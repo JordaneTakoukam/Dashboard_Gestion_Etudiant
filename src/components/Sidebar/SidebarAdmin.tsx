@@ -246,7 +246,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Listes des étudiants
+                                                            Listes des enseignants
                                                         </NavLink>
                                                     </li>
                                                     <li>

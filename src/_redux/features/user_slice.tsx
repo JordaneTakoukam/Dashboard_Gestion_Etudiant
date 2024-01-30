@@ -14,12 +14,12 @@ export interface PropsUserState {
     username: string;
 }
 
-const initialState: UserState = {
-    id: '',
-    email: "",
-    role: "",
-    username: '',
-};
+    const initialState: UserState = {
+        id: '',
+        email: "",
+        role: "",
+        username: '',
+    };
 
 export const userSlice = createSlice({
     name: "userSlice",

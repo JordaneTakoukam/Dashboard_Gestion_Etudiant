@@ -1,15 +1,17 @@
 
 interface ButtonCrudProps {
-    onClickEdit: () => void;
-    onClickDelete: () => void;
+    onClickEdit?: () => void;
+    onClickDelete?: () => void;
+    onClickAddHour?:()=>void;
+    onClickRemovHour?:()=>void;
     border?: boolean;
 }
 
-const ButtonCrudTable = ({ onClickEdit, onClickDelete, border  }: ButtonCrudProps) => {
+const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, border  }: ButtonCrudProps) => {
     return (
         <div className="flex items-center w-full justify-center">
             {/* Button Edit */}
-            <button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
+            {onClickEdit && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
                 onClick={onClickEdit}>
                 <svg
                     className="feather feather-edit"
@@ -26,11 +28,11 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, border  }: ButtonCrudProp
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
-            </button>
+            </button>)}
             {/* ! Edit SVG Path */}
 
             {/* button Delete */}
-            <button className={`${border && 'border  border-gray'}   hover:bg-meta-1 flex text-sm gap-2 text-body hover:text-white  items-center py-4 px-5  dark:text-gray`} onClick={onClickDelete}>
+            {onClickDelete && (<button className={`${border && 'border  border-gray'}   hover:bg-meta-1 flex text-sm gap-2 text-body hover:text-white  items-center py-4 px-5  dark:text-gray`} onClick={onClickDelete}>
                 <svg
                     className="fill-current"
                     width="18"
@@ -56,7 +58,44 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, border  }: ButtonCrudProp
                         fill=""
                     />
                 </svg>
-            </button>
+            </button>)}
+            {/* Button ajout heure d'absence */}
+            {onClickAddHour && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
+                onClick={onClickAddHour}>
+                <svg
+                    className="feather feather-plus"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    >
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+            </button>)}
+            {/* ! Edit SVG Path */}
+            {/* Button reduction heure d'absence */}
+            {onClickRemovHour && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
+                onClick={onClickRemovHour}>
+                <svg
+                    className="feather feather-minus"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    >
+                    <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>)}
+            {/* ! Edit SVG Path */}
+            
         </div >
     );
 };

@@ -23,39 +23,39 @@ const BodyTableEtudiant = ({ data }: { data: Etudiant[] }) => {
 
                 {/* nom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.firstName}</h5>
+                    <h5>{capitalizeFirstLetter(item.lastName)}</h5>
                 </td>
 
                 {/* prenom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.lastName}</h5>
+                    <h5>{capitalizeFirstLetter(item.firstName)}</h5>
                 </td>
 
-                {/* classes
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.classe}</h5>
-                </td> */}
 
-                {/* email */}
+                {/* e-mail */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
                     <h5>{capitalizeFirstLetter(item.email)}</h5>
                 </td>
 
                 {/* contact */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">                    
-                    <h5>{capitalizeFirstLetter(item.contact)}</h5>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                    <h5>{item.contact}</h5>
                 </td>
-                
+
+                {/* nombre d'heure d'absence */}
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{item.nbAbscences}</h5>
+                </td>
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
-                        onClickEdit={() => {
+                        onClickAddHour={() => {
                             dispatch(setShowModalUpdate())
-                        }}
-                        onClickDelete={() => {
-                            dispatch(setShowModalDelete())
-                        }}
+                        } }
+                        onClickRemovHour={() => {
+                            dispatch(setShowModalUpdate())
+                        } }                                             
                     />
                 </td>
             </tr>

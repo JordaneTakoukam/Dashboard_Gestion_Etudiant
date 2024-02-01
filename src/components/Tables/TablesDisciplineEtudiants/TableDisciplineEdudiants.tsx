@@ -5,7 +5,7 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import BodyTableEtudiant from "./BodyTableEtudiant";
-import HeaderTableEtudiant from "./HeaderTableEtudiant";
+import HeaderTableEtudiant from "./HeaderTableDisciplineEtudiant";
 import { setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
@@ -72,10 +72,6 @@ const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <ButtonCreate
-                    title="Nouvel étudiant"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
-                />
                 <InputSearch hintText="Rechercher un étudiant" onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -93,6 +89,7 @@ const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
                             <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
+                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleNiveauSelect} />
                         </div>
                     )}
                 </div>
@@ -105,6 +102,7 @@ const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
                             <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
+                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleNiveauSelect} />
                         </div>
                     </div>
                 </div>

@@ -7,10 +7,11 @@ import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiant
 export interface Etudiant {
     firstName: string;
     lastName: string;
-    address: string;
+    email: string;
     contact: string;
     matricule: string;
     classe: string;
+    nbAbscences : number
 }
 
 const ListeDesEtudiants = () => {
@@ -34,96 +35,105 @@ export default ListeDesEtudiants;
 
 
 
-
-
-const listTest: Etudiant[] = [
+export const listTest: Etudiant[] = [
     {
         firstName: "Jane",
         lastName: "Smith",
-        address: "456 Elm Street",
+        email: "test@123",
         contact: "655484959",
         matricule: "CD5678",
-        classe: "L2A"
+        classe: "L2A", 
+        nbAbscences : 0
     },
     {
         firstName: "Alice",
         lastName: "Johnson",
-        address: "789 Oak Street",
+        email: "test@123",
         contact: "677988866",
         matricule: "EF9012",
-        classe: "L2B"
+        classe: "L2B", 
+        nbAbscences : 0
     },
     {
         firstName: "Alice",
         lastName: "Johnson",
-        address: "789 Oak Street",
+        email: "test@123",
         contact: "677988866",
         matricule: "EF9012",
-        classe: "L2B"
+        classe: "L2B", 
+        nbAbscences : 0
     },
     {
         firstName: "Bob",
         lastName: "Brown",
-        address: "321 Pine Street",
+        email: "test@123",
         contact: "677978745",
         matricule: "GH3456",
-        classe: "L3A"
+        classe: "L3A", 
+        nbAbscences : 0
     },
     {
         firstName: "Emily",
         lastName: "Taylor",
-        address: "654 Cedar Street",
+        email: "test@123",
         contact: "677966888",
         matricule: "IJ7890",
-        classe: "L3B"
+        classe: "L3B", 
+        nbAbscences : 0
     },
     {
         firstName: "Michael",
         lastName: "Anderson",
-        address: "987 Maple Street",
+        email: "test@123",
         contact: "655489566",
         matricule: "KL2345",
-        classe: "L4A"
+        classe: "L4A", 
+        nbAbscences : 0
     },
     {
         firstName: "Sophia",
         lastName: "Martinez",
-        address: "210 Birch Street",
+        email: "test@123",
         contact: "677944777",
         matricule: "MN6789",
-        classe: "L4B"
+        classe: "L4B", 
+        nbAbscences : 0
     },
     {
         firstName: "William",
         lastName: "Garcia",
-        address: "543 Walnut Street",
+        email: "test@123",
         contact: "655484343",
         matricule: "OP0123",
-        classe: "L5A"
+        classe: "L5A", 
+        nbAbscences : 0
     },
     {
         firstName: "Olivia",
         lastName: "Hernandez",
-        address: "876 Spruce Street",
+        email: "test@123",
         contact: "677955666",
         matricule: "QR4567",
-        classe: "L5B"
+        classe: "L5B", 
+        nbAbscences : 0
     },
     {
         firstName: "James",
         lastName: "Lopez",
-        address: "109 Cherry Street",
+        email: "test@123",
         contact: "677988877",
         matricule: "ST8901",
-        classe: "L6A"
+        classe: "L6A", 
+        nbAbscences : 0
     },
     {
         firstName: "Maria",
         lastName: "Ramirez",
-        address: "210 Oak Street",
+        email: "test@123",
         contact: "677999888",
         matricule: "UV2345",
-        classe: "L6B"
+        classe: "L6B", 
+        nbAbscences : 0
     }
 ];
 

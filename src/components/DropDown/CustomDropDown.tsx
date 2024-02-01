@@ -73,7 +73,8 @@ export function CustomDropDown({ items, title, defaultValue, initialSelection, o
 
                         {/* liste deroulante */}
                         <Listbox.Options className={`
-                       ${!alignTop ? '-top-[110px]' : ''} 
+                   
+                       ${!alignTop ? 'lg:-top-[110px]' : ''} 
                         absolute max-h-60 w-[120px] lg:w-[200px] overflow-auto rounded-md bg-white dark:bg-black dark:shadow-black py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm`}>
                             {updatedItems.map((item, index) => (
                                 <Listbox.Option

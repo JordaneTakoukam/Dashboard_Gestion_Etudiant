@@ -1,5 +1,7 @@
 import Breadcrumb from "../../components/Breadcrumb";
-import ModalCreateEtudiant from "../../components/DialogBoxes/DialogEtudiant/DialogCreateEtudiant";
+import ModalCreateEtudiant from "../../components/Modals/ModalEtudiant/DialogCreateEtudiant";
+import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDeleteEtudiant";
+import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 
 export interface Etudiant {
@@ -17,7 +19,11 @@ const ListeDesEtudiants = () => {
             <Breadcrumb pageName="Liste des étudiants" />
             <TableEtudiant data={listTest} />
 
+
+            {/* Boite de dialogue */}
             <ModalCreateEtudiant />
+            <ModalUpdateEtudiant />
+            <ModalDeleteEtudiant />
 
 
         </>

@@ -1,28 +1,22 @@
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import { IoMdClose } from 'react-icons/io';
 
-import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
-import { IoMdClose } from "react-icons/io";
-import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalCreate } from '../../../_redux/features/setting_slice';
-import { RootState } from '../../../_redux/store';
+interface CustomDialogModalProps {
+    title: string;
+    handleConfirm: () => void;
+    isModalOpen: boolean;
+    closeModal: () => void;
+    children: React.ReactNode;
+}
 
+// model generale pour les boites de dialogue
 
-
-function ModalCreateEtudiant() {
-    const dispatch = useDispatch();
-
-    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.create);
-    const closeModal = () => { dispatch(setShowModalCreate()); };
-
-
-    const handleCreateEtudiant = () => {
-
-    }
-
+function CustomDialogModal({ title, handleConfirm, isModalOpen, closeModal, children }: CustomDialogModalProps) {
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
-                <Dialog open={isModalOpen} as="div" className="relative z-999999" onClose={() => { }}   >
+                <Dialog open={isModalOpen} as="div" className="relative z-999999" onClose={closeModal}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -36,7 +30,7 @@ function ModalCreateEtudiant() {
                     </Transition.Child>
 
                     <div className="fixed inset-0  w-screen overflow-y-auto overflow-x-hidden ">
-                        <div className="flex min-h-full w-screen   items-center justify-center p-4 text-center">
+                        <div className="flex min-h-full w-screen   items-center justify-center p-4 text-center  text-[14px] lg:text-[15px]">
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-300"
@@ -49,36 +43,32 @@ function ModalCreateEtudiant() {
                                 <Dialog.Panel className="mt-[90px] w-[600px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title
                                         as="h3"
-                                        className="text-lg font-medium leading-6 text-gray-900 "
+                                        className=" font-medium leading-6 text-gray-900 "
                                     >
-                                        <div className='flex justify-between items-center text-md md:text-lg text-black-2 dark:text-gray font-bold'>
-                                            Enregistrer un nouvelle étuidant
+                                        <div className='flex justify-between items-center  text-black-2 dark:text-gray font-bold '>
+                                            {title}
                                             <div
-                                                onClick={() => closeModal()}
+                                                onClick={closeModal}
                                                 className='h-6 w-6 cursor-pointer flex items-center justify-center hover:bg-body rounded-full hover:text-white'>
                                                 <IoMdClose />
                                             </div>
-
                                         </div>
                                     </Dialog.Title>
 
-                                    {/* CORD DE LA BOITE DE DIALOGUE */}
-                                    <div className='mt-5 md:mt-10'>
-                                        <h1>Contenu</h1>
-
-                                    </div>
+                                    {/* BODY DE LA BOITE DE DIALOGUE */}
+                                    <div className='mt-5 md:mt-10'>{children}</div>
 
                                     <div className="flex justify-end gap-4.5 mt-8">
                                         <button
-                                            className="flex justify-center rounded border border-stroke py-2 px-8 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                            className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-2 lg:px-8 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] "
                                             type="submit"
-                                            onClick={() => closeModal()}
+                                            onClick={closeModal}
                                         >
                                             Annuler
                                         </button>
                                         <button
                                             className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70"
-                                            onClick={handleCreateEtudiant}
+                                            onClick={handleConfirm}
                                         >
                                             Ajouter
                                         </button>
@@ -91,9 +81,6 @@ function ModalCreateEtudiant() {
             </Transition>
         </div>
     );
-};
+}
 
-export default ModalCreateEtudiant
-
-
-
+export default CustomDialogModal;

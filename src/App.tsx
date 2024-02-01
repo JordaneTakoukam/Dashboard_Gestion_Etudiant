@@ -22,6 +22,8 @@ import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
 
 function App() {
   var dispatch = useDispatch();
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+
   const [loading, setLoading] = useState<boolean>(true);
   // var isAuth = isUserAuthenticated();
   const isAuth = { status: true };
@@ -60,10 +62,16 @@ function App() {
 
   // au lencement de la page
   useEffect(() => {
+    const checkIfMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (checkIfMobileOrTablet) {
+      setIsMobileOrTablet(false);
+    } else {
+      setIsMobileOrTablet(true);
+    }
     // temps de latence (Test), pour passe de la page common vers /dashboard  ou /sigin
     const timeout = setTimeout(() => {
       setLoading(false);
-
 
       // on save en state le user connecter dans le state global de l'app
       const currentUser: PropsUserState = userTest[0]; // 0=admin, 1=enseignant 2=delegué 3=etudiant
@@ -90,7 +98,7 @@ function App() {
         <Route path="/auth/signin" element={<SignIn />} />
 
         {/* Menu de gauche pour les differents roles  */}
-        <Route element={isAuth.status ? <Layout /> : <Navigate to={'/auth/signin'} />}>
+        <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/auth/signin'} />}>
 
 
           {/*  Page de droites   */}

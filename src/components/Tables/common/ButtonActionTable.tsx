@@ -9,7 +9,7 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, border  }: ButtonCrudProp
     return (
         <div className="flex items-center w-full justify-center">
             {/* Button Edit */}
-            <button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-2 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
+            <button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
                 onClick={onClickEdit}>
                 <svg
                     className="feather feather-edit"

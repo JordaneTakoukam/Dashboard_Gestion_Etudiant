@@ -6,14 +6,18 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../_redux/store';
 import { config } from '../config';
 import SidebarTeacher from '../components/Sidebar/SidebarTeacher';
-import Sidebar from '../components/Sidebar';
 import SidebarStudent from '../components/Sidebar/SidebarStudent';
 
-const Layout = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+interface LayoutProps {
+    isMobileOrTablet: boolean;
+}
+const Layout = ({ isMobileOrTablet }: LayoutProps) => {
+    const [sidebarOpen, setSidebarOpen] = useState(isMobileOrTablet);
 
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
+
+
 
     return (
         <div className="dark:bg-boxdark-2 dark:text-bodydark">

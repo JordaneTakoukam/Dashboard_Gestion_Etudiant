@@ -80,7 +80,7 @@ const DropdownUser = () => {
             </span>
         }
 
-        <span className={`rounded-full ${user.role === roles.teacher ? 'h-11 w-11' : 'h-12 w-12 '}`}>
+        <span className={`rounded-full ${user.role === roles.teacher ? 'h-9 w-9' : 'h-10 w-10 '}`}>
           <img src={
             user.role === roles.admin ? ImageAdmin :
               user.role === roles.teacher ? ImageTeacher :

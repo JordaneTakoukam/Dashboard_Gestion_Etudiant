@@ -1,17 +1,17 @@
 import Breadcrumb from "../../components/Breadcrumb";
 import ModalCreateEtudiant from "../../components/Modals/ModalEtudiant/DialogCreateEtudiant";
 import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDeleteEtudiant";
-import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
+// import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 
-export interface Etudiant {
-    firstName: string;
-    lastName: string;
-    email: string;
-    contact: string;
-    matricule: string;
-    classe: string;
-    nbAbscences : number
+export class Etudiant {
+    firstName!: string;
+    lastName!: string;
+    email!: string;
+    contact!: string;
+    matricule!: string;
+    classe!: string;
+    nbAbscences!: number;
 }
 
 const ListeDesEtudiants = () => {
@@ -23,7 +23,6 @@ const ListeDesEtudiants = () => {
 
             {/* Boite de dialogue */}
             <ModalCreateEtudiant />
-            <ModalUpdateEtudiant />
             <ModalDeleteEtudiant />
 
 
@@ -32,8 +31,6 @@ const ListeDesEtudiants = () => {
 };
 
 export default ListeDesEtudiants;
-
-
 
 export const listTest: Etudiant[] = [
     {

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface SettingState {
     showModal: {
@@ -12,7 +12,7 @@ const initialState: SettingState = {
     showModal: {
         create: false,
         update: false,
-        delete: false,
+        delete: false,       
     }
 };
 

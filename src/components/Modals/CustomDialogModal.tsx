@@ -70,7 +70,7 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, closeModal, chil
                                             className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70"
                                             onClick={handleConfirm}
                                         >
-                                            Ajouter
+                                            Enregistrer
                                         </button>
                                     </div>
                                 </Dialog.Panel>

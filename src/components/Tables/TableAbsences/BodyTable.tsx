@@ -1,0 +1,39 @@
+import { useDispatch, useSelector } from "react-redux"
+import ButtonCrudTable from "../common/ButtonActionTable"
+import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { Abscences } from "../../../pages/CommonPage/Abscences"
+
+
+const BodyTable = ({ data }: { data: Abscences[] }) => {
+
+    const dispatch = useDispatch();
+
+    return <tbody>
+        {data.map((item, index) => (
+            <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
+                {/* index */}
+                <td className="border-b border-[#eee] py-0 lg:py-4 pl-4 md:pl-5 lg:pl-6 xl:pl-5 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
+                    <h5 className="">{index + 1}</h5>
+                </td>
+
+                {/* date */}
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
+                    <h5>{item.dateAbs}</h5>
+                </td>
+
+                {/* période */}
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{item.debutPeriode} - {item.finPeriode}</h5>
+                </td>
+
+
+                {/* total */}
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
+                    <h5>{item.totalAbscences}</h5>
+                </td>
+            </tr>
+        ))}
+    </tbody>
+}
+
+export default BodyTable

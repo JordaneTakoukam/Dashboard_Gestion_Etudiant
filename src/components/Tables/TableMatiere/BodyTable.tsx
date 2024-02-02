@@ -1,11 +1,15 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
 import { Matiere } from "../../../pages/Admin/ListeMatieres"
+import { RootState } from "../../../_redux/store"
+import { config } from "../../../config"
 
 const BodyTable = ({ data }: { data: Matiere[] }) => {
 
     const dispatch = useDispatch();
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
 
     return <tbody>
         {data.map((item, index) => (
@@ -42,9 +46,9 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
                             
                             dispatch(setShowModalUpdate())
                         }}
-                        onClickDelete={() => {
+                        onClickDelete={roles.admin === userRole ?() => {
                             dispatch(setShowModalDelete())
-                        }}
+                        }:undefined}
                         onClickAddInfoSub={() => {
                             
                         }}

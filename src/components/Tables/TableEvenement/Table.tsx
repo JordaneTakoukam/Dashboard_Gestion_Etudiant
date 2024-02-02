@@ -77,7 +77,7 @@ const Table = ({ data }: { data: Evenement[] }) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-            {roles.admin === userRole && (<ButtonCreate
+                {roles.admin === userRole && (<ButtonCreate
                     title="Nouvel évènement"
                     onClick={() => { dispatch(setShowModalCreate()) }}
                 />)}

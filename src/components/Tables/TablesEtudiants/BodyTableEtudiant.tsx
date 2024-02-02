@@ -51,8 +51,8 @@ const BodyTableEtudiant = ({ data }: { data: Etudiant[] }) => {
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
+                            dispatch(setShowModalUpdate());
                             
-                            dispatch(setShowModalUpdate())
                         }}
                         onClickDelete={() => {
                             dispatch(setShowModalDelete())

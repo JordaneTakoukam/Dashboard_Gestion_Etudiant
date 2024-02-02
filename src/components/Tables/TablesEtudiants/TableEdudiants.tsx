@@ -13,7 +13,6 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 
 
-
 const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -74,7 +73,7 @@ const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Nouvel étudiant"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => {dispatch(setShowModalCreate()) }}
                 />
                 <InputSearch hintText="Rechercher un étudiant" onSubmit={() => { }} />
             </div>

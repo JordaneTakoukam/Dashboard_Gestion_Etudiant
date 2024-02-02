@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface SettingState {
+    [x: string]: any;
     showModal: {
         create: boolean,
         update: boolean,

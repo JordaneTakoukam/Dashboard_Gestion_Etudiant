@@ -4,14 +4,14 @@ import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDel
 // import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 
-export class Etudiant {
-    firstName!: string;
-    lastName!: string;
-    email!: string;
-    contact!: string;
-    matricule!: string;
-    classe!: string;
-    nbAbscences!: number;
+export interface Etudiant {
+    firstName: string;
+    lastName: string;
+    email: string;
+    contact: string;
+    matricule: string;
+    classe: string;
+    nbAbscences: number;
 }
 
 const ListeDesEtudiants = () => {

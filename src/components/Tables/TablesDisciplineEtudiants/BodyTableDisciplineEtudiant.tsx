@@ -5,7 +5,7 @@ import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModalUpdate } from "../../../_redux/features/setting_slice"
 
 
-const BodyTableEtudiant = ({ data }: { data: Etudiant[] }) => {
+const BodyTableDisciplineEtudiant = ({ data }: { data: Etudiant[] }) => {
 
     const dispatch = useDispatch();
 
@@ -64,4 +64,4 @@ const BodyTableEtudiant = ({ data }: { data: Etudiant[] }) => {
     </tbody>
 }
 
-export default BodyTableEtudiant
+export default BodyTableDisciplineEtudiant

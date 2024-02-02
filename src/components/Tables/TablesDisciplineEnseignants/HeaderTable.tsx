@@ -1,5 +1,5 @@
 
-const HeaderTableDisciplineEtudiant = () => {
+const HeaderTable = () => {
     return (
 
         <thead className=''>
@@ -50,4 +50,4 @@ const HeaderTableDisciplineEtudiant = () => {
     )
 }
 
-export default HeaderTableDisciplineEtudiant
+export default HeaderTable

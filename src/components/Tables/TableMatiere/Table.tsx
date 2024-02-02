@@ -1,19 +1,21 @@
 import { useDispatch } from "react-redux";
+import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
+import { setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
+import { Matiere } from "../../../pages/Admin/ListeMatieres";
 
 
 
 
-const Table = ({ data }: { data: Enseignant[] }) => {
+const Table = ({ data }: { data: Matiere[] }) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -28,7 +30,6 @@ const Table = ({ data }: { data: Enseignant[] }) => {
     const [filtreSection, setFiltreSection] = useState("");
     const [filtreCycle, setFiltreCycle] = useState("");
     const [filtreNiveau, setFiltreNiveau] = useState("");
-    const [filtreSemestre, setFiltreSemestre] = useState("");
     const [formatToDownload, setFormatToDownload] = useState("");
 
     const handleAnneeSelect = (selected: string) => {
@@ -49,12 +50,6 @@ const Table = ({ data }: { data: Enseignant[] }) => {
         setFiltreNiveau(selected);
         console.log(selected);
     };
-
-    const handleSemestreSelect = (selected: string) => {
-        setFiltreSemestre(selected);
-        console.log(selected);
-    };
-
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
@@ -78,14 +73,18 @@ const Table = ({ data }: { data: Enseignant[] }) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText="Rechercher un enseignant" onSubmit={() => { }} />
+                <ButtonCreate
+                    title="Nouvelle matière"
+                    onClick={() => { dispatch(setShowModalCreate()) }}
+                />
+                <InputSearch hintText="Rechercher une matière" onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>Filtrer la liste des enseignants suivant : </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>Filtrer la liste des matières suivant : </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
@@ -95,7 +94,6 @@ const Table = ({ data }: { data: Enseignant[] }) => {
                             <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
                         </div>
                     )}
                 </div>
@@ -108,7 +106,6 @@ const Table = ({ data }: { data: Enseignant[] }) => {
                             <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
                         </div>
                     </div>
                 </div>

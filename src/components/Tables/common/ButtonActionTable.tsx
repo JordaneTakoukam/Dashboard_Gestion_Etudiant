@@ -1,13 +1,14 @@
 
 interface ButtonCrudProps {
-    onClickEdit?: () => void;
-    onClickDelete?: () => void;
-    onClickAddHour?:()=>void;
-    onClickRemovHour?:()=>void;
+    onClickEdit?: () => void; //Editer un élément
+    onClickDelete?: () => void; //Supprimer un élèment
+    onClickAddHour?:()=>void; //Ajouter les heures d'absences
+    onClickRemovHour?:()=>void; //Diminuer les erreurs d'absences
+    onClickAddInfoSub?:()=>void; //Ajouter des informations sur la matières (chapitres, compétences) ou voir les détails de la matière
     border?: boolean;
 }
 
-const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, border  }: ButtonCrudProps) => {
+const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, onClickAddInfoSub, border  }: ButtonCrudProps) => {
     return (
         <div className="flex items-center w-full justify-center">
             {/* Button Edit */}
@@ -96,6 +97,23 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRe
 
             </button>)}
             {/* ! Edit SVG Path */}
+            {/* Plus d'info sur la matière*/}
+            {onClickAddInfoSub && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
+                onClick={onClickAddInfoSub}>
+                <svg
+                    className="feather feather-plus"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    >
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+            </button>)}
             
         </div >
     );

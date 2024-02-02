@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
-import { Matiere } from "../../../pages/Admin/ListeMatieres"
+import { Section } from "../../../pages/Admin/Sections";
 
-const BodyTable = ({ data }: { data: Matiere[] }) => {
+const BodyTable = ({ data }: { data: Section[] }) => {
 
     const dispatch = useDispatch();
 
@@ -15,7 +15,7 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
                     <h5 className="">{index + 1}</h5>
                 </td>
 
-                {/* code */}
+                {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
                     <h5>{item.code}</h5>
                 </td>
@@ -23,16 +23,6 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
                 {/* libelle */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.libelle}</h5>
-                </td>
-
-                {/* nombre de chapitre */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.nbChapitre}</h5>
-                </td>
-
-                {/* volume horaire */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
-                    <h5>{item.volumeHoraire}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}
@@ -44,9 +34,6 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
                         }}
                         onClickDelete={() => {
                             dispatch(setShowModalDelete())
-                        }}
-                        onClickAddInfoSub={() => {
-                            
                         }}
                     />
                 </td>

@@ -19,17 +19,17 @@ const BodyTableDisciplineEtudiant = ({ data }: { data: Etudiant[] }) => {
 
                 {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{capitalizeFirstLetter(item.matricule)}</h5>
+                    <h5>{item.matricule?item.matricule:""}</h5>
                 </td>
 
                 {/* nom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{capitalizeFirstLetter(item.lastName)}</h5>
+                    <h5>{item.nom}</h5>
                 </td>
 
                 {/* prenom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{capitalizeFirstLetter(item.firstName)}</h5>
+                    <h5>{item.prenom?item.prenom:""}</h5>
                 </td>
 
 

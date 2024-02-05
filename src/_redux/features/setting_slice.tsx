@@ -6,6 +6,7 @@ interface SettingState {
         create: boolean,
         update: boolean,
         delete: boolean,
+        open : boolean,
     };
 }
 
@@ -13,7 +14,8 @@ const initialState: SettingState = {
     showModal: {
         create: false,
         update: false,
-        delete: false,       
+        delete: false,  
+        open : false,     
     }
 };
 
@@ -34,12 +36,16 @@ export const settingSlice = createSlice({
             state.showModal.delete = !state.showModal.delete;
         },
 
+        setShowModal: (state)=>{
+            state.showModal.open = !state.showModal.open;
+        }
+
 
     },
 });
 
 export const {
-    setShowModalCreate, setShowModalUpdate, setShowModalDelete,
+    setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal,
 } = settingSlice.actions;
 
 export default settingSlice.reducer;

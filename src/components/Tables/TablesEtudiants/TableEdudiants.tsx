@@ -6,14 +6,19 @@ import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import BodyTableEtudiant from "./BodyTableEtudiant";
 import HeaderTableEtudiant from "./HeaderTableEtudiant";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 
+interface TableEtudiantProps {
+    data: Etudiant[];
+    onCreate:()=>void;
+    onEdit: (etudiant: Etudiant) => void;
+}
 
-const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
+const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -66,14 +71,14 @@ const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-
+    
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Nouvel étudiant"
-                    onClick={() => {dispatch(setShowModalCreate()) }}
+                    onClick={() => {onCreate();dispatch(setShowModal()) }}
                 />
                 <InputSearch hintText="Rechercher un étudiant" onSubmit={() => { }} />
             </div>
@@ -126,7 +131,7 @@ const TableEtudiant = ({ data }: { data: Etudiant[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTableEtudiant data={data} />
+                            !pageIsLoading && <BodyTableEtudiant data={data} onEdit={onEdit} />
                         }
 
 

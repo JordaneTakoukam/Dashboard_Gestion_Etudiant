@@ -6,13 +6,14 @@ interface CustomDialogModalProps {
     title: string;
     handleConfirm: () => void;
     isModalOpen: boolean;
+    isDelete:boolean;
     closeModal: () => void;
     children: React.ReactNode;
 }
 
 // model generale pour les boites de dialogue
 
-function CustomDialogModal({ title, handleConfirm, isModalOpen, closeModal, children }: CustomDialogModalProps) {
+function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeModal, children }: CustomDialogModalProps) {
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
@@ -64,13 +65,13 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, closeModal, chil
                                             type="submit"
                                             onClick={closeModal}
                                         >
-                                            Annuler
+                                            {!isDelete?'Annuler':'Non'}
                                         </button>
                                         <button
                                             className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70"
                                             onClick={handleConfirm}
                                         >
-                                            Enregistrer
+                                            {!isDelete?'Enregistrer':'Oui'}
                                         </button>
                                     </div>
                                 </Dialog.Panel>

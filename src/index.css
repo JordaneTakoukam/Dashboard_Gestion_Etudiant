@@ -158,6 +158,18 @@ span.flatpickr-weekday,
   background-image: url(./images/icon/icon-arrow-down.svg);
 }
 
+.text-red-500 {
+  color: red;
+}
+
+.radio-label-space{
+  margin-right: 2%;
+}
+
+.radio-intern-space{
+  margin-right: 5%;
+}
+
 [x-cloak] {
   display: none !important;
 }

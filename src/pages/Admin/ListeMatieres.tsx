@@ -4,6 +4,7 @@ import Table from "../../components/Tables/TableMatiere/Table";
 import { Niveau } from "./Niveaux";
 import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
+import { Enseignant, enseignants } from "./ListeEnseignants";
 
 export interface Matiere {
     id? : number;
@@ -12,6 +13,8 @@ export interface Matiere {
     prerequis?: string;
     evaluationDesAcquis?: string;
     niveau: Niveau;
+    enseignant:Enseignant;
+    enseignantSup?:Enseignant
     approchePedagogique?: string;
     chapitres? : Chapitre[];
 }
@@ -60,12 +63,17 @@ const ListeDesMatieres = () => {
 };
 
 export default ListeDesMatieres;
+export const cm:TypeEnseignement={id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:0};
+export const td:TypeEnseignement={id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:0};
+export const tp:TypeEnseignement={id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0};
+
 export const matieres: Matiere[] = [
     {
         code: "CG1",
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
+        enseignant:enseignants[0],
         niveau: {
             id:1,
             code:"N1",
@@ -93,6 +101,7 @@ export const matieres: Matiere[] = [
                 typesEnseignement:[
                     {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:8},
                     {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:4},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
             {
@@ -106,6 +115,7 @@ export const matieres: Matiere[] = [
                 typesEnseignement:[
                     {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:5},
                     {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:2},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
         ]
@@ -115,6 +125,8 @@ export const matieres: Matiere[] = [
         libelle: "Elaboration du budget de l'Etat",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
+        enseignant:enseignants[1],
+        enseignantSup:enseignants[0],
         niveau: {
             id:1,
             code:"N1",
@@ -142,6 +154,7 @@ export const matieres: Matiere[] = [
                 typesEnseignement:[
                     {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:7},
                     {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:4},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
             {
@@ -165,6 +178,7 @@ export const matieres: Matiere[] = [
         libelle: "Management des organisations publiques",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
+        enseignant:enseignants[3],
         niveau: {
             id:1,
             code:"N1",
@@ -216,6 +230,8 @@ export const matieres: Matiere[] = [
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
+        enseignant:enseignants[4],
+        enseignantSup:enseignants[5],
         niveau: {
             id:1,
             code:"N1",
@@ -263,5 +279,6 @@ export const matieres: Matiere[] = [
         ]
     },
 ];
+
 
 

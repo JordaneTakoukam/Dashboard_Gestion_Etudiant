@@ -1,321 +1,156 @@
+import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableEmploieDeTemps/Table";
-import { Matiere } from "../Admin/ListeMatieres";
+import { Matiere, TypeEnseignement, cm, matieres, td, tp } from "../Admin/ListeMatieres";
+import {niveau } from "../Admin/Niveaux";
+import { SalleCours, sallesCours } from "../Admin/SallesDeCours";
+import FormCreateUpdate from "../../components/Modals/ModalEmploiTemps/FormCreateUpdate";
 
 export interface PeriodeCours{
-    jour:number;
+    id?:number;
+    jour:Jour;
     heureDebut:string;
     heureFin:string;
-    salle:string;
-    enseignant:string;
-    enseignantSup:string;
+    salle:SalleCours;
     matiere:Matiere;
-    typeUE:string;
+    typeUE:TypeEnseignement;
     semestre:number;
-    niveau:string;
     annee:number;
 }
 
+export interface Jour{
+    ordre:number;
+    libelle:string;
+}
+
 const EmploiDeTemp = () => {
+    const [selectedPeriode, setSelectedPeriode] = useState<PeriodeCours | null>(null);
+    const handleEditPeriode = (periode : PeriodeCours) => {
+        setSelectedPeriode(periode);
+    }
+
+    const handleAddPeriode = () => {
+        setSelectedPeriode(null);
+    }
   
     return (
         <>
             <Breadcrumb pageName={`Emplois de temps`} />
-            <Table data={listPeriode}/>
-
+            <Table data={listPeriode} onCreate={handleAddPeriode} onEdit={handleEditPeriode}/>
+            <FormCreateUpdate periodecours={selectedPeriode}/>
 
         </>
     );
 };
 
 export default EmploiDeTemp;
+export const semestres = [1, 2];
+export const lundi:Jour={ordre:1,libelle:"Lundi"}
+export const mardi:Jour={ordre:2,libelle:"Mardi"}
+export const mercredi:Jour={ordre:3,libelle:"Mercredi"}
+export const jeudi:Jour={ordre:4,libelle:"Jeudi"}
+export const vendredi:Jour={ordre:5,libelle:"Vendredi"}
+export const samedi:Jour={ordre:6,libelle:"Samedi"}
+export const dimanche:Jour={ordre:7,libelle:"Dimanche"}
+export const jours:Jour[]=[lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche];
 export const listPeriode:PeriodeCours[]=[
     {
-        jour:1,
-        heureDebut:"07h00",
-        heureFin:"09h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG3",
-                libelle:"Management des organisations publiques",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"CM",
+        id:1,
+        jour:lundi,
+        heureDebut:"07:00",
+        heureFin:"09:55",
+        salle:sallesCours[0],
+        matiere:matieres[0],
+        typeUE:cm,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:1,
-        heureDebut:"10h05",
-        heureFin:"12h55",
-        salle:"S02",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG3",
-                libelle:"Management des organisations publiques",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:2,
+        jour:lundi,
+        heureDebut:"10:05",
+        heureFin:"12:55",
+        salle:sallesCours[1],
+        matiere:matieres[1],
+        typeUE:tp,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:2,
-        heureDebut:"13h05",
-        heureFin:"15h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"CM",
+        id:3,
+        jour:mardi,
+        heureDebut:"13:05",
+        heureFin:"15:55",
+        salle:sallesCours[0],
+        matiere:matieres[2],
+        typeUE:cm,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:3,
-        heureDebut:"16h05",
-        heureFin:"18h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:4,
+        jour:mercredi,
+        heureDebut:"16:05",
+        heureFin:"18:55",
+        salle:sallesCours[0],
+        matiere:matieres[3],
+        typeUE:td,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:4,
-        heureDebut:"07h05",
-        heureFin:"09h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:5,
+        jour:jeudi,
+        heureDebut:"07:05",
+        heureFin:"09:55",
+        salle:sallesCours[0],
+        matiere:matieres[3],
+        typeUE:tp,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:5,
-        heureDebut:"13h05",
-        heureFin:"15h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:6,
+        jour:vendredi,
+        heureDebut:"13:05",
+        heureFin:"15:55",
+        salle:sallesCours[0],
+        matiere:matieres[0],
+        typeUE:tp,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:5,
-        heureDebut:"10h05",
-        heureFin:"13h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:7,
+        jour:samedi,
+        heureDebut:"10:05",
+        heureFin:"13:55",
+        salle:sallesCours[3],
+        matiere:matieres[1],
+        typeUE:tp,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:6,
-        heureDebut:"13h05",
-        heureFin:"15h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:8,
+        jour:vendredi,
+        heureDebut:"13:05",
+        heureFin:"15:55",
+        salle:sallesCours[1],
+        matiere:matieres[2],
+        typeUE:td,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     },
     {
-        jour:7,
-        heureDebut:"10h05",
-        heureFin:"13h55",
-        salle:"S01",
-        enseignant:"Arnold Julio",
-        enseignantSup:"Anderson Enrick",
-        matiere:{code:"CG1",
-                libelle:"Elaboration, exécution et contrôle du budget de l'Etat",
-                prerequis: "",
-                evaluationDesAcquis: "Contrôle continu, Examen écrit",
-                niveau: {
-                    id:1,
-                    code:"N1",
-                    libelle:"1ère année",
-                    cycle:{
-                        id:1,
-                        code:"CA",
-                        libelle:"Cycle A",
-                        section:{
-                            code:"S001",
-                            libelle:"Douane",
-                        }
-                    },
-                },
-                approchePedagogique: "APC",
-                },
-        typeUE:"TP",
+        id:9,
+        jour:dimanche,
+        heureDebut:"10:05",
+        heureFin:"13:55",
+        salle:sallesCours[0],
+        matiere:matieres[3],
+        typeUE:td,
         semestre:1,
-        niveau:"1ère année",
         annee:2022
     }
 

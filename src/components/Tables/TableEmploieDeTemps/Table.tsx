@@ -6,16 +6,26 @@ import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
-import { PeriodeCours } from "../../../pages/CommonPage/EmploiDeTemp";
+import { PeriodeCours, jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
+import { setShowModal } from "../../../_redux/features/setting_slice";
 
 
+interface TablePeriodeProps {
+    data: PeriodeCours[];
+    onCreate:()=>void;
+    onEdit: (periode : PeriodeCours) => void;
+}
 
-
-const Table = ({ data }: { data: PeriodeCours[] }) => {
+const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const ouvrirFormulairePeriode = (periode?: PeriodeCours) => {
-        // Logique pour ouvrir le formulaire avec les informations de la période
+        if(periode){
+            onEdit(periode);
+        }else{
+            onCreate();
+        }
+        dispatch(setShowModal());
         console.log("Ouverture du formulaire pour la période :", periode);
     };
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -51,10 +61,9 @@ const Table = ({ data }: { data: PeriodeCours[] }) => {
                     row.className = classNames;
                 const horaireCell = row.insertCell();
                 horaireCell.textContent = horaire;
-                const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
                 jours.forEach((jour) => {
                     const jourCell = row.insertCell();
-                    const coursJour = periodes.find((cours) => cours.jour === jours.indexOf(jour) + 1);
+                    const coursJour = periodes.find((cours) => cours.jour.ordre === jours.indexOf(jour) + 1);
                     jourCell.style.textAlign='center';
                     if (roles.admin === userRole) {
                         jourCell.onmouseover = () => {
@@ -66,7 +75,7 @@ const Table = ({ data }: { data: PeriodeCours[] }) => {
                         };
                     }
                     if (coursJour) {
-                        jourCell.textContent = `${coursJour.matiere.code} (${coursJour.typeUE}) - ${coursJour.enseignant}/${coursJour.enseignantSup} - ${coursJour.salle}`;
+                        jourCell.textContent = `${coursJour.matiere.code} (${coursJour.typeUE.code}) - ${coursJour.matiere.enseignant.nom} ${coursJour.matiere.enseignant.prenom}/${coursJour.matiere.enseignantSup?coursJour.matiere.enseignantSup.nom:"--"} - ${coursJour.salle.code}`;
                         if (roles.admin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
                             jourCell.style.cursor = 'pointer';
@@ -84,7 +93,7 @@ const Table = ({ data }: { data: PeriodeCours[] }) => {
 
     
     function convertirHeureVersMinutes(heure: string): number {
-        const [heures, minutes] = heure.split('h').map(Number);
+        const [heures, minutes] = heure.split(':').map(Number);
         return heures * 60 + minutes;
     }
 

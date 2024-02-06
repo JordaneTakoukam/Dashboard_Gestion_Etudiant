@@ -1,4 +1,7 @@
+import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
+import FormCreateUpdate from "../../components/Modals/ModalNiveau/FormCreateUpdate";
+import FormDelete from "../../components/Modals/ModalNiveau/FormDelete";
 import Table from "../../components/Tables/TableNiveau/Table";
 import { Cycle } from "./Cycles";
 
@@ -10,17 +13,28 @@ export interface Niveau{
 }
 
 const Niveaux = () => {
+    const [selectedNiveau, setSelectedNiveau] = useState<Niveau | null>(null);
+    const handleEditCycle = (niveau: Niveau) => {
+        setSelectedNiveau(niveau);
+    }
+
+    const handleAddCycle = () => {
+        setSelectedNiveau(null);
+    }
     return (
         <>
             <Breadcrumb pageName="Niveaux" />
-            <Table data={listNiveau}/>
+            <Table data={niveaux}  onCreate={handleAddCycle} onEdit={handleEditCycle}/>
+
+            <FormCreateUpdate niveau={selectedNiveau}/>
+            <FormDelete niveau={selectedNiveau}/>
 
         </>
     );
 };
 
 export default Niveaux;
-export const listNiveau: Niveau[] = [
+export const niveaux: Niveau[] = [
     {
         id:1,
         code:"N1",

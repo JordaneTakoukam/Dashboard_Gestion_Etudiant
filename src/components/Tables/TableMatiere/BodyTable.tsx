@@ -10,6 +10,40 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
+    function nombreDeChapitres(matiere:Matiere) {
+        // Vérifier si la matière existe et si elle a une liste de chapitres
+        if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
+            // Retourner la longueur de la liste des chapitres
+            return matiere.chapitres.length;
+        } else {
+            // Si la matière est invalide ou n'a pas de chapitres, retourner 0
+            return 0;
+        }
+    }
+
+    function volumeHoraireGlobal(matiere:Matiere) {
+        let volumeTotal = 0;
+    
+        // Vérifier si la matière existe et si elle a une liste de chapitres
+        if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
+            // Parcourir tous les chapitres de la matière
+            matiere.chapitres.forEach(chapitre => {
+                // Vérifier si le chapitre a une liste de types d'enseignement
+                if (chapitre.typesEnseignement && Array.isArray(chapitre.typesEnseignement)) {
+                    // Ajouter le volume horaire de chaque type d'enseignement du chapitre au volume total
+                    chapitre.typesEnseignement.forEach(typeEnseignement => {
+                        if (typeEnseignement.volumeHoraire) {
+                            volumeTotal += typeEnseignement.volumeHoraire;
+                        }
+                    });
+                }
+            });
+        }
+    
+        return volumeTotal;
+    }
+    
+    
 
     return <tbody>
         {data.map((item, index) => (
@@ -31,12 +65,12 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
 
                 {/* nombre de chapitre */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.nbChapitre}</h5>
+                    <h5>{nombreDeChapitres(item)}</h5>
                 </td>
 
                 {/* volume horaire */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
-                    <h5>{item.volumeHoraire}</h5>
+                    <h5>{volumeHoraireGlobal(item)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}

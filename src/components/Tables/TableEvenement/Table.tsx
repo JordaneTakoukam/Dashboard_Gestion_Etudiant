@@ -3,7 +3,7 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
@@ -15,9 +15,13 @@ import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 
 
+interface TableEvenementProps {
+    data: Evenement[];
+    onCreate:()=>void;
+    onEdit: (evenement : Evenement) => void;
+}
 
-
-const Table = ({ data }: { data: Evenement[] }) => {
+const Table = ({ data, onCreate, onEdit}: TableEvenementProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -79,7 +83,7 @@ const Table = ({ data }: { data: Evenement[] }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === userRole && (<ButtonCreate
                     title="Nouvel évènement"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
                 <InputSearch hintText="Rechercher un évènement" onSubmit={() => { }} />
             </div>
@@ -132,7 +136,7 @@ const Table = ({ data }: { data: Evenement[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
                         }
 
 

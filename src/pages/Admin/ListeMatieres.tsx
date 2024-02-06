@@ -1,5 +1,6 @@
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableMatiere/Table";
+import { Niveau } from "./Niveaux";
 
 export interface Matiere {
     id? : number;
@@ -7,10 +8,8 @@ export interface Matiere {
     libelle: string;
     prerequis: string;
     evaluationDesAcquis: string;
-    niveau: string;
+    niveau: Niveau;
     approchePedagogique: string;
-    nbChapitre: number;
-    volumeHoraire: number;
     chapitres : Chapitre[];
 }
 
@@ -25,6 +24,14 @@ export interface Chapitre {
     code : string;
     libelle: string;
     objectifs : Objectif[];
+    typesEnseignement:TypeEnseignement[];
+}
+
+export interface TypeEnseignement{
+    id?:number;
+    code:string;
+    libelle:string;
+    volumeHoraire: number;
 }
 
 const ListeDesMatieres = () => {
@@ -44,10 +51,21 @@ export const listMatieres: Matiere[] = [
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
-        niveau: "1ère année",
+        niveau: {
+            id:1,
+            code:"N1",
+            libelle:"1ère année",
+            cycle:{
+                id:1,
+                code:"CA",
+                libelle:"Cycle A",
+                section:{
+                    code:"S001",
+                    libelle:"Douane",
+                }
+            },
+        },
         approchePedagogique: "APC",
-        nbChapitre: 4,
-        volumeHoraire: 20,
         chapitres: [
             {
                 code: "CG1C1",
@@ -56,6 +74,10 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Comprendre les bases du budget de l'Etat", etat: 1 },
                     { libelle: "Connaître l'importance du budget dans la gestion publique", etat: 1 },
                     { libelle: "Identifier les différentes phases de l'élaboration du budget", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:8},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:4},
                 ]
             },
             {
@@ -65,6 +87,10 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Comprendre le processus d'élaboration du budget", etat: 0 },
                     { libelle: "Analyser les étapes de l'élaboration budgétaire", etat: 0 },
                     { libelle: "Maîtriser les mécanismes de contrôle du budget", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:5},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:2},
                 ]
             },
         ]
@@ -74,10 +100,21 @@ export const listMatieres: Matiere[] = [
         libelle: "Elaboration du budget de l'Etat",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
-        niveau: "1ère année",
+        niveau: {
+            id:1,
+            code:"N1",
+            libelle:"1ère année",
+            cycle:{
+                id:1,
+                code:"CA",
+                libelle:"Cycle A",
+                section:{
+                    code:"S001",
+                    libelle:"Douane",
+                }
+            },
+        },
         approchePedagogique: "APC",
-        nbChapitre: 4,
-        volumeHoraire: 20,
         chapitres: [
             {
                 code: "CG2C1",
@@ -86,6 +123,10 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Comprendre les principes de l'élaboration du budget", etat: 1 },
                     { libelle: "Analyser les différentes composantes du budget", etat: 0 },
                     { libelle: "Identifier les acteurs impliqués dans le processus budgétaire", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:7},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:4},
                 ]
             },
             {
@@ -95,6 +136,11 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Connaître les techniques courantes d'élaboration du budget", etat: 0 },
                     { libelle: "Mettre en pratique les méthodes d'élaboration budgétaire", etat: 0 },
                     { libelle: "Analyser les résultats budgétaires", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:5},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:2},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
         ]
@@ -104,10 +150,21 @@ export const listMatieres: Matiere[] = [
         libelle: "Management des organisations publiques",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
-        niveau: "1ère année",
+        niveau: {
+            id:1,
+            code:"N1",
+            libelle:"1ère année",
+            cycle:{
+                id:1,
+                code:"CA",
+                libelle:"Cycle A",
+                section:{
+                    code:"S001",
+                    libelle:"Douane",
+                }
+            },
+        },
         approchePedagogique: "APC",
-        nbChapitre: 6,
-        volumeHoraire: 30,
         chapitres: [
             {
                 code: "CG3C1",
@@ -116,6 +173,11 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Comprendre les principes du management dans le secteur public", etat: 0 },
                     { libelle: "Analyser les spécificités du management des organisations publiques", etat: 0 },
                     { libelle: "Appliquer les concepts de gestion dans le contexte public", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:5},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:2},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
             {
@@ -125,6 +187,11 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Connaître les différentes structures des organisations publiques", etat: 0 },
                     { libelle: "Analyser l'impact des structures sur la performance organisationnelle", etat: 0 },
                     { libelle: "Proposer des améliorations de structures", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:7},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:4},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
         ]
@@ -134,10 +201,21 @@ export const listMatieres: Matiere[] = [
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",
         prerequis: "",
         evaluationDesAcquis: "Contrôle continu, Examen écrit",
-        niveau: "1ère année",
+        niveau: {
+            id:1,
+            code:"N1",
+            libelle:"1ère année",
+            cycle:{
+                id:1,
+                code:"CA",
+                libelle:"Cycle A",
+                section:{
+                    code:"S001",
+                    libelle:"Douane",
+                }
+            },
+        },
         approchePedagogique: "APC",
-        nbChapitre: 4,
-        volumeHoraire: 20,
         chapitres: [
             {
                 code: "CG4C1",
@@ -146,6 +224,11 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Comprendre les bases du budget de l'Etat", etat: 0 },
                     { libelle: "Connaître l'importance du budget dans la gestion publique", etat: 0 },
                     { libelle: "Identifier les différentes phases de l'élaboration du budget", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:5},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:2},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
             {
@@ -155,6 +238,11 @@ export const listMatieres: Matiere[] = [
                     { libelle: "Comprendre le processus d'élaboration du budget", etat: 0 },
                     { libelle: "Analyser les étapes de l'élaboration budgétaire", etat: 0 },
                     { libelle: "Maîtriser les mécanismes de contrôle du budget", etat: 0 },
+                ],
+                typesEnseignement:[
+                    {id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:5},
+                    {id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:2},
+                    {id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0},
                 ]
             },
         ]

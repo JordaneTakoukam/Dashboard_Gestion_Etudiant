@@ -3,13 +3,14 @@ import { setShowModal, setShowModalCreate, setShowModalUpdate } from '../../../_
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Categorie, Commune, Departement, Etudiant, Fonction, Grade, Region, Service, categories, communes, departements, fonctions, grades, regions, services } from '../../../pages/Admin/ListeEtudiants';
 import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
 import { Section, sections } from '../../../pages/Admin/Sections';
 import { Cycle, cycles } from '../../../pages/Admin/Cycles';
+import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
+import { Grade, Categorie, Fonction, Service, Region, Departement, Commune, fonctions, grades, categories, services, regions, departements, communes } from '../../../pages/Admin/ListeEtudiants';
 
 
-function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
+function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
 
     const dispatch = useDispatch();
     const [nom, setNom] = useState("");
@@ -20,9 +21,9 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
     const [email, setEmail] = useState("");
     const [contact, setContact] = useState("");
     const [matricule, setMatricule] = useState("");
-    const [section, setSection] = useState<Section>();
-    const [cycle, setCycle] = useState<Cycle>();
-    const [niveau, setNiveau] = useState<Niveau>();
+    // const [section, setSection] = useState<Section>();
+    // const [cycle, setCycle] = useState<Cycle>();
+    // const [niveau, setNiveau] = useState<Niveau>();
     const [grade, setGrade] = useState<Grade>();
     const [categorie, setCategorie] = useState<Categorie>();
     const [fonction, setFonction] = useState<Fonction>();
@@ -35,37 +36,37 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
     const [errorNom, setErrorNom] = useState("");
     const [errorGenre, setErrorGenre] = useState("");
     const [errorEmail, setErrorEmail] = useState("");
-    const [errorSection, setErrorSection] = useState("");
-    const [errorCycle, setErrorCycle] = useState("");
-    const [errorNiveau, setErrorNiveau] = useState("");
+    // const [errorSection, setErrorSection] = useState("");
+    // const [errorCycle, setErrorCycle] = useState("");
+    // const [errorNiveau, setErrorNiveau] = useState("");
     const [isFirstRender, setIsFirstRender] = useState(true);
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
 
     useEffect(() => {
-        if (etudiant) {
-            setModalTitle("Mettre à jour les informations de l'étudiant");
-            setNom(etudiant.nom);
-            setPrenom(etudiant.prenom?etudiant.prenom:"");setGenre(etudiant.genre);
-            setDateNaiss(etudiant.dateNaiss ? etudiant.dateNaiss : "");
-            setLieuNaiss(etudiant.lieuNaiss ? etudiant.lieuNaiss : "");
-            setEmail(etudiant.email);
-            setContact(etudiant.contact ? etudiant.contact : "");
-            setMatricule(etudiant.matricule ? etudiant.matricule : "");
-            setSection(etudiant.niveau.cycle.section);
-            setCycle(etudiant.niveau.cycle);
-            setNiveau(etudiant.niveau);
-            setGrade(etudiant.grade ? etudiant.grade : undefined);
-            setCategorie(etudiant.categorie ? etudiant.categorie : undefined);
-            setFonction(etudiant.fonction ? etudiant.fonction : undefined);
-            setService(etudiant.service ? etudiant.service : undefined);
-            setRegion(etudiant.region ? etudiant.region : undefined);
-            setDepartement(etudiant.departement ? etudiant.departement : undefined);
-            setCommune(etudiant.commune ? etudiant.commune : undefined);
-            setDateEntreeAdmin(etudiant.dateEntreeAdmin ? etudiant.dateEntreeAdmin : "");
+        if (enseignant) {
+            setModalTitle("Mettre à jour les informations de l'enseignant");
+            setNom(enseignant.nom);
+            setPrenom(enseignant.prenom?enseignant.prenom:"");setGenre(enseignant.genre);
+            setDateNaiss(enseignant.dateNaiss ? enseignant.dateNaiss : "");
+            setLieuNaiss(enseignant.lieuNaiss ? enseignant.lieuNaiss : "");
+            setEmail(enseignant.email);
+            setContact(enseignant.contact ? enseignant.contact : "");
+            setMatricule(enseignant.matricule ? enseignant.matricule : "");
+            // setSection(enseignant.niveau.cycle.section);
+            // setCycle(enseignant.niveau.cycle);
+            // setNiveau(enseignant.niveau);
+            setGrade(enseignant.grade ? enseignant.grade : undefined);
+            setCategorie(enseignant.categorie ? enseignant.categorie : undefined);
+            setFonction(enseignant.fonction ? enseignant.fonction : undefined);
+            setService(enseignant.service ? enseignant.service : undefined);
+            setRegion(enseignant.region ? enseignant.region : undefined);
+            setDepartement(enseignant.departement ? enseignant.departement : undefined);
+            setCommune(enseignant.commune ? enseignant.commune : undefined);
+            setDateEntreeAdmin(enseignant.dateEntreeAdmin ? enseignant.dateEntreeAdmin : "");
         } else {
-            setModalTitle("Enregistrer un nouvel étudiant");
+            setModalTitle("Enregistrer un nouvel enseignant");
             setNom("");
             setPrenom("");
             setGenre("");
@@ -74,9 +75,9 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
             setEmail("");
             setContact("");
             setMatricule("");
-            setSection(undefined);
-            setCycle(undefined);
-            setNiveau(undefined);
+            // setSection(undefined);
+            // setCycle(undefined);
+            // setNiveau(undefined);
             setGrade(undefined);
             setCategorie(undefined);
             setFonction(undefined);
@@ -92,20 +93,20 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
             setErrorNom("");
             setErrorGenre("");
             setErrorEmail("");
-            setErrorSection("");
-            setErrorCycle("");
-            setErrorNiveau("");
+            // setErrorSection("");
+            // setErrorCycle("");
+            // setErrorNiveau("");
             setIsFirstRender(false);
         }
-    }, [etudiant, isFirstRender]);
+    }, [enseignant, isFirstRender]);
 
     const closeModal = () => { 
         setErrorNom(""); 
         setErrorGenre("");
         setErrorEmail("");
-        setErrorSection("");
-        setErrorCycle("");
-        setErrorNiveau("");
+        // setErrorSection("");
+        // setErrorCycle("");
+        // setErrorNiveau("");
         setIsFirstRender(true);
         dispatch(setShowModal()); 
     };
@@ -120,30 +121,30 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
         return true;
     };
 
-    const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedSectionLibelle = e.target.value;
-        const selectedSection = sections.find(section => section.libelle === selectedSectionLibelle);
-        if (selectedSection) {
-            setSection(selectedSection);
-            setErrorSection("");
-        }
-    };
-    const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCycleLibelle = e.target.value;
-        const selectedCycle = cycles.find(cycle => cycle.libelle === selectedCycleLibelle);
-        if (selectedCycle) {
-            setCycle(selectedCycle);
-            setErrorCycle("");
-        }
-    };
-    const handleNiveauChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedNiveauLibelle = e.target.value;
-        const selectedNiveau = niveaux.find(niveau => niveau.libelle === selectedNiveauLibelle);
-        if (selectedNiveau) {
-            setNiveau(selectedNiveau);
-            setErrorNiveau("");
-        }
-    };
+    // const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedSectionLibelle = e.target.value;
+    //     const selectedSection = sections.find(section => section.libelle === selectedSectionLibelle);
+    //     if (selectedSection) {
+    //         setSection(selectedSection);
+    //         setErrorSection("");
+    //     }
+    // };
+    // const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedCycleLibelle = e.target.value;
+    //     const selectedCycle = cycles.find(cycle => cycle.libelle === selectedCycleLibelle);
+    //     if (selectedCycle) {
+    //         setCycle(selectedCycle);
+    //         setErrorCycle("");
+    //     }
+    // };
+    // const handleNiveauChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedNiveauLibelle = e.target.value;
+    //     const selectedNiveau = niveaux.find(niveau => niveau.libelle === selectedNiveauLibelle);
+    //     if (selectedNiveau) {
+    //         setNiveau(selectedNiveau);
+    //         setErrorNiveau("");
+    //     }
+    // };
     const handleFonctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedFonctionLibelle = e.target.value;
         const selectedFonction = fonctions.find(fonction => fonction.libelle === selectedFonctionLibelle);
@@ -198,8 +199,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
     
     
 
-    const handleCreateEtudiant = () => {
-        if (!nom || !genre || !email || !section || !cycle || !niveau) {
+    const handleCreateEnseignant = () => {
+        if (!nom || !genre || !email) {
             if (!nom) {
                 setErrorNom("Le champ Nom est obligatoire.");
             }
@@ -211,22 +212,13 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
                 setErrorEmail("Le champ e-mail est obligatoire.");
             }
             
-            if (!section) {
-                setErrorSection("Le champ section est obligatoire.");
-            }
-            if (!cycle) {
-                setErrorCycle("Le champ cycle est obligatoire.");
-            }
-            if (!niveau) {
-                setErrorNiveau("Le champ niveau est obligatoire.");
-            }
             return;
         }
         if (!validateEmail()) {
             return;
         }
         
-        if (etudiant) {
+        if (enseignant) {
             console.log("student update");
         }else{
             console.log("student add");
@@ -241,7 +233,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
                 isModalOpen={isModalOpen}
                 isDelete={false}
                 closeModal={closeModal}
-                handleConfirm={handleCreateEtudiant}
+                handleConfirm={handleCreateEnseignant}
             >
                 <label>Matricule</label>
                 <input
@@ -317,42 +309,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
                     value={contact}
                     onChange={(e) => {setContact(e.target.value)}}
                 />
-                <label>Section</label><label className="text-red-500"> *</label>
-                <select
-                    value={section ? section.libelle : 'Sélectionnez une section'}
-                    onChange={handleSectionChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">Sélectionnez une section</option>
-                    {sections.map(section => (
-                        <option key={section.id} value={section.libelle}>{section.libelle}</option>
-                    ))}
-                </select>
-                {errorSection && <p className="text-red-500">{errorSection}</p>}
-                <label>Cycle</label><label className="text-red-500"> *</label>
-                <select
-                    value={cycle ? cycle.libelle : 'Sélectionnez un cycle'}
-                    onChange={handleCycleChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">Sélectionnez un cycle</option>
-                    {cycles.map(cycle => (
-                        <option key={cycle.id} value={cycle.libelle}>{cycle.libelle}</option>
-                    ))}
-                </select>
-                {errorCycle && <p className="text-red-500">{errorCycle}</p>}
-                <label>Niveau</label><label className="text-red-500"> *</label>
-                <select
-                    value={niveau ? niveau.libelle : 'Sélectionnez un niveau'}
-                    onChange={handleNiveauChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">Sélectionnez un niveau</option>
-                    {niveaux.map(niveau => (
-                        <option key={niveau.id} value={niveau.libelle}>{niveau.libelle}</option>
-                    ))}
-                </select>
-                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
+                
                 <label>Grade</label>
                 <select
                     value={grade ? grade.libelle : 'Sélectionnez un grade'}
@@ -443,4 +400,4 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
     );
 }
 
-export default ModalCreateEtudiant;
+export default ModalCreateUpdate;

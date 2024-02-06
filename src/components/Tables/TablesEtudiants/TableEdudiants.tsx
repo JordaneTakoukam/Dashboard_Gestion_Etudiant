@@ -6,7 +6,7 @@ import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import BodyTableEtudiant from "./BodyTableEtudiant";
 import HeaderTableEtudiant from "./HeaderTableEtudiant";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";

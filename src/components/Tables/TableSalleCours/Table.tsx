@@ -3,16 +3,20 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { SalleCours } from "../../../pages/Admin/SallesDeCours";
 
 
+interface TableSalleProps {
+    data: SalleCours[];
+    onCreate:()=>void;
+    onEdit: (salleCours : SalleCours) => void;
+}
 
-
-const Table = ({ data }: { data: SalleCours[] }) => {
+const Table = ({ data, onCreate, onEdit }: TableSalleProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -72,7 +76,7 @@ const Table = ({ data }: { data: SalleCours[] }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Nouvelle salle"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => {onCreate(); dispatch(setShowModal()) }}
                 />
                 <InputSearch hintText="Rechercher une salle" onSubmit={() => { }} />
             </div>
@@ -123,7 +127,7 @@ const Table = ({ data }: { data: SalleCours[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
                         }
 
 

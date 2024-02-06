@@ -22,6 +22,7 @@ function ModalUpdateEtudiant() {
             <CustomDialogModal
                 title="Mettre à jour les informations étudiant"
                 isModalOpen={isModalOpen}
+                isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateEtudiant}
             >

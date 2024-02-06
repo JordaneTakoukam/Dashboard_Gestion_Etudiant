@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete} from "../../../_redux/features/setting_slice"
 import { Section } from "../../../pages/Admin/Sections";
 
-const BodyTable = ({ data }: { data: Section[] }) => {
+const BodyTable = ({ data, onEdit }: { data: Section[], onEdit: (section: Section) => void }) => {
 
     const dispatch = useDispatch();
 
@@ -29,10 +29,11 @@ const BodyTable = ({ data }: { data: Section[] }) => {
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
-                            
-                            dispatch(setShowModalUpdate())
+                            onEdit(item);
+                            dispatch(setShowModal())
                         }}
                         onClickDelete={() => {
+                            onEdit(item);
                             dispatch(setShowModalDelete())
                         }}
                     />

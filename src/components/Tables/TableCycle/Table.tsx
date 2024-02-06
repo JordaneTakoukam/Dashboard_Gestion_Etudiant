@@ -3,7 +3,7 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
@@ -12,9 +12,13 @@ import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
 
 
+interface TableCycleProps {
+    data: Cycle[];
+    onCreate:()=>void;
+    onEdit: (cycle: Cycle) => void;
+}
 
-
-const Table = ({ data }: { data: Cycle[] }) => {
+const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -74,7 +78,7 @@ const Table = ({ data }: { data: Cycle[] }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Nouveau cycle"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
                 <InputSearch hintText="Rechercher un cycle" onSubmit={() => { }} />
             </div>
@@ -125,7 +129,7 @@ const Table = ({ data }: { data: Cycle[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
                         }
 
 

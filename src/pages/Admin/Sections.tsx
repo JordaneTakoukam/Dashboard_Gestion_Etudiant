@@ -1,5 +1,8 @@
+import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableSection/Table";
+import FormCreateUpdate from "../../components/Modals/ModalSection/FormCreateUpdate";
+import FormDelete from "../../components/Modals/ModalSection/FormDelete";
 
 export interface Section{
     id?:number;
@@ -8,10 +11,21 @@ export interface Section{
 }
 
 const Sections = () => {
+    const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+    const handleEditSection = (section : Section) => {
+        setSelectedSection(section);
+    }
+
+    const handleAddSection = () => {
+        setSelectedSection(null);
+    }
     return (
         <>
             <Breadcrumb pageName="Sections" />
-            <Table data={sections}/>
+            <Table data={sections} onCreate={handleAddSection} onEdit={handleEditSection}/>
+
+            <FormCreateUpdate section={selectedSection}/>
+            <FormDelete section={selectedSection}/>
 
         </>
     );

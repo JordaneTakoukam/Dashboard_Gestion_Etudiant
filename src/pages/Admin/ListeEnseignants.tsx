@@ -1,23 +1,52 @@
+import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
+import FormCreateUpdate from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
+import FormDelete from "../../components/Modals/ModalEnseignant/FormDelete";
 import Table from "../../components/Tables/TablesEnseignants/Table";
+import { Grade, Categorie, Fonction, Service, Region, Departement, Commune } from "./ListeEtudiants";
+import { Niveau } from "./Niveaux";
 
 export interface Enseignant {
-    firstName: string;
-    lastName: string;
+    id?:number
+    nom: string;
+    prenom?: string;
+    genre : string;
+    dateNaiss?:string,
+    lieuNaiss?:string;
     email: string;
-    contact: string;
-    matricule: string;
-    classe: string;
+    contact?: string;
+    matricule?: string;
+    niveaux?: Niveau[];
+    grade?:Grade;
+    categorie?:Categorie;
+    fonction?:Fonction;
+    service?:Service;
+    region?:Region;
+    departement?:Departement;
+    commune?:Commune;
+    dateEntreeAdmin?:string;
     nbAbscences: number;
 }
 const ListeDesEnseignant = () => {
+    const [selectedEnseignant, setSelectedEnseignant] = useState<Enseignant | null>(null);
+        // Fonction pour gérer l'édition d'un étudiant
+    const handleEditEtudiant = (enseignant: Enseignant) => {
+        setSelectedEnseignant(enseignant);
+    }
+
+    // Fonction pour gérer l'ajout d'un nouvel étudiant
+    const handleAddEtudiant = () => {
+        setSelectedEnseignant(null);
+    }
     return (
         <>
             <Breadcrumb pageName="Liste des enseignants" />
-            <Table data={listTest} />
+            <Table data={enseignants} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant}/>
 
 
             {/* Boite de dialogue */}
+            <FormCreateUpdate enseignant={selectedEnseignant}/>
+            <FormDelete enseignant={selectedEnseignant}/>
 
         </>
     );
@@ -25,104 +54,115 @@ const ListeDesEnseignant = () => {
 
 export default ListeDesEnseignant;
 
-export const listTest: Enseignant[] = [
+export const enseignants: Enseignant[] = [
     {
-        firstName: "Jane",
-        lastName: "Smith",
+        id:1,
+        nom: "Jane",
+        prenom: "Smith",
         email: "test@123",
         contact: "655484959",
         matricule: "CD5678",
-        classe: "L2A", 
+        genre:"H",
         nbAbscences : 0
     },
     {
-        firstName: "Alice",
-        lastName: "Johnson",
+        id:2,
+        nom: "Alice",
+        prenom: "Johnson",
         email: "test@123",
         contact: "677988866",
         matricule: "EF9012",
-        classe: "L2B", 
+        genre: "M", 
         nbAbscences : 0
     },
     {
-        firstName: "Alice",
-        lastName: "Johnson",
+        id:3,
+        nom: "Alice",
+        prenom: "Johnson",
         email: "test@123",
         contact: "677988866",
         matricule: "EF9012",
-        classe: "L2B", 
+        genre: "F", 
         nbAbscences : 0
     },
     {
-        firstName: "Bob",
-        lastName: "Brown",
+        id:4,
+        nom: "Bob",
+        prenom: "Brown",
         email: "test@123",
         contact: "677978745",
         matricule: "GH3456",
-        classe: "L3A", 
+        genre: "H", 
         nbAbscences : 0
     },
     {
-        firstName: "Emily",
-        lastName: "Taylor",
+        id:5,
+        nom: "Emily",
+        prenom: "Taylor",
         email: "test@123",
         contact: "677966888",
         matricule: "IJ7890",
-        classe: "L3B", 
+        genre: "F", 
         nbAbscences : 0
     },
     {
-        firstName: "Michael",
-        lastName: "Anderson",
+        id:6,
+        nom: "Michael",
+        prenom: "Anderson",
         email: "test@123",
         contact: "655489566",
         matricule: "KL2345",
-        classe: "L4A", 
+        genre: "H", 
         nbAbscences : 0
     },
     {
-        firstName: "Sophia",
-        lastName: "Martinez",
+        id:7,
+        nom: "Sophia",
+        prenom: "Martinez",
         email: "test@123",
         contact: "677944777",
         matricule: "MN6789",
-        classe: "L4B", 
+        genre: "F", 
         nbAbscences : 0
     },
     {
-        firstName: "William",
-        lastName: "Garcia",
+        id:8,
+        nom: "William",
+        prenom: "Garcia",
         email: "test@123",
         contact: "655484343",
         matricule: "OP0123",
-        classe: "L5A", 
+        genre: "H", 
         nbAbscences : 0
     },
     {
-        firstName: "Olivia",
-        lastName: "Hernandez",
+        id:9,
+        nom: "Olivia",
+        prenom: "Hernandez",
         email: "test@123",
         contact: "677955666",
         matricule: "QR4567",
-        classe: "L5B", 
+        genre: "F", 
         nbAbscences : 0
     },
     {
-        firstName: "James",
-        lastName: "Lopez",
+        id:10,
+        nom: "James",
+        prenom: "Lopez",
         email: "test@123",
         contact: "677988877",
         matricule: "ST8901",
-        classe: "L6A", 
+        genre: "H", 
         nbAbscences : 0
     },
     {
-        firstName: "Maria",
-        lastName: "Ramirez",
+        id:11,
+        nom: "Maria",
+        prenom: "Ramirez",
         email: "test@123",
         contact: "677999888",
         matricule: "UV2345",
-        classe: "L6B", 
+        genre: "F", 
         nbAbscences : 0
     }
 ];

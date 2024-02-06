@@ -3,16 +3,20 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal} from "../../../_redux/features/setting_slice";
 import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Section } from "../../../pages/Admin/Sections";
 
+interface TableSectionProps {
+    data: Section[];
+    onCreate:()=>void;
+    onEdit: (section : Section) => void;
+}
 
 
-
-const Table = ({ data }: { data: Section[] }) => {
+const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -72,7 +76,7 @@ const Table = ({ data }: { data: Section[] }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Nouvelle section"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
                 <InputSearch hintText="Rechercher une section" onSubmit={() => { }} />
             </div>
@@ -123,7 +127,7 @@ const Table = ({ data }: { data: Section[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
                         }
 
 

@@ -1,10 +1,9 @@
 import { useDispatch } from "react-redux"
-import { capitalizeFirstLetter } from "../../../fonctions/fonction"
-import { Etudiant } from "../../../pages/Admin/ListeEtudiants"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete} from "../../../_redux/features/setting_slice"
+import { Enseignant } from "../../../pages/Admin/ListeEnseignants"
 
-const BodyTable = ({ data }: { data: Etudiant[] }) => {
+const BodyTable = ({ data, onEdit }: { data: Enseignant[], onEdit:(enseigant:Enseignant)=>void }) => {
 
     const dispatch = useDispatch();
 
@@ -18,17 +17,17 @@ const BodyTable = ({ data }: { data: Etudiant[] }) => {
 
                 {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{capitalizeFirstLetter(item.matricule)}</h5>
+                    <h5>{item.matricule?item.matricule:""}</h5>
                 </td>
 
                 {/* nom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.firstName}</h5>
+                    <h5>{item.nom}</h5>
                 </td>
 
                 {/* prenom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.lastName}</h5>
+                    <h5>{item.prenom?item.prenom:""}</h5>
                 </td>
 
                 {/* classes
@@ -38,12 +37,12 @@ const BodyTable = ({ data }: { data: Etudiant[] }) => {
 
                 {/* email */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
-                    <h5>{capitalizeFirstLetter(item.email)}</h5>
+                    <h5>{item.email}</h5>
                 </td>
 
                 {/* contact */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">                    
-                    <h5>{capitalizeFirstLetter(item.contact)}</h5>
+                    <h5>{item.contact?item.contact:""}</h5>
                 </td>
                 
 
@@ -51,10 +50,11 @@ const BodyTable = ({ data }: { data: Etudiant[] }) => {
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
-                            
-                            dispatch(setShowModalUpdate())
+                            onEdit(item);
+                            dispatch(setShowModal())
                         }}
                         onClickDelete={() => {
+                            onEdit(item);
                             dispatch(setShowModalDelete())
                         }}
                     />

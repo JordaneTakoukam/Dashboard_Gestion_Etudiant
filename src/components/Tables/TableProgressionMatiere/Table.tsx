@@ -9,7 +9,7 @@ import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
-import { Matiere, listMatieres } from "../../../pages/Admin/ListeMatieres";
+import { Matiere, matieres } from "../../../pages/Admin/ListeMatieres";
 
 
 
@@ -29,15 +29,17 @@ const Table = ({ data }: { data: Matiere }) => {
     const calculateProgress = (matiere : Matiere) => {
         let totalObjectifs = 0;
         let objectifsAvecEtat1 = 0;
-    
-        matiere.chapitres.forEach((chapitre) => {
-            totalObjectifs += chapitre.objectifs.length;
-            chapitre.objectifs.forEach((objectif) => {
-                if (objectif.etat === 1) {
-                    objectifsAvecEtat1++;
-                }
+        if(matiere.chapitres){
+            matiere.chapitres.forEach((chapitre) => {
+                totalObjectifs += chapitre.objectifs.length;
+                chapitre.objectifs.forEach((objectif) => {
+                    if (objectif.etat === 1) {
+                        objectifsAvecEtat1++;
+                    }
+                });
             });
-        });
+        }
+        
     
         const progress = totalObjectifs === 0 ? 0 : (objectifsAvecEtat1 / totalObjectifs) * 100;
     
@@ -51,9 +53,9 @@ const Table = ({ data }: { data: Matiere }) => {
     const [filtreCycle, setFiltreCycle] = useState("");
     const [filtreNiveau, setFiltreNiveau] = useState("");
     const [filtreSemestre, setFiltreSemestre] = useState("");
-    const [filtreMatiere, setFiltreMatiere] = useState(listMatieres[0]);
+    const [filtreMatiere, setFiltreMatiere] = useState(matieres[0]);
     const [formatToDownload, setFormatToDownload] = useState("");
-    const [progress, setProgress] = useState(calculateProgress(listMatieres[0]));
+    const [progress, setProgress] = useState(calculateProgress(matieres[0]));
 
     // Fonction pour calculer la progression en pourcentage
 
@@ -129,7 +131,7 @@ const Table = ({ data }: { data: Matiere }) => {
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
                             <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
-                            <CustomDropDown title="Matiere" items={listMatieres} defaultValue={listMatieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} />
+                            <CustomDropDown title="Matiere" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} />
                         </div>
                     )}
                 </div>
@@ -143,7 +145,7 @@ const Table = ({ data }: { data: Matiere }) => {
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
                             <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
-                            <CustomDropDown title="Matière" items={listMatieres} defaultValue={listMatieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} />
+                            <CustomDropDown title="Matière" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} />
                         </div>
                     </div>
                 </div>

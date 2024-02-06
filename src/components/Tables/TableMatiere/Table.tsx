@@ -3,7 +3,7 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
@@ -14,9 +14,13 @@ import { Matiere } from "../../../pages/Admin/ListeMatieres";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 
+interface TableMatiereProps {
+    data: Matiere[];
+    onCreate:()=>void;
+    onEdit: (matiere : Matiere) => void;
+}
 
-
-const Table = ({ data }: { data: Matiere[] }) => {
+const Table = ({ data, onCreate, onEdit }: TableMatiereProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -77,7 +81,7 @@ const Table = ({ data }: { data: Matiere[] }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === userRole && (<ButtonCreate
                     title="Nouvelle matière"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
                 <InputSearch hintText="Rechercher une matière" onSubmit={() => { }} />
             </div>
@@ -130,7 +134,7 @@ const Table = ({ data }: { data: Matiere[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
                         }
 
 

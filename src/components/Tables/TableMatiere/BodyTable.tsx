@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
 import { Matiere } from "../../../pages/Admin/ListeMatieres"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 
-const BodyTable = ({ data }: { data: Matiere[] }) => {
+const BodyTable = ({ data, onEdit }: { data: Matiere[], onEdit:(matiere:Matiere)=>void }) => {
 
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -77,10 +77,11 @@ const BodyTable = ({ data }: { data: Matiere[] }) => {
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
-                            
-                            dispatch(setShowModalUpdate())
+                            onEdit(item);
+                            dispatch(setShowModal())
                         }}
                         onClickDelete={roles.admin === userRole ?() => {
+                            onEdit(item);
                             dispatch(setShowModalDelete())
                         }:undefined}
                         onClickAddInfoSub={() => {

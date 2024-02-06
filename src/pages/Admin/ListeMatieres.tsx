@@ -1,16 +1,19 @@
+import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableMatiere/Table";
 import { Niveau } from "./Niveaux";
+import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
+import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
 
 export interface Matiere {
     id? : number;
     code: string;
     libelle: string;
-    prerequis: string;
-    evaluationDesAcquis: string;
+    prerequis?: string;
+    evaluationDesAcquis?: string;
     niveau: Niveau;
-    approchePedagogique: string;
-    chapitres : Chapitre[];
+    approchePedagogique?: string;
+    chapitres? : Chapitre[];
 }
 
 export interface Objectif {
@@ -25,6 +28,7 @@ export interface Chapitre {
     libelle: string;
     objectifs : Objectif[];
     typesEnseignement:TypeEnseignement[];
+    competences?:string;
 }
 
 export interface TypeEnseignement{
@@ -34,18 +38,29 @@ export interface TypeEnseignement{
     volumeHoraire: number;
 }
 
+
 const ListeDesMatieres = () => {
+    const [selectedMatiere, setSelectedMatiere] = useState<Matiere | null>(null);
+    const handleEditMatiere = (matiere : Matiere) => {
+        setSelectedMatiere(matiere);
+    }
+
+    const handleAddMatiere = () => {
+        setSelectedMatiere(null);
+    }
     return (
         <>
             <Breadcrumb pageName="Liste des matières" />
-            <Table data={listMatieres}/>
-
+            <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere}/>
+            
+            <FormCreateUpdate matiere={selectedMatiere}/>
+            <FormDelete matiere={selectedMatiere}/>
         </>
     );
 };
 
 export default ListeDesMatieres;
-export const listMatieres: Matiere[] = [
+export const matieres: Matiere[] = [
     {
         code: "CG1",
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",

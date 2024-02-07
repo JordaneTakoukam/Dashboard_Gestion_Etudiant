@@ -8,7 +8,7 @@ import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
 import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 
 
-function ModalCreateUpdate({ user, isAddHour, isHourRemove }: { user : Etudiant | Enseignant | null, isAddHour?:boolean, isHourRemove:boolean }) {
+function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant | Enseignant | null, isSignaled?:boolean, isHourRemove:boolean }) {
 
     const dispatch = useDispatch();
     const [date, setDate] = useState("");
@@ -37,6 +37,9 @@ function ModalCreateUpdate({ user, isAddHour, isHourRemove }: { user : Etudiant 
         } else{
             setModalTitle("Ajouter une abscence : "+user?.nom+" "+user?.prenom);
         }
+        if(isSignaled){
+            setModalTitle("Signaler mon abscence");            
+        }
 
 
         if (isFirstRender) {
@@ -46,7 +49,7 @@ function ModalCreateUpdate({ user, isAddHour, isHourRemove }: { user : Etudiant 
             setErrorSemestre("");
             setIsFirstRender(false);
         }
-    }, [isHourRemove, user, isFirstRender]);
+    }, [isHourRemove, isSignaled, user, isFirstRender]);
 
     const closeModal = () => { 
         setErrorDate(""); 

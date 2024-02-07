@@ -1,14 +1,18 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting_slice"
 import { Enseignant } from "../../../pages/Admin/ListeEnseignants"
 import { nbTotal } from "../TableAbsences/Table"
+import { RootState } from "../../../_redux/store"
+import { config } from "../../../config"
 
 
 const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant: Enseignant, isHourRemove:boolean) => void }) => {
 
     const dispatch = useDispatch();
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
 
     return <tbody>
         {data.map((item, index) => (
@@ -56,10 +60,10 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant:
                             onEdit(item, false);
                             dispatch(setShowModal())
                         } }
-                        onClickRemovHour={() => {
+                        onClickRemovHour={roles.admin === userRole ?() => {
                             onEdit(item, true);
                             dispatch(setShowModal())
-                        } }                                             
+                        }:undefined }                                             
                     />
                 </td>
             </tr>

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
-import { setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
@@ -41,7 +41,12 @@ export function nbTotal(data: Etudiant | Enseignant, semestre:number) {
     return totalHeuresAbscence;
 }
 
-const Table = ({ data}: { data: Etudiant | Enseignant }) => {
+interface TableProps {
+    data: Etudiant | Enseignant;
+    onEdit: (user: Etudiant | Enseignant | null) => void;
+}
+
+const Table = ({ data, onEdit}:TableProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -92,7 +97,7 @@ const Table = ({ data}: { data: Etudiant | Enseignant }) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Signaler mon abscence"
-                    onClick={() => { dispatch(setShowModalCreate()) }}
+                    onClick={() => {onEdit(data); dispatch(setShowModal()) }}
                 />
                 <h5>Heure d'abscence total : {nbTotal(data, 1)} heure(s)</h5>
                 {/* <InputSearch hintText="Rechercher une matière" onSubmit={() => { }} /> */}

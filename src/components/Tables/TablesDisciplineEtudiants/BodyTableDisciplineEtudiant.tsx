@@ -1,14 +1,17 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Etudiant } from "../../../pages/Admin/ListeEtudiants"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting_slice"
 import { nbTotal } from "../TableAbsences/Table"
+import { RootState } from "../../../_redux/store"
+import { config } from "../../../config"
 
 
 const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdit: (etudiant: Etudiant, isHourRemove:boolean) => void }) => {
 
     const dispatch = useDispatch();
-
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
     return <tbody>
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -55,10 +58,10 @@ const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdi
                             onEdit(item, false);
                             dispatch(setShowModal())
                         } }
-                        onClickRemovHour={() => {
+                        onClickRemovHour={(roles.admin === userRole  || roles.teacher === userRole )?() => {
                             onEdit(item, true);
                             dispatch(setShowModal())
-                        } }                                             
+                        }:undefined}                                             
                     />
                 </td>
             </tr>

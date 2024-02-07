@@ -5,6 +5,8 @@ import { config } from "../../config";
 import { Etudiant, etudiant, listTest } from "../Admin/ListeEtudiants";
 import { Enseignant, enseignant, enseignants } from "../Admin/ListeEnseignants";
 import Table from "../../components/Tables/TableAbsences/Table";
+import { useState } from "react";
+import FormCreateUpdate from "../../components/Modals/ModalAbsence/FormCreateUpdate";
 
 export interface Abscences{
     id?:number;
@@ -14,14 +16,22 @@ export interface Abscences{
     semestre:number;
 }
 
+
 const Abscences = () => {
+    const [selectedUser, setSelectedUser] = useState<Etudiant | Enseignant | null>(null);
+    const [isHourRemove, setHourRemove] = useState(false);
+    const handleEditHourUser = (user: Etudiant | Enseignant | null) => {
+        setSelectedUser(user);
+    }
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     return (
         <>
             <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} />
-            {(userRole===roles.student || userRole===roles.delegate) && <Table data={etudiant}/>}
-            {userRole===roles.teacher && <Table data={enseignant}/>}
+            {(userRole===roles.student || userRole===roles.delegate) && <Table data={etudiant} onEdit={handleEditHourUser}/>}
+            {userRole===roles.teacher && <Table data={enseignant} onEdit={handleEditHourUser}/>}
+
+            <FormCreateUpdate user={selectedUser} isSignaled={true} isHourRemove={false} /> 
         </>
     );
 };

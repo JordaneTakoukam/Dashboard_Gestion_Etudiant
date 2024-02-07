@@ -12,6 +12,7 @@ import { SalleCours, sallesCours } from '../../../pages/Admin/SallesDeCours';
 import { FaTrash } from 'react-icons/fa6';
 
 
+
 function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | null }) {
 
     const dispatch = useDispatch();
@@ -162,6 +163,41 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
             setErrorTypeEnseignement("");
         }
     };
+
+    // Vérifie si une période chevauche une autre période dans l'emploi du temps
+    const verifierChevauchementPeriode = (periode: PeriodeCours): boolean => {
+        for (const autrePeriode of listPeriode) {
+            // Convertir les heures de début et de fin en minutes pour faciliter la comparaison
+            const heureDebutPeriode = convertirHeureVersMinutes(periode.heureDebut);
+            const heureFinPeriode = convertirHeureVersMinutes(periode.heureFin);
+            const heureDebutAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureDebut);
+            const heureFinAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureFin);
+
+            // Vérifier si les périodes se chevauchent
+            if (
+                (heureDebutPeriode >= heureDebutAutrePeriode && heureDebutPeriode < heureFinAutrePeriode) ||
+                (heureFinPeriode > heureDebutAutrePeriode && heureFinPeriode <= heureFinAutrePeriode) ||
+                (heureDebutPeriode <= heureDebutAutrePeriode && heureFinPeriode >= heureFinAutrePeriode)
+            ) {
+                return true; // Il y a un chevauchement
+            }
+        }
+        return false; // Aucun chevauchement trouvé
+    };
+
+    //verifier si l'heure de fin vient avant l'heure de début
+    const verifierHeureFinApresDebut = (heureDebut: string, heureFin: string): boolean => {
+        const debutMinutes = convertirHeureVersMinutes(heureDebut);
+        const finMinutes = convertirHeureVersMinutes(heureFin);
+    
+        return finMinutes < debutMinutes;
+    };
+
+    // Fonction utilitaire pour convertir l'heure au format HH:MM en minutes
+    const convertirHeureVersMinutes = (heure: string): number => {
+        const [heures, minutes] = heure.split(':').map(Number);
+        return heures * 60 + minutes;
+    };
     
     
 
@@ -206,11 +242,16 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
 
             return;
         }
+
+        if(verifierHeureFinApresDebut(heuredebut, heurefin)){
+            setErrorHeureFin("L'heure de fin ne peut pas être plus petite que l'heure de début");
+            return;
+        }
         
         if (periodecours) {
             console.log("student update");
         }else{
-            console.log("taille liste before "+listPeriode.length);
+            
             let periode:PeriodeCours={
                 id:listPeriode.length+1,
                 jour: jour,
@@ -222,7 +263,10 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
                 semestre: semestre,
                 annee: 2024
             }
-            console.log("taille liste after "+listPeriode.length);console.log("student add");
+            if(verifierChevauchementPeriode(periode)){
+                console.log("Des périodes se chevauchent");
+                return;
+            }
         }
         closeModal();
     }
@@ -248,17 +292,17 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
             >   
                 <div style={{textAlign:'right'}}>
                 <button onClick={handleToggleDelete} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                {isDeleting ? (
-                    <span>Confirmer la suppression</span>
-                ) : (
-                    <FaTrash style={{ color: 'red', fontSize: '20px' }} />
-                )}
-                {isDeleting && (
-                    <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                        Oui
-                    </button>
-                )}
-        </button>
+                        {isDeleting ? (
+                            <span>Confirmer la suppression</span>
+                        ) : (
+                            <FaTrash style={{ color: 'red', fontSize: '20px' }} />
+                        )}
+                        {isDeleting && (
+                            <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                Oui
+                            </button>
+                        )}
+                </button>
                 </div>
                 
                 <label>Semestre</label><label className="text-red-500"> *</label>

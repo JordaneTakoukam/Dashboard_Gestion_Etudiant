@@ -26,6 +26,19 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
+    //verifier si l'heure de fin vient avant l'heure de début
+    const verifierHeureFinApresDebut = (heureDebut: string, heureFin: string): boolean => {
+        const debutMinutes = convertirHeureVersMinutes(heureDebut);
+        const finMinutes = convertirHeureVersMinutes(heureFin);
+    
+        return finMinutes < debutMinutes;
+    };
+
+    // Fonction utilitaire pour convertir l'heure au format HH:MM en minutes
+    const convertirHeureVersMinutes = (heure: string): number => {
+        const [heures, minutes] = heure.split(':').map(Number);
+        return heures * 60 + minutes;
+    };
 
     useEffect(() => {
         setDate("");
@@ -83,6 +96,11 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                 setErrorFinPeriode("Le champ heure de fin est obligatoire.");
             }
 
+            return;
+        }
+
+        if(verifierHeureFinApresDebut(debutPeriode, finPeriode)){
+            setErrorFinPeriode("L'heure de fin ne peut pas être plus petite que l'heure de début");
             return;
         }
         

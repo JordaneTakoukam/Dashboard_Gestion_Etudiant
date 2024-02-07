@@ -2,13 +2,16 @@ import { useSelector } from "react-redux";
 import Breadcrumb from "../../components/Breadcrumb";
 import { RootState } from "../../_redux/store";
 import { config } from "../../config";
+import { Etudiant, etudiant, listTest } from "../Admin/ListeEtudiants";
+import { Enseignant, enseignant, enseignants } from "../Admin/ListeEnseignants";
 import Table from "../../components/Tables/TableAbsences/Table";
 
 export interface Abscences{
-    dateAbs:string;
+    id?:number;
+    date:string;
     debutPeriode:string;
     finPeriode:string;
-    totalAbscences:number;
+    semestre:number;
 }
 
 const Abscences = () => {
@@ -17,35 +20,70 @@ const Abscences = () => {
     return (
         <>
             <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} />
-            <Table data={listAbsence}/>
+            {(userRole===roles.student || userRole===roles.delegate) && <Table data={etudiant}/>}
+            {userRole===roles.teacher && <Table data={enseignant}/>}
         </>
     );
 };
 
 export default Abscences;
-export const listAbsence:Abscences[]=[
+export const absencesEtudiant:Abscences[]=[
     {
-        dateAbs:"01/01/2023",
-        debutPeriode:"7h30",
-        finPeriode:"9h30",
-        totalAbscences:2
+        id:1,
+        date:"01/01/2023",
+        debutPeriode:"07:30",
+        finPeriode:"09:30",
+        semestre:1,
     },
     {
-        dateAbs:"10/01/2023",
-        debutPeriode:"7h30",
-        finPeriode:"9h30",
-        totalAbscences:2
+        id:2,
+        date:"10/01/2023",
+        debutPeriode:"07:30",
+        finPeriode:"09:30",
+        semestre:1,
     },
     {
-        dateAbs:"15/01/2023",
-        debutPeriode:"12h30",
-        finPeriode:"16h30",
-        totalAbscences:4
+        id:3,
+        date:"15/01/2023",
+        debutPeriode:"12:30",
+        finPeriode:"16:30",
+        semestre:1,
     },
     {
-        dateAbs:"17/02/2023",
-        debutPeriode:"10h30",
-        finPeriode:"12h30",
-        totalAbscences:2
+        id:4,
+        date:"17/02/2023",
+        debutPeriode:"10:30",
+        finPeriode:"12:30",
+        semestre:1,
+    },
+]
+export const absencesEnseignant:Abscences[]=[
+    {
+        id:1,
+        date:"01/01/2023",
+        debutPeriode:"07:30",
+        finPeriode:"09:30",
+        semestre:1,
+    },
+    {
+        id:2,
+        date:"10/01/2023",
+        debutPeriode:"07:30",
+        finPeriode:"09:30",
+        semestre:1,
+    },
+    {
+        id:3,
+        date:"15/01/2023",
+        debutPeriode:"12:30",
+        finPeriode:"16:30",
+        semestre:1,
+    },
+    {
+        id:4,
+        date:"17/02/2023",
+        debutPeriode:"10:30",
+        finPeriode:"12:30",
+        semestre:1,
     },
 ]

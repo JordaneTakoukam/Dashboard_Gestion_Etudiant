@@ -7,7 +7,23 @@ import { Abscences } from "../../../pages/CommonPage/Abscences"
 const BodyTable = ({ data }: { data: Abscences[] }) => {
 
     const dispatch = useDispatch();
-
+    function calculerDifferenceHeures(heureDebut:string, heureFin:string) {
+        // Extraire les heures et les minutes de début et de fin
+        const debutHeureMinute = heureDebut.split(':');
+        const finHeureMinute = heureFin.split(':');
+    
+        // Convertir les heures et les minutes en nombres
+        const debutHeure = parseInt(debutHeureMinute[0]);
+        const debutMinute = parseInt(debutHeureMinute[1]);
+    
+        const finHeure = parseInt(finHeureMinute[0]);
+        const finMinute = parseInt(finHeureMinute[1]);
+    
+        // Calculer la différence en heures
+        const differenceHeures = finHeure - debutHeure + (finMinute - debutMinute) / 60;
+    
+        return differenceHeures;
+    }
     return <tbody>
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -18,7 +34,7 @@ const BodyTable = ({ data }: { data: Abscences[] }) => {
 
                 {/* date */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{item.dateAbs}</h5>
+                    <h5>{item.date}</h5>
                 </td>
 
                 {/* période */}
@@ -29,7 +45,7 @@ const BodyTable = ({ data }: { data: Abscences[] }) => {
 
                 {/* total */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
-                    <h5>{item.totalAbscences}</h5>
+                    <h5>{calculerDifferenceHeures(item.debutPeriode, item.finPeriode)}</h5>
                 </td>
             </tr>
         ))}

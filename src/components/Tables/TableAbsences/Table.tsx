@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
-import InputSearch from "../common/SearchTable";
 import { setShowModalCreate } from "../../../_redux/features/setting_slice";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
@@ -10,14 +9,39 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Matiere } from "../../../pages/Admin/ListeMatieres";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
-import { Abscences } from "../../../pages/CommonPage/Abscences";
+import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
+import { Etudiant } from "../../../pages/Admin/ListeEtudiants";
 
+export function nbTotal(data: Etudiant | Enseignant, semestre:number) {
+    // Filtrer les abscences pour le semestre spécifié
+    const abscencesSemestre = data.abscences.filter(abscence => abscence.semestre === semestre);
 
+    // Initialiser le nombre total d'heures d'abscence
+    let totalHeuresAbscence = 0;
 
-const Table = ({ data }: { data: Abscences[] }) => {
+    // Parcourir les abscences du semestre
+    abscencesSemestre.forEach(abscence => {
+        // Extraire les heures et les minutes du début et de la fin de la période d'abscence
+        const debutHeureMinute = abscence.debutPeriode.split(':');
+        const finHeureMinute = abscence.finPeriode.split(':');
+
+        // Convertir les heures et les minutes en millisecondes
+        const debutEnMillisecondes = (parseInt(debutHeureMinute[0]) * 60 + parseInt(debutHeureMinute[1])) * 60 * 1000;
+        const finEnMillisecondes = (parseInt(finHeureMinute[0]) * 60 + parseInt(finHeureMinute[1])) * 60 * 1000;
+
+        // Calculer la différence en heures entre debutPeriode et finPeriode
+        const differenceHeures = (finEnMillisecondes - debutEnMillisecondes) / (1000 * 60 * 60); // Millisecondes en heures
+
+        // Ajouter la différence calculée au total des heures d'abscence
+        totalHeuresAbscence += differenceHeures;
+    });
+
+    return totalHeuresAbscence;
+}
+
+const Table = ({ data}: { data: Etudiant | Enseignant }) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -55,14 +79,8 @@ const Table = ({ data }: { data: Abscences[] }) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-    const nbTotal = ()=>{
-        let total=0;
-        for(const abscence of data){
-            total+=abscence.totalAbscences
-        }
-        return total;
-    };
+    const currentItems = data.abscences.slice(indexOfFirstItem, indexOfLastItem);
+    
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -76,7 +94,7 @@ const Table = ({ data }: { data: Abscences[] }) => {
                     title="Signaler mon abscence"
                     onClick={() => { dispatch(setShowModalCreate()) }}
                 />
-                <h5>Heure d'absence total : {nbTotal()} heure(s)</h5>
+                <h5>Heure d'abscence total : {nbTotal(data, 1)} heure(s)</h5>
                 {/* <InputSearch hintText="Rechercher une matière" onSubmit={() => { }} /> */}
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -112,12 +130,12 @@ const Table = ({ data }: { data: Abscences[] }) => {
 
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
-                    {nbTotal()>0? <table className="w-full table-auto">
+                    {nbTotal(data, 1)>0? <table className="w-full table-auto">
                         {/* en tete du tableau */}
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : data.length === 0 ?
+                                : data.abscences.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -125,14 +143,14 @@ const Table = ({ data }: { data: Abscences[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data.abscences} />
                         }
                     </table>:<h1>Aucune abscence enregistrée pour ce semestre</h1>}
                 </div>
 
                 {/* Pagination */}
 
-                {nbTotal()>0?<h1>Pagination ici</h1>:""}
+                {nbTotal(data, 1)>0?<h1>Pagination ici</h1>:""}
 
             </div>
 

@@ -97,6 +97,16 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         return heures * 60 + minutes;
     }
 
+    const [showAddRowButton, setShowAddRowButton] = useState(false);
+
+    const handleCellMouseEnter = () => {
+        setShowAddRowButton(true);
+    };
+
+    const handleCellMouseLeave = () => {
+        setShowAddRowButton(false);
+    };
+
     const pageIsLoading = false;
     const dispatch = useDispatch();
 

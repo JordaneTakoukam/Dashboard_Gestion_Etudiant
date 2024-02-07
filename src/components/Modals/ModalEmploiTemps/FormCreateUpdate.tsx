@@ -256,7 +256,7 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
                     onChange={(e) => {setHeureDebut(e.target.value); setErrorHeureDebut("")}}
                 />
                 {errorHeureDebut && <p className="text-red-500" >{errorHeureDebut}</p>}
-                <label>HeureFin</label><label className="text-red-500"> *</label>
+                <label>Heure de fin</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"

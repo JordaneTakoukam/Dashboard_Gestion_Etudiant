@@ -10,10 +10,13 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
 
+interface TableDisciplineProps {
+    data: Enseignant[];
+    onEdit: (enseignant: Enseignant, isHourRemove:boolean) => void;
+}
 
 
-
-const Table = ({ data }: { data: Enseignant[] }) => {
+const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -131,7 +134,7 @@ const Table = ({ data }: { data: Enseignant[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
                         }
 
 

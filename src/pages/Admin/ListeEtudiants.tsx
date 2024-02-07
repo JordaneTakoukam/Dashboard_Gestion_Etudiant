@@ -5,6 +5,7 @@ import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDel
 // import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 import { Niveau } from "./Niveaux";
+import { Abscences, absencesEtudiant } from "../CommonPage/Abscences";
 
 export interface Etudiant {
     id?:number
@@ -25,7 +26,7 @@ export interface Etudiant {
     departement?:Departement;
     commune?:Commune;
     dateEntreeAdmin?:string;
-    nbAbscences: number;
+    abscences:Abscences[];
 }
 
 export interface Grade{
@@ -91,6 +92,37 @@ const ListeDesEtudiants = () => {
 
 export default ListeDesEtudiants;
 
+export const etudiant:Etudiant={
+    id : 1,
+    nom: "Jane",
+    prenom: "Smith",
+    email: "test@123",
+    contact: "655484959",
+    matricule: "CD5678",
+    dateNaiss : "2000-02-17",
+    genre:"H",
+    niveau: {
+        id:1,
+        code:"N1",
+        libelle:"1ère année",
+        cycle:{
+            id:1,
+            code:"CA",
+            libelle:"Cycle A",
+            section:{
+                code:"S001",
+                libelle:"Douane",
+            }
+        },
+    },
+    service : {
+        id : 1,
+        code : "S01",
+        libelle : "Cellule informatique"
+    },
+    abscences:absencesEtudiant,
+}
+
 export const listTest: Etudiant[] = [
     {
         id : 1,
@@ -120,7 +152,7 @@ export const listTest: Etudiant[] = [
             code : "S01",
             libelle : "Cellule informatique"
         },
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 2,
@@ -144,7 +176,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         },
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 3,
@@ -168,7 +200,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 4,
@@ -192,7 +224,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 5,
@@ -216,7 +248,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 6,
@@ -240,7 +272,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 7,
@@ -264,7 +296,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 8,
@@ -288,7 +320,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 9,
@@ -312,7 +344,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         },
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 10,
@@ -336,7 +368,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id : 11,
@@ -360,7 +392,7 @@ export const listTest: Etudiant[] = [
                 }
             },
         }, 
-        nbAbscences : 0
+        abscences:[],
     }
 ];
 

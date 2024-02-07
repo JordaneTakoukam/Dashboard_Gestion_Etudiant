@@ -5,6 +5,7 @@ import FormDelete from "../../components/Modals/ModalEnseignant/FormDelete";
 import Table from "../../components/Tables/TablesEnseignants/Table";
 import { Grade, Categorie, Fonction, Service, Region, Departement, Commune } from "./ListeEtudiants";
 import { Niveau } from "./Niveaux";
+import { Abscences, absencesEnseignant } from "../CommonPage/Abscences";
 
 export interface Enseignant {
     id?:number
@@ -25,7 +26,7 @@ export interface Enseignant {
     departement?:Departement;
     commune?:Commune;
     dateEntreeAdmin?:string;
-    nbAbscences: number;
+    abscences:Abscences[];
 }
 const ListeDesEnseignant = () => {
     const [selectedEnseignant, setSelectedEnseignant] = useState<Enseignant | null>(null);
@@ -53,7 +54,16 @@ const ListeDesEnseignant = () => {
 };
 
 export default ListeDesEnseignant;
-
+export const enseignant:Enseignant={
+    id:1,
+    nom: "Jane",
+    prenom: "Smith",
+    email: "test@123",
+    contact: "655484959",
+    matricule: "CD5678",
+    genre:"H",
+    abscences:absencesEnseignant,
+}
 export const enseignants: Enseignant[] = [
     {
         id:1,
@@ -63,7 +73,8 @@ export const enseignants: Enseignant[] = [
         contact: "655484959",
         matricule: "CD5678",
         genre:"H",
-        nbAbscences : 0
+        abscences:[],
+        
     },
     {
         id:2,
@@ -73,7 +84,7 @@ export const enseignants: Enseignant[] = [
         contact: "677988866",
         matricule: "EF9012",
         genre: "M", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:3,
@@ -83,7 +94,7 @@ export const enseignants: Enseignant[] = [
         contact: "677988866",
         matricule: "EF9012",
         genre: "F", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:4,
@@ -93,7 +104,7 @@ export const enseignants: Enseignant[] = [
         contact: "677978745",
         matricule: "GH3456",
         genre: "H", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:5,
@@ -103,7 +114,7 @@ export const enseignants: Enseignant[] = [
         contact: "677966888",
         matricule: "IJ7890",
         genre: "F", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:6,
@@ -113,7 +124,7 @@ export const enseignants: Enseignant[] = [
         contact: "655489566",
         matricule: "KL2345",
         genre: "H", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:7,
@@ -123,7 +134,7 @@ export const enseignants: Enseignant[] = [
         contact: "677944777",
         matricule: "MN6789",
         genre: "F", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:8,
@@ -133,7 +144,7 @@ export const enseignants: Enseignant[] = [
         contact: "655484343",
         matricule: "OP0123",
         genre: "H", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:9,
@@ -143,7 +154,7 @@ export const enseignants: Enseignant[] = [
         contact: "677955666",
         matricule: "QR4567",
         genre: "F", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:10,
@@ -153,7 +164,7 @@ export const enseignants: Enseignant[] = [
         contact: "677988877",
         matricule: "ST8901",
         genre: "H", 
-        nbAbscences : 0
+        abscences:[],
     },
     {
         id:11,
@@ -163,6 +174,6 @@ export const enseignants: Enseignant[] = [
         contact: "677999888",
         matricule: "UV2345",
         genre: "F", 
-        nbAbscences : 0
+        abscences:[],
     }
 ];

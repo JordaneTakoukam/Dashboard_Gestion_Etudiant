@@ -10,9 +10,12 @@ import CustomButtonDownload from "../common/CustomButtomDownload";
 import BodyTableDisciplineEtudiant from "./BodyTableDisciplineEtudiant";
 import HeaderTableDisciplineEtudiant from "./HeaderTableDisciplineEtudiant";
 
+interface TableDisciplineProps {
+    data: Etudiant[];
+    onEdit: (etudiant: Etudiant, isHourRemove:boolean) => void;
+}
 
-
-const TableDisciplineEtudiant = ({ data }: { data: Etudiant[] }) => {
+const TableDisciplineEtudiant = ({ data, onEdit }: TableDisciplineProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -130,7 +133,7 @@ const TableDisciplineEtudiant = ({ data }: { data: Etudiant[] }) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTableDisciplineEtudiant data={data} />
+                            !pageIsLoading && <BodyTableDisciplineEtudiant data={data} onEdit={onEdit}/>
                         }
 
 

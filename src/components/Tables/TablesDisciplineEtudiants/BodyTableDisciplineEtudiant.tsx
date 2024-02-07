@@ -1,11 +1,11 @@
 import { useDispatch } from "react-redux"
-import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import { Etudiant } from "../../../pages/Admin/ListeEtudiants"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { nbTotal } from "../TableAbsences/Table"
 
 
-const BodyTableDisciplineEtudiant = ({ data }: { data: Etudiant[] }) => {
+const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdit: (etudiant: Etudiant, isHourRemove:boolean) => void }) => {
 
     const dispatch = useDispatch();
 
@@ -35,27 +35,29 @@ const BodyTableDisciplineEtudiant = ({ data }: { data: Etudiant[] }) => {
 
                 {/* e-mail */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
-                    <h5>{capitalizeFirstLetter(item.email)}</h5>
+                    <h5>{item.email}</h5>
                 </td>
 
                 {/* contact */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.contact}</h5>
+                    <h5>{item.contact?item.contact:""}</h5>
                 </td>
 
                 {/* nombre d'heure d'absence */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.nbAbscences}</h5>
+                    <h5>{nbTotal(item, 1)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickAddHour={() => {
-                            dispatch(setShowModalUpdate())
+                            onEdit(item, false);
+                            dispatch(setShowModal())
                         } }
                         onClickRemovHour={() => {
-                            dispatch(setShowModalUpdate())
+                            onEdit(item, true);
+                            dispatch(setShowModal())
                         } }                                             
                     />
                 </td>

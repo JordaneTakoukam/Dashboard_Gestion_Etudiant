@@ -6,9 +6,10 @@ import { SetStateAction, useEffect, useState } from 'react';
 import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
 import { Section, sections } from '../../../pages/Admin/Sections';
 import { Cycle, cycles } from '../../../pages/Admin/Cycles';
-import { Jour, PeriodeCours, jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
+import { Jour, PeriodeCours, jours, listPeriode, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { Matiere, TypeEnseignement, matieres } from '../../../pages/Admin/ListeMatieres';
 import { SalleCours, sallesCours } from '../../../pages/Admin/SallesDeCours';
+import { FaTrash } from 'react-icons/fa6';
 
 
 function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | null }) {
@@ -209,10 +210,32 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
         if (periodecours) {
             console.log("student update");
         }else{
-            console.log("student add");
+            console.log("taille liste before "+listPeriode.length);
+            let periode:PeriodeCours={
+                id:listPeriode.length+1,
+                jour: jour,
+                heureDebut: heuredebut,
+                heureFin: heurefin,
+                salle: salleCours,
+                matiere: matiere,
+                typeUE: typeEnseignement,
+                semestre: semestre,
+                annee: 2024
+            }
+            console.log("taille liste after "+listPeriode.length);console.log("student add");
         }
         closeModal();
     }
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleToggleDelete = () => {
+        setIsDeleting(!isDeleting);
+    };
+
+    const handleDelete = () => {
+        // onDelete(); // Appeler la fonction de suppression de la période
+        setIsDeleting(false); // Réinitialiser le toggle à false après la suppression
+    };
 
     return (
         <>
@@ -222,7 +245,22 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
-            >
+            >   
+                <div style={{textAlign:'right'}}>
+                <button onClick={handleToggleDelete} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+                {isDeleting ? (
+                    <span>Confirmer la suppression</span>
+                ) : (
+                    <FaTrash style={{ color: 'red', fontSize: '20px' }} />
+                )}
+                {isDeleting && (
+                    <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+                        Oui
+                    </button>
+                )}
+        </button>
+                </div>
+                
                 <label>Semestre</label><label className="text-red-500"> *</label>
                 <select
                     value={semestre}

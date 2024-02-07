@@ -19,7 +19,6 @@ export interface Abscences{
 
 const Abscences = () => {
     const [selectedUser, setSelectedUser] = useState<Etudiant | Enseignant | null>(null);
-    const [isHourRemove, setHourRemove] = useState(false);
     const handleEditHourUser = (user: Etudiant | Enseignant | null) => {
         setSelectedUser(user);
     }

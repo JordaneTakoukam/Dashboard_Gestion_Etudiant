@@ -10,6 +10,7 @@ import { PeriodeCours, jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 import { setShowModal } from "../../../_redux/features/setting_slice";
+import ButtonCreate from "../common/ButtonCreate";
 
 
 interface TablePeriodeProps {
@@ -42,13 +43,13 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             return heureDebutA - heureDebutB;
         });
         if (table) {
-            
+            table.innerHTML = '';
             const groupedPeriodes: { [key: string]: PeriodeCours[] } = {};
             //Les évènements de la même période de cours sont groupés entre eux
             sortedPeriodes.forEach((periode) => {
                 const horaire = `${periode.heureDebut} - ${periode.heureFin}`;
                 if (!groupedPeriodes[horaire]) {
-                groupedPeriodes[horaire] = [];
+                    groupedPeriodes[horaire] = [];
                 }
                 groupedPeriodes[horaire].push(periode);
             });
@@ -89,7 +90,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 });
             });
         }
-    }, []);
+    }, [data]);
 
     
     function convertirHeureVersMinutes(heure: string): number {
@@ -171,7 +172,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     return (
         <div>
-            
+            <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+                <ButtonCreate
+                    title="Créer une période de cours"
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                />
+            </div>
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -208,7 +214,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
-                    <table className="w-full table-auto" id="myTable">
+                    <table className="w-full table-auto">
                         {/* en tete du tableau */}
                         {
                             pageIsLoading ?
@@ -220,9 +226,9 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
                         {/* corp du tableau*/}
 
-                        {/* {
-                            !pageIsLoading && <BodyTable data={data} />
-                        } */}
+                        {
+                            !pageIsLoading && <tbody id="myTable"></tbody>
+                        }
 
 
 

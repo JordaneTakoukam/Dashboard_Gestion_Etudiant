@@ -183,6 +183,7 @@ export const enseignants: Enseignant[] = [
 
 export const matieres: Matiere[] = [
     {
+        id:1,
         code: "CG1",
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",
         prerequis: "",
@@ -235,6 +236,7 @@ export const matieres: Matiere[] = [
         ]
     },
     {
+        id:2,
         code: "CG2",
         libelle: "Elaboration du budget de l'Etat",
         prerequis: "",
@@ -288,6 +290,7 @@ export const matieres: Matiere[] = [
         ]
     },
     {
+        id:3,
         code: "CG3",
         libelle: "Management des organisations publiques",
         prerequis: "",
@@ -340,6 +343,7 @@ export const matieres: Matiere[] = [
         ]
     },
     {
+        id:4,
         code: "CG4",
         libelle: "Elaboration, exécution et contrôle du budget de l'Etat",
         prerequis: "",

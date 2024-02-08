@@ -1,13 +1,16 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalCreate, setShowModalUpdate } from '../../../_redux/features/setting_slice';
+import { setShowModal} from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
-import { Section, sections } from '../../../pages/Admin/Sections';
-import { Cycle, cycles } from '../../../pages/Admin/Cycles';
 import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
-import { Grade, Categorie, Fonction, Service, Region, Departement, Commune, fonctions, grades, categories, services, regions, departements, communes } from '../../../pages/Admin/ListeEtudiants';
+import {Commune, communes } from '../../../pages/Admin/Communes';
+import { Service, services } from '../../../pages/Admin/Services';
+import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
+import { Grade, grades } from '../../../pages/Admin/Grades';
+import { Categorie, categories } from '../../../pages/Admin/Categories';
+import { Region, regions } from '../../../pages/Admin/Regions';
+import { Departement, departements } from '../../../pages/Admin/Departements';
 
 
 function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {

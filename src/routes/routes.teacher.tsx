@@ -5,7 +5,7 @@ import Abscences from '../pages/CommonPage/Abscences';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
 import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
 //import Matieres from '../pages/CommonPage/Matieres';
-import Parametres from '../pages/CommonPage/Parametres';
+// import Parametres from '../pages/Admin/Administration';
 import MonProfil from '../pages/CommonPage/Profil';
 
 
@@ -65,11 +65,11 @@ const coreRoutes = [
   },
 
   // parametres
-  {
-    path: '/settings',
-    title: 'Paramètres',
-    component: Parametres,
-  },
+  // {
+  //   path: '/settings',
+  //   title: 'Paramètres',
+  //   component: Parametres,
+  // },
 ];
 
 const routes = [...coreRoutes];

@@ -10,8 +10,16 @@ import SallesDeCours from '../pages/Admin/SallesDeCours';
 import Sections from '../pages/Admin/Sections';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
 import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
-import Parametres from '../pages/CommonPage/Parametres';
+import Administration from '../pages/Admin/Administration';
 import MonProfil from '../pages/CommonPage/Profil';
+import AnneeSemestre from '../pages/Admin/AnneeSemestreCourant';
+import Services from '../pages/Admin/Services';
+import Fonctions from '../pages/Admin/Fonctions';
+import Grades from '../pages/Admin/Grades';
+import Categories from '../pages/Admin/Categories';
+import Regions from '../pages/Admin/Regions';
+import Departements from '../pages/Admin/Departements';
+import Communes from '../pages/Admin/Communes';
 
 
 
@@ -90,18 +98,64 @@ const coreRoutes = [
     component: CalendrierAcademique,
   },
 
+  // parametres
   // profil
   {
-    path: '/profile',
+    path: '/parametres/profile',
     title: 'Mon profil',
     component: MonProfil,
   },
 
-  // parametres
   {
-    path: '/settings',
-    title: 'Paramètres',
-    component: Parametres,
+    path: '/parametres/admins',
+    title: 'Liste des administrateurs',
+    component: Administration,
+  },
+
+  {
+    path: '/parametres/current-year-semester',
+    title: 'Année et Semestre courant',
+    component: AnneeSemestre,
+  },
+
+  {
+    path: '/parametres/services',
+    title: 'Services',
+    component: Services,
+  },
+
+  {
+    path: '/parametres/fonctions',
+    title: 'Fonctions',
+    component: Fonctions,
+  },
+
+  {
+    path: '/parametres/grades',
+    title: 'Grades',
+    component: Grades,
+  },
+
+  {
+    path: '/parametres/categories',
+    title: 'Catégories',
+    component: Categories,
+  },
+
+  {
+    path: '/parametres/regions',
+    title: 'Régions',
+    component: Regions,
+  },
+  {
+    path: '/parametres/departements',
+    title: 'Départements',
+    component: Departements,
+  },
+  {
+    path: '/parametres/communes',
+    title: 'Communes',
+    component: Communes,
   },
 
 ];

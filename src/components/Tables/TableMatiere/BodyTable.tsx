@@ -4,6 +4,7 @@ import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_
 import { Matiere } from "../../../pages/Admin/ListeMatieres"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
+import DropDownMatiere from "../../Header/DropDownMatiere"
 
 const BodyTable = ({ data, onEdit }: { data: Matiere[], onEdit:(matiere:Matiere)=>void }) => {
 

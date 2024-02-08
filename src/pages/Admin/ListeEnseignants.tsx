@@ -3,9 +3,15 @@ import Breadcrumb from "../../components/Breadcrumb";
 import FormCreateUpdate from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalEnseignant/FormDelete";
 import Table from "../../components/Tables/TablesEnseignants/Table";
-import { Grade, Categorie, Fonction, Service, Region, Departement, Commune } from "./ListeEtudiants";
+import {Commune } from "./Communes";
 import { Niveau } from "./Niveaux";
-import { Abscences, absencesEnseignant } from "../CommonPage/Abscences";
+import { Abscences} from "../CommonPage/Abscences";
+import { Fonction } from "./Fonctions";
+import { Service } from "./Services";
+import { Grade } from "./Grades";
+import { Categorie } from "./Categories";
+import { Region } from "./Regions";
+import { Departement } from "./Departements";
 
 export interface Enseignant {
     id?:number
@@ -54,6 +60,36 @@ const ListeDesEnseignant = () => {
 };
 
 export default ListeDesEnseignant;
+export const absencesEnseignant:Abscences[]=[
+    {
+        id:1,
+        date:"01/01/2023",
+        debutPeriode:"07:30",
+        finPeriode:"09:30",
+        semestre:1,
+    },
+    {
+        id:2,
+        date:"10/01/2023",
+        debutPeriode:"07:30",
+        finPeriode:"09:30",
+        semestre:1,
+    },
+    {
+        id:3,
+        date:"15/01/2023",
+        debutPeriode:"12:30",
+        finPeriode:"16:30",
+        semestre:1,
+    },
+    {
+        id:4,
+        date:"17/02/2023",
+        debutPeriode:"10:30",
+        finPeriode:"12:30",
+        semestre:1,
+    },
+]
 export const enseignant:Enseignant={
     id:1,
     nom: "Jane",

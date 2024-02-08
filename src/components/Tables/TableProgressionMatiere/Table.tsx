@@ -1,17 +1,12 @@
 import { useDispatch } from "react-redux";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
-import InputSearch from "../common/SearchTable";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
 import { Matiere, matieres } from "../../../pages/Admin/ListeMatieres";
-
-
+import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 
 
 const Table = ({ data }: { data: Matiere }) => {
@@ -75,6 +70,8 @@ const Table = ({ data }: { data: Matiere }) => {
         console.log(selected);
     };
 
+    ;
+
     const handleNiveauSelect = (selected: string) => {
         setFiltreNiveau(selected);
         console.log(selected);
@@ -108,6 +105,8 @@ const Table = ({ data }: { data: Matiere }) => {
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+    const [niveau, setNiveau] = useState<Niveau>();
+    
 
     return (
         <div>
@@ -162,8 +161,8 @@ const Table = ({ data }: { data: Matiere }) => {
                         {
                             // pageIsLoading ?
                             //     <LoadingTable />
-                            //     : data.length === 0 ?
-                            //         <NoDataTable /> :
+                            //     : !data.chapitres?
+                            //         <NoDataTable/> :
                                     <HeaderTable matiere={filtreMatiere} />
                         }
 

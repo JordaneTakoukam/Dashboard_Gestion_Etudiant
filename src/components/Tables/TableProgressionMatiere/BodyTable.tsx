@@ -14,28 +14,31 @@ const BodyTable = ({ data }: { data: Matiere }) => {
     }, [data]);
 
     const handleCheckboxChange = (chapitreIndex: number, objectifIndex: number) => {
-        if (roles.admin === userRole || roles.teacher === userRole) {
-            const updatedChapitres = matiereData.chapitres.map((chapitre, index) => {
-                if (index === chapitreIndex) {
-                    const updatedObjectifs = chapitre.objectifs.map((objectif, idx) => {
-                        if (idx === objectifIndex) {
-                            // Créez un nouvel objet Objectif avec l'état mis à jour
-                            return { ...objectif, etat: objectif.etat === 1 ? 0 : 1 };
-                        }
-                        return objectif;
-                    });
-                    return { ...chapitre, objectifs: updatedObjectifs };
-                }
-                return chapitre;
-            });
-            // Mettez à jour l'état de la matière avec les chapitres mis à jour
-            setMatiereData({ ...matiereData, chapitres: updatedChapitres });
+        if (roles.admin === userRole || roles.teacher === userRole ) {
+            if(matiereData.chapitres){
+                const updatedChapitres = matiereData.chapitres.map((chapitre, index) => {
+                    if (index === chapitreIndex) {
+                        const updatedObjectifs = chapitre.objectifs.map((objectif, idx) => {
+                            if (idx === objectifIndex) {
+                                // Créez un nouvel objet Objectif avec l'état mis à jour
+                                return { ...objectif, etat: objectif.etat === 1 ? 0 : 1 };
+                            }
+                            return objectif;
+                        });
+                        return { ...chapitre, objectifs: updatedObjectifs };
+                    }
+                    return chapitre;
+                });
+                // Mettez à jour l'état de la matière avec les chapitres mis à jour
+                setMatiereData({ ...matiereData, chapitres: updatedChapitres });
+            }
+            
         }
     };
 
     return (
         <tbody>
-            {matiereData.chapitres.map((chapitre: Chapitre, indexChapitre: number) => (
+            {matiereData.chapitres && matiereData.chapitres.map((chapitre: Chapitre, indexChapitre: number) => (
                 <React.Fragment key={indexChapitre + 1}>
                     {chapitre.objectifs.map((objectif: Objectif, indexObjectif: number) => (
                         <tr key={`${indexChapitre}-${indexObjectif}`} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">

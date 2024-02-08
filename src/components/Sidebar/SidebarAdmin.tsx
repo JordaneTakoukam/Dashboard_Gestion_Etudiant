@@ -493,13 +493,13 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                     {/* <!-- Autres --> */}
                     <div>
-                        <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
+                        {/* <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
                             AUTRES
-                        </h3>
+                        </h3> */}
 
                         <ul className="mb-2 flex flex-col gap-1.5">
                             {/* Profil */}
-                            <li>
+                            {/* <li>
                                 <NavLink
                                     to="/profile"
                                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/profile' ||
@@ -514,25 +514,167 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                     </div>
                                     Mon Profil
                                 </NavLink>
-                            </li>
+                            </li> */}
                             {/* Profil */}
 
                             {/* Parametre */}
                             <li>
-                                <NavLink
-                                    to="/settings"
-                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/settings' ||
-                                        pathname.includes('settings')) &&
-                                        'bg-graydark dark:bg-meta-4 text-secondary'
-                                        }`}
-                                >
-                                    <div className='-ml-.75 w-6'>
-                                        <div className='text-[22px]'>
-                                            <IoSettingsOutline />
-                                        </div>
-                                    </div>
-                                    Paramètres
-                                </NavLink>
+                            <SidebarLinkGroup
+                                activeCondition={
+                                    pathname === '/parametres' || pathname.includes('parametres')
+                                }
+                            >
+                                {(handleClick, open) => {
+                                    return (
+                                        <React.Fragment>
+                                            <NavLink
+                                                to="#"
+                                                className={`group relative flex items-center gap-2.5 rounded-sm  py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/academic-levels' ||
+                                                    pathname.includes('parametres')) &&
+                                                    'bg-graydark dark:bg-meta-4 text-secondary'
+                                                    }`}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    sidebarExpanded
+                                                        ? handleClick()
+                                                        : setSidebarExpanded(true);
+                                                }}
+                                            >
+                                                <div className='-ml-.75 w-6'>
+                                                    <div className='text-[22px]'>
+                                                        <IoSettingsOutline />
+                                                    </div>
+                                                </div>
+                                                Paramètres
+                                                <div
+                                                    className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                                                        }`}>
+                                                    <IoIosArrowDown />
+                                                </div>
+
+                                            </NavLink>
+                                            <div
+                                                className={`translate transform overflow-hidden ${!open && 'hidden'
+                                                    }`}
+                                            >
+                                                <ul className="mt-4 mb-3 flex flex-col gap-2.5 pl-6">
+                                                    {/* <li>
+                                                        <NavLink
+                                                            to="/parametres/profile"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            Mon profile
+                                                        </NavLink>
+                                                    </li> */}
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/admins"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            Administrateurs
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/current-year-semester"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Année et semestre courant
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/services"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Services
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/fonctions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Fonctions
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/grades"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Grades
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/categories"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Catégories
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/regions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Régions
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/departements"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Départements
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/communes"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Communes
+                                                        </NavLink>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {/* <!-- Dropdown Menu End --> */}
+                                        </React.Fragment>
+                                    );
+                                }}
+                            </SidebarLinkGroup>
                             </li>
                             {/* Parametre */}
 

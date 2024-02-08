@@ -5,7 +5,7 @@ import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDel
 // import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 import { Niveau } from "./Niveaux";
-import { Abscences } from "../CommonPage/Abscences";
+import { Abscences, absencesEtudiant } from "../CommonPage/Abscences";
 import { Service } from "./Services";
 import { Fonction } from "./Fonctions";
 import { Grade } from "./Grades";
@@ -63,37 +63,6 @@ const ListeDesEtudiants = () => {
 };
 
 export default ListeDesEtudiants;
-
-export const absencesEtudiant:Abscences[]=[
-    {
-        id:1,
-        date:"01/01/2023",
-        debutPeriode:"07:30",
-        finPeriode:"09:30",
-        semestre:1,
-    },
-    {
-        id:2,
-        date:"10/01/2023",
-        debutPeriode:"07:30",
-        finPeriode:"09:30",
-        semestre:1,
-    },
-    {
-        id:3,
-        date:"15/01/2023",
-        debutPeriode:"12:30",
-        finPeriode:"16:30",
-        semestre:1,
-    },
-    {
-        id:4,
-        date:"17/02/2023",
-        debutPeriode:"10:30",
-        finPeriode:"12:30",
-        semestre:1,
-    },
-]
 
 export const etudiant:Etudiant={
     id : 1,
@@ -398,4 +367,5 @@ export const listTest: Etudiant[] = [
         abscences:[],
     }
 ];
+
 

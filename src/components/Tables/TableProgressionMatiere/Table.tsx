@@ -7,6 +7,9 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Matiere, matieres } from "../../../pages/Admin/ListeMatieres";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
+import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import { Section, sections } from "../../../pages/Admin/Sections";
+import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 
 
 const Table = ({ data }: { data: Matiere }) => {
@@ -21,10 +24,10 @@ const Table = ({ data }: { data: Matiere }) => {
     };
 
     //Calcul de la progression de chaque leçon
-    const calculateProgress = (matiere : Matiere) => {
+    const calculateProgress = (matiere : Matiere | undefined) => {
         let totalObjectifs = 0;
         let objectifsAvecEtat1 = 0;
-        if(matiere.chapitres){
+        if(matiere && matiere.chapitres){
             matiere.chapitres.forEach((chapitre) => {
                 totalObjectifs += chapitre.objectifs.length;
                 chapitre.objectifs.forEach((objectif) => {
@@ -56,34 +59,32 @@ const Table = ({ data }: { data: Matiere }) => {
 
 
 
-    const handleAnneeSelect = (selected: string) => {
-        setFiltreAnnee(selected);
+    const handleAnneeSelect = (selected: String | undefined) => {
+        // setFiltreAnnee(selected);
         console.log(selected)
     };
-    const handleSectionSelect = (selected: string) => {
-        setFiltreSection(selected);
+    
+    const handleSectionSelect = (selected: Section | undefined) => {
+        // setFiltreSection(selected);
         console.log(selected);
     };
 
-    const handleCycleSelect = (selected: string) => {
-        setFiltreCycle(selected);
+    const handleCycleSelect = (selected: Cycle | undefined) => {
+        // setFiltreCycle(selected);
+        console.log(selected);
+    };
+    
+    const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
+        // Logique à exécuter lorsque le niveau est sélectionné
+        // console.log("Niveau sélectionné :", selectedNiveau);
+    };
+    const handleSemestreSelect = (selected: String | undefined) => {
+        // setFiltreSemestre(selected);
         console.log(selected);
     };
 
-    ;
-
-    const handleNiveauSelect = (selected: string) => {
-        setFiltreNiveau(selected);
-        console.log(selected);
-    };
-
-    const handleSemestreSelect = (selected: string) => {
-        setFiltreSemestre(selected);
-        console.log(selected);
-    };
-
-    const handleMatiereSelect = (selected: Matiere) => {
-        setFiltreMatiere(selected);
+    const handleMatiereSelect = (selected: Matiere | undefined) => {
+        // setFiltreMatiere(selected);
         setProgress(calculateProgress(selected));
     };
 
@@ -125,12 +126,53 @@ const Table = ({ data }: { data: Matiere }) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
-                            <CustomDropDown title="Matiere" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} />
+                            <CustomDropDown2<String>
+                                title="Année"
+                                items={['2023-2024', '2022-2023', '2021-2022']}
+                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                
+                                onSelect={handleAnneeSelect}
+                            />
+                            <CustomDropDown2<Section>
+                                title="Section"
+                                items={sections}
+                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(section: Section) => `${section.libelle}`}
+                                onSelect={handleSectionSelect}
+                            />
+                            <CustomDropDown2<Cycle>
+                                title="Cycle"
+                                items={cycles}
+                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                onSelect={handleCycleSelect}
+                            />
+                            <CustomDropDown2<Niveau>
+                                title="Niveau"
+                                items={niveaux}
+                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                onSelect={handleNiveauSelect}
+                            />
+                            <CustomDropDown2<String>
+                                title="Semestre"
+                                items={["1", "2"]}
+                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
+                            <CustomDropDown2<Matiere>
+                                title="Matière"
+                                items={matieres}
+                                defaultValue={matieres[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(matiere: Matiere) => `${matiere.libelle}`}
+                                onSelect={handleMatiereSelect}
+                            />
+                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
+                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
+                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} /> */}
+                            {/* <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
+                            {/* <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
+                            <CustomDropDown title="Matiere" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} /> */}
                         </div>
                     )}
                 </div>
@@ -139,12 +181,53 @@ const Table = ({ data }: { data: Matiere }) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
+                            <CustomDropDown2<String>
+                                title="Année"
+                                items={['2023-2024', '2022-2023', '2021-2022']}
+                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                
+                                onSelect={handleAnneeSelect}
+                            />
+                            <CustomDropDown2<Section>
+                                title="Section"
+                                items={sections}
+                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(section: Section) => `${section.libelle}`}
+                                onSelect={handleSectionSelect}
+                            />
+                            <CustomDropDown2<Cycle>
+                                title="Cycle"
+                                items={cycles}
+                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                onSelect={handleCycleSelect}
+                            />
+                            <CustomDropDown2<Niveau>
+                                title="Niveau"
+                                items={niveaux}
+                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                onSelect={handleNiveauSelect}
+                            />
+                            <CustomDropDown2<String>
+                                title="Semestre"
+                                items={["1", "2"]}
+                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
+                            <CustomDropDown2<Matiere>
+                                title="Matière"
+                                items={matieres}
+                                defaultValue={matieres[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(matiere: Matiere) => `${matiere.libelle}`}
+                                onSelect={handleMatiereSelect}
+                            />
+                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
                             <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
                             <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
                             <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
-                            <CustomDropDown title="Matière" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} />
+                            <CustomDropDown title="Matière" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} /> */}
                         </div>
                     </div>
                 </div>

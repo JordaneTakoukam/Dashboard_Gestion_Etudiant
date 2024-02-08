@@ -11,7 +11,7 @@ import { RootState } from "./../../_redux/store";
 import { config } from '../../config';
 import { formatRoleName } from '../../fonctions/fonction';
 import { BiLogOutCircle } from "react-icons/bi";
-import { IoSettingsOutline } from "react-icons/io5";
+// import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
 
 
@@ -118,7 +118,7 @@ const DropdownUser = () => {
 
         <ul className="flex flex-col  border-b border-stroke   dark:border-strokedark">
           <NavLink
-            to="/profile"
+            to="/parametres/profile"
             onClick={() => { setDropdownOpen(false) }}
             className="flex items-center gap-3.5 py-3 pt-3 px-5 text-sm font-medium duration-300 ease-in-out lg:text-base hover:bg-gray dark:hover:bg-black"
           >
@@ -130,7 +130,7 @@ const DropdownUser = () => {
           </NavLink>
 
 
-          <NavLink
+          {/* <NavLink
             to="/settings"
             onClick={() => { setDropdownOpen(false) }}
             className=" flex items-center gap-3.5 py-3 px-5 text-sm font-medium duration-300 ease-in-out  lg:text-base hover:bg-gray dark:hover:bg-black">
@@ -139,7 +139,7 @@ const DropdownUser = () => {
 
             </div>
             Paramètres
-          </NavLink>
+          </NavLink> */}
         </ul>
 
 

@@ -11,7 +11,6 @@ import { GiTeacher } from "react-icons/gi";
 import { GiLevelEndFlag } from "react-icons/gi";
 import { TbSchool } from "react-icons/tb";
 import { IoSettingsOutline } from "react-icons/io5";
-import { RxPerson } from "react-icons/rx";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -558,7 +557,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     }`}
                                             >
                                                 <ul className="mt-4 mb-3 flex flex-col gap-2.5 pl-6">
-                                                    {/* <li>
+                                                    <li>
                                                         <NavLink
                                                             to="/parametres/profile"
                                                             className={({ isActive }) =>
@@ -568,7 +567,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         >
                                                             Mon profile
                                                         </NavLink>
-                                                    </li> */}
+                                                    </li>
                                                     <li>
                                                         <NavLink
                                                             to="/parametres/admins"

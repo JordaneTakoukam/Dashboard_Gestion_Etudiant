@@ -44,7 +44,7 @@ const BodyTable = ({ data }: { data: Abscences[] }) => {
 
 
                 {/* total */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
                     <h5>{calculerDifferenceHeures(item.debutPeriode, item.finPeriode)}</h5>
                 </td>
             </tr>

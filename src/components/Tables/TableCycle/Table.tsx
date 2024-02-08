@@ -10,6 +10,8 @@ import BodyTable from "./BodyTable";
 import { Cycle } from "../../../pages/Admin/Cycles";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
+import { Section, sections } from "../../../pages/Admin/Sections";
+import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 
 
 interface TableCycleProps {
@@ -39,8 +41,8 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
     //     setFiltreAnnee(selected);
     //     console.log(selected)
     // };
-    const handleSectionSelect = (selected: string) => {
-        setFiltreSection(selected);
+    const handleSectionSelect = (selected: Section | undefined) => {
+        // setFiltreSection(selected);
         console.log(selected);
     };
 
@@ -92,8 +94,15 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
+                            <CustomDropDown2<Section>
+                                title="Section"
+                                items={sections}
+                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(section: Section) => `${section.libelle}`}
+                                onSelect={handleSectionSelect}
+                            />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
+                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} /> */}
                             {/* <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>
@@ -103,8 +112,15 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
+                            <CustomDropDown2<Section>
+                                title="Section"
+                                items={sections}
+                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(section: Section) => `${section.libelle}`}
+                                onSelect={handleSectionSelect}
+                            />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
+                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} /> */}
                             {/* <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>

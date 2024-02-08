@@ -13,6 +13,7 @@ import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
 import { Etudiant } from "../../../pages/Admin/ListeEtudiants";
+import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 
 export function nbTotal(data: Etudiant | Enseignant, semestre:number) {
     // Filtrer les abscences pour le semestre spécifié
@@ -63,12 +64,12 @@ const Table = ({ data, onEdit}:TableProps) => {
     const [formatToDownload, setFormatToDownload] = useState("");
   
 
-    const handleAnneeSelect = (selected: string) => {
-        setFiltreAnnee(selected);
+    const handleAnneeSelect = (selected: String | undefined) => {
+        // setFiltreAnnee(selected);
         console.log(selected)
     };
-    const handleSemestreSelect = (selected: string) => {
-        setFiltreSemestre(selected);
+    const handleSemestreSelect = (selected: String | undefined) => {
+        // setFiltreSemestre(selected);
         console.log(selected);
     };
     const handleDownloadSelect = (selected: string) => {
@@ -113,8 +114,22 @@ const Table = ({ data, onEdit}:TableProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
+                            <CustomDropDown2<String>
+                                title="Année"
+                                items={['2023-2024', '2022-2023', '2021-2022']}
+                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                
+                                onSelect={handleAnneeSelect}
+                            />
+                            <CustomDropDown2<String>
+                                title="Semestre"
+                                items={["1","2"]}
+                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                
+                                onSelect={handleSemestreSelect}
+                            />
+                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
+                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
                         </div>
                     )}
                 </div>
@@ -123,8 +138,22 @@ const Table = ({ data, onEdit}:TableProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
+                            <CustomDropDown2<String>
+                                title="Année"
+                                items={['2023-2024', '2022-2023', '2021-2022']}
+                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                
+                                onSelect={handleAnneeSelect}
+                            />
+                            <CustomDropDown2<String>
+                                title="Semestre"
+                                items={["1","2"]}
+                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                
+                                onSelect={handleSemestreSelect}
+                            />
+                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
+                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
                             
                         </div>
                     </div>

@@ -59,7 +59,7 @@ const coreRoutes = [
 
   // profil
   {
-    path: '/profile',
+    path: '/parametres/profile',
     title: 'Mon profil',
     component: MonProfil,
   },

@@ -74,7 +74,7 @@ function App() {
       setLoading(false);
 
       // on save en state le user connecter dans le state global de l'app
-      const currentUser: PropsUserState = userTest[0]; // 0=admin, 1=enseignant 2=delegué 3=etudiant
+      const currentUser: PropsUserState = userTest[1]; // 0=admin, 1=enseignant 2=delegué 3=etudiant
       dispatch(setUser(currentUser))
     }, 0);
     return () => clearTimeout(timeout);

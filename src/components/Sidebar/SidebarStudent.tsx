@@ -5,7 +5,7 @@ import { config } from '../../config';
 import { RxDashboard } from "react-icons/rx";
 import { PiStudentFill } from "react-icons/pi";
 import { FaRegCalendarTimes } from "react-icons/fa";
-import { IoSettingsOutline } from "react-icons/io5";
+// import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
@@ -270,7 +270,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             {/* Profil */}
                             <li>
                                 <NavLink
-                                    to="/profile"
+                                    to="/parametres/profile"
                                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/profile' ||
                                         pathname.includes('profile')) &&
                                         'bg-graydark dark:bg-meta-4 text-secondary'

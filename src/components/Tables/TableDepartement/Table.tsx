@@ -11,6 +11,7 @@ import { Departement, departements } from "../../../pages/Admin/Departements";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import { Region, regions } from "../../../pages/Admin/Regions";
+import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 
 
 interface TableDepartementProps {
@@ -44,8 +45,8 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
     //     setFiltreRegion(selected);
     //     console.log(selected);
     // };
-    const handleRegionSelect = (selected: Region) => {
-        setFiltreRegion(selected);
+    const handleRegionSelect = (selected: Region | undefined) => {
+        // setFiltreRegion(selected);
     };
 
     // const handleDepartementSelect = (selected: string) => {
@@ -96,8 +97,15 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
+                            <CustomDropDown2<Region>
+                                title="Région"
+                                items={regions}
+                                defaultValue={regions[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(region: Region) => `${region.libelle}`}
+                                onSelect={handleRegionSelect}
+                            />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            <CustomDropDown title="Région" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleRegionSelect} />
+                            {/* <CustomDropDown title="Région" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleRegionSelect} /> */}
                             {/* <CustomDropDown title="Departement" items={['Departement A', 'Departement B']} defaultValue="Departement A" onSelect={handleDepartementSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>
@@ -107,8 +115,15 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
+                        <CustomDropDown2<Region>
+                                title="Région"
+                                items={regions}
+                                defaultValue={regions[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(region: Region) => `${region.libelle}`}
+                                onSelect={handleRegionSelect}
+                            />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            <CustomDropDown title="Région" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleRegionSelect} />
+                            {/* <CustomDropDown title="Région" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleRegionSelect} /> */}
                             {/* <CustomDropDown title="Departement" items={['Departement A', 'Departement B']} defaultValue="Departement A" onSelect={handleDepartementSelect} />
                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>

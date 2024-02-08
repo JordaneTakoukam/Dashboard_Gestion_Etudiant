@@ -496,7 +496,6 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             AUTRES
                         </h3> */}
 
-                        <ul className="mb-2 flex flex-col gap-1.5">
                             {/* Profil */}
                             {/* <li>
                                 <NavLink
@@ -517,7 +516,6 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             {/* Profil */}
 
                             {/* Parametre */}
-                            <li>
                             <SidebarLinkGroup
                                 activeCondition={
                                     pathname === '/parametres' || pathname.includes('parametres')
@@ -674,7 +672,6 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                     );
                                 }}
                             </SidebarLinkGroup>
-                            </li>
                             {/* Parametre */}
 
                             <div className='w-full flex flex-col justify-center items-center -ml-4 mt-10 mb-5 text-body'>
@@ -691,7 +688,6 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </div>
 
 
-                        </ul>
                     </div>
                 </nav>
                 {/* <!-- Sidebar Menu --> */}

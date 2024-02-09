@@ -1,0 +1,82 @@
+import { PiStudentFill } from "react-icons/pi";
+import { GiTeacher } from "react-icons/gi";
+import { GiProgression } from "react-icons/gi";
+import { AiOutlineClockCircle } from "react-icons/ai";
+import AtomProgressBar from '@s-ui/react-atom-progress-bar';
+
+
+interface CardDashboardProps {
+    title: String,
+    value?: String,
+    id: Number,
+    progressionValue?: number,
+    additionalStyle?: String,
+}
+
+
+import { CurrentYearDate } from "./_CommonYear";
+
+
+
+const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: CardDashboardProps) => {
+    return (
+        <div className={`${id == 1 || id == 3 ?
+            'text-black bg-white'
+            : id == 2 ? ' bg-primary text-white'
+
+                : 'bg-orange text-meta-4'} relative rounded-sm border border-stroke  py-6 px-5 shadow-default dark:border-strokedark  w-full`}>
+            {/* icone position en haut a gauche */}
+            {
+                id != 4 && <div className="absolute top-0 right-0 mt-5 mr-2 z-10">
+                    <div className='flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 '>
+                        <div className="text-primary text-[25px]" >
+                            {
+
+                                id === 1 ?
+                                    <PiStudentFill />
+                                    : id === 2 ? <AiOutlineClockCircle />
+                                        : id === 3 ? <GiTeacher />
+                                            : <div></div>
+
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            {/* titre */}
+            <div className="flex justify-between h-[70px]">
+                <h3 className={`${additionalStyle} ${id === 4 ? 'mr-0' : 'mr-[42px]'} mt-0  text-[13px] xl:text-[14px] text-start  font-semibold`}>
+                    {title}
+                </h3>
+            </div>
+
+            {/* valeurss */}
+            <div className='flex justify-center'>
+                {
+                    progressionValue == null ?
+                        <h4 className={`text-[22px] font-bold ml-1 pb-[50px] lg:pb-[40px] `}>
+                            {value}
+                        </h4> :
+                        <div className={`${id == 4 ? 'text-black' : 'text-white'} text-[22px]  ml-1 pb-10 `}>
+                            <AtomProgressBar percentage={progressionValue} />
+
+                        </div>
+                }
+            </div>
+
+
+
+
+
+
+
+
+            {/* texte en absolute */}
+            <CurrentYearDate additionalStyle={`${id == 2 || id == 4 ? 'text-white' : id == 4 ? 'text-black' : id == 1 ? ' text-meta-5' : "text-meta-4"}`} />
+        </div>
+    );
+};
+
+export default CardDashboard;

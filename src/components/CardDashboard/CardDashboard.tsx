@@ -20,11 +20,11 @@ import { CurrentYearDate } from "./_CommonYear";
 
 const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: CardDashboardProps) => {
     return (
-        <div className={`${id == 1 || id == 3 ?
-            'text-black bg-white'
-            : id == 2 ? ' bg-primary text-white'
-
-                : 'bg-orange text-meta-4'} relative rounded-sm border border-stroke  py-6 px-5 shadow-default dark:border-strokedark  w-full`}>
+        <div className={`
+        
+        text-black bg-white
+        
+       relative rounded-sm border border-stroke  py-6 px-5 shadow-default dark:border-strokedark  w-full`}>
             {/* icone position en haut a gauche */}
             {
                 id != 4 && <div className="absolute top-0 right-0 mt-5 mr-2 z-10">
@@ -74,7 +74,7 @@ const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: 
 
 
             {/* texte en absolute */}
-            <CurrentYearDate additionalStyle={`${id == 2 || id == 4 ? 'text-white' : id == 4 ? 'text-black' : id == 1 ? ' text-meta-5' : "text-meta-4"}`} />
+            <CurrentYearDate  />
         </div>
     );
 };

@@ -15,10 +15,11 @@ import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import { Section, sections } from "../../../pages/Admin/Sections";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import Pagination from "../../Pagination/Pagination";
 
 interface TableEtudiantProps {
     data: Etudiant[];
-    onCreate:()=>void;
+    onCreate: () => void;
     onEdit: (etudiant: Etudiant) => void;
 }
 
@@ -43,7 +44,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
         // setFiltreAnnee(selected);
         console.log(selected)
     };
-    
+
     const handleSectionSelect = (selected: Section | undefined) => {
         // setFiltreSection(selected);
         console.log(selected);
@@ -53,7 +54,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
         // setFiltreCycle(selected);
         console.log(selected);
     };
-    
+
     const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
         // Logique à exécuter lorsque le niveau est sélectionné
         // console.log("Niveau sélectionné :", selectedNiveau);
@@ -66,24 +67,37 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
 
 
     // variable pour la pagination
-    //
-    const itemsPerPage = 10; // nombre delements maximum par page
+    const itemsPerPage = 3; // nombre delements maximum par page
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+    const count = data.length;
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+
+
+
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Nouvel étudiant"
-                    onClick={() => {onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
                 <InputSearch hintText="Rechercher un étudiant" onSubmit={() => { }} />
             </div>
@@ -102,7 +116,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                                 title="Année"
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<Section>
@@ -126,10 +140,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                                 displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
+
                         </div>
                     )}
                 </div>
@@ -142,7 +153,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                                 title="Année"
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<Section>
@@ -166,10 +177,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                                 displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
+
                         </div>
                     </div>
                 </div>
@@ -192,7 +200,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTableEtudiant data={data} onEdit={onEdit} />
+                            !pageIsLoading && <BodyTableEtudiant data={currentItems} onEdit={onEdit} />
                         }
 
 
@@ -203,8 +211,18 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
 
+                />
             </div>
 
             {/* bouton downlod Download */}

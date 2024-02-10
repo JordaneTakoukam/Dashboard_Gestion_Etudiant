@@ -1,5 +1,4 @@
 import { useDispatch } from "react-redux";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
@@ -10,6 +9,7 @@ import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { Section, sections } from "../../../pages/Admin/Sections";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
+import AtomProgressBar from '@s-ui/react-atom-progress-bar';
 
 
 const Table = ({ data }: { data: Matiere }) => {

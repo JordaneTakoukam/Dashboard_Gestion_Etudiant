@@ -20,6 +20,7 @@ import Categories from '../pages/Admin/Categories';
 import Regions from '../pages/Admin/Regions';
 import Departements from '../pages/Admin/Departements';
 import Communes from '../pages/Admin/Communes';
+import Chapitres from '../pages/Admin/Chapitres';
 
 
 
@@ -53,6 +54,11 @@ const coreRoutes = [
     path: '/subjects/subject-list',
     title: 'Liste des matières',
     component: ListeDesMatieres,
+  },
+  {
+    path: '/subjects/subject-list/chapitres',
+    title: 'Liste des chapitres de la matière',
+    component: Chapitres,
   },
   {
     path: '/subjects/progressions',

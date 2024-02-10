@@ -67,7 +67,7 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
 
 
     // variable pour la pagination
-    const itemsPerPage = 3; // nombre delements maximum par page
+    const itemsPerPage = 10; // nombre delements maximum par page
     const [currentPage, setCurrentPage] = useState<number>(1);
 
     const indexOfLastItem = currentPage * itemsPerPage;

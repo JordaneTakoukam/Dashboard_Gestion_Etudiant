@@ -22,9 +22,10 @@ interface TableMatiereProps {
     data: Matiere[];
     onCreate:()=>void;
     onEdit: (matiere : Matiere) => void;
+    onAddChap:(matiere : Matiere)=>void;
 }
 
-const Table = ({ data, onCreate, onEdit }: TableMatiereProps) => {
+const Table = ({ data, onCreate, onEdit, onAddChap }: TableMatiereProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -195,7 +196,7 @@ const Table = ({ data, onCreate, onEdit }: TableMatiereProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} onAddChap={onAddChap}/>
                         }
 
 

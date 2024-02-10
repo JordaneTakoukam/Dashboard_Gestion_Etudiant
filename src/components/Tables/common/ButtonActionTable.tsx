@@ -1,16 +1,20 @@
+import { useState } from "react";
+import { Matiere } from "../../../pages/Admin/ListeMatieres";
 
 interface ButtonCrudProps {
     onClickEdit?: () => void; //Editer un élément
     onClickDelete?: () => void; //Supprimer un élèment
     onClickAddHour?:()=>void; //Ajouter les heures d'absences
     onClickRemovHour?:()=>void; //Diminuer les erreurs d'absences
-    onClickAddInfoSub?:()=>void; //Ajouter des informations sur la matières (chapitres, compétences) ou voir les détails de la matière
-    border?: boolean;
+    onClickOpenChapitres?:()=>void;
+    border?: boolean;    
 }
 
-const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, onClickAddInfoSub, border  }: ButtonCrudProps) => {
+const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, onClickOpenChapitres, border}: ButtonCrudProps) => {
+
+    
     return (
-        <div className="flex items-center w-full justify-center">
+        <div className="flex items-center w-full justify-center relative">
             {/* Button Edit */}
             {onClickEdit && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
                 onClick={onClickEdit}>
@@ -34,6 +38,7 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRe
 
             {/* button Delete */}
             {onClickDelete && (<button className={`${border && 'border  border-gray'}   hover:bg-meta-1 flex text-sm gap-2 text-body hover:text-white  items-center py-4 px-5  dark:text-gray`} onClick={onClickDelete}>
+                
                 <svg
                     className="fill-current"
                     width="18"
@@ -97,25 +102,19 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRe
 
             </button>)}
             {/* ! Edit SVG Path */}
-            {/* Plus d'info sur la matière*/}
-            {onClickAddInfoSub && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
-                onClick={onClickAddInfoSub}>
-                <svg
-                    className="feather feather-plus"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    xmlns="http://www.w3.org/2000/svg"
-                    >
-                    <path d="M12 5v14M5 12h14" />
-                </svg>
-            </button>)}
+            {onClickOpenChapitres && (
+                <button className={`${border && 'border  border-gray'} dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5 dark:text-gray`} onClick={onClickOpenChapitres}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 22h14v-2H4V22z" />
+                        <path d="M14 18v2H4v-2h10z" />
+                        <path d="M16 14l-4 4l-4-4" />
+                        <path d="M10 8v6l4-2l4 2V8" />
+                    </svg>
+                </button>
+            )}
+
             
-        </div >
+        </div>        
     );
 };
 

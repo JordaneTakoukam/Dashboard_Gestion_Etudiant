@@ -162,6 +162,10 @@ span.flatpickr-weekday,
   color: red;
 }
 
+.flex-item {
+  margin-top: 3px;
+}
+
 .radio-label-space{
   margin-right: 2%;
 }

@@ -5,6 +5,8 @@ import { Niveau } from "./Niveaux";
 import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
 import { Enseignant } from "./ListeEnseignants";
+import Chapitres, { Chapitre } from "./Chapitres";
+import { Link, useNavigate } from "react-router-dom";
 
 export interface Matiere {
     id? : number;
@@ -19,53 +21,37 @@ export interface Matiere {
     chapitres? : Chapitre[];
 }
 
-export interface Objectif {
-    id?:number;
-    libelle: string;
-    etat: number;
-}
 
-export interface Chapitre {
-    id?:number;
-    code : string;
-    libelle: string;
-    objectifs : Objectif[];
-    typesEnseignement:TypeEnseignement[];
-    competences?:string;
-}
-
-export interface TypeEnseignement{
-    id?:number;
-    code:string;
-    libelle:string;
-    volumeHoraire: number;
-}
 
 
 const ListeDesMatieres = () => {
     const [selectedMatiere, setSelectedMatiere] = useState<Matiere | null>(null);
+    const navigate = useNavigate();
     const handleEditMatiere = (matiere : Matiere) => {
         setSelectedMatiere(matiere);
     }
 
     const handleAddMatiere = () => {
+        console.log("is call");
         setSelectedMatiere(null);
     }
+
+    const handleOpenChapitres = (matiere: Matiere) => {
+        setSelectedMatiere(matiere);
+    };
     return (
         <>
-            <Breadcrumb pageName="Liste des matières" />
-            <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere}/>
+            {!selectedMatiere && <Breadcrumb pageName="Liste des matières" />}
+            {!selectedMatiere && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres}/>}
             
             <FormCreateUpdate matiere={selectedMatiere}/>
             <FormDelete matiere={selectedMatiere}/>
+            {selectedMatiere && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere}/>}
         </>
     );
 };
 
 export default ListeDesMatieres;
-export const cm:TypeEnseignement={id:1, code:"CM", libelle:"Cours magistral", volumeHoraire:0};
-export const td:TypeEnseignement={id:2, code:"TD", libelle:"Travaux dirigés", volumeHoraire:0};
-export const tp:TypeEnseignement={id:3, code:"TP", libelle:"Travaux pratiques", volumeHoraire:0};
 
 export const enseignants: Enseignant[] = [
     {

@@ -1,12 +1,45 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalChapitre, setShowModalDelete } from "../../../_redux/features/setting_slice"
 import { Matiere } from "../../../pages/Admin/ListeMatieres"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
-import DropDownMatiere from "../../Header/DropDownMatiere"
+import { useState } from "react"
+import { NavLink, useNavigate } from "react-router-dom"
 
-const BodyTable = ({ data, onEdit }: { data: Matiere[], onEdit:(matiere:Matiere)=>void }) => {
+interface BodyMatiereProps {
+    data: Matiere[];
+    onEdit: (matiere : Matiere) => void;
+    onAddChap:(matiere : Matiere)=>void;
+}
+
+const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
+    const [selectedMatiere, setSelectedMatiere] = useState<Matiere>();
+    const navigate = useNavigate();
+    const handleAddChapitre = (matiere: Matiere) => {
+        onAddChap(matiere); // Appeler la fonction onAddChap avec la matière sélectionnée
+        navigate("save/chapitres"); // Rediriger vers l'interface d'ajout de chapitres
+    };
+    const onMoreActionsClick = (actionName: string) => {
+        switch (actionName) {
+            case 'Ajouter un chapitre':
+                if(selectedMatiere){
+                    onAddChap(selectedMatiere);
+                }
+                dispatch(setShowModalChapitre())
+                break;
+            case 'Ajouter un objectif':
+                // Logic to add an objective                    
+                
+                
+                break;
+            case 'Ajouter une compétence':
+                // Logic to add a competency
+                break;
+            default:
+                console.error(`Unknown action: ${actionName}`);
+        }
+    };
 
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -85,10 +118,10 @@ const BodyTable = ({ data, onEdit }: { data: Matiere[], onEdit:(matiere:Matiere)
                             onEdit(item);
                             dispatch(setShowModalDelete())
                         }:undefined}
-                        onClickAddInfoSub={() => {
-                            
-                        }}
+                        
+                        onClickOpenChapitres={() => onAddChap(item)} 
                     />
+                    
                 </td>
             </tr>
         ))}

@@ -7,6 +7,7 @@ interface SettingState {
         update: boolean,
         delete: boolean,
         open : boolean,
+        openChapitre : boolean,
     };
 }
 
@@ -15,7 +16,8 @@ const initialState: SettingState = {
         create: false,
         update: false,
         delete: false,  
-        open : false,     
+        open : false,   
+        openChapitre : false,  
     }
 };
 
@@ -38,14 +40,17 @@ export const settingSlice = createSlice({
 
         setShowModal: (state)=>{
             state.showModal.open = !state.showModal.open;
+        },
+        
+        setShowModalChapitre: (state)=>{
+            state.showModal.openChapitre = !state.showModal.openChapitre;
         }
-
 
     },
 });
 
 export const {
-    setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal,
+    setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre
 } = settingSlice.actions;
 
 export default settingSlice.reducer;

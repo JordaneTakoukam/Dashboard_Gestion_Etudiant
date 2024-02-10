@@ -1,10 +1,11 @@
 import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableEmploieDeTemps/Table";
-import { Matiere, TypeEnseignement, cm, matieres, td, tp } from "../Admin/ListeMatieres";
+import { Matiere,  matieres} from "../Admin/ListeMatieres";
 import {niveau } from "../Admin/Niveaux";
 import { SalleCours, sallesCours } from "../Admin/SallesDeCours";
 import FormCreateUpdate from "../../components/Modals/ModalEmploiTemps/FormCreateUpdate";
+import { TypeEnseignement, cm, tp, td } from "../Admin/Chapitres";
 
 export interface PeriodeCours{
     id?:number;

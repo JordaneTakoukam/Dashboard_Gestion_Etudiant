@@ -24,7 +24,7 @@ export interface TypeEnseignement{
     id?:number;
     code:string;
     libelle:string;
-    volumeHoraire: number;
+    volumeHoraire?: number;
 }
 
 export interface Competence{

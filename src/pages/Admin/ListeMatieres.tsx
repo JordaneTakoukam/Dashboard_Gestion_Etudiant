@@ -6,7 +6,6 @@ import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpd
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
 import { Enseignant } from "./ListeEnseignants";
 import Chapitres, { Chapitre } from "./Chapitres";
-import { Link, useNavigate } from "react-router-dom";
 
 export interface Matiere {
     id? : number;
@@ -26,27 +25,30 @@ export interface Matiere {
 
 const ListeDesMatieres = () => {
     const [selectedMatiere, setSelectedMatiere] = useState<Matiere | null>(null);
-    const navigate = useNavigate();
+    const [openChapitres, setOpenChapitre]=useState(false);
     const handleEditMatiere = (matiere : Matiere) => {
         setSelectedMatiere(matiere);
+        setOpenChapitre(false);
     }
 
     const handleAddMatiere = () => {
         console.log("is call");
         setSelectedMatiere(null);
+        setOpenChapitre(false);
     }
 
     const handleOpenChapitres = (matiere: Matiere) => {
         setSelectedMatiere(matiere);
+        setOpenChapitre(true);
     };
     return (
         <>
-            {!selectedMatiere && <Breadcrumb pageName="Liste des matières" />}
-            {!selectedMatiere && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres}/>}
+            {!openChapitres && <Breadcrumb pageName="Liste des matières" />}
+            {!openChapitres && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres}/>}
             
-            <FormCreateUpdate matiere={selectedMatiere}/>
-            <FormDelete matiere={selectedMatiere}/>
-            {selectedMatiere && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere}/>}
+            {!openChapitres && <FormCreateUpdate matiere={selectedMatiere}/>}
+            {!openChapitres && <FormDelete matiere={selectedMatiere}/>}
+            {openChapitres && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere}/>}
         </>
     );
 };

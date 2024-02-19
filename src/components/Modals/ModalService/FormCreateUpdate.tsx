@@ -74,7 +74,7 @@ function ModalCreateUpdate({ service }: { service : Service | null }) {
                 title={modalTitle} // Utilisation du titre dynamique
                 isModalOpen={isModalOpen}
                 isDelete={false}
-                closeModal={closeModal}
+                closeModal={()=>{}}
                 handleConfirm={handleCreateUpdate}
             >
                 

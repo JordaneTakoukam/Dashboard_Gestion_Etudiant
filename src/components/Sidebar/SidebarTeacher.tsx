@@ -304,9 +304,9 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                     {/* <!-- Autres --> */}
                     <div>
-                        {/* <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
+                        <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
                             AUTRES
-                        </h3> */}
+                        </h3>
 
                         <ul className="mb-2 flex flex-col gap-1.5">
                             {/* Profil */}

@@ -492,28 +492,11 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                     {/* <!-- Autres --> */}
                     <div>
-                        {/* <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
+                        <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
                             AUTRES
-                        </h3> */}
+                        </h3>
 
-                            {/* Profil */}
-                            {/* <li>
-                                <NavLink
-                                    to="/profile"
-                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/profile' ||
-                                        pathname.includes('profile')) &&
-                                        'bg-graydark dark:bg-meta-4 text-secondary'
-                                        }`}
-                                >
-                                    <div className='-ml-.75 w-6'>
-                                        <div className='text-[22px]'>
-                                            <RxPerson />
-                                        </div>
-                                    </div>
-                                    Mon Profil
-                                </NavLink>
-                            </li> */}
-                            {/* Profil */}
+                       
 
                             {/* Parametre */}
                             <SidebarLinkGroup

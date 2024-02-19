@@ -122,7 +122,9 @@ function App() {
                       path={path}
                       element={
                         <Suspense fallback={<LoaderCircular />}>
-                          <Component />
+                          <Component matiereSelectionnee={null} returnWithMatiere={function (): void {
+                            throw new Error('Function not implemented.');
+                          } } />
                         </Suspense>
                       }
                     />

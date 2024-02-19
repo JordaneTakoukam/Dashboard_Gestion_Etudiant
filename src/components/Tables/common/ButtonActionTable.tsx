@@ -7,10 +7,11 @@ interface ButtonCrudProps {
     onClickAddHour?:()=>void; //Ajouter les heures d'absences
     onClickRemovHour?:()=>void; //Diminuer les erreurs d'absences
     onClickOpenChapitres?:()=>void;
+    onClickSondage?:()=>void;
     border?: boolean;    
 }
 
-const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, onClickOpenChapitres, border}: ButtonCrudProps) => {
+const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRemovHour, onClickOpenChapitres, onClickSondage, border}: ButtonCrudProps) => {
 
     
     return (
@@ -104,6 +105,16 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRe
             {/* ! Edit SVG Path */}
             {onClickOpenChapitres && (
                 <button className={`${border && 'border  border-gray'} dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5 dark:text-gray`} onClick={onClickOpenChapitres}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 22h14v-2H4V22z" />
+                        <path d="M14 18v2H4v-2h10z" />
+                        <path d="M16 14l-4 4l-4-4" />
+                        <path d="M10 8v6l4-2l4 2V8" />
+                    </svg>
+                </button>
+            )}
+            {onClickSondage && (
+                <button className={`${border && 'border  border-gray'} dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5 dark:text-gray`} onClick={onClickSondage}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M4 22h14v-2H4V22z" />
                         <path d="M14 18v2H4v-2h10z" />

@@ -9,7 +9,7 @@ const HeaderTable = () => {
                     #
                 </th>
 
-                {/* matricule */}
+                {/* code */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
                     Code
                 </th>
@@ -18,21 +18,16 @@ const HeaderTable = () => {
                 <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
                     Libelle
                 </th>
+
+                {/* code */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black ">
-                    CM
+                    Numéro du groupe
                 </th>
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    TD
+
+                {/* libelle */}
+                <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
+                    Sujet des questions
                 </th>
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    TP
-                </th>
-                {/* <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    Objectifs
-                </th>
-                <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    Compétences
-                </th> */}
         
                 {/* Actions  */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">

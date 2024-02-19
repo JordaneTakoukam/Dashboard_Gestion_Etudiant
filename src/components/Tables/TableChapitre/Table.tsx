@@ -14,7 +14,7 @@ interface TableChapitreProps {
     data?: Chapitre[];
     onCreate:()=>void;
     onEdit: (chapitre:Chapitre) => void;
-    matiere : Matiere | null;
+    matiere?: Matiere | null;
 }
 
 

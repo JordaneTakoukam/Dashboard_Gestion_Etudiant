@@ -21,6 +21,10 @@ import Regions from '../pages/Admin/Regions';
 import Departements from '../pages/Admin/Departements';
 import Communes from '../pages/Admin/Communes';
 import Chapitres from '../pages/Admin/Chapitres';
+import Rubriques from '../pages/Admin/Rubriques';
+import GroupeQuestions from '../pages/Admin/GroupeQuestions';
+import Questions from '../pages/Admin/Questions';
+import ListeDesSondages from '../pages/Admin/Sondages';
 
 
 
@@ -55,11 +59,7 @@ const coreRoutes = [
     title: 'Liste des matières',
     component: ListeDesMatieres,
   },
-  {
-    path: '/subjects/subject-list/chapitres',
-    title: 'Liste des chapitres de la matière',
-    component: Chapitres,
-  },
+  
   {
     path: '/subjects/progressions',
     title: 'Progréssion',
@@ -71,6 +71,28 @@ const coreRoutes = [
     path: '/classrooms',
     title: 'classrooms',
     component: SallesDeCours,
+  },
+
+  //sondages
+  {
+    path:'/sondages/rubriques',
+    title:'Rubriques',
+    component:Rubriques
+  },
+  {
+    path:'/sondages/groupe_de_question',
+    title:'Groupe de questions',
+    component:GroupeQuestions
+  },
+  {
+    path:'/sondages/questions',
+    title:'Questions',
+    component:Questions
+  },
+  {
+    path:'/sondages/liste_sondage',
+    title:'Liste des sondages',
+    component:ListeDesSondages
   },
 
   // structuraction academique

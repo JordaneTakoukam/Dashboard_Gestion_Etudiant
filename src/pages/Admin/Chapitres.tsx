@@ -34,8 +34,8 @@ export interface Competence{
 }
 
 interface ChapitresProps {
-    matiereSelectionnee: Matiere | null; 
-    returnWithMatiere:()=>void;
+    matiereSelectionnee?: Matiere | null; 
+    returnWithMatiere?:()=>void;
 }
 
 const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) => {

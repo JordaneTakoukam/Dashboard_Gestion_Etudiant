@@ -1,8 +1,8 @@
 import { PiStudentFill } from "react-icons/pi";
 import { GiTeacher } from "react-icons/gi";
-import { GiProgression } from "react-icons/gi";
 import { AiOutlineClockCircle } from "react-icons/ai";
-import AtomProgressBar from '@s-ui/react-atom-progress-bar';
+import { CurrentYearDate } from "./_CommonYear";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 
 interface CardDashboardProps {
@@ -14,7 +14,7 @@ interface CardDashboardProps {
 }
 
 
-import { CurrentYearDate } from "./_CommonYear";
+
 
 
 
@@ -59,11 +59,10 @@ const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: 
                         <h4 className={`text-[22px] font-bold ml-1 pb-[50px] lg:pb-[40px] `}>
                             {value}
                         </h4> :
-                        <div className={`${id == 4 ? 'text-black' : 'text-white'} text-[22px]  ml-1 pb-10 `}>
-                            <AtomProgressBar percentage={progressionValue} />
+                        <div className="w-full mt-2">
+                            <ProgressBar completed={progressionValue}  />
 
-                        </div>
-                }
+                        </div>}
             </div>
 
 
@@ -74,7 +73,7 @@ const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: 
 
 
             {/* texte en absolute */}
-            <CurrentYearDate  />
+            <CurrentYearDate />
         </div>
     );
 };

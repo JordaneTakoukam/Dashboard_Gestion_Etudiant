@@ -17,7 +17,7 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
-                <Dialog open={isModalOpen} as="div" className="relative z-999999" onClose={closeModal}>
+                <Dialog open={isModalOpen} as="div" className="relative z-999999" onClose={()=>{}}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"

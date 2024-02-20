@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Matiere, Chapitre, Objectif } from "../../../pages/Admin/ListeMatieres";
+import { Matiere } from "../../../pages/Admin/ListeMatieres";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
+import { Chapitre, Objectif } from "../../../pages/Admin/Chapitres";
 
-const BodyTable = ({ data }: { data: Matiere }) => {
+const BodyTable = ({ data }: { data: Matiere | undefined }) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
-    const [matiereData, setMatiereData] = useState<Matiere>(data); // État de la matière
+    const [matiereData, setMatiereData] = useState<Matiere | undefined>(data); // État de la matière
     useEffect(() => {
         setMatiereData(data);
     }, [data]);
 
     const handleCheckboxChange = (chapitreIndex: number, objectifIndex: number) => {
         if (roles.admin === userRole || roles.teacher === userRole ) {
-            if(matiereData.chapitres){
+            if(matiereData && matiereData.chapitres){
                 const updatedChapitres = matiereData.chapitres.map((chapitre, index) => {
                     if (index === chapitreIndex) {
                         const updatedObjectifs = chapitre.objectifs.map((objectif, idx) => {
@@ -38,7 +39,7 @@ const BodyTable = ({ data }: { data: Matiere }) => {
 
     return (
         <tbody>
-            {matiereData.chapitres && matiereData.chapitres.map((chapitre: Chapitre, indexChapitre: number) => (
+            {matiereData && matiereData.chapitres && matiereData.chapitres.map((chapitre: Chapitre, indexChapitre: number) => (
                 <React.Fragment key={indexChapitre + 1}>
                     {chapitre.objectifs.map((objectif: Objectif, indexObjectif: number) => (
                         <tr key={`${indexChapitre}-${indexObjectif}`} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">

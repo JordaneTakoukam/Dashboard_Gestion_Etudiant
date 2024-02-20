@@ -25,6 +25,7 @@ import Rubriques from '../pages/Admin/Rubriques';
 import GroupeQuestions from '../pages/Admin/GroupeQuestions';
 import Questions from '../pages/Admin/Questions';
 import ListeDesSondages from '../pages/Admin/Sondages';
+import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
 
 
 
@@ -137,7 +138,8 @@ const coreRoutes = [
   {
     path: '/parametres/admins',
     title: 'Liste des administrateurs',
-    component: Administration,
+    // component: Administration,
+    component: ListeDesAdministrateur,
   },
 
   {

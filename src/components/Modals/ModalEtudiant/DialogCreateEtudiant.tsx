@@ -208,7 +208,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant : Etudiant | null }) {
     const handleCreateEtudiant = () => {
         if (!nom || !genre || !email || !section || !cycle || !niveau) {
             if (!nom) {
-                setErrorNom("Le champ Nom est obligatoire.");
+                setErrorNom("Le champ nom est obligatoire.");
             }
             if (!genre) {
                 setErrorGenre("La sélection du genre est obligatoire.");

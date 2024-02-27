@@ -13,10 +13,12 @@ import { formatRoleName } from '../../fonctions/fonction';
 import { BiLogOutCircle } from "react-icons/bi";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
+import { useTranslation } from 'react-i18next';
 
 
 const DropdownUser = () => {
   // const pageIsLoading = useSelector((state: RootState) => state.setting.pageIsLoading);
+  const { t } = useTranslation();
   const pageIsLoading = false;
 
   const roles = config.roles;
@@ -126,7 +128,7 @@ const DropdownUser = () => {
               <RxPerson />
 
             </div>
-            Mon profil
+            {t('header.profil')}
           </NavLink>
 
 
@@ -152,7 +154,7 @@ const DropdownUser = () => {
             <BiLogOutCircle />
 
           </div>
-          Se déconnecter
+          {t('header.deconnexion')}
         </button>
 
 

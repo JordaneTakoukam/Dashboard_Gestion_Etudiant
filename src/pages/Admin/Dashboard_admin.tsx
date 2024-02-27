@@ -3,21 +3,23 @@ import CardDashboard from "../../components/CardDashboard/CardDashboard";
 import { CardEvenement } from "../../components/CardDashboard/CardEvenement";
 import { ChartEtudiantNiveau } from "../../components/Chart/ChartEtudiantParNiveau";
 import { ChartNombreEtudiant } from "../../components/Chart/ChartAbscenceEtudiant";
+import { useTranslation } from "react-i18next";
 
 
 const DashBoardAmin = () => {
     const style = 'text-[13px] xl:text-[14px]';
+    const { t } = useTranslation();
     return (
         <>
-            <Breadcrumb pageName="Tableau de bord" isDashboard={true} />
+            <Breadcrumb pageName={t('tableau_de_bord.title')} isDashboard={true} />
 
             {/*  */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5">
-                <CardDashboard title={"Nombres total d'étudiants"} value={'600'} id={1} additionalStyle={style} />
-                <CardDashboard title={"Abscences total des étudiants"} value={'100H'} id={2} additionalStyle={style} />
-                <CardDashboard title={"Nombres total d'enseignants"} value={'35'} id={3} additionalStyle={style} />
-                <CardDashboard title={"Abscences total des enseignants"} value={'100H'} id={2} additionalStyle={style} />
-                <CardDashboard title={"Progression globales des enseignants"} id={4} progressionValue={40}  />
+                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={'600'} id={1} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={'100H'} id={2} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={'35'} id={3} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.absences_enseignants')} value={'100H'} id={2} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={40}  />
 
             </div>
 

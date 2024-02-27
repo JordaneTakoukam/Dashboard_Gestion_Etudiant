@@ -2,6 +2,7 @@ import { ApexOptions } from 'apexcharts';
 import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import LoadingTable from '../Tables/common/LoadingTable';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -19,7 +20,7 @@ export const ChartNombreEtudiant: React.FC = () => {
     const pageIsLoading = false;
     const listNiveau = ['1ère année', '2ème année', '3ème année', '4ème année', '5ème année'];
     const listHeureAbscenceEtudiant = [40, 105, 15, 55, 20];
-
+    const { t } = useTranslation();
 
     const options: ApexOptions = {
         colors: ['#D2691E', '#80CAEE'],
@@ -100,7 +101,7 @@ export const ChartNombreEtudiant: React.FC = () => {
             <div className="mb-4 justify-between gap-4 sm:flex">
                 <div>
                     <h4 className="text-md xl:text-[18px]  font-semibold text-black dark:text-white">
-                        Nombres d'heures d'abscences par niveau
+                        {t('tableau_de_bord.nombre_absence_niveau')}
                     </h4>
                 </div>
 

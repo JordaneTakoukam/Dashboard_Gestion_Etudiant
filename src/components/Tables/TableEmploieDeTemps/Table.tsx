@@ -176,12 +176,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     return (
         <div>
-            <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+            {roles.admin === userRole && <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title="Créer une période de cours"
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-            </div>
+            </div>}
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">

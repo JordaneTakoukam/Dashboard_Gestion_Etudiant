@@ -14,6 +14,7 @@ import { FaRegCopyright } from "react-icons/fa6";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../_redux/store';
 import { GiTeacher } from "react-icons/gi";
+import { useTranslation } from 'react-i18next';
 
 
 interface SidebarProps {
@@ -24,7 +25,7 @@ interface SidebarProps {
 const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const location = useLocation();
     const { pathname } = location;
-
+    const { t } = useTranslation();
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
 
@@ -106,7 +107,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <nav className="mt-0 py-4 px-4 lg:mt- lg:px-6">
                     {/* <!-- Menu Group --> */}
                     <h3 className="mb-2 ml-3 text-sm font-semibold text-bodydark2">
-                        MENU
+                        {t('menu.menu')}
                     </h3>
                     <div>
                         <ul className="mb-6 flex flex-col gap-1.5">
@@ -124,7 +125,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <RxDashboard />
                                         </div>
                                     </div>
-                                    Tableau De Bord
+                                    {t('menu.tableau_de_bord')}
                                 </NavLink>
                             </li>
                             {/* TABLEAU DE BORD */}
@@ -145,7 +146,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     <PiStudentFill />
                                                 </div>
                                             </div>
-                                            Disciplines étudiants
+                                            {t('menu.discipline_etudiant')}
                                         </NavLink>
                                     </li>
                                 )
@@ -165,7 +166,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     <GiTeacher />
                                                 </div>
                                             </div>
-                                            Disciplines enseignants
+                                            {t('menu.discipline_enseignant')}
                                         </NavLink>
                                     </li>
                                 )
@@ -187,7 +188,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <FaRegCalendarTimes />
                                         </div>
                                     </div>
-                                    Abscences
+                                    {t('menu.absences')}
                                 </NavLink>
                             </li>
                             {/* Abscences */}
@@ -208,7 +209,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <LuBookMarked />
                                         </div>
                                     </div>
-                                    Matières
+                                    {t('menu.matieres')}
                                 </NavLink>
                             </li>
                             {/* Matieres enseignants */}
@@ -229,7 +230,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <AiOutlineSchedule />
                                         </div>
                                     </div>
-                                    Emploi de temps
+                                    {t('menu.emploi')}
                                 </NavLink>
                             </li>
                             {/* EMPLOI DE TEMPS */}
@@ -250,7 +251,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <FaCalendarAlt />
                                         </div>
                                     </div>
-                                    Calendrier académique
+                                    {t('menu.calendrier')}
                                 </NavLink>
                             </li>
                             {/*  calendrier academique*/}
@@ -264,7 +265,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <div>
                        
                         <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
-                            AUTRES
+                            {t('menu.autres')}
                         </h3>
 
                         <ul className="mb-2 flex flex-col gap-1.5">
@@ -282,7 +283,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <RxPerson />
                                         </div>
                                     </div>
-                                    Mon Profil
+                                    {t('menu.profil')}
                                 </NavLink>
                             </li>
                             {/* Profil */}

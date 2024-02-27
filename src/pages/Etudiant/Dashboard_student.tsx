@@ -14,7 +14,7 @@ const DashBoardStudent = () => {
                 {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5"> */}
                 <div className="flex flex-col gap-y-3">
                     <CardDashboard title={"Nombres total d'heures d'abscences"} value={'22H'} id={1} />
-                    <CardDashboard title={"Progression globales des enseignants"} id={4} progressionValue={10} />
+                    <CardDashboard title={"Progression globales des enseignants"} id={4} progressionValue={40} />
                     <CardAlertRecente alertList={[]} />
 
                 </div>

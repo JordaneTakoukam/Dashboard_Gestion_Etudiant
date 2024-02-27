@@ -1,7 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAction, createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
 interface SettingState {
     [x: string]: any;
+    language: string;
     showModal: {
         create: boolean,
         update: boolean,
@@ -9,10 +11,12 @@ interface SettingState {
         open : boolean,
         openChapitre : boolean,
         toDoSondage : boolean,
+
     };
 }
 
 const initialState: SettingState = {
+    language: 'fr',
     showModal: {
         create: false,
         update: false,
@@ -50,13 +54,22 @@ export const settingSlice = createSlice({
         
         setShowModalChapitre: (state)=>{
             state.showModal.openChapitre = !state.showModal.openChapitre;
-        }
+        },
+
+        setShowLanguage: (state, action: PayloadAction<string>) => {
+            state.language = action.payload;
+        },
 
     },
 });
 
 export const {
-    setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
+    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
 } = settingSlice.actions;
 
+// export const changeLanguage = createAction<string>('setting/changeLanguage');
+
+// export const selectLanguage = (state: RootState) => state.setting.language;
+
 export default settingSlice.reducer;
+

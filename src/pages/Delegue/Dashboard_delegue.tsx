@@ -15,7 +15,7 @@ const DashboardDelegate = () => {
                 <CardDashboard title={"Abscences total des étudiants"} value={'100H'} id={2} />
                 <CardDashboard title={"Nombres total d'enseignants"} value={'35'} id={3} />
                 <CardDashboard title={"Abscences total des enseignants"} value={'100H'} id={2} />
-                <CardDashboard title={"Progression globales des enseignants"} id={4} progressionValue={10} />
+                <CardDashboard title={"Progression globales des enseignants"} id={4} progressionValue={40} />
 
             </div>
 

@@ -15,6 +15,7 @@ import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
 import { FaCalendarAlt } from "react-icons/fa";
 import { FaRegCopyright } from "react-icons/fa6";
+import { useTranslation } from 'react-i18next';
 
 
 interface SidebarProps {
@@ -25,7 +26,7 @@ interface SidebarProps {
 const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const location = useLocation();
     const { pathname } = location;
-
+    const { t } = useTranslation();
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
 
@@ -102,7 +103,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <nav className="mt-0 py-4 px-4 lg:mt- lg:px-6">
                     {/* <!-- Menu Group --> */}
                     <h3 className="mb-2 ml-3 text-sm font-semibold text-bodydark2">
-                        MENU
+                        {t('menu.menu')}
                     </h3>
                     <div>
                         <ul className="mb-6 flex flex-col gap-1.5">
@@ -120,7 +121,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <RxDashboard />
                                         </div>
                                     </div>
-                                    Tableau De Bord
+                                    {t('menu.tableau_de_bord')}
                                 </NavLink>
                             </li>
                             {/* TABLEAU DE BORD */}
@@ -153,7 +154,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     </div>
                                                 </div>
 
-                                                Étudiants
+                                                {t('menu.etudiants')}
                                                 <div className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'}`}>
                                                     <IoIosArrowDown />
                                                 </div>
@@ -172,7 +173,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Listes des étudiants
+                                                            {t('sub_menu.liste_etudiant')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -183,7 +184,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Disciplines
+                                                            {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -224,7 +225,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <GiTeacher />
                                                     </div>
                                                 </div>
-                                                Enseignants
+                                                {t('menu.enseignants')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -245,7 +246,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Listes des enseignants
+                                                            {t('sub_menu.liste_enseignant')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -256,7 +257,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Disciplines
+                                                            {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -296,7 +297,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <LuBookMarked />
                                                     </div>
                                                 </div>
-                                                Matières
+                                                {t('menu.matieres')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -317,7 +318,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Liste des matières
+                                                            {t('sub_menu.liste_matiere')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -328,7 +329,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Progréssion
+                                                            {t('sub_menu.progression')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -355,12 +356,12 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <TbSchool />
                                         </div>
                                     </div>
-                                    Salles de cours
+                                    {t('menu.salles')}
                                 </NavLink>
                             </li>
                             {/* SALLES DE COURS */}
                             {/*Sondage*/}
-                            <SidebarLinkGroup
+                            {/* <SidebarLinkGroup
                                 activeCondition={
                                     pathname === '/sondages' || pathname.includes('sondages')
                                 }
@@ -445,11 +446,11 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     </li>
                                                 </ul>
                                             </div>
-                                            {/* <!-- Dropdown Menu End --> */}
+                                            <!-- Dropdown Menu End -->
                                         </React.Fragment>
                                     );
                                 }}
-                            </SidebarLinkGroup>
+                            </SidebarLinkGroup> */}
                             {/*SONDAGE */}
 
                             {/* Niveaux  academique : list group */}
@@ -479,7 +480,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <GiLevelEndFlag />
                                                     </div>
                                                 </div>
-                                                Niveaux Académiques
+                                                {t('menu.niveaux')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -500,7 +501,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Sections
+                                                            {t('sub_menu.sections')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -511,7 +512,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Cycles
+                                                            {t('sub_menu.cycles')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -522,7 +523,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Niveaux
+                                                            {t('sub_menu.niveaux')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -550,7 +551,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <AiOutlineSchedule />
                                         </div>
                                     </div>
-                                    Emploi de temps
+                                    {t('menu.emploi')}
                                 </NavLink>
                             </li>
                             {/* EMPLOI DE TEMPS */}
@@ -571,7 +572,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <FaCalendarAlt />
                                         </div>
                                     </div>
-                                    Calendrier académique
+                                    {t('menu.calendrier')}
                                 </NavLink>
                             </li>
                             {/* calen */}
@@ -584,7 +585,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     {/* <!-- Autres --> */}
                     <div>
                         <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
-                            AUTRES
+                            {t('menu.autres')}
                         </h3>
 
                        
@@ -616,7 +617,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <IoSettingsOutline />
                                                     </div>
                                                 </div>
-                                                Paramètres
+                                                {t('menu.parametres')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -637,7 +638,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Mon profile
+                                                            {t('sub_menu.profil')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -648,10 +649,10 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Administrateurs
+                                                            {t('sub_menu.administrateurs')}
                                                         </NavLink>
                                                     </li>
-                                                    <li>
+                                                    {/* <li>
                                                         <NavLink
                                                             to="/parametres/current-year-semester"
                                                             className={({ isActive }) =>
@@ -661,7 +662,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         >
                                                             Année et semestre courant
                                                         </NavLink>
-                                                    </li>
+                                                    </li> */}
                                                     <li>
                                                         <NavLink
                                                             to="/parametres/services"
@@ -670,7 +671,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Services
+                                                            {t('sub_menu.services')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -681,7 +682,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Fonctions
+                                                            {t('sub_menu.fonctions')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -692,7 +693,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Grades
+                                                            {t('sub_menu.grades')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -703,7 +704,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Catégories
+                                                            {t('sub_menu.categories')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -714,7 +715,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Régions
+                                                            {t('sub_menu.regions')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -725,7 +726,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Départements
+                                                            {t('sub_menu.departements')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -736,7 +737,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Communes
+                                                            {t('sub_menu.communes')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>

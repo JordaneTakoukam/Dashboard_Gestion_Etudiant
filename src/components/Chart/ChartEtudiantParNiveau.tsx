@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import LoadingTable from '../Tables/common/LoadingTable';
 import { Etudiant } from '../../pages/Admin/ListeEtudiants';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -20,6 +21,7 @@ export const ChartEtudiantNiveau: React.FC = () => {
     const pageIsLoading = false;
     const listNiveau = ['1ère année', '2ème année', '3ème année', '4ème année', '5ème année'];
     const listNbreEtudiant = [30, 35, 20, 25, 30];
+    const { t } = useTranslation();
 
 
     const options: ApexOptions = {
@@ -101,7 +103,7 @@ export const ChartEtudiantNiveau: React.FC = () => {
             <div className="mb-4 justify-between gap-4 sm:flex">
                 <div>
                     <h4 className="text-md xl:text-[18px]  font-semibold text-black dark:text-white">
-                        Nombres d'étudiants par niveau
+                        {t('tableau_de_bord.nombre_etudiant_niveau')}
                     </h4>
                 </div>
 

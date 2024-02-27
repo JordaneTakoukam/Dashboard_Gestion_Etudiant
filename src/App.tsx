@@ -18,6 +18,11 @@ import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import enTranslations from './langages/en.json';
+import frTranslations from './langages/fr.json';
+// import { selectLanguage } from './_redux/features/setting_slice.js';
 
 
 function App() {
@@ -83,6 +88,25 @@ function App() {
 
 
   const userRole = useSelector((state: RootState) => state.user.role);
+  
+  // const options = {
+  //   resources: {
+  //     en: {
+  //       translation: enTranslations, // Contenu de votre fichier en.json
+  //     },
+  //     fr: {
+  //       translation: frTranslations, // Contenu de votre fichier fr.json
+  //     },
+  //   },
+  //   lng: useSelector(selectLanguage), // Langue par défaut (peut être modifiée dynamiquement)
+  //   interpolation: {
+  //     escapeValue: false, // Optionnel : configuration des interpolations
+  //   },
+  // };
+
+  // i18next
+  //   .use(initReactI18next)
+  //   .init(options);
 
 
 
@@ -122,9 +146,7 @@ function App() {
                       path={path}
                       element={
                         <Suspense fallback={<LoaderCircular />}>
-                          <Component matiereSelectionnee={null} returnWithMatiere={function (): void {
-                            throw new Error('Function not implemented.');
-                          } } />
+                          <Component  />
                         </Suspense>
                       }
                     />

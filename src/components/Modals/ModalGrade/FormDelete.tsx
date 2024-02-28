@@ -3,10 +3,12 @@ import { setShowModalDelete } from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { Grade } from '../../../pages/Admin/Grades';
+import { useTranslation } from 'react-i18next';
 
 
 
 function ModalDelete({ grade }: { grade : Grade|null}) {
+    const {t}=useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -21,13 +23,13 @@ function ModalDelete({ grade }: { grade : Grade|null}) {
     return (
         <>
             <CustomDialogModal
-                title="Supprimer un grade"
+                title={t('form_delete.supprimer')}
                 isModalOpen={isModalOpen}
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>Supprimez le grade : {grade?grade.libelle:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.grade')} : {grade?grade.libelle:""}</h1>
             </CustomDialogModal>
         </>
     );

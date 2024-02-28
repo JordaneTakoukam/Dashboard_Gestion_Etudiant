@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import DarkModeSwitcher from './DarkModeSwitcher';
 import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
-import {useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../_redux/store';
 // import { changeLanguage } from '../../_redux/features/setting_slice';
 import i18next from '../../langages/i18n';
 import { setShowLanguage } from '../../_redux/features/setting_slice';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -15,8 +15,7 @@ const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
-  const { t } = useTranslation();
-
+  const {t}=useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
   const dispatch = useDispatch();
   const language = useSelector((state: RootState) => state.setting.language);

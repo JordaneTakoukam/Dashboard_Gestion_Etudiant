@@ -25,7 +25,7 @@ const Breadcrumb = ({ pageName, isDashboard = false, isMatiere=false, returnWith
 
           {isMatiere && (
             <li>
-              <Link to={"/subjects/subject-list"} onClick={() =>returnWithMatiere && returnWithMatiere()}>{pageName} /</Link>
+              <Link to={"/subjects/subject-list"} onClick={() =>returnWithMatiere && returnWithMatiere()}>{t('sub_menu.liste_matiere')} /</Link>
             </li>
           )}
 

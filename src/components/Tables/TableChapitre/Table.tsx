@@ -9,6 +9,7 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Chapitre } from "../../../pages/Admin/Chapitres";
 import { Matiere } from "../../../pages/Admin/ListeMatieres";
+import { useTranslation } from "react-i18next";
 
 interface TableChapitreProps {
     data?: Chapitre[];
@@ -19,15 +20,16 @@ interface TableChapitreProps {
 
 
 const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
-
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const itemsPerPage = 10; // nombre delements maximum par page
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
+
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -38,10 +40,10 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouveau chapitre"
+                    title={t('boutton.nouveau_chapitre')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher un chapitre" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.chapitre'))} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

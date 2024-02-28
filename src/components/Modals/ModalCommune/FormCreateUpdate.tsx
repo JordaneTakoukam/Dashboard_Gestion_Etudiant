@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react';
 import { Commune } from '../../../pages/Admin/Communes';
 import { Region, regions } from '../../../pages/Admin/Regions';
 import { Departement, departements } from '../../../pages/Admin/Departements';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
@@ -28,14 +29,14 @@ function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
 
     useEffect(() => {
         if (commune) {
-            setModalTitle("Mettre à jour les informations de la commune");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.commune'));
             setCode(commune.code);
             setLibelle(commune.libelle);
             setRegion(commune.departement.region);
             setDepartement(commune.departement);
             
         } else {
-            setModalTitle("Enregistrer une nouvelle commune");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.commune'));
             setCode("");
             setLibelle("");
             setRegion(undefined);
@@ -50,7 +51,7 @@ function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
             setErrorDepartement("");
             setIsFirstRender(false);
         }
-    }, [commune, isFirstRender]);
+    }, [commune, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorCode(""); 
@@ -84,16 +85,16 @@ function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
     const handleCreateUpdate = () => {
         if (!code || !libelle || !region || !departement) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
             if (!region) {
-                setErrorRegion("Le champ région est obligatoire.");
+                setErrorRegion(t('error.region'));
             }
             if (!departement) {
-                setErrorDepartement("Le champ département est obligatoire.");
+                setErrorDepartement(t('error.departement'));
             }
 
 
@@ -113,7 +114,7 @@ function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -121,7 +122,7 @@ function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -129,25 +130,25 @@ function ModalCreateUpdate({ commune }: { commune : Commune | null }) {
                     onChange={(e) => {setLibelle(e.target.value); setErrorLibelle("")}}
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-                <label>Région</label><label className="text-red-500"> *</label>
+                <label>{t('label.region')}</label><label className="text-red-500"> *</label>
                 <select
                     value={region ? region.libelle : 'Sélectionnez une region'}
                     onChange={handleRegionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une région</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
                     {regions.map(region => (
                         <option key={region.id} value={region.libelle}>{region.libelle}</option>
                     ))}
                 </select>
                 {errorRegion && <p className="text-red-500">{errorRegion}</p>}
-                <label>Département</label><label className="text-red-500"> *</label>
+                <label>{t('label.departement')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={departement ? departement.libelle : 'Sélectionnez un département'}
+                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}
                     onChange={handleDepartementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un département</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}</option>
                     {departements.map(departement => (
                         <option key={departement.id} value={departement.libelle}>{departement.libelle}</option>
                     ))}

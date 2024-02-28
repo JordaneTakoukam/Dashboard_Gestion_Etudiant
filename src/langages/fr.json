@@ -31,6 +31,7 @@
       "liste_enseignant":"Liste des enseignants",
       "discipline":"Discipline",
       "liste_matiere":"Liste des matières",
+      "chapitres":"Chapitres",
       "progression":"Progression",
       "sections":"Sections",
       "cycles":"Cycles",
@@ -69,9 +70,10 @@
       "nom":"Nom",
       "prenom":"Prénom",
       "genre":"genre",
+      "date":"date",
       "date_naiss":"Date de naissance",
       "lieu_naiss":"Lieu de naissance",
-      "contatc":"Contact",
+      "contact":"Contact",
       "email":"E-mail",
       "mot_de_passe":"Mot de passe",
       "grade":"Grade",
@@ -90,7 +92,7 @@
       "code":"Code",
       "libelle":"Libelle",
       "nom_chose":"Nom",
-      "action":"Actions",
+      "actions":"Actions",
       "nombre_place":"Nombre de place",
       "periode":"Période",
       "personnel":"Personnel",
@@ -114,14 +116,17 @@
       "femme":"Femme",
       "objectifs":"Objectifs",
       "objectif":"Objectif",
+      "objectif_min":"objectif",
       "competences":"Compétences",
       "competence":"Compétence",
+      "competence_min":"compétence",
       "info_pers":"Informations personnelles",
       "photo_profil":"Photo de profil",
       "editer_photo":"Editez votre photo de profil",
       "telecharger_photo":"Cliquez ici pour télécharger ou faites glisser et déposez",
       "nombre_chapitre":"Nombre de chapitre",
-      "volume_horaire":"Volume horaire"
+      "volume_horaire":"Volume horaire",
+      "tableau_vide":"Aucune donnée enregistrée durant cette période."
     },
 
     "recherche":{
@@ -175,7 +180,9 @@
       "telecharger_format":"Télécharger au format",
       "ajouter_type":"Ajouter un type d'enseignement",
       "ajouter_obj":"Ajouter un objectif",
-      "ajouter_comp":"Ajouter une compétence"
+      "ajouter_comp":"Ajouter une compétence",
+      "oui":"Oui",
+      "non":"Non"
     },
 
     "select_par_defaut":{
@@ -199,7 +206,7 @@
       "type_ens":"un type d'enseignement"
     },
 
-    "fitrer":{
+    "filtre":{
       "filtrer":"Filtrer",
       "etudiant":"Filtrer la liste des étudiants suivant :",
       "enseignant":"Filtrer la liste des enseignants suivant:",
@@ -222,7 +229,7 @@
       "chapitre":"un nouveau chapitre",
       "salle":"une nouvelle salle",
       "section":"une nouvelle section",
-      "cylce":"un nouveau cycle",
+      "cycle":"un nouveau cycle",
       "niveau":"un nouveau niveau",
       "grade":"un nouveau grade",
       "categorie":"une nouvelle catégorie",
@@ -237,6 +244,7 @@
 
     "form_update":{
       "absence":"Ajouter une absence : ",
+      "signaler":"Signaler mon abscence",
       "enregistrer":"Mettre à jour les informations ",
       "etudiant":"de l'étudiant",
       "enseignant":"de l'enseignant",
@@ -269,7 +277,7 @@
       "chapitre":"du chapitre",
       "salle":"de la salle",
       "section":"de la section",
-      "cylce":"du cycle",
+      "cycle":"du cycle",
       "niveau":"du niveau",
       "grade":"du grade",
       "categorie":"de la catégorie",
@@ -280,6 +288,22 @@
       "commune":"de la commune",
       "periode":"de la période",
       "evenement":"de l'évènement"
+    },
+
+    "error":{
+      "code":"Le champ code est obligatoire.",
+      "libelle":"Le champ libellé est obligatoire.",
+      "type_ens":"Au moins un type d'enseignement doit être défini.",
+      "objectif":"Au moins un objectif doit être défini.",
+      "competence":"Au moins une compétence doit être défini.",
+      "region":"Le champ région est obligatoire.",
+      "departement":"Le champ département est obligatoire.",
+      "section":"Le champ section est obligatoire.",
+      "semestre":"Le champ semestre est obligatoire.",
+      "date":"Le champ date est obligatoire.",
+      "heure_debut":"Le champ heure de début est obligatoire.",
+      "heure_fin":"Le champ heure de fin est obligatoire.",
+      "debut_sup_fin_periode":"L'heure de fin ne peut pas être plus petite que l'heure de début"
     }
   }
   

@@ -8,6 +8,7 @@ import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Categorie } from "../../../pages/Admin/Categories";
+import { useTranslation } from "react-i18next";
 
 interface TableCategorieProps {
     data: Categorie[];
@@ -19,6 +20,7 @@ interface TableCategorieProps {
 const Table = ({ data, onCreate, onEdit }: TableCategorieProps) => {
     const pageIsLoading = false;
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     // const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -75,10 +77,10 @@ const Table = ({ data, onCreate, onEdit }: TableCategorieProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouvelle catégorie"
+                    title={t('boutton.nouvelle_categorie')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher une catégorie" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.categorie')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

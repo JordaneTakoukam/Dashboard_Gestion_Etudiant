@@ -18,9 +18,8 @@ import { useTranslation } from 'react-i18next';
 
 const DropdownUser = () => {
   // const pageIsLoading = useSelector((state: RootState) => state.setting.pageIsLoading);
-  const { t } = useTranslation();
   const pageIsLoading = false;
-
+  const {t}=useTranslation();
   const roles = config.roles;
 
   const userState = useSelector((state: RootState) => state.user);

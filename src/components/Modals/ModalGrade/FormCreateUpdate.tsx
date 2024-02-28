@@ -4,9 +4,11 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Grade } from '../../../pages/Admin/Grades';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
+    const {t}=useTranslation();
 
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
@@ -23,12 +25,12 @@ function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
 
     useEffect(() => {
         if (grade) {
-            setModalTitle("Mettre à jour les informations du grade");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.grade'));
             setCode(grade.code);
             setLibelle(grade.libelle);
             
         } else {
-            setModalTitle("Enregistrer un nouveau grade");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.grade'));
             setCode("");
             setLibelle("");
         }
@@ -39,7 +41,7 @@ function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
             setErrorLibelle("");
             setIsFirstRender(false);
         }
-    }, [grade, isFirstRender]);
+    }, [grade, isFirstRender,t]);
 
     const closeModal = () => { 
         setErrorCode(""); 
@@ -56,10 +58,10 @@ function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
     const handleCreateUpdate = () => {
         if (!code || !libelle) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
 
             return;
@@ -78,7 +80,7 @@ function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -86,7 +88,7 @@ function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -94,7 +96,7 @@ function ModalCreateUpdate({ grade }: { grade : Grade | null }) {
                     onChange={(e) =>{setLibelle(e.target.value); setErrorLibelle("");} }
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-                            </CustomDialogModal>
+            </CustomDialogModal>
 
         </>
     );

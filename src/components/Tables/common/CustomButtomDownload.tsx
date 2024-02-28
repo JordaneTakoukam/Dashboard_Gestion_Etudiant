@@ -1,5 +1,6 @@
 import { IoMdDownload } from "react-icons/io";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
+import { useTranslation } from "react-i18next";
 
 interface ButtonDownloadPropos {
     onClick: (selectedItem: string) => void; // Ajouter la fonction de rappel onSelect
@@ -9,6 +10,7 @@ interface ButtonDownloadPropos {
 }
 
 export default function CustomButtonDownload({ onClick, items, defaultValue }: ButtonDownloadPropos) {
+    const {t}=useTranslation();
     return (
         <div className="w-full  flex justify-center items-center gap-x-2">
             {/* 1 */}
@@ -16,7 +18,7 @@ export default function CustomButtonDownload({ onClick, items, defaultValue }: B
                 <div>
                     <IoMdDownload />
                 </div>
-                <h1 className="text-[12px] lg:text-sm">Télécharger au format</h1>
+                <h1 className="text-[12px] lg:text-sm">{t('boutton.telecharger_format')}</h1>
             </div>
 
             {/* 2 */}

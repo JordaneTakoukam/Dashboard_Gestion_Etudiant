@@ -4,6 +4,7 @@ import Table from "../../components/Tables/TableCycle/Table";
 import { Section } from "./Sections";
 import FormCreateUpdate from "../../components/Modals/ModalCycle/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCycle/FormDelete";
+import { useTranslation } from "react-i18next";
 
 export interface Cycle{
     id?:number,
@@ -13,6 +14,7 @@ export interface Cycle{
 }
 
 const Cycles = () => {
+    const {t}=useTranslation();
     const [selectedCycle, setSelectedCycle] = useState<Cycle | null>(null);
     const handleEditCycle = (cycle: Cycle) => {
         setSelectedCycle(cycle);
@@ -23,7 +25,7 @@ const Cycles = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Cycles" />
+            <Breadcrumb pageName={t('sub_menu.cycles')} />
             <Table data={cycles} onCreate={handleAddCycle} onEdit={handleEditCycle}/>
 
             <FormCreateUpdate cycle={selectedCycle}/>

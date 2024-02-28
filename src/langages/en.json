@@ -31,6 +31,7 @@
     "liste_enseignant": "Teacher List",
     "discipline": "Discipline",
     "liste_matiere": "Subject List",
+    "chapitres":"Chapters",
     "progression": "Progression",
     "sections": "Sections",
     "cycles": "Cycles",
@@ -65,13 +66,14 @@
   },
 
   "label": {
-    "matricule": "Registration Number",
-    "nom": "Last Name",
-    "prenom": "First Name",
+    "matricule": "Registration N°",
+    "nom": "First Name",
+    "prenom": "Last Name",
     "genre": "Gender",
+    "date":"date",
     "date_naiss": "Date of Birth",
     "lieu_naiss": "Place of Birth",
-    "contatc": "Contact",
+    "contact": "Contact",
     "email": "Email",
     "mot_de_passe": "Password",
     "grade": "Grade",
@@ -90,7 +92,7 @@
     "code": "Code",
     "libelle": "Label",
     "nom_chose": "Name",
-    "action": "Actions",
+    "actions": "Actions",
     "nombre_place": "Number of Seats",
     "periode": "Period",
     "personnel": "Personnel",
@@ -114,35 +116,38 @@
     "femme": "Female",
     "objectifs": "Objectives",
     "objectif": "Objective",
+    "objectif_min": "objective",
     "competences": "Competencies",
     "competence": "Competence",
+    "competence_min": "competence",
     "info_pers": "Personal Information",
     "photo_profil": "Profile Picture",
     "editer_photo": "Edit your profile picture",
     "telecharger_photo": "Click here to upload or drag and drop",
     "nombre_chapitre": "Number of Chapters",
-    "volume_horaire": "Hourly Volume"
+    "volume_horaire": "Hourly Volume",
+    "tableau_vide":"No data recorded during this period."
   },
 
   "recherche": {
-    "rechercher": "Search",
-    "etudiant": "for a student",
-    "enseignant": "for a teacher",
-    "matiere": "for a subject",
-    "chapitre": "for a chapter",
-    "salle_cour": "for a classroom",
-    "section": "for a section",
-    "cycle": "for a cycle",
-    "niveau": "for a level",
-    "evenement": "for an event",
-    "administrateur": "for an administrator",
-    "grade": "for a grade",
-    "service": "for a service",
-    "categorie": "for a category",
-    "fonction": "for a function",
-    "region": "for a region",
-    "departement": "for a department",
-    "commune": "for a commune"
+    "rechercher": "Search ",
+    "etudiant": "a student",
+    "enseignant": "a teacher",
+    "matiere": "a subject",
+    "chapitre": "a chapter",
+    "salle_cour": "a classroom",
+    "section": "a section",
+    "cycle": "a cycle",
+    "niveau": "a level",
+    "evenement": "an event",
+    "administrateur": "an administrator",
+    "grade": "a grade",
+    "service": "a service",
+    "categorie": "a category",
+    "fonction": "a function",
+    "region": "a region",
+    "departement": "a department",
+    "commune": "a commune"
   },
 
   "boutton": {
@@ -174,12 +179,14 @@
     "nouvelle_commune": "New Commune",
     "telecharger_format": "Download in Format",
     "ajouter_type": "Add a Teaching Type",
-    "ajouter_obj": "Add an Objective",
-    "ajouter_comp": "Add a Competency"
+    "ajouter_obj": "Add an objective",
+    "ajouter_comp": "Add a competency",
+    "oui":"Yes",
+    "non":"No"
   },
 
   "select_par_defaut": {
-    "selectionnez": "Select",
+    "selectionnez": "Select ",
     "section": "a section",
     "cycle": "a cycle",
     "niveau": "a level",
@@ -199,7 +206,7 @@
     "type_ens": "a type of teaching"
   },
 
-  "fitrer": {
+  "filtre": {
     "filtrer": "Filter",
     "etudiant": "Filter the list of students by:",
     "enseignant": "Filter the list of teachers by:",
@@ -214,7 +221,7 @@
   },
 
   "form_save": {
-    "enregistrer": "Save",
+    "enregistrer": "Save ",
     "etudiant": "a new student",
     "enseignant": "a new teacher",
     "administrateur": "a new administrator",
@@ -222,7 +229,7 @@
     "chapitre": "a new chapter",
     "salle": "a new classroom",
     "section": "a new section",
-    "cylce": "a new cycle",
+    "cycle": "a new cycle",
     "niveau": "a new level",
     "grade": "a new grade",
     "categorie": "a new category",
@@ -236,8 +243,9 @@
   },
 
   "form_update": {
-    "absence": "Add an absence:",
-    "enregistrer": "Update Information",
+    "absence": "Add an absence : ",
+    "signaler":"Report my abscence",
+    "enregistrer": "Update Information ",
     "etudiant": "of the student",
     "enseignant": "of the teacher",
     "administrateur": "of the administrator",
@@ -260,8 +268,8 @@
 
   "form_delete": {
     "supprimer": "Delete",
-    "suppression": "Deletion",
-    "absence": "Delete an absence:",
+    "suppression": "Deletion ",
+    "absence": "Delete an absence : ",
     "etudiant": "of the student",
     "enseignant": "of the teacher",
     "administrateur": "of the administrator",
@@ -269,7 +277,7 @@
     "chapitre": "of the chapter",
     "salle": "of the classroom",
     "section": "of the section",
-    "cylce": "of the cycle",
+    "cycle": "of the cycle",
     "niveau": "of the level",
     "grade": "of the grade",
     "categorie": "of the category",

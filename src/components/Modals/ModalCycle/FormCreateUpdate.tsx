@@ -5,10 +5,12 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Cycle } from '../../../pages/Admin/Cycles';
 import { Section, sections } from '../../../pages/Admin/Sections';
+import { useTranslation } from 'react-i18next';
+
 
 
 function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
@@ -25,13 +27,13 @@ function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
 
     useEffect(() => {
         if (cycle) {
-            setModalTitle("Mettre à jour les informations du cycle");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.cycle'));
             setCode(cycle.code);
             setLibelle(cycle.libelle);
             setSection(cycle.section);
             
         } else {
-            setModalTitle("Enregistrer un nouveau cycle");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.cycle'));
             setCode("");
             setLibelle("");
             setSection(undefined);
@@ -44,7 +46,7 @@ function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
             setErrorSection("");
             setIsFirstRender(false);
         }
-    }, [cycle, isFirstRender]);
+    }, [cycle, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorCode(""); 
@@ -69,13 +71,13 @@ function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
     const handleCreateUpdate = () => {
         if (!code || !libelle || !section) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
             if (!section) {
-                setErrorSection("Le champ section est obligatoire.");
+                setErrorSection(t('error.section'));
             }
 
 
@@ -95,7 +97,7 @@ function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -103,7 +105,7 @@ function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -111,13 +113,13 @@ function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
                     onChange={(e) => {setLibelle(e.target.value); setErrorLibelle("")}}
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-                <label>Section</label><label className="text-red-500"> *</label>
+                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={section ? section.libelle : 'Sélectionnez une section'}
+                    value={section ? section.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}
                     onChange={handleSectionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une section</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}</option>
                     {sections.map(section => (
                         <option key={section.id} value={section.libelle}>{section.libelle}</option>
                     ))}

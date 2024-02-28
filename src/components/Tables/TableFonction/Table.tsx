@@ -8,6 +8,7 @@ import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Fonction } from "../../../pages/Admin/Fonctions";
+import { useTranslation } from "react-i18next";
 
 interface TableFonctionProps {
     data: Fonction[];
@@ -17,6 +18,7 @@ interface TableFonctionProps {
 
 
 const Table = ({ data, onCreate, onEdit }: TableFonctionProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -75,10 +77,10 @@ const Table = ({ data, onCreate, onEdit }: TableFonctionProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouvelle fonction"
+                    title={t('boutton.nouvelle_fonction')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher une fonction" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.fonction')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

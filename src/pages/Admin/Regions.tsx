@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableRegion/Table";
 import FormCreateUpdate from "../../components/Modals/ModalRegion/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalRegion/FormDelete";
+import { useTranslation } from "react-i18next";
 
 export interface Region{
     id?:number;
@@ -11,6 +12,7 @@ export interface Region{
 }
 
 const Regions = () => {
+    const {t}=useTranslation();
     const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
     const handleEditRegion = (region : Region) => {
         setSelectedRegion(region);
@@ -21,7 +23,7 @@ const Regions = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Regions" />
+            <Breadcrumb pageName={t('sub_menu.regions')} />
             <Table data={regions} onCreate={handleAddRegion} onEdit={handleEditRegion}/>
 
             <FormCreateUpdate region={selectedRegion}/>

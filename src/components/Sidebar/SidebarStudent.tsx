@@ -23,11 +23,12 @@ interface SidebarProps {
 }
 
 const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+    const {t}=useTranslation();
     const location = useLocation();
     const { pathname } = location;
-    const { t } = useTranslation();
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
+
 
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
     const [sidebarExpanded] = useState(

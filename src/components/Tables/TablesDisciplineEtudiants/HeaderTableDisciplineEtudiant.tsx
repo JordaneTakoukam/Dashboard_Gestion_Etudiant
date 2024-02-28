@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next"
 
 const HeaderTableDisciplineEtudiant = () => {
+    const {t}=useTranslation();
     return (
 
         <thead className=''>
@@ -11,39 +13,39 @@ const HeaderTableDisciplineEtudiant = () => {
                 
                 {/* matricule */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    Matricule
+                    {t('label.matricule')}
                 </th>
 
                 {/* nom */}
                 <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
-                    Nom
+                    {t('label.nom')}
                 </th>
                 
 
                 {/* prenom */}
                 <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
-                    Prénom
+                    {t('label.prenom')}
                 </th>
 
                 {/* Adresse  */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    E-mail
+                    {t('label.email')}
                 </th>
 
                 {/* Contacts */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    Contacts
+                    {t('label.contact')}
                 </th>
 
                 {/* Absences(H) */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
-                    Absences(H)
+                    {t('label.absences')}(H)
                 </th>
 
 
                 {/* Actions  */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
-                    Actions
+                    {t('label.actions')}
                 </th>
             </tr>
         </thead>

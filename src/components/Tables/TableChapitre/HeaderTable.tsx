@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 
 const HeaderTable = () => {
+    const {t}=useTranslation();
     return (
 
         <thead className=''>
@@ -11,12 +13,12 @@ const HeaderTable = () => {
 
                 {/* matricule */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
-                    Code
+                    {t('label.code')}
                 </th>
 
                 {/* libelle */}
                 <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
-                    Libelle
+                    {t('label.libelle')}
                 </th>
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black ">
                     CM
@@ -36,7 +38,7 @@ const HeaderTable = () => {
         
                 {/* Actions  */}
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
-                    Actions
+                    {t('label.actions')}
                 </th>
             </tr>
         </thead>

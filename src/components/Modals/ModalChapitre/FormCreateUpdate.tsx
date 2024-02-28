@@ -4,10 +4,12 @@ import { RootState } from '../../../_redux/store';
 import { useEffect, useState } from 'react';
 import { Chapitre, Competence, Objectif, TypeEnseignement, cm, typesEnseignement } from '../../../pages/Admin/Chapitres';
 import CustomDialogModal from '../CustomDialogModal';
+import { useTranslation } from 'react-i18next';
 
 
 
 function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
@@ -35,7 +37,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
 
     useEffect(() => {
         if (chapitre) {
-            setModalTitle("Mettre à jour les informations sur le chapitre");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.chapitre'));
             setCode(chapitre.code);
             setLibelle(chapitre.libelle);
             setTypesEnseignementState(chapitre.typesEnseignement || [cm]);
@@ -43,7 +45,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
             setCompetences(chapitre.competences || [competence]);
         
         }else{
-            setModalTitle("Enregistrer un nouveau chapitre");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.chapitre'));
             setCode("");
             setLibelle("");
             setTypesEnseignementState([cm]);
@@ -62,7 +64,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
             setObjectifs([objectif]);
             setCompetences([competence]);
         }
-    }, [chapitre,  isFirstRender]);
+    }, [chapitre,  isFirstRender, t]);
 
     const closeModal = () => {
         setErrorCode("");
@@ -130,21 +132,21 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
         if (!code || !libelle ||  !typesEnseignementState[0].volumeHoraire 
         || !objectifs[0].libelle || !competences[0].libelle) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
             if(!typesEnseignementState[0].volumeHoraire){
-                setErrorTypesEnseignement("Au moins un type d'enseignement doit être défini.");
+                setErrorTypesEnseignement(t('error.type_ens'));
             }
             
             if(!objectifs[0].libelle){
-                setErrorObjectif("Au moins un objectif doit être défini.");
+                setErrorObjectif(t('error.objectif'));
             }
 
             if(!competences[0].libelle){
-                setErrorCompetence("Au moins une compétence doit être défini.");
+                setErrorCompetence(t('error.competence'));
             }
 
             return;
@@ -162,7 +164,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -170,7 +172,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
                     onChange={(e) => { setCode(e.target.value); setErrorCode("") }}
                 />
                 {errorCode && <p className="text-red-500">{errorCode}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -179,7 +181,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
                 <div>
-                    <h3>Types d'enseignement : <label className="text-red-500"> *</label></h3>
+                    <h3>{t('label.type_ens')}<label className="text-red-500"> *</label></h3>
                     {typesEnseignementState.map((type, index) => (
                         <div key={index} className="flex items-center flex-item">
                             <select
@@ -198,14 +200,14 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
                             <input
                                 className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 type="number"
-                                placeholder="Volume horaire"
+                                placeholder={t('label.volume_horaire')}
                                 value={type.volumeHoraire}
                                 onChange={(e) => {handleTypeEnseignementChange(index, { ...type, volumeHoraire: +e.target.value }); setErrorTypesEnseignement("")}}
                             />
                             
                             {index !== 0 && ( // Ne pas afficher le bouton de suppression pour le premier type
                                 <button type="button" onClick={() => handleRemoveTypeEnseignement(index)}>
-                                    Supprimer
+                                    {t('boutton.supprimer')}
                                 </button>
                             )}
                         </div>
@@ -213,58 +215,58 @@ function ModalCreateUpdate({ chapitre }: { chapitre: Chapitre | null }) {
                     {errorTypesEnseignement && <p className="text-red-500">{errorTypesEnseignement}</p>}
                     {typesEnseignementState.length < typesEnseignement.length && ( // Afficher le bouton d'ajout si tous les types n'ont pas été ajoutés
                         <button type="button" onClick={handleAddTypeEnseignement}>
-                            Ajouter un type d'enseignement
+                            {t('boutton.ajouter_type')}
                         </button>
                     )}
                 </div>
 
                 <div>
-                    <h3>Objectifs : <label className="text-red-500"> *</label></h3>
+                    <h3>{t('label.objectifs')} <label className="text-red-500"> *</label></h3>
                     {objectifs.map((objectif, index) => (
                         <div key={index} className="flex items-center flex-item">
                             <input
                                 className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 type="text"
-                                placeholder={`Objectif ${index + 1}`}
+                                placeholder={`${t('label.objectif')} ${index + 1}`}
                                 value={objectif.libelle}
                                 onChange={(e) => {handleObjectifChange(index, {...objectif, libelle : e.target.value}); setErrorObjectif("")}}
                             />
                             
                             {index !== 0 && (
                                 <button type="button" onClick={() => handleRemoveObjectif(index)}>
-                                    Supprimer
+                                    {t('boutton.supprimer')}
                                 </button>
                             )}
                         </div>
                     ))}
                     {errorObjectif && <p className="text-red-500">{errorObjectif}</p>}
                     <button type="button" onClick={handleAddObjectif}>
-                        Ajouter un objectif
+                        {t('boutton.ajouter_obj')}
                     </button>
                 </div>
 
                 <div>
-                    <h3>Compétences : <label className="text-red-500"> *</label></h3>
+                    <h3>{t('label.competences')} <label className="text-red-500"> *</label></h3>
                     {competences.map((competence, index) => (
                         <div key={index} className="flex items-center flex-item">
                             <input
                                 className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 type="text"
-                                placeholder={`Compétence ${index + 1}`}
+                                placeholder={`${t('label.competence')} ${index + 1}`}
                                 value={competence.libelle}
                                 onChange={(e) => {handleCompetenceChange(index, {...competence, libelle : e.target.value}); setErrorCompetence("")}}
                             />
                             
                             {index !== 0 && (
                                 <button type="button" onClick={() => handleRemoveCompetence(index)}>
-                                    Supprimer
+                                    {t('boutton.supprimer')}
                                 </button>
                             )}
                         </div>
                     ))}
                     {errorCompetence && <p className="text-red-500">{errorCompetence}</p>}
                     <button type="button" onClick={handleAddCompetence}>
-                        Ajouter une compétence
+                        {t('boutton.ajouter_comp')}
                     </button>
                 </div>
             </CustomDialogModal>

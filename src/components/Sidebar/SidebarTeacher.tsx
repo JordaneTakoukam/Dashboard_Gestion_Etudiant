@@ -23,9 +23,9 @@ interface SidebarProps {
 }
 
 const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+    const {t}=useTranslation();
     const location = useLocation();
     const { pathname } = location;
-    const { t } = useTranslation();
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
 

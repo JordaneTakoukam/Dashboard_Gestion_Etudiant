@@ -8,6 +8,7 @@ import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Region } from "../../../pages/Admin/Regions";
+import { useTranslation } from "react-i18next";
 
 interface TableRegionProps {
     data: Region[];
@@ -17,6 +18,7 @@ interface TableRegionProps {
 
 
 const Table = ({ data, onCreate, onEdit }: TableRegionProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -75,10 +77,10 @@ const Table = ({ data, onCreate, onEdit }: TableRegionProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouvelle région"
+                    title={t('boutton.nouvelle_region')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher une région" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.region')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

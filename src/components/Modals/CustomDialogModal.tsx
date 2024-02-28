@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IoMdClose } from 'react-icons/io';
 
 interface CustomDialogModalProps {
@@ -14,6 +15,7 @@ interface CustomDialogModalProps {
 // model generale pour les boites de dialogue
 
 function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeModal, children }: CustomDialogModalProps) {
+    const {t}=useTranslation();
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
@@ -65,13 +67,13 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
                                             type="submit"
                                             onClick={closeModal}
                                         >
-                                            {!isDelete?'Annuler':'Non'}
+                                            {!isDelete?t('boutton.annuler'):t('boutton.non')}
                                         </button>
                                         <button
                                             className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70"
                                             onClick={handleConfirm}
                                         >
-                                            {!isDelete?'Enregistrer':'Oui'}
+                                            {!isDelete?t('boutton.enregistrer'):t('boutton.oui')}
                                         </button>
                                     </div>
                                 </Dialog.Panel>

@@ -5,6 +5,7 @@ import FormDelete from "../../components/Modals/ModalCommune/FormDelete";
 import Table from "../../components/Tables/TableCommune/Table";
 import { Departement } from "./Departements";
 import { Region } from "./Regions";
+import { useTranslation } from "react-i18next";
 
 export interface Commune{
     id?:number;
@@ -15,6 +16,7 @@ export interface Commune{
 
 const Communes = () => {
     const [selectedCommune, setSelectedCommune] = useState<Commune | null>(null);
+    const {t}=useTranslation();
     const handleEditDepartement = (commune: Commune) => {
         setSelectedCommune(commune);
     }
@@ -24,7 +26,7 @@ const Communes = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Communex" />
+            <Breadcrumb pageName={t('sub_menu.communes')} />
             <Table data={communes}  onCreate={handleAddDepartement} onEdit={handleEditDepartement}/>
 
             <FormCreateUpdate commune={selectedCommune}/>

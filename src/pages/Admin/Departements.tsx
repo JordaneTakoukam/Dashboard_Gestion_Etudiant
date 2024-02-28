@@ -4,6 +4,7 @@ import Table from "../../components/Tables/TableDepartement/Table";
 import { Region } from "./Regions";
 import FormCreateUpdate from "../../components/Modals/ModalDepartement/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalDepartement/FormDelete";
+import { useTranslation } from "react-i18next";
 
 
 export interface Departement{
@@ -14,6 +15,7 @@ export interface Departement{
 }
 
 const Departements = () => {
+    const {t}=useTranslation();
     const [selectedDepartement, setSelectedDepartement] = useState<Departement | null>(null);
     const handleEditDepartement = (departement: Departement) => {
         setSelectedDepartement(departement);
@@ -24,7 +26,7 @@ const Departements = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Départements" />
+            <Breadcrumb pageName={t('sub_menu.departements')} />
             <Table data={departements} onCreate={handleAddDepartement} onEdit={handleEditDepartement}/>
 
             <FormCreateUpdate departement={selectedDepartement}/>

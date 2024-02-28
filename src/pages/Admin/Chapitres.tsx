@@ -4,6 +4,7 @@ import FormCreateUpdate from "../../components/Modals/ModalChapitre/FormCreateUp
 import FormDelete from "../../components/Modals/ModalChapitre/FormDelete";
 import Table from "../../components/Tables/TableChapitre/Table";
 import { Matiere } from "./ListeMatieres";
+import { useTranslation } from "react-i18next";
 
 export interface Objectif {
     id?:number;
@@ -40,11 +41,10 @@ interface ChapitresProps {
 
 const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) => {
     const [selectedChapitre, setSelectedChapitre] = useState<Chapitre | null>(null);
-
     const handleEditCycle = (chapitre: Chapitre) => {
         setSelectedChapitre(chapitre);
     }
-
+    const {t}=useTranslation();
     const handleAddChapitre = () => {
         setSelectedChapitre(null);
     }
@@ -53,7 +53,7 @@ const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) =
     
     return (
         <>
-            <Breadcrumb pageName="Chapitres" isMatiere={true} returnWithMatiere={returnWithMatiere}/>
+            <Breadcrumb pageName={t('sub_menu.chapitres')} isMatiere={true} returnWithMatiere={returnWithMatiere}/>
             <Table data={matiereSelectionnee?.chapitres}  onCreate={handleAddChapitre} onEdit={handleEditCycle} matiere={matiereSelectionnee}/>
 
             <FormCreateUpdate chapitre={selectedChapitre}/>

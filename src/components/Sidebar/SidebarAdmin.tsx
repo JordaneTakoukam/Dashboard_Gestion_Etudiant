@@ -26,9 +26,9 @@ interface SidebarProps {
 const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const location = useLocation();
     const { pathname } = location;
-    const { t } = useTranslation();
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
+    const {t}=useTranslation();
 
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
     const [sidebarExpanded, setSidebarExpanded] = useState(

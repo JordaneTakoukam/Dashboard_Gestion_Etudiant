@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableCategorie/Table";
 import FormCreateUpdate from "../../components/Modals/ModalCategorie/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCategorie/FormDelete";
+import { useTranslation } from "react-i18next";
 
 export interface Categorie{
     id?:number;
@@ -12,6 +13,7 @@ export interface Categorie{
 
 const Categories = () => {
     const [selectedCategorie, setSelectedCategorie] = useState<Categorie | null>(null);
+    const { t } = useTranslation();
     const handleEditCategorie = (categorie : Categorie) => {
         setSelectedCategorie(categorie);
     }
@@ -21,7 +23,7 @@ const Categories = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Catégories" />
+            <Breadcrumb pageName={t('sub_menu.categories')} />
             <Table data={categories} onCreate={handleAddCategorie} onEdit={handleEditCategorie}/>
 
             <FormCreateUpdate categorie={selectedCategorie}/>

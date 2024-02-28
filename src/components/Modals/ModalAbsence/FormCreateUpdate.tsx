@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
 import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant | Enseignant | null, isSignaled?:boolean, isHourRemove:boolean }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [date, setDate] = useState("");
     const [debutPeriode, setDebutPeriode] = useState("");
@@ -46,12 +47,12 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
         setFinPeriode("");
         setSemestre(0);
         if (isHourRemove) {
-            setModalTitle("Supprimer une absence : "+user?.nom+" "+user?.prenom);            
+            setModalTitle(t('form_delete.absence')+user?.nom+" "+user?.prenom);            
         } else{
-            setModalTitle("Ajouter une abscence : "+user?.nom+" "+user?.prenom);
+            setModalTitle(t('form_update.absence')+user?.nom+" "+user?.prenom);
         }
         if(isSignaled){
-            setModalTitle("Signaler mon abscence");            
+            setModalTitle(t('form_update.signaler'));            
         }
 
 
@@ -62,7 +63,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
             setErrorSemestre("");
             setIsFirstRender(false);
         }
-    }, [isHourRemove, isSignaled, user, isFirstRender]);
+    }, [isHourRemove, isSignaled, user, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorDate(""); 
@@ -84,23 +85,23 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
     const handleCreateUpdate = () => {
         if (!date || !debutPeriode || !finPeriode || !semestre) {
             if (!semestre) {
-                setErrorSemestre("Le champ semestre est obligatoire.");
+                setErrorSemestre(t('error.semestre'));
             }
             if (!date) {
-                setErrorDate("Le champ date est obligatoire.");
+                setErrorDate(t('error.date'));
             }
             if (!debutPeriode) {
-                setErrorDebutPeriode("Le champ heure de début est obligatoire.");
+                setErrorDebutPeriode(t('error.heure_debut'));
             }
             if (!finPeriode) {
-                setErrorFinPeriode("Le champ heure de fin est obligatoire.");
+                setErrorFinPeriode(t('error.heure_fin'));
             }
 
             return;
         }
 
         if(verifierHeureFinApresDebut(debutPeriode, finPeriode)){
-            setErrorFinPeriode("L'heure de fin ne peut pas être plus petite que l'heure de début");
+            setErrorFinPeriode(t('error.debut_sup_fin_periode'));
             return;
         }
         
@@ -116,13 +117,13 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                <label>Semestre</label><label className="text-red-500"> *</label>
+                <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
                 <select
                     value={semestre}
                     onChange={handleSemestreChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un semestre</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.semestre')}</option>
                     {semestres.map((semestre, index) => (
                         <option key={index} value={semestre}>{semestre}</option>
                     ))}
@@ -130,7 +131,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                 </select>
                 {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
                 
-                <label>Date</label><label className="text-red-500"> *</label>
+                <label>{t('label.date')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
@@ -138,7 +139,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                     onChange={(e) => {setDate(e.target.value); setErrorDate("")}}
                 />
                 {errorDate && <p className="text-red-500" >{errorDate}</p>}
-                <label>Heure de début</label><label className="text-red-500"> *</label>
+                <label>{t('label.heure_debut')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"
@@ -146,7 +147,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                     onChange={(e) => {setDebutPeriode(e.target.value); setErrorDebutPeriode("")}}
                 />
                 {errorDebutPeriode && <p className="text-red-500" >{errorDebutPeriode}</p>}
-                <label>Heure de fin</label><label className="text-red-500"> *</label>
+                <label>{t('label.heure_fin')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"

@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableGrade/Table";
 import FormCreateUpdate from "../../components/Modals/ModalGrade/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalGrade/FormDelete";
+import { useTranslation } from "react-i18next";
 
 export interface Grade{
     id?:number;
@@ -11,6 +12,7 @@ export interface Grade{
 }
 
 const Grades = () => {
+    const {t}=useTranslation();
     const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
     const handleEditGrade = (grade : Grade) => {
         setSelectedGrade(grade);
@@ -21,7 +23,7 @@ const Grades = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Grades" />
+            <Breadcrumb pageName={t('sub_menu.grades')} />
             <Table data={grades} onCreate={handleAddGrade} onEdit={handleEditGrade}/>
 
             <FormCreateUpdate grade={selectedGrade}/>

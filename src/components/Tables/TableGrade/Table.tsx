@@ -8,6 +8,7 @@ import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Grade } from "../../../pages/Admin/Grades";
+import { useTranslation } from "react-i18next";
 
 interface TableGradeProps {
     data: Grade[];
@@ -17,6 +18,7 @@ interface TableGradeProps {
 
 
 const Table = ({ data, onCreate, onEdit }: TableGradeProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -75,10 +77,10 @@ const Table = ({ data, onCreate, onEdit }: TableGradeProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouveau grade"
+                    title={t('boutton.nouveau_grade')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher un grade" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.grade')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

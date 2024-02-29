@@ -6,6 +6,7 @@ import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpd
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
 import { Enseignant } from "./ListeEnseignants";
 import Chapitres, { Chapitre } from "./Chapitres";
+import { useTranslation } from "react-i18next";
 
 export interface Matiere {
     id? : number;
@@ -24,6 +25,7 @@ export interface Matiere {
 
 
 const ListeDesMatieres = () => {
+    const {t}=useTranslation();
     const [selectedMatiere, setSelectedMatiere] = useState<Matiere | null>(null);
     const [openChapitres, setOpenChapitre]=useState(false);
     const handleEditMatiere = (matiere : Matiere) => {
@@ -43,7 +45,7 @@ const ListeDesMatieres = () => {
     };
     return (
         <>
-            {!openChapitres && <Breadcrumb pageName="Liste des matières" />}
+            {!openChapitres && <Breadcrumb pageName={t('sub_menu.liste_matiere')} />}
             {!openChapitres && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres}/>}
             
             {!openChapitres && <FormCreateUpdate matiere={selectedMatiere}/>}

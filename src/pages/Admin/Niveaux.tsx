@@ -4,6 +4,7 @@ import FormCreateUpdate from "../../components/Modals/ModalNiveau/FormCreateUpda
 import FormDelete from "../../components/Modals/ModalNiveau/FormDelete";
 import Table from "../../components/Tables/TableNiveau/Table";
 import { Cycle } from "./Cycles";
+import { useTranslation } from "react-i18next";
 
 export interface Niveau{
     id?:number;
@@ -13,6 +14,7 @@ export interface Niveau{
 }
 
 const Niveaux = () => {
+    const {t}=useTranslation();
     const [selectedNiveau, setSelectedNiveau] = useState<Niveau | null>(null);
     const handleEditCycle = (niveau: Niveau) => {
         setSelectedNiveau(niveau);
@@ -23,7 +25,7 @@ const Niveaux = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Niveaux" />
+            <Breadcrumb pageName={t('sub_menu.niveaux')} />
             <Table data={niveaux}  onCreate={handleAddCycle} onEdit={handleEditCycle}/>
 
             <FormCreateUpdate niveau={selectedNiveau}/>

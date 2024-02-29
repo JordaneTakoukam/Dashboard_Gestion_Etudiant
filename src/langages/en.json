@@ -58,11 +58,12 @@
     "progression": "Overall teachers' progression",
     "evenements_titre": "Upcoming events",
     "evenements_aucun": "No events at the moment",
-    "nombre_total_abscence": "Total absence hours",
+    "nombre_total_absence": "Total absence hours",
     "cours_programmes": "Scheduled courses",
     "aucun_cour": "No scheduled courses at the moment",
     "alertes": "Recent alerts",
-    "aucune_alerte": "No alerts at the moment"
+    "aucune_alerte": "No alerts at the moment",
+    "liste_alerte":"List of recent alerts"
   },
 
   "label": {
@@ -123,10 +124,32 @@
     "info_pers": "Personal Information",
     "photo_profil": "Profile Picture",
     "editer_photo": "Edit your profile picture",
-    "telecharger_photo": "Click here to upload or drag and drop",
+    "telecharger_photo": "Click here to upload",
+    "glisser_photo":"or drag and drop",
+    "changer_pass":"Change password",
+    "actuel_pass":"Current password",
+    "nouveau_pass":"New password",
     "nombre_chapitre": "Number of Chapters",
     "volume_horaire": "Hourly Volume",
-    "tableau_vide":"No data recorded during this period."
+    "tableau_vide":"No data recorded during this period.",
+    "heure":"hour",
+    "total_heure_absence":"Total absence time",
+    "aucune_absence":"No absences recorded this semester",
+    "nombre_heure":"Number of hours",
+    "horaire":"Timetable",
+    "lundi":"Monday",
+    "mardi":"Tuesday",
+    "mercredi":"Wednesday",
+    "jeudi":"Thursday",
+    "vendredi":"Friday",
+    "samedi":"Saturday",
+    "dimanche":"Sunday",
+    "confirm_sup":"Confirm deletion",
+    "jour":"Day",
+    "se_connecter":"Sign in",
+    "entree_email":"Enter your e-mail address",
+    "entree_pass":"Enter your password",
+    "content":"Welcome back !"
   },
 
   "recherche": {
@@ -135,7 +158,7 @@
     "enseignant": "a teacher",
     "matiere": "a subject",
     "chapitre": "a chapter",
-    "salle_cour": "a classroom",
+    "salle": "a classroom",
     "section": "a section",
     "cycle": "a cycle",
     "niveau": "a level",
@@ -182,7 +205,11 @@
     "ajouter_obj": "Add an objective",
     "ajouter_comp": "Add a competency",
     "oui":"Yes",
-    "non":"No"
+    "non":"No",
+    "signaler_absence":"Report my abscence",
+    "se_connecter":"Sign in",
+    "oublie_pass":"Password forgotten?",
+    "reinit_pass":"Reset password"
   },
 
   "select_par_defaut": {
@@ -217,7 +244,8 @@
     "emploie_temps": "Display the timetable by:",
     "evenement": "Display the list of events by:",
     "departement": "Filter the list of departments by:",
-    "commune": "Filter the list of communes by:"
+    "commune": "Filter the list of communes by:",
+    "absence":"Filter my absences by : "
   },
 
   "form_save": {
@@ -288,5 +316,35 @@
     "commune": "of the commune",
     "periode": "of the period",
     "evenement": "of the event"
+  },
+
+  "error": {
+    "code": "The code field is required.",
+    "libelle": "The label field is required.",
+    "type_ens": "At least one type of teaching must be defined.",
+    "objectif": "At least one objective must be defined.",
+    "competence": "At least one competence must be defined.",
+    "region": "The region field is required.",
+    "departement": "The department field is required.",
+    "section": "The section field is required.",
+    "semestre": "The semester field is required.",
+    "date": "The date field is required.",
+    "heure_debut": "The start time field is required.",
+    "heure_fin": "The end time field is required.",
+    "debut_sup_fin_periode": "The end time cannot be earlier than the start time.",
+    "incorrect_email": "Please enter a valid email address.",
+    "nom": "The name field is required.",
+    "genre": "Gender selection is required.",
+    "email": "The email field is required.",
+    "cycle": "The cycle field is required.",
+    "niveau": "The level field is required.",
+    "nb_place": "The number of seats field is required.",
+    "num_even": "The event number field is required.",
+    "periode": "The period field is required.",
+    "jour": "The Day field is required.",
+    "matiere": "The subject field is required.",
+    "type_ens_periode": "The type of teaching field is required.",
+    "salle": "The classroom field is required."
   }
+  
 }

@@ -1,5 +1,5 @@
 import { Link, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
@@ -9,6 +9,11 @@ import { signinApi } from '../../api/auth/api_signin';
 import createToast from '../../hooks/toastify';
 import { config } from '../../config';
 import { FaRegCopyright } from "react-icons/fa6";
+import i18next from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { setShowLanguage } from '../../_redux/features/setting_slice';
+import { RootState } from '../../_redux/store';
 
 
 const SignIn = () => {
@@ -16,9 +21,22 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {t}=useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState('fr');
+  const dispatch = useDispatch();
+  const language = useSelector((state: RootState) => state.setting.language);
+  useEffect(() => {
+    i18next.changeLanguage(language);
+  }, [language]);
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLanguage = e.target.value;
+    setSelectedLanguage(newLanguage);
+    dispatch(setShowLanguage(newLanguage));
+  };
 
   const handleSubmit = async () => {
-
+    
     // if (email && password) {
     setLoading(true);
 
@@ -57,7 +75,7 @@ const SignIn = () => {
 
               <div className='h-20 w-50'>
                 <p className="mt-5 text-lg ">
-                  Content de vous revoir !
+                  {t('label.content')}
                 </p>
               </div>
 
@@ -87,19 +105,26 @@ const SignIn = () => {
           </div>
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
+            <div className="lang-selector items-center">
+              {/* <label htmlFor="lang">{t('header.langue')}</label> */}
+              <select id="lang" value={selectedLanguage} onChange={handleLanguageChange}>
+                <option value="fr">{t('header.francais')}</option>
+                <option value="en">{t('header.anglais')}</option>
+              </select>
+            </div>
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Se connecter
+                {t('label.se_connecter')}
               </h2>
 
               <div className="mb-4">
                 <label className="mb-2.5 block font-medium text-black dark:text-white">
-                  E-mail
+                  {t('label.email')}
                 </label>
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder="Entrer votre email"
+                    placeholder={t('label.entree_email')}
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -115,12 +140,12 @@ const SignIn = () => {
 
               <div className="mb-4">
                 <label className="mb-2.5 block font-medium text-black dark:text-white">
-                  Mot de passe
+                  {t('label.mot_de_passe')}
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Entrer votre mot de passe"
+                    placeholder={t('label.entree_pass')}
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -156,7 +181,7 @@ const SignIn = () => {
                       className="h-[60px] w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                       onClick={handleSubmit}
 
-                    >Se connecter </button>
+                    >{t('boutton.se_connecter')} </button>
                 }
               </div>
 
@@ -164,9 +189,9 @@ const SignIn = () => {
 
               <div className="mt-6 text-center">
                 <p>
-                  Mot de passe oublier ?{' '}
+                  {t('boutton.oublie_pass')}{' '}
                   <Link to="?" className="text-primary font-medium">
-                    Réinitialiser le mot de passe
+                    {t('boutton.reinit_pass')}
                   </Link>
                 </p>
               </div>

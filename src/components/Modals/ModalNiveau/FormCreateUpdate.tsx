@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react';
 import { Niveau } from '../../../pages/Admin/Niveaux';
 import { Section, sections } from '../../../pages/Admin/Sections';
 import { Cycle, cycles } from '../../../pages/Admin/Cycles';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
@@ -28,14 +29,14 @@ function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
 
     useEffect(() => {
         if (niveau) {
-            setModalTitle("Mettre à jour les informations du niveau");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.niveau'));
             setCode(niveau.code);
             setLibelle(niveau.libelle);
             setSection(niveau.cycle.section);
             setCycle(niveau.cycle);
             
         } else {
-            setModalTitle("Enregistrer un nouveau niveau");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.niveau'));
             setCode("");
             setLibelle("");
             setSection(undefined);
@@ -50,7 +51,7 @@ function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
             setErrorCycle("");
             setIsFirstRender(false);
         }
-    }, [niveau, isFirstRender]);
+    }, [niveau, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorCode(""); 
@@ -84,16 +85,16 @@ function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
     const handleCreateUpdate = () => {
         if (!code || !libelle || !section || !cycle) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
             if (!section) {
-                setErrorSection("Le champ section est obligatoire.");
+                setErrorSection(t('error.section'));
             }
             if (!cycle) {
-                setErrorCycle("Le champ cycle est obligatoire.");
+                setErrorCycle(t('error.cycle'));
             }
 
 
@@ -113,7 +114,7 @@ function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -121,7 +122,7 @@ function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -129,25 +130,25 @@ function ModalCreateUpdate({ niveau }: { niveau : Niveau | null }) {
                     onChange={(e) => {setLibelle(e.target.value); setErrorLibelle("")}}
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-                <label>Section</label><label className="text-red-500"> *</label>
+                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={section ? section.libelle : 'Sélectionnez une section'}
+                    value={section ? section.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.section')}
                     onChange={handleSectionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une section</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.section')}</option>
                     {sections.map(section => (
                         <option key={section.id} value={section.libelle}>{section.libelle}</option>
                     ))}
                 </select>
                 {errorSection && <p className="text-red-500">{errorSection}</p>}
-                <label>Cycle</label><label className="text-red-500"> *</label>
+                <label>{t('label.cycle')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={cycle ? cycle.libelle : 'Sélectionnez un cycle'}
+                    value={cycle ? cycle.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}
                     onChange={handleCycleChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un cycle</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}</option>
                     {cycles.map(cycle => (
                         <option key={cycle.id} value={cycle.libelle}>{cycle.libelle}</option>
                     ))}

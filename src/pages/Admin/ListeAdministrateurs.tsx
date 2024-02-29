@@ -12,6 +12,7 @@ import { Categorie } from "./Categories";
 import { Region } from "./Regions";
 import { Departement } from "./Departements";
 import Table from "../../components/Tables/TableAdministrateur/Table";
+import { useTranslation } from "react-i18next";
 
 export interface Administrateur {
     id?:number
@@ -35,6 +36,7 @@ export interface Administrateur {
     abscences:Abscences[];
 }
 const ListeDesAdministrateur = () => {
+    const {t}=useTranslation();
     const [selectedAdministrateur, setSelectedAdministrateur] = useState<Administrateur | null>(null);
         // Fonction pour gérer l'édition d'un étudiant
     const handleEditEtudiant = (administrateur: Administrateur) => {
@@ -47,7 +49,7 @@ const ListeDesAdministrateur = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Liste des administrateurs" />
+            <Breadcrumb pageName={t('sub_menu.administrateurs')} />
             <Table data={administrateurs} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant}/>
 
 

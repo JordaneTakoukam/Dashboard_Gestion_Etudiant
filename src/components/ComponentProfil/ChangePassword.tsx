@@ -1,13 +1,15 @@
+import { useTranslation } from "react-i18next";
 import { RiLockPasswordLine } from "react-icons/ri";
 
 export function ChangePassword() {
+    const {t}=useTranslation();
     return (
         <div className="col-span-5 xl:col-span-3 mt-4">
 
             <div className="max-h-[370px] rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                     <h3 className="font-medium text-black dark:text-white">
-                        Changer de mot de passe
+                        {t('label.changer_pass')}
                     </h3>
                 </div>
                 <div className="p-7">
@@ -17,7 +19,7 @@ export function ChangePassword() {
                             <label
                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                             >
-                                Mot de passe actuel
+                                {t('label.actuel_pass')}
                             </label>
                             <div className="relative">
                                 <span className="absolute left-4.5 top-4">
@@ -36,7 +38,7 @@ export function ChangePassword() {
                             <label
                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                             >
-                                Nouveau mot de passe
+                                {t('label.nouveau_pass')}
                             </label>
                             <div className="relative">
                                 <span className="absolute left-4.5 top-4">
@@ -59,12 +61,12 @@ export function ChangePassword() {
                                 className=" text-sm flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white hover:border-body duration-300 "
                                 type="submit"
                             >
-                                Effacer les champs
+                               {t('boutton.effacer_champs')}
                             </button>
                             <button
                                 className="text-sm flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1 hover:bg-opacity-70 duration-300 "
                             >
-                                Modifier le mot de passe
+                                {t('boutton.modifier_mot_de_passe')}
                             </button>
                         </div>
                     </form>

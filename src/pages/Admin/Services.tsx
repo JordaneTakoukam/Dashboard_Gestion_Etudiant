@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableService/Table";
 import FormCreateUpdate from "../../components/Modals/ModalService/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalService/FormDelete";
+import { useTranslation } from "react-i18next";
 
 export interface Service{
     id?:number;
@@ -11,6 +12,7 @@ export interface Service{
 }
 
 const Services = () => {
+    const {t}=useTranslation();
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const handleEditService = (service : Service) => {
         setSelectedService(service);
@@ -21,7 +23,7 @@ const Services = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Services" />
+            <Breadcrumb pageName={t('sub_menu.services')} />
             <Table data={services} onCreate={handleAddService} onEdit={handleEditService}/>
 
             <FormCreateUpdate service={selectedService}/>

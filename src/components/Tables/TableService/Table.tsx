@@ -8,6 +8,7 @@ import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Service } from "../../../pages/Admin/Services";
+import { useTranslation } from "react-i18next";
 
 interface TableServiceProps {
     data: Service[];
@@ -17,6 +18,7 @@ interface TableServiceProps {
 
 
 const Table = ({ data, onCreate, onEdit }: TableServiceProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -75,10 +77,10 @@ const Table = ({ data, onCreate, onEdit }: TableServiceProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouveau service"
+                    title={t('boutton.nouveau_service')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher un service" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.service')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

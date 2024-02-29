@@ -1,20 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalCreate, setShowModalUpdate } from '../../../_redux/features/setting_slice';
+import { setShowModal, } from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { SetStateAction, useEffect, useState } from 'react';
+import {useEffect, useState } from 'react';
 import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
 import { Section, sections } from '../../../pages/Admin/Sections';
 import { Cycle, cycles } from '../../../pages/Admin/Cycles';
 import { Jour, PeriodeCours, jours, listPeriode, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
-import { Matiere, TypeEnseignement, matieres } from '../../../pages/Admin/ListeMatieres';
+import { Matiere, matieres } from '../../../pages/Admin/ListeMatieres';
 import { SalleCours, sallesCours } from '../../../pages/Admin/SallesDeCours';
 import { FaTrash } from 'react-icons/fa6';
+import { TypeEnseignement } from '../../../pages/Admin/Chapitres';
+import { useTranslation } from 'react-i18next';
 
 
 
 function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [jour, setJour] = useState<Jour>();
     const [heuredebut, setHeureDebut] = useState("");
@@ -45,7 +47,7 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
 
     useEffect(() => {
         if (periodecours) {
-            setModalTitle("Mettre à jour la période de cours");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.periode'));
             setJour(periodecours.jour);
             setHeureDebut(periodecours.heureDebut);
             setHeureFin(periodecours.heureFin);
@@ -57,7 +59,7 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
             setTypeEnseignement(periodecours.typeUE);
             setSemestre(periodecours.semestre);
         } else {
-            setModalTitle("Enregistrer une nouvel période");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.periode'));
             setJour(undefined);
             setHeureDebut("");
             setHeureFin("");
@@ -84,11 +86,11 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
             setErrorTypeEnseignement("");
             setIsFirstRender(false);
         }
-    }, [periodecours, isFirstRender]);
+    }, [periodecours, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorJour("");
-        setHeureDebut("");
+        setErrorHeureDebut("");
         setErrorHeureFin("");
         setErrorSection("");
         setErrorCycle("");
@@ -205,46 +207,46 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
         if (!jour || !heuredebut || !heurefin || !section || !cycle || !niveau || !matiere || !semestre 
             || !typeEnseignement || !salleCours) {
             if (!jour) {
-                setErrorJour("Le champ Jour est obligatoire.");
+                setErrorJour(t('error.jour'));
             }
             if (!heuredebut) {
-                setErrorHeureDebut("Le champ heure de début est obligatoire.");
+                setErrorHeureDebut(t('error.heure_debut'));
             }
             if (!heurefin) {
-                setErrorHeureFin("Le champ heure de fin est obligatoire.");
+                setErrorHeureFin(t('error.heure_fin'));
             }
                 
             if (!section) {
-                setErrorSection("Le champ section est obligatoire.");
+                setErrorSection(t('error.section'));
             }
             if (!cycle) {
-                setErrorCycle("Le champ cycle est obligatoire.");
+                setErrorCycle(t('error.cycle'));
             }
             if (!niveau) {
-                setErrorNiveau("Le champ niveau est obligatoire.");
+                setErrorNiveau(t('error.niveau'));
             }
 
             if (!matiere) {
-                setErrorMatiere("Le champ matiere est obligatoire.");
+                setErrorMatiere(t('error.matiere'));
             }
 
             if (!semestre) {
-                setErrorSemestre("Le champ semestre est obligatoire.");
+                setErrorSemestre(t('error.semestre'));
             }
 
             if (!typeEnseignement) {
-                setErrorTypeEnseignement("Le champ type d'enseignement est obligatoire.");
+                setErrorTypeEnseignement(t('error.type_ens_periode'));
             }
 
             if (!salleCours) {
-                setErrorSalle("Le champ salle de cours est obligatoire.");
+                setErrorSalle(t('error.salle'));
             }
 
             return;
         }
 
         if(verifierHeureFinApresDebut(heuredebut, heurefin)){
-            setErrorHeureFin("L'heure de fin ne peut pas être plus petite que l'heure de début");
+            setErrorHeureFin(t('error.debut_sup_fin_periode'));
             return;
         }
         
@@ -293,44 +295,49 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
                 <div style={{textAlign:'right'}}>
                 <button onClick={handleToggleDelete} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
                         {isDeleting ? (
-                            <span>Confirmer la suppression</span>
+                            <span>{t('label.confirm_sup')}</span>
                         ) : (
                             <FaTrash style={{ color: 'red', fontSize: '20px' }} />
                         )}
                         {isDeleting && (
                             <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                Oui
+                                {t('boutton.non')}
+                            </button>
+                        )}
+                        {isDeleting && (
+                            <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                {t('boutton.oui')}
                             </button>
                         )}
                 </button>
                 </div>
                 
-                <label>Semestre</label><label className="text-red-500"> *</label>
+                <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
                 <select
                     value={semestre}
                     onChange={handleSemestreChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un semestre</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.semestre')}</option>
                     {semestres.map((semestre, index) => (
                         <option key={index} value={semestre}>{semestre}</option>
                     ))}
                     
                 </select>
                 {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
-                <label>Jour</label><label className="text-red-500"> *</label>
+                <label>{t('label.jour')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={jour ? jour.libelle : 'Sélectionnez un cycle'}
+                    value={jour ? jour.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.jour')}
                     onChange={handleJourChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un jour de la semaine</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.jour')}</option>
                     {jours.map(jour => (
                         <option key={jour.ordre} value={jour.libelle}>{jour.libelle}</option>
                     ))}
                 </select>
                 {errorJour && <p className="text-red-500" >{errorJour}</p>}
-                <label>Heure de début</label><label className="text-red-500"> *</label>
+                <label>{t('label.heure_debut')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"
@@ -338,7 +345,7 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
                     onChange={(e) => {setHeureDebut(e.target.value); setErrorHeureDebut("")}}
                 />
                 {errorHeureDebut && <p className="text-red-500" >{errorHeureDebut}</p>}
-                <label>Heure de fin</label><label className="text-red-500"> *</label>
+                <label>{t('label.heure_fin')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"
@@ -346,73 +353,73 @@ function ModalCreateUpdate({ periodecours }: { periodecours : PeriodeCours | nul
                     onChange={(e) => {setHeureFin(e.target.value); setErrorHeureFin("")}}
                 />
                 {errorHeureFin && <p className="text-red-500" >{errorHeureFin}</p>}
-                <label>Section</label><label className="text-red-500"> *</label>
+                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={section ? section.libelle : 'Sélectionnez une section'}
+                    value={section ? section.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.section')}
                     onChange={handleSectionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une section</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.section')}</option>
                     {sections.map(section => (
                         <option key={section.id} value={section.libelle}>{section.libelle}</option>
                     ))}
                 </select>
                 {errorSection && <p className="text-red-500">{errorSection}</p>}
-                <label>Cycle</label><label className="text-red-500"> *</label>
+                <label>{t('label.cycle')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={cycle ? cycle.libelle : 'Sélectionnez un cycle'}
+                    value={cycle ? cycle.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}
                     onChange={handleCycleChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un cycle</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}</option>
                     {cycles.map(cycle => (
                         <option key={cycle.id} value={cycle.libelle}>{cycle.libelle}</option>
                     ))}
                 </select>
                 {errorCycle && <p className="text-red-500">{errorCycle}</p>}
-                <label>Niveau</label><label className="text-red-500"> *</label>
+                <label>{t('label.niveau')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={niveau ? niveau.libelle : 'Sélectionnez un niveau'}
+                    value={niveau ? niveau.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.niveau')}
                     onChange={handleNiveauChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un niveau</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.niveau')}</option>
                     {niveaux.map(niveau => (
                         <option key={niveau.id} value={niveau.libelle}>{niveau.libelle}</option>
                     ))}
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
-                <label>Matière</label><label className="text-red-500"> *</label>
+                <label>{t('label.matiere')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={matiere ? matiere.libelle : 'Sélectionnez un matiere'}
+                    value={matiere ? matiere.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.matiere')}
                     onChange={handleMatiereChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une matière</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.matiere')}</option>
                     {matieres.map(matiere => (
                         <option key={matiere.id} value={matiere.libelle}>{matiere.libelle}</option>
                     ))}
                 </select>
                 {errorMatiere && <p className="text-red-500">{errorMatiere}</p>}
-                <label>Salle de cours</label><label className="text-red-500"> *</label>
+                <label>{t('label.salle_cour')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={salleCours ? salleCours.nom : 'Sélectionnez une sallecours'}
+                    value={salleCours ? salleCours.nom : t('select_par_defaut.selectionnez')+t('select_par_defaut.salle')}
                     onChange={handleSalleCoursChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une salle de cours</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.salle')}</option>
                     {sallesCours.map(salleCours => (
                         <option key={salleCours.id} value={salleCours.nom}>{salleCours.nom}</option>
                     ))}
                 </select>
                 {errorSalle && <p className="text-red-500">{errorSalle}</p>}
-                <label>Type d'enseignement</label><label className="text-red-500"> *</label>
+                <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={typeEnseignement ? typeEnseignement.libelle : 'Sélectionnez un typeenseignement'}
+                    value={typeEnseignement ? typeEnseignement.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.type_ens')}
                     onChange={handleTypeEnseignementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un type d'enseignement</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.type_ens')}</option>
                     {matiere?.chapitres && matiere.chapitres[0].typesEnseignement.map(typeEnseignement => (
                         <option key={typeEnseignement.id} value={typeEnseignement.libelle}>{typeEnseignement.libelle}</option>
                     ))}

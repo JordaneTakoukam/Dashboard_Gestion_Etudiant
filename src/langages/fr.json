@@ -58,11 +58,12 @@
       "progression": "Progression globale des enseignants",
       "evenements_titre": "Evènements à venir",
       "evenements_aucun": "Aucun événement pour le moment",
-      "nombre_total_abscence":"Total d'heure d'abscence",
+      "nombre_total_absence":"Total d'heure d'abscence",
       "cours_programmes":"Cours programmés",
       "aucun_cour":"Aucun cour programmés pour le moment",
       "alertes":"Alerte récentes",
-      "aucune_alerte":"Aucune alerte pour le moment"
+      "aucune_alerte":"Aucune alerte pour le moment",
+      "liste_alerte":"Liste des alertes recentes"
     },
 
     "label":{
@@ -123,10 +124,32 @@
       "info_pers":"Informations personnelles",
       "photo_profil":"Photo de profil",
       "editer_photo":"Editez votre photo de profil",
-      "telecharger_photo":"Cliquez ici pour télécharger ou faites glisser et déposez",
+      "telecharger_photo":"Cliquez ici pour télécharger",
+      "glisser_photo":" ou faites glisser et déposez",
+      "changer_pass":"Changer de mot de passe",
+      "actuel_pass":"Mot de passe actuel",
+      "nouveau_pass":"Nouveau mot de passe",
       "nombre_chapitre":"Nombre de chapitre",
       "volume_horaire":"Volume horaire",
-      "tableau_vide":"Aucune donnée enregistrée durant cette période."
+      "tableau_vide":"Aucune donnée enregistrée durant cette période.",
+      "heure":"heure",
+      "total_heure_absence":"Heure d'abscence total",
+      "aucune_absence":"Aucune abscence enregistrée pour ce semestre",
+      "nombre_heure":"Nombre d'heures",
+      "horaire":"Horaire",
+      "lundi":"Lundi",
+      "mardi":"Mardi",
+      "mercredi":"Mercredi",
+      "jeudi":"Jeudi",
+      "vendredi":"Vendredi",
+      "samedi":"Samedi",
+      "dimanche":"Dimanche",
+      "confirm_sup":"Confirmer la suppression",
+      "jour":"Jour",
+      "se_connecter":"Se connecter",
+      "entree_email":"Entrer votre e-mail",
+      "entree_pass":"Entrer votre mot de passe",
+      "content":"Content de vous revoir !"
     },
 
     "recherche":{
@@ -135,7 +158,7 @@
       "enseignant":"un enseignant",
       "matiere":"une matière",
       "chapitre":"un chapitre",
-      "salle_cour":"une salle de cours",
+      "salle":"une salle de cours",
       "section":"une section",
       "cycle":"un cycle",
       "niveau":"un niveau",
@@ -182,7 +205,11 @@
       "ajouter_obj":"Ajouter un objectif",
       "ajouter_comp":"Ajouter une compétence",
       "oui":"Oui",
-      "non":"Non"
+      "non":"Non",
+      "signaler_absence":"Signaler mon abscence",
+      "se_connecter":"Se connecter",
+      "oublie_pass":"Mot de passe oublier ?",
+      "reinit_pass":"Réinitialiser le mot de passe"
     },
 
     "select_par_defaut":{
@@ -217,7 +244,8 @@
       "emploie_temps":"Afficher l'emploie de temps suivant :",
       "evenement":"Afficher la liste des évènements suivant :",
       "departement":"Filtrer la liste des départements suivant :",
-      "commune":"Filtrer la liste des communes suivant :"
+      "commune":"Filtrer la liste des communes suivant :",
+      "absence":"Filtrer mes absences suivant : "
     },
 
     "form_save":{
@@ -303,7 +331,20 @@
       "date":"Le champ date est obligatoire.",
       "heure_debut":"Le champ heure de début est obligatoire.",
       "heure_fin":"Le champ heure de fin est obligatoire.",
-      "debut_sup_fin_periode":"L'heure de fin ne peut pas être plus petite que l'heure de début"
+      "debut_sup_fin_periode":"L'heure de fin ne peut pas être plus petite que l'heure de début",
+      "incorrect_email":"Veuillez saisir une adresse e-mail valide.",
+      "nom":"Le champ nom est obligatoire.",
+      "genre":"La sélection du genre est obligatoire.",
+      "email":"Le champ e-mail est obligatoire.",
+      "cycle":"Le champ cycle est obligatoire.",
+      "niveau":"Le champ niveau est obligatoire.",
+      "nb_place":"Le champ nombre de place est obligatoire.",
+      "num_even":"Le champ numéro de l'évènement est obligatoire.",
+      "periode":"Le champ période est obligatoire.",
+      "jour":"Le champ Jour est obligatoire.",
+      "matiere":"Le champ matiere est obligatoire.",
+      "type_ens_periode":"Le champ type d'enseignement est obligatoire.",
+      "salle":"Le champ salle de cours est obligatoire."
     }
   }
   

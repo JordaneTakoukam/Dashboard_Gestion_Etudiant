@@ -4,10 +4,11 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { SalleCours } from '../../../pages/Admin/SallesDeCours';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [nom, setNom] = useState("");
@@ -25,13 +26,13 @@ function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
 
     useEffect(() => {
         if (salleCours) {
-            setModalTitle("Mettre à jour les informations de la salle de cours");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.salle'));
             setCode(salleCours.code);
             setNom(salleCours.nom);
             setNbPlace(salleCours.nbPlace);
             
         } else {
-            setModalTitle("Enregistrer une nouvelle salle de cours");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.salle'));
             setCode("");
             setNom("");
             setNbPlace(0);
@@ -44,7 +45,7 @@ function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
             setErrorNbPlace("");
             setIsFirstRender(false);
         }
-    }, [salleCours, isFirstRender]);
+    }, [salleCours, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorCode(""); 
@@ -62,13 +63,13 @@ function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
     const handleCreateUpdate = () => {
         if (!code || !nom || !nbPlace) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!nom) {
-                setErrorNom("Le champ nom est obligatoire.");
+                setErrorNom(t('error.nom'));
             }
             if(!nbPlace){
-                setErrorNbPlace("Le champ nombre de place est obligatoire.")
+                setErrorNbPlace(t('error.nb_place'))
             }
 
             return;
@@ -87,7 +88,7 @@ function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -95,7 +96,7 @@ function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>Nom</label><label className="text-red-500"> *</label>
+                <label>{t('label.nom_chose')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -103,7 +104,7 @@ function ModalCreateUpdate({ salleCours }: { salleCours : SalleCours | null }) {
                     onChange={(e) =>{setNom(e.target.value); setErrorNom("");} }
                 />
                 {errorNom && <p className="text-red-500">{errorNom}</p>}
-                <label>Nombre de place</label><label className="text-red-500"> *</label>
+                <label>{t('label.nombre_place')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="number"

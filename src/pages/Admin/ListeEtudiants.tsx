@@ -13,6 +13,7 @@ import { Categorie } from "./Categories";
 import { Region } from "./Regions";
 import { Departement } from "./Departements";
 import { Commune } from "./Communes";
+import { useTranslation } from "react-i18next";
 
 export interface Etudiant {
     id?:number
@@ -40,6 +41,7 @@ export interface Etudiant {
 
 
 const ListeDesEtudiants = () => {
+    const {t}=useTranslation();
     const [selectedEtudiant, setSelectedEtudiant] = useState<Etudiant | null>(null);
         // Fonction pour gérer l'édition d'un étudiant
     const handleEditEtudiant = (etudiant: Etudiant) => {
@@ -52,7 +54,7 @@ const ListeDesEtudiants = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Liste des étudiants" />
+            <Breadcrumb pageName={t('sub_menu.liste_etudiant')} />
             <TableEtudiant data={listTest} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
 
             {/* Boite de dialogue */}

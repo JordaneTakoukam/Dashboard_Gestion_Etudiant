@@ -3,10 +3,12 @@ import { setShowModalDelete } from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { Niveau } from '../../../pages/Admin/Niveaux';
+import { useTranslation } from 'react-i18next';
 
 
 
 function ModalDelete({ niveau }: { niveau : Niveau|null}) {
+    const {t}=useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -21,13 +23,13 @@ function ModalDelete({ niveau }: { niveau : Niveau|null}) {
     return (
         <>
             <CustomDialogModal
-                title="Supprimer un niveau"
+                title={t('form_delete.supprimer')}
                 isModalOpen={isModalOpen}
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>Supprimez le niveau : {niveau?niveau.libelle:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.niveau')} : {niveau?niveau.libelle:""}</h1>
             </CustomDialogModal>
         </>
     );

@@ -15,6 +15,7 @@ import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import { Section, sections } from "../../../pages/Admin/Sections";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import { useTranslation } from "react-i18next";
 
 interface TableAdministrateurProps {
     data: Administrateur[];
@@ -25,6 +26,7 @@ interface TableAdministrateurProps {
 
 
 const Table = ({ data, onCreate, onEdit }:TableAdministrateurProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -85,10 +87,10 @@ const Table = ({ data, onCreate, onEdit }:TableAdministrateurProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouvel administrateur"
+                    title={t('boutton.nouvel_admin')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher un administrateur" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.administrateur')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

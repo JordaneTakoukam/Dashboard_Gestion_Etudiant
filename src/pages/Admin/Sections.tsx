@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableSection/Table";
 import FormCreateUpdate from "../../components/Modals/ModalSection/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalSection/FormDelete";
+import { useTranslation } from "react-i18next";
 
 export interface Section{
     id?:number;
@@ -11,6 +12,7 @@ export interface Section{
 }
 
 const Sections = () => {
+    const {t}=useTranslation();
     const [selectedSection, setSelectedSection] = useState<Section | null>(null);
     const handleEditSection = (section : Section) => {
         setSelectedSection(section);
@@ -21,7 +23,7 @@ const Sections = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Sections" />
+            <Breadcrumb pageName={t('sub_menu.sections')} />
             <Table data={sections} onCreate={handleAddSection} onEdit={handleEditSection}/>
 
             <FormCreateUpdate section={selectedSection}/>

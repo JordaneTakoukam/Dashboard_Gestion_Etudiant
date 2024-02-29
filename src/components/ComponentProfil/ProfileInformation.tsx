@@ -12,6 +12,7 @@ import { Categorie, categories } from "../../pages/Admin/Categories";
 import { Fonction, fonctions } from "../../pages/Admin/Fonctions";
 import { Grade, grades } from "../../pages/Admin/Grades";
 import { Service, services } from "../../pages/Admin/Services";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     icone: ReactNode; // Type de la variable icone
@@ -48,6 +49,7 @@ function LabelInput({ title, required }: LabelInputProps) {
 
 
 function ProfileInformation() {
+    const {t}=useTranslation();
     const [user, setUser] = useState({
         nom: "John",
         prenom: "Doe",
@@ -143,7 +145,7 @@ function ProfileInformation() {
     const validateEmail = () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            setErrorEmail("Veuillez saisir une adresse e-mail valide.");
+            setErrorEmail(t('error.incorrect_email'));
             return false;
         }
         setErrorEmail("");
@@ -154,18 +156,18 @@ function ProfileInformation() {
         // Vérification des champs obligatoires
         if (!nom || !genre || !email) {
             if (!nom) {
-                setErrorNom("Le champ nom est obligatoire.");
+                setErrorNom(t('error.nom'));
             }else{
                 setErrorNom("");
             }
             if (!genre) {
-                setErrorGenre("La sélection du genre est obligatoire.");
+                setErrorGenre(t('error.genre'));
             }else{
                 setErrorGenre("");
             }
     
             if (!email) {
-                setErrorEmail("Le champ e-mail est obligatoire.");
+                setErrorEmail(t('error.email'));
             }else{
                 setErrorEmail("");
             }
@@ -185,7 +187,7 @@ function ProfileInformation() {
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
                 <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                     <h3 className="font-medium text-black dark:text-white">
-                        Informations personnelles
+                        {t('label.info_pers')}
                     </h3>
                 </div>
                 <div className="px-7 py-7 lg:py-[30px] ">
@@ -193,7 +195,7 @@ function ProfileInformation() {
 
                         {/* matricule */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Matricule'} />
+                            <LabelInput title={t('label.matricule')} />
 
                             <div className="relative">
                                 <input
@@ -206,7 +208,7 @@ function ProfileInformation() {
                         </div>
                         {/* Date entrée admin */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Date d\'entrée dans l\'administration'} />
+                            <LabelInput title={t('label.date_entree_admin')} />
 
                             <div className="relative">
                                 <input
@@ -222,7 +224,7 @@ function ProfileInformation() {
                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                         {/* NOM */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Nom'} required={true}/>
+                            <LabelInput title={t('label.nom')} required={true}/>
 
                             <div className="relative">
                                 <IconeInput icone={<GoPerson />} />
@@ -241,7 +243,7 @@ function ProfileInformation() {
 
                         {/* PRENOM */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Prénom'} />
+                            <LabelInput title={t('label.prenom')} />
 
                             <div className="relative">
                                 <IconeInput icone={<GoPerson />} />
@@ -258,7 +260,7 @@ function ProfileInformation() {
                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                         {/* Contact */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Contact'} />
+                            <LabelInput title={t('label.contact')} />
                             <div className="relative">
                                 <IconeInput icone={<MdOutlinePhone />} />
                                 <input
@@ -274,7 +276,7 @@ function ProfileInformation() {
 
                         {/* E-mail */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Email'} required={true}/>
+                            <LabelInput title={t('label.email')} required={true}/>
 
                             <div className="relative">
                                 <IconeInput icone={<MdOutlineMail />} />
@@ -292,7 +294,7 @@ function ProfileInformation() {
 
                     {/* genre */}
                     <div className="w-full mb-5.5">
-                        <LabelInput title={'Genre'} required={true}/>
+                        <LabelInput title={t('label.genre')} required={true}/>
 
                         <div className="relative">
                             {/* <IconeInput icone={<MdOutlineMail />} /> */}
@@ -300,24 +302,24 @@ function ProfileInformation() {
                                 <input
                                     className='radio-label-space'
                                     type="radio"
-                                    id="homme"
+                                    id={t('label.homme')}
                                     name="genre"
-                                    value="Homme"
+                                    value={t('label.homme')}
                                     checked={true}
                                     onChange={() => { }}
                                 />
-                                <label htmlFor="homme" className='radio-intern-space font-semibold'>Homme</label>
+                                <label htmlFor={t('label.homme')} className='radio-intern-space font-semibold'>{t('label.homme')}</label>
 
                                 <input
                                     className='radio-label-space'
                                     type="radio"
-                                    id="femme"
+                                    id={t('label.femme')}
                                     name="genre"
-                                    value="Femme"
+                                    value={t('label.femme')}
                                     checked={genre === "F"}
                                     onChange={() => { }}
                                 />
-                                <label className="font-semibold" htmlFor="femme">Femme</label>
+                                <label className="font-semibold" htmlFor={t('label.femme')}>{t('label.femme')}</label>
                             </div>
                         </div>
                         {errorGenre && <p className="text-red-500 pt-2 text-sm " >{errorGenre}</p>}
@@ -325,7 +327,7 @@ function ProfileInformation() {
                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                         {/* Date de naissance */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Date de naissance'} />
+                            <LabelInput title={t('label.date_naiss')} />
 
                             <div className="relative">
                                 <IconeInput icone={<FaBirthdayCake />} />
@@ -342,7 +344,7 @@ function ProfileInformation() {
 
                         {/* lieu de naissance */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Lieu de naissance'} />
+                            <LabelInput title={t('label.lieu_naiss')} />
 
                             <div className="relative">
                                 <IconeInput icone={<RiMapPin2Fill />} />
@@ -360,15 +362,15 @@ function ProfileInformation() {
 
                         {/* Grade */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Grade'} />
+                            <LabelInput title={t('label.grade')} />
 
                             <div className="relative">
                                 <select
-                                    value={grade ? grade.libelle : 'Sélectionnez un grade'}
+                                    value={grade ? grade.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}
                                     onChange={handleGradeChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez un grade</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}</option>
                                     {grades.map(grade => (
                                         <option key={grade.id} value={grade.libelle}>{grade.libelle}</option>
                                     ))}
@@ -377,15 +379,15 @@ function ProfileInformation() {
                         </div>
                         {/* Catégorie */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Catégorie'} />
+                            <LabelInput title={t('label.categorie')} />
 
                             <div className="relative">
                                 <select
-                                    value={categorie ? categorie.libelle : 'Sélectionnez une catégorie'}
+                                    value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}
                                     onChange={handleCategorieChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez une catégorie</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}</option>
                                     {categories.map(categorie => (
                                         <option key={categorie.id} value={categorie.libelle}>{categorie.libelle}</option>
                                     ))}
@@ -397,15 +399,15 @@ function ProfileInformation() {
 
                         {/* Fonction */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Fonction'} />
+                            <LabelInput title={t('label.fonction')} />
 
                             <div className="relative">
                                 <select
-                                    value={fonction ? fonction.libelle : 'Sélectionnez une fonction'}
+                                    value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}
                                     onChange={handleFonctionChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez une fonction</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}</option>
                                     {fonctions.map(fonction => (
                                         <option key={fonction.id} value={fonction.libelle}>{fonction.libelle}</option>
                                     ))}
@@ -414,15 +416,15 @@ function ProfileInformation() {
                         </div>
                         {/* Service */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={'Service'} />
+                            <LabelInput title={t('label.servie')} />
 
                             <div className="relative">
                                 <select
-                                    value={service ? service.libelle : 'Sélectionnez un service'}
+                                    value={service ? service.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}
                                     onChange={handleServiceChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez un service</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}</option>
                                     {services.map(service => (
                                         <option key={service.id} value={service.libelle}>{service.libelle}</option>
                                     ))}
@@ -434,15 +436,15 @@ function ProfileInformation() {
 
                         {/* Région */}
                         <div className="w-full sm:w-1/3">
-                            <LabelInput title={'Région'} />
+                            <LabelInput title={t('label.region')} />
 
                             <div className="relative">
                                 <select
-                                    value={region ? region.libelle : 'Sélectionnez une région'}
+                                    value={region ? region.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}
                                     onChange={handleRegionChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez une région</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
                                     {regions.map(region => (
                                         <option key={region.id} value={region.libelle}>{region.libelle}</option>
                                     ))}
@@ -451,15 +453,15 @@ function ProfileInformation() {
                         </div>
                         {/* Département */}
                         <div className="w-full sm:w-1/3">
-                            <LabelInput title={'Département'} />
+                            <LabelInput title={t('label.departement')} />
 
                             <div className="relative">
                                 <select
-                                    value={departement ? departement.libelle : 'Sélectionnez un département'}
+                                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}
                                     onChange={handleDepartementChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez un département</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}</option>
                                     {departements.map(departement => (
                                         <option key={departement.id} value={departement.libelle}>{departement.libelle}</option>
                                     ))}
@@ -468,15 +470,15 @@ function ProfileInformation() {
                         </div>
                         {/* Commune */}
                         <div className="w-full sm:w-1/3">
-                            <LabelInput title={'Commune'} />
+                            <LabelInput title={t('label.commune')} />
 
                             <div className="relative">
                                 <select
-                                    value={commune ? commune.libelle : 'Sélectionnez une commune'}
+                                    value={commune ? commune.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}
                                     onChange={handleCommuneChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">Sélectionnez une commune</option>
+                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}</option>
                                     {communes.map(commune => (
                                         <option key={commune.id} value={commune.libelle}>{commune.libelle}</option>
                                     ))}
@@ -495,7 +497,7 @@ function ProfileInformation() {
                         <button
                             className="text-sm mt-8 flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
                             onClick={handleUpdateProfil} >
-                            Mettre à jour mes informations
+                            {t('boutton.mettre_a_jour_info')}
                         </button>
                     </div>
                 </div>

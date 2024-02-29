@@ -1,13 +1,14 @@
+import { useTranslation } from "react-i18next";
 import Breadcrumb from "../../components/Breadcrumb";
 import { ChangePassword } from "../../components/ComponentProfil/ChangePassword";
 import { PickPhoto } from "../../components/ComponentProfil/PickPhoto";
 import ProfileInformation from "../../components/ComponentProfil/ProfileInformation";
 
 const MonProfil = () => {
-
+    const {t}=useTranslation();
     return (
         <>
-            <Breadcrumb pageName="Mon profil" />
+            <Breadcrumb pageName={t("sub_menu.profil")} />
 
 
 

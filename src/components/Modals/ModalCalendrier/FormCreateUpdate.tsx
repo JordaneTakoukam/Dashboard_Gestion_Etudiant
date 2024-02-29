@@ -4,10 +4,11 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Evenement } from '../../../pages/CommonPage/CalendrierAcademique';
+import { useTranslation } from 'react-i18next';
 
 
-function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
-
+function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {   
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [numEvenement, setNumEvenement] = useState(0);
     const [libelle, setLibelle] = useState("");
@@ -27,14 +28,14 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
 
     useEffect(() => {
         if (evenement) {
-            setModalTitle("Mettre à jour les informations de l'évènement");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.evenement'));
             setNumEvenement(evenement.numEvenement);
             setLibelle(evenement.libelle);
             setPeriode(evenement.periode);
             setPersonnel(evenement.personnel?evenement.personnel:"");
             setDescription(evenement.description?evenement.description:"");
         } else {
-            setModalTitle("Enregistrer un nouvel évènement");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.evenement'));
             setNumEvenement(0);
             setLibelle("");
             setPeriode("");
@@ -49,7 +50,7 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
             setErrorPeriode("");
             setIsFirstRender(false);
         }
-    }, [evenement, isFirstRender]);
+    }, [evenement, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorNumEvenement(""); 
@@ -67,13 +68,13 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
     const handleCreateUpdate = () => {
         if (!numEvenement || !libelle || !periode) {
             if (!numEvenement) {
-                setErrorNumEvenement("Le champ numéro de l'évènement est obligatoire.");
+                setErrorNumEvenement(t('error.num_even'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
             if (!periode) {
-                setErrorPeriode("Le champ période est obligatoire.");
+                setErrorPeriode(t('error.periode'));
             }
 
             return;
@@ -92,7 +93,7 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Numéro de l'évèvenement</label><label className="text-red-500"> *</label>
+                <label>{t('label.numero_evenement')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -100,7 +101,7 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
                     onChange={(e) => {setNumEvenement(parseInt(e.target.value)); setErrorNumEvenement("")}}
                 />
                 {errorNumEvenement && <p className="text-red-500" >{errorNumEvenement}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -108,7 +109,7 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
                     onChange={(e) =>{setLibelle(e.target.value); setErrorLibelle("");} }
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-                <label>Période</label><label className="text-red-500"> *</label>
+                <label>{t('label.periode')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -116,14 +117,14 @@ function ModalCreateUpdate({ evenement }: { evenement : Evenement | null }) {
                     onChange={(e) =>{setPeriode(e.target.value); setErrorPeriode("");} }
                 />
                 {errorPeriode && <p className="text-red-500">{errorPeriode}</p>}
-                <label>Personnel concerné</label>
+                <label>{t('label.personnel_concerne')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={personnel}
                     onChange={(e) =>{setPersonnel(e.target.value)} }
                 />
-                <label>Description/Observation</label>
+                <label>{t('label.description')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"

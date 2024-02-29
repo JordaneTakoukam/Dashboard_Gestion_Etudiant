@@ -7,6 +7,7 @@ import { Enseignant, enseignant, enseignants } from "../Admin/ListeEnseignants";
 import Table from "../../components/Tables/TableAbsences/Table";
 import { useState } from "react";
 import FormCreateUpdate from "../../components/Modals/ModalAbsence/FormCreateUpdate";
+import { useTranslation } from "react-i18next";
 
 export interface Abscences{
     id?:number;
@@ -18,6 +19,7 @@ export interface Abscences{
 
 
 const Abscences = () => {
+    const {t}=useTranslation();
     const [selectedUser, setSelectedUser] = useState<Etudiant | Enseignant | null>(null);
     const handleEditHourUser = (user: Etudiant | Enseignant | null) => {
         setSelectedUser(user);
@@ -26,7 +28,8 @@ const Abscences = () => {
     const roles = config.roles;
     return (
         <>
-            <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} />
+            {/* <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} /> */}
+            <Breadcrumb pageName={t('menu.absences')} />
             {(userRole===roles.student || userRole===roles.delegate) && <Table data={etudiant} onEdit={handleEditHourUser}/>}
             {userRole===roles.teacher && <Table data={enseignant} onEdit={handleEditHourUser}/>}
 

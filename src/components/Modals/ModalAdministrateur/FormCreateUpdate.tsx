@@ -11,10 +11,11 @@ import { Grade, grades } from '../../../pages/Admin/Grades';
 import { Categorie, categories } from '../../../pages/Admin/Categories';
 import { Region, regions } from '../../../pages/Admin/Regions';
 import { Departement, departements } from '../../../pages/Admin/Departements';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [nom, setNom] = useState("");
     const [prenom, setPrenom] = useState("");
@@ -49,7 +50,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
 
     useEffect(() => {
         if (administrateur) {
-            setModalTitle("Mettre à jour les informations de l'administrateur");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.administrateur'));
             setNom(administrateur.nom);
             setPrenom(administrateur.prenom?administrateur.prenom:"");setGenre(administrateur.genre);
             setDateNaiss(administrateur.dateNaiss ? administrateur.dateNaiss : "");
@@ -69,7 +70,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
             setCommune(administrateur.commune ? administrateur.commune : undefined);
             setDateEntreeAdmin(administrateur.dateEntreeAdmin ? administrateur.dateEntreeAdmin : "");
         } else {
-            setModalTitle("Enregistrer un nouvel administrateur");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.administrateur'));
             setNom("");
             setPrenom("");
             setGenre("");
@@ -101,7 +102,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
             // setErrorNiveau("");
             setIsFirstRender(false);
         }
-    }, [administrateur, isFirstRender]);
+    }, [administrateur, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorNom(""); 
@@ -117,7 +118,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
     const validateEmail = () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            setErrorEmail("Veuillez saisir une adresse e-mail valide.");
+            setErrorEmail(t('error.incorrect_email'));
             return false;
         }
         setErrorEmail("");
@@ -205,14 +206,14 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
     const handleCreateAdministrateur = () => {
         if (!nom || !genre || !email) {
             if (!nom) {
-                setErrorNom("Le champ Nom est obligatoire.");
+                setErrorNom(t('error.nom'));
             }
             if (!genre) {
-                setErrorGenre("La sélection du genre est obligatoire.");
+                setErrorGenre(t('error.genre'));
             }
     
             if (!email) {
-                setErrorEmail("Le champ e-mail est obligatoire.");
+                setErrorEmail(t('error.email'));
             }
             
             return;
@@ -238,14 +239,14 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
                 closeModal={closeModal}
                 handleConfirm={handleCreateAdministrateur}
             >
-                <label>Matricule</label>
+                <label>{t('label.matricule')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={matricule}
                     onChange={(e) => setMatricule(e.target.value)}
                 />
-                <label>Nom</label><label className="text-red-500"> *</label>
+                <label>{t('label.nom')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -253,51 +254,51 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
                     onChange={(e) => {setNom(e.target.value); setErrorNom("")}}
                 />
                 {errorNom && <p className="text-red-500" >{errorNom}</p>}
-                <label>Prénom</label><input
+                <label>{t('label.prenom')}</label><input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={prenom}
                     onChange={(e) => setPrenom(e.target.value)}
                 />
-                <label>Date de naissance</label>
+                <label>{t('label.date_naiss')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
                     value={dateNaiss}
                     onChange={(e) => setDateNaiss(e.target.value)}
                 />
-                <label>Lieu de naissance</label><input
+                <label>{t('label.lieu_naiss')}</label><input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={lieuNaiss}
                     onChange={(e) => {setLieuNaiss(e.target.value)}}
                 />
-                <label>Genre</label><label className="text-red-500"> *</label>
+                <label>{t('label.genre')}</label><label className="text-red-500"> *</label>
                 <div>
                     <input
                         className='radio-label-space'
                         type="radio"
-                        id="homme"
+                        id={t('label.homme')}
                         name="genre"
-                        value="Homme"
+                        value={t('label.homme')}
                         checked={genre === "H"}
                         onChange={() =>{ setGenre("H"); setErrorGenre("")}}
                     />
-                    <label htmlFor="homme" className='radio-intern-space'>Homme</label>
+                    <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
                     
                     <input
                         className='radio-label-space'
                         type="radio"
-                        id="femme"
+                        id={t('label.femme')}
                         name="genre"
-                        value="Femme"
+                        value={t('label.femme')}
                         checked={genre === "F"}
                         onChange={() =>{ setGenre("F"); setErrorGenre("")}}
                     />
-                    <label htmlFor="femme">Femme</label>
+                    <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                 </div>
                 {errorGenre && <p className="text-red-500">{errorGenre}</p>}
-                <label>E-mail</label><label className="text-red-500"> *</label>
+                <label>{t('label.email')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="e-mail"
@@ -305,7 +306,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
                     onChange={(e) => {setEmail(e.target.value); setErrorEmail("");}}
                 />
                 {errorEmail && <p className="text-red-500">{errorEmail}</p>}
-                <label>Contact</label>
+                <label>{t('label.contact')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -313,84 +314,84 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
                     onChange={(e) => {setContact(e.target.value)}}
                 />
                 
-                <label>Grade</label>
+                <label>{t('label.grade')}</label>
                 <select
-                    value={grade ? grade.libelle : 'Sélectionnez un grade'}
+                    value={grade ? grade.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}
                     onChange={handleGradeChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un grade</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}</option>
                     {grades.map(grade => (
                         <option key={grade.id} value={grade.libelle}>{grade.libelle}</option>
                     ))}
                 </select>
-                <label>Catégorie</label>
+                <label>{t('label.categorie')}</label>
                 <select
-                    value={categorie ? categorie.libelle : 'Sélectionnez une catégorie'}
+                    value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}
                     onChange={handleCategorieChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une catégorie</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}</option>
                     {categories.map(categorie => (
                         <option key={categorie.id} value={categorie.libelle}>{categorie.libelle}</option>
                     ))}
                 </select>
-                <label>Fonction</label>
+                <label>{t('label.fonction')}</label>
                 <select
-                    value={fonction ? fonction.libelle : 'Sélectionnez une fonction'}
+                    value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}
                     onChange={handleFonctionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une fonction</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}</option>
                     {fonctions.map(fonction => (
                         <option key={fonction.id} value={fonction.libelle}>{fonction.libelle}</option>
                     ))}
                 </select>
-                <label>Service</label>
+                <label>{t('label.service')}</label>
                 <select
-                    value={service ? service.libelle : 'Sélectionnez un service'}
+                    value={service ? service.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}
                     onChange={handleServiceChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un service</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}</option>
                     {services.map(service => (
                         <option key={service.id} value={service.libelle}>{service.libelle}</option>
                     ))}
                 </select>
-                <label>Région</label>
+                <label>{t('label.region')}</label>
                 <select
-                    value={region ? region.libelle : 'Sélectionnez une région'}
+                    value={region ? region.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}
                     onChange={handleRegionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une région</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
                     {regions.map(region => (
                         <option key={region.id} value={region.libelle}>{region.libelle}</option>
                     ))}
                 </select>
-                <label>Département</label>
+                <label>{t('label.departement')}</label>
                 <select
-                    value={departement ? departement.libelle : 'Sélectionnez un département'}
+                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}
                     onChange={handleDepartementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un département</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}</option>
                     {departements.map(departement => (
                         <option key={departement.id} value={departement.libelle}>{departement.libelle}</option>
                     ))}
                 </select>
-                <label>Commune</label>
+                <label>{t('label.commune')}</label>
                 <select
-                    value={commune ? commune.libelle : 'Sélectionnez une commune'}
+                    value={commune ? commune.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}
                     onChange={handleCommuneChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une commune</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}</option>
                     {communes.map(commune => (
                         <option key={commune.id} value={commune.libelle}>{commune.libelle}</option>
                     ))}
                 </select>
-                <label>Date d'entrée dans l'administration</label>
+                <label>{t('label.date_entree_admin')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"

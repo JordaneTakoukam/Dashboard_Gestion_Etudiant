@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumb";
 import FormCreateUpdate from "../../components/Modals/ModalSalleCours/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalSalleCours/FormDelete";
 import Table from "../../components/Tables/TableSalleCours/Table";
+import { useTranslation } from "react-i18next";
 
 export interface SalleCours{
     id?:number;
@@ -12,6 +13,7 @@ export interface SalleCours{
 }
 
 const SallesDeCours = () => {
+    const {t}=useTranslation();
     const [selectedSalleCours, setSelectedSalleCours] = useState<SalleCours | null>(null);
     const handleEditSection = (salleCours : SalleCours) => {
         setSelectedSalleCours(salleCours);
@@ -22,7 +24,7 @@ const SallesDeCours = () => {
     }
     return (
         <>
-            <Breadcrumb pageName="Salles de cours" />
+            <Breadcrumb pageName={t('menu.salles')} />
             <Table data={sallesCours} onCreate={handleAddSection} onEdit={handleEditSection}/>
 
             <FormCreateUpdate salleCours={selectedSalleCours}/>

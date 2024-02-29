@@ -5,9 +5,11 @@ import ImageStudent from './../../images/user/student.png';
 import { config } from "../../config";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
+import { useTranslation } from 'react-i18next';
 
 
 export function PickPhoto() {
+  const {t}=useTranslation();
   const roles = config.roles;
   const userState = useSelector((state: RootState) => state.user);
 
@@ -18,7 +20,7 @@ export function PickPhoto() {
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
           <h3 className="font-medium text-black dark:text-white">
-            Photo de profil
+            {t('label.photo_profil')}
           </h3>
         </div>
         <div className="p-7">
@@ -33,14 +35,14 @@ export function PickPhoto() {
                 } alt="User" />                                        </div>
               <div>
                 <span className="mb-1.5 text-black dark:text-white">
-                  Éditez votre photo de profil
+                  {t('label.editer_photo')}
                 </span>
                 <span className="flex gap-2.5">
                   <button className="text-sm hover:text-meta-1">
-                    Supprimer
+                    {t('boutton.supprimer')}
                   </button>
                   <button className="text-sm hover:text-primary">
-                    Mettre à jour
+                    {t('boutton.mettre_a_jour')}
                   </button>
                 </span>
               </div>
@@ -85,7 +87,7 @@ export function PickPhoto() {
                   </svg>
                 </span>
                 <p className="text-center">
-                  <span className="text-primary ">Cliquez pour télécharger </span>ou faites glisser et déposez
+                  <span className="text-primary ">{t('label.telecharger_photo')} </span>{t('label.glisser_photo')}
                 </p>
                 <p className="mt-1.5">SVG, PNG, JPG or GIF</p>
                 <p>(max, 800 X 800px)</p>
@@ -97,13 +99,13 @@ export function PickPhoto() {
                 className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-sm"
                 type="submit"
               >
-                Annuler
+                {t('boutton.annuler')}
               </button>
               <button
                 className="text-sm flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
                 type="submit"
               >
-                Sauvegarder
+                {t('boutton.sauvegarder')}
               </button>
             </div>
           </form>

@@ -10,9 +10,11 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { Section, sections } from "../../../pages/Admin/Sections";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import ProgressBar from "@ramonak/react-progress-bar";
+import { useTranslation } from "react-i18next";
 
 
 const Table = ({ data }: { data: Matiere }) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -120,48 +122,48 @@ const Table = ({ data }: { data: Matiere }) => {
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>Afficher la progression dans la matière suivant : </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.progression')} </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
-                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
+                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
-                                title="Année"
+                                title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
                                 
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<Section>
-                                title="Section"
+                                title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: Section) => `${section.libelle}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<Cycle>
-                                title="Cycle"
+                                title={t('label.cycle')}
                                 items={cycles}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
                                 onSelect={handleCycleSelect}
                             />
                             <CustomDropDown2<Niveau>
-                                title="Niveau"
+                                title={t('label.niveau')}
                                 items={niveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
                                 onSelect={handleNiveauSelect}
                             />
                             <CustomDropDown2<String>
-                                title="Semestre"
+                                title={t('label.semestre')}
                                 items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<Matiere>
-                                title="Matière"
+                                title={t('label.matiere')}
                                 items={matieres}
                                 defaultValue={matieres[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(matiere: Matiere) => `${matiere.libelle}`}
@@ -182,41 +184,41 @@ const Table = ({ data }: { data: Matiere }) => {
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
-                                title="Année"
+                                title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
                                 
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<Section>
-                                title="Section"
+                                title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: Section) => `${section.libelle}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<Cycle>
-                                title="Cycle"
+                                title={t('label.cycle')}
                                 items={cycles}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
                                 onSelect={handleCycleSelect}
                             />
                             <CustomDropDown2<Niveau>
-                                title="Niveau"
+                                title={t('label.niveau')}
                                 items={niveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
                                 onSelect={handleNiveauSelect}
                             />
                             <CustomDropDown2<String>
-                                title="Semestre"
+                                title={t('label.semestre')}
                                 items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<Matiere>
-                                title="Matière"
+                                title={t('label.matiere')}
                                 items={matieres}
                                 defaultValue={matieres[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(matiere: Matiere) => `${matiere.libelle}`}

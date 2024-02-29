@@ -5,6 +5,7 @@ import { Matiere,  matieres} from "../Admin/ListeMatieres";
 import { SalleCours, sallesCours } from "../Admin/SallesDeCours";
 import FormCreateUpdate from "../../components/Modals/ModalEmploiTemps/FormCreateUpdate";
 import { TypeEnseignement, cm, tp, td } from "../Admin/Chapitres";
+import { useTranslation } from "react-i18next";
 
 export interface PeriodeCours{
     id?:number;
@@ -24,6 +25,7 @@ export interface Jour{
 }
 
 const EmploiDeTemp = () => {
+    const {t}=useTranslation();
     const [selectedPeriode, setSelectedPeriode] = useState<PeriodeCours | null>(null);
     const handleEditPeriode = (periode : PeriodeCours) => {
         setSelectedPeriode(periode);
@@ -35,7 +37,7 @@ const EmploiDeTemp = () => {
   
     return (
         <>
-            <Breadcrumb pageName={`Emplois de temps`} />
+            <Breadcrumb pageName={t('menu.emploi')} />
             <Table data={listPeriode} onCreate={handleAddPeriode} onEdit={handleEditPeriode}/>
             <FormCreateUpdate periodecours={selectedPeriode}/>
 

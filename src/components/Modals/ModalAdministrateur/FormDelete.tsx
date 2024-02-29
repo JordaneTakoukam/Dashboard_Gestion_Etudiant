@@ -3,10 +3,12 @@ import { setShowModalDelete } from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { Administrateur } from '../../../pages/Admin/ListeAdministrateurs';
+import { useTranslation } from 'react-i18next';
 
 
 
 function ModalDeleteAdministrateur({ administrateur }: { administrateur : Administrateur|null}) {
+    const {t}=useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -21,13 +23,13 @@ function ModalDeleteAdministrateur({ administrateur }: { administrateur : Admini
     return (
         <>
             <CustomDialogModal
-                title="Supprimer un administrateur"
+                title={t('form_delete.supprimer')}
                 isModalOpen={isModalOpen}
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleCreateAdministrateur}
             >
-                <h1>Supprimez l'administrateur : {administrateur?administrateur.nom:""} {administrateur?administrateur.prenom:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.administrateur')} : {administrateur?administrateur.nom:""} {administrateur?administrateur.prenom:""}</h1>
             </CustomDialogModal>
         </>
     );

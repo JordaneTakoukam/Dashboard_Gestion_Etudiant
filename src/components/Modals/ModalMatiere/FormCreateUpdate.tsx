@@ -7,10 +7,11 @@ import { Section, sections } from '../../../pages/Admin/Sections';
 import { Cycle, cycles } from '../../../pages/Admin/Cycles';
 import { Matiere } from '../../../pages/Admin/ListeMatieres';
 import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
+import { useTranslation } from 'react-i18next';
 
 
 function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
-
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
@@ -34,7 +35,7 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
 
     useEffect(() => {
         if (matiere) {
-            setModalTitle("Mettre à jour les informations de la matière");
+            setModalTitle(t('form_update.enregistrer')+t('form_update.matiere'));
             setCode(matiere.code);
             setLibelle(matiere.libelle);
             setPrerequis(matiere.prerequis?matiere.prerequis:"");
@@ -45,7 +46,7 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
             setNiveau(matiere.niveau);
             
         } else {
-            setModalTitle("Enregistrer une nouvelle matière");
+            setModalTitle(t('form_save.enregistrer')+t('form_save.matiere'));
             setCode("");
             setLibelle("");
             setPrerequis("");
@@ -65,7 +66,7 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
             setErrorNiveau("");
             setIsFirstRender(false);
         }
-    }, [matiere, isFirstRender]);
+    }, [matiere, isFirstRender, t]);
 
     const closeModal = () => { 
         setErrorCode(""); 
@@ -108,19 +109,19 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
     const handleCreateUpdate = () => {
         if (!code || !libelle || !section || !cycle || !niveau) {
             if (!code) {
-                setErrorCode("Le champ code est obligatoire.");
+                setErrorCode(t('error.code'));
             }
             if (!libelle) {
-                setErrorLibelle("Le champ libellé est obligatoire.");
+                setErrorLibelle(t('error.libelle'));
             }
             if (!section) {
-                setErrorSection("Le champ section est obligatoire.");
+                setErrorSection(t('error.section'));
             }
             if (!cycle) {
-                setErrorCycle("Le champ cycle est obligatoire.");
+                setErrorCycle(t('error.cycle'));
             }
             if (!niveau) {
-                setErrorNiveau("Le champ niveau est obligatoire.");
+                setErrorNiveau(t('error.niveau'));
             }
 
 
@@ -140,7 +141,7 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>Code</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -148,7 +149,7 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>Libellé</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -156,58 +157,58 @@ function ModalCreateUpdate({ matiere }: { matiere : Matiere | null }) {
                     onChange={(e) => {setLibelle(e.target.value); setErrorLibelle("")}}
                 />
                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-                <label>Prérequis</label>
+                <label>{t('label.prerequis')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={prerequis}
                     onChange={(e) => {setPrerequis(e.target.value);}}
                 />
-                <label>Approche pédagogique</label>
+                <label>{t('label.approche_ped')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={approchePedagogique}
                     onChange={(e) => {setApprochePedagogique(e.target.value);}}
                 />
-                <label>Evaluations des acquis</label>
+                <label>{t('label.evaluation_acquis')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={evaluationDesAcquis}
                     onChange={(e) => {setEvaluationDesAcquis(e.target.value);}}
                 />
-                <label>Section</label><label className="text-red-500"> *</label>
+                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={section ? section.libelle : 'Sélectionnez une section'}
+                    value={section ? section.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.section')}
                     onChange={handleSectionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez une section</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.section')}</option>
                     {sections.map(section => (
                         <option key={section.id} value={section.libelle}>{section.libelle}</option>
                     ))}
                 </select>
                 {errorSection && <p className="text-red-500">{errorSection}</p>}
-                <label>Cycle</label><label className="text-red-500"> *</label>
+                <label>{t('label.cycle')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={cycle ? cycle.libelle : 'Sélectionnez un cycle'}
+                    value={cycle ? cycle.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}
                     onChange={handleCycleChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un cycle</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}</option>
                     {cycles.map(cycle => (
                         <option key={cycle.id} value={cycle.libelle}>{cycle.libelle}</option>
                     ))}
                 </select>
                 {errorCycle && <p className="text-red-500">{errorCycle}</p>}
-                <label>Niveau</label><label className="text-red-500"> *</label>
+                <label>{t('label.niveau')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={niveau ? niveau.libelle : 'Sélectionnez un niveau'}
+                    value={niveau ? niveau.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.niveau')}
                     onChange={handleNiveauChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">Sélectionnez un niveau</option>
+                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.niveau')}</option>
                     {niveaux.map(niveau => (
                         <option key={niveau.id} value={niveau.libelle}>{niveau.libelle}</option>
                     ))}

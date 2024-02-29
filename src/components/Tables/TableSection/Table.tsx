@@ -8,6 +8,7 @@ import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { Section } from "../../../pages/Admin/Sections";
+import { useTranslation } from "react-i18next";
 
 interface TableSectionProps {
     data: Section[];
@@ -17,6 +18,7 @@ interface TableSectionProps {
 
 
 const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
+    const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -75,10 +77,10 @@ const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title="Nouvelle section"
+                    title={t('boutton.nouvelle_section')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText="Rechercher une section" onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.section')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

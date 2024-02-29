@@ -18,10 +18,6 @@ import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
-import i18next from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import enTranslations from './langages/en.json';
-import frTranslations from './langages/fr.json';
 // import { selectLanguage } from './_redux/features/setting_slice.js';
 
 

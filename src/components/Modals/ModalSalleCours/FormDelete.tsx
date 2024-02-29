@@ -3,10 +3,12 @@ import { setShowModalDelete } from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { SalleCours } from '../../../pages/Admin/SallesDeCours';
+import { useTranslation } from 'react-i18next';
 
 
 
 function ModalDelete({ salleCours }: { salleCours : SalleCours|null}) {
+    const {t}=useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -21,13 +23,13 @@ function ModalDelete({ salleCours }: { salleCours : SalleCours|null}) {
     return (
         <>
             <CustomDialogModal
-                title="Supprimer une salle de cours"
+                title={t('form_delete.supprimer')}
                 isModalOpen={isModalOpen}
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>Supprimez la sallecours : {salleCours?salleCours.nom:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.salle')} : {salleCours?salleCours.nom:""}</h1>
             </CustomDialogModal>
         </>
     );

@@ -105,7 +105,7 @@ const SignIn = () => {
           </div>
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
-            <div className="lang-selector items-center">
+            <div className="lang-selector ">
               {/* <label htmlFor="lang">{t('header.langue')}</label> */}
               <select id="lang" value={selectedLanguage} onChange={handleLanguageChange}>
                 <option value="fr">{t('header.francais')}</option>

@@ -27,7 +27,7 @@ function App() {
 
   const [loading, setLoading] = useState<boolean>(true);
   // var isAuth = isUserAuthenticated();
-  const isAuth = { status: false };
+  const isAuth = { status: true };
   const roles = config.roles;
   const sommesRoutesDelegateStudent = [...routeStudent, ...routeDelegate];
 

@@ -14,7 +14,7 @@ i18next
         translation: frTranslations,
       },
     },
-    lng: 'fr', // Langue par défaut
+    lng: localStorage.getItem('lang') ?? 'fr', // Langue par défaut
     fallbackLng: 'en', // Langue de secours
   });
 

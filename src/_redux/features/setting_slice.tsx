@@ -16,7 +16,7 @@ interface SettingState {
 }
 
 const initialState: SettingState = {
-    language: localStorage.getItem('lang')?.toString() ?? 'fr',
+    language: localStorage.getItem('lang')?.toString() ?? 'en',
     showModal: {
         create: false,
         update: false,

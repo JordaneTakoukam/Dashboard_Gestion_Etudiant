@@ -28,7 +28,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const { pathname } = location;
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
-    const {t}=useTranslation();
+    const { t } = useTranslation();
 
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
     const [sidebarExpanded, setSidebarExpanded] = useState(
@@ -579,16 +579,14 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
 
 
-                        </ul>
-                    </div>
 
-                    {/* <!-- Autres --> */}
-                    <div>
-                        <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
-                            {t('menu.autres')}
-                        </h3>
 
-                       
+                            {/* <!-- Autres --> */}
+
+                            <h3 className="mt-8 mb-2 ml-4 text-sm font-semibold text-bodydark2">
+                                {t('menu.autres')}
+                            </h3>
+
 
                             {/* Parametre */}
                             <SidebarLinkGroup
@@ -747,23 +745,30 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                     );
                                 }}
                             </SidebarLinkGroup>
-                            {/* Parametre */}
+                        </ul>
+                    </div>
 
-                            <div className='w-full flex flex-col justify-center items-center -ml-4 mt-10 mb-5 text-body'>
-                                <div className='flex items-center'>
-                                    <div className='text-[10px]  pr-1 '>
-                                        <FaRegCopyright />
-                                    </div>
-                                    <p className='text-[10px]'>{config.copyRight}</p>
 
-                                </div>
 
-                                <p className='text-[13px] ml-2'>Version <span className='font-semibold'>{config.version}</span></p>
 
+
+                    {/* Parametre */}
+
+                    <div className='w-full flex flex-col justify-center items-center -ml-4 mt-10 mb-5 text-body'>
+                        <div className='flex items-center'>
+                            <div className='text-[10px]  pr-1 '>
+                                <FaRegCopyright />
                             </div>
+                            <p className='text-[10px]'>{config.copyRight}</p>
 
+                        </div>
+
+                        <p className='text-[13px] ml-2'>Version <span className='font-semibold'>{config.version}</span></p>
 
                     </div>
+
+
+
                 </nav>
                 {/* <!-- Sidebar Menu --> */}
             </div>

@@ -15,17 +15,20 @@ const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
-  const {t}=useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState('fr');
+  const { t } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('lang')?.toString() ?? 'fr');
   const dispatch = useDispatch();
-  const language = useSelector((state: RootState) => state.setting.language);
+  const language = localStorage.getItem('lang')?.toString() ?? 'fr';
   useEffect(() => {
+
     i18next.changeLanguage(language);
   }, [language]);
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLanguage = e.target.value;
     setSelectedLanguage(newLanguage);
+    localStorage.setItem('lang', newLanguage);
+
     dispatch(setShowLanguage(newLanguage));
   };
   return (

@@ -21,8 +21,8 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const {t}=useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState('fr');
+  const { t } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('lang')?.toString() ?? 'fr');
   const dispatch = useDispatch();
   const language = useSelector((state: RootState) => state.setting.language);
   useEffect(() => {
@@ -32,11 +32,12 @@ const SignIn = () => {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLanguage = e.target.value;
     setSelectedLanguage(newLanguage);
+    localStorage.setItem('lang', newLanguage);
     dispatch(setShowLanguage(newLanguage));
   };
 
   const handleSubmit = async () => {
-    
+
     // if (email && password) {
     setLoading(true);
 

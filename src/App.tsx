@@ -18,10 +18,15 @@ import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
-// import { selectLanguage } from './_redux/features/setting_slice.js';
+import * as dotenv from 'dotenv';
 
 
 function App() {
+
+  // intialisation de dotenv
+  dotenv.config();
+
+
   var dispatch = useDispatch();
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
@@ -84,7 +89,7 @@ function App() {
 
 
   const userRole = useSelector((state: RootState) => state.user.role);
-  
+
   // const options = {
   //   resources: {
   //     en: {
@@ -142,7 +147,7 @@ function App() {
                       path={path}
                       element={
                         <Suspense fallback={<LoaderCircular />}>
-                          <Component  />
+                          <Component />
                         </Suspense>
                       }
                     />

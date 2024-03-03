@@ -2,11 +2,12 @@ import { config } from "../config";
 import CryptoJS from 'crypto-js';
 
 
+
 export function formatRoleName(value: string) {
   const roles = config.roles;
-  return value === roles.admin ? 'Administrateur' :
-    value === roles.teacher ? 'Enseignant' :
-      value === roles.delegate ? 'Délégué' :
+  return value === roles.superAdmin ? 'Super Administrateur' : value === roles.admin ? 'Administrateur' :
+    value === roles.enseignant ? 'Enseignant' :
+      value === roles.delegue ? 'Délégué' :
         'Étudiant'
 }
 
@@ -27,8 +28,7 @@ export async function decrypt(encryptedValue: String) {
   const ivWordArray = CryptoJS.lib.WordArray.create(iv);
   const ciphertextWordArray = CryptoJS.lib.WordArray.create(ciphertext);
 
-  // Accéder à la clé secrète à partir de la variable d'environnement
-  const secretKey = process.env.CRYPO_KEY;
+  const secretKey = config.cryptoKey; // Accéder à la clé
 
   const decrypted = CryptoJS.AES.decrypt({
     ciphertext: ciphertextWordArray,

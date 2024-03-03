@@ -18,13 +18,9 @@ import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
-import * as dotenv from 'dotenv';
 
 
 function App() {
-
-  // intialisation de dotenv
-  dotenv.config();
 
 
   var dispatch = useDispatch();
@@ -129,10 +125,10 @@ function App() {
           {/*  Page de droites   */}
           {/* page dashboard est celle selectionner par defaut */}
           <Route index element={
-            roles.admin === userRole ? <DashBoardAmin /> :
-              roles.teacher === userRole ? <DashboardTeacher /> :
-                roles.student === userRole ? <DashBoardStudent /> :
-                  roles.delegate === userRole ? <DashboardDelegate /> :
+            (roles.admin || roles.superAdmin) === userRole ? <DashBoardAmin /> :
+              roles.enseignant === userRole ? <DashboardTeacher /> :
+                roles.etudiant === userRole ? <DashBoardStudent /> :
+                  roles.delegue === userRole ? <DashboardDelegate /> :
                     <NotFoundIsAuth />
           } />
           {/* autres pagges pour chaque type de compte */}
@@ -154,7 +150,7 @@ function App() {
                   );
                 })
               ) :
-              userRole === roles.teacher ?
+              userRole === roles.enseignant ?
                 (
                   routeTeacher.map((route, index) => {
                     const { path, component: Component } = route;
@@ -171,7 +167,7 @@ function App() {
                     );
                   })
                 ) :
-                userRole === roles.student ?
+                userRole === roles.etudiant ?
                   (
                     routeStudent.map((route, index) => {
                       const { path, component: Component } = route;
@@ -188,7 +184,7 @@ function App() {
                       );
                     })
                   ) :
-                  userRole === roles.delegate ?
+                  userRole === roles.delegue ?
                     (
                       sommesRoutesDelegateStudent.map((route, index) => {
                         const { path, component: Component } = route;

@@ -16,34 +16,32 @@ interface SignInApiResponse {
 
 interface SignInApiProps {
     email: string;
-    password: string;
+    mot_de_passe: string;
 }
 
-export async function signinApi({ email, password }: SignInApiProps): Promise<ApiResponse<string>> {
+export async function signInApi({ email, mot_de_passe }: SignInApiProps): Promise<ApiResponse<string>> {
     try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return { success: true, message: 'Connexion réussie' };
 
+        const response = await axios.post<SignInApiResponse>(
+            `${api}/auth/signin`,
+            { email, mot_de_passe },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
 
-        // const response = await axios.post<SignInApiResponse>(
-        //     `${api}/auth/signin`,
-        //     { email, password },
-        //     {
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //     },
-        // );
+        const data = response.data;
 
-        // const data = response.data;
+        if (data.token) {
+            storeTokenInLocalStorage(data.token);
+            createToast("Bienvenue", "", 0)
+        } else {
+            createToast("Une erreur est survenue, réessayer", "", 2)
+        }
 
-        // if (data.token) {
-        //     storeTokenInLocalStorage(data.token);
-        // } else {
-        //     createToast("Une erreur est survenue, réessayer", "", 2)
-        // }
-
-        // return { success: true, message: 'Connexion réuissi' };
+        return { success: true, message: 'Connexion réuissi' };
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
             const axiosError: AxiosError<ApiResponse<string>> = error;

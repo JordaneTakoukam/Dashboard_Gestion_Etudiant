@@ -18,6 +18,7 @@ import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
+import ResetPassword from './pages/Authentication/ResetPassword.js';
 
 
 function App() {
@@ -116,10 +117,11 @@ function App() {
 
       <Routes>
         {/* Redirect to /auth/signup if not authenticated */}
-        <Route path="/auth/signin" element={<SignIn />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Menu de gauche pour les differents roles  */}
-        <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/auth/signin'} />}>
+        <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/signin'} />}>
 
 
           {/*  Page de droites   */}

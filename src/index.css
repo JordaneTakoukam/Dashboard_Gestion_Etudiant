@@ -178,3 +178,9 @@ span.flatpickr-weekday,
   display: none !important;
 }
 
+
+.card {
+  @apply rounded-2xl shadow-md;
+  background-color: white;
+  border: 1px solid #ccc; /* Ajout de la bordure grise */
+}

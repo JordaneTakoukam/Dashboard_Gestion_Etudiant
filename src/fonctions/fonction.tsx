@@ -38,3 +38,26 @@ export async function decrypt(encryptedValue: String) {
   return decrypted;
 }
 
+
+export function isValidEmail(email: string) {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "L'adresse e-mail n'est pas valide.";
+  }
+  return '';
+}
+
+export function isValidPassword(password: string) {
+  if (!password || password.trim().length < 8) {
+    return "Le mot de passe doit contenir au moins 8 caractères.";
+  }
+
+  // Vérifie la présence d'au moins une lettre et un chiffre dans le mot de passe
+  const containsLetter = /[a-zA-Z]/.test(password);
+  const containsNumber = /\d/.test(password);
+
+  if (!containsLetter || !containsNumber) {
+    return "Le mot de passe doit contenir au moins une lettre et un chiffre.";
+  }
+
+  return '';
+}

@@ -1,81 +1,82 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
-    id: string,
+    _id: string;
     role: string;
-    commune: string;
-    categorie: string;
-    service: string;
-    grade: string;
-    matricule: string | null;
+    genre: string;
+    date_creation: Date;
     nom: string;
     prenom: string | null;
-    genre: string;
-    dateNaiss: string | null;
-    lieuNaiss: string | null;
-    contact: string | null;
     email: string;
+    mot_de_passe: string;
+    id_commune: string | null;
+    id_categorie: string | null;
+    id_service: string | null;
+    id_grade: string | null;
+    matricule: string | null;
+    date_naiss: Date | null;
+    lieu_naiss: string | null;
+    contact: string | null;
+    status: string;
+    abscences: Abscence[];
+    historique_connexion: Date[];
 }
 
-export interface PropsUserState {
-    id: string,
+interface Abscence {
+    date_abs: Date | null;
+    heure_debut: string | null;
+    heure_fin: string | null;
+    semestre: string | null;
+    annee: string | null;
+}
+
+
+export interface PropsUserMinState {
+    _id: string;
     role: string;
-    commune: string;
-    categorie: string;
-    service: string;
-    grade: string;
-    matricule: string | null;
     nom: string;
     prenom: string | null;
-    genre: string;
-    dateNaiss: string | null;
-    lieuNaiss: string | null;
-    contact: string | null;
-    email: string;
 }
-
 const initialState: UserState = {
-    id: '',
+    _id: '',
     role: '',
-    commune: '',
-    categorie: '',
-    service: '',
-    grade: '',
-    matricule: null,
+    genre: '',
+    date_creation: new Date(),
     nom: '',
     prenom: null,
-    genre: '',
-    dateNaiss: null,
-    lieuNaiss: '',
-    contact: '',
     email: '',
+    mot_de_passe: '',
+    id_commune: null,
+    id_categorie: null,
+    id_service: null,
+    id_grade: null,
+    matricule: null,
+    date_naiss: null,
+    lieu_naiss: null,
+    contact: null,
+    status: 'actif',
+    abscences: [],
+    historique_connexion: [],
 };
+
+
 
 export const userSlice = createSlice({
     name: "userSlice",
     initialState,
     reducers: {
-        setUser: (state, action: PayloadAction<PropsUserState>) => {
-            state.id = action.payload.id;
+        setUser: (state, action: PayloadAction<UserState>) => {
+            return { ...state, ...action.payload };
+        },
+        setMinimumUser: (state, action: PayloadAction<PropsUserMinState>) => {
+            state._id = action.payload._id;
             state.role = action.payload.role;
-            state.commune = action.payload.commune;
-            state.categorie = action.payload.categorie;
-            state.service = action.payload.service;
-            state.grade = action.payload.grade;
-            state.matricule = action.payload.matricule;
             state.nom = action.payload.nom;
             state.prenom = action.payload.prenom;
-            state.genre = action.payload.genre;
-            state.dateNaiss = action.payload.dateNaiss;
-            state.lieuNaiss = action.payload.lieuNaiss;
-            state.contact = action.payload.contact;
-            state.email = action.payload.email;
         },
     },
 });
 
-export const {
-    setUser,
-} = userSlice.actions;
+export const { setUser, setMinimumUser } = userSlice.actions;
 
 export default userSlice.reducer;

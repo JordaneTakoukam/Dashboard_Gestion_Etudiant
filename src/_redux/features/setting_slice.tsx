@@ -1,5 +1,4 @@
-import { PayloadAction, createAction, createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../store";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface SettingState {
     [x: string]: any;
@@ -16,7 +15,7 @@ interface SettingState {
 }
 
 const initialState: SettingState = {
-    language: localStorage.getItem('lang')?.toString() ?? 'en',
+    language: localStorage.getItem('lang')?.toString() ?? 'fr',
     showModal: {
         create: false,
         update: false,

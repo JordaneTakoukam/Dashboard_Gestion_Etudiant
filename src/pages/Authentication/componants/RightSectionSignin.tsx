@@ -6,8 +6,13 @@ import { signInApi } from "../../../api/auth/api_signin";
 import Input from "../../../components/ui/input";
 import ButtonCustom from "../../../components/ui/button";
 import Loading from "../../../components/ui/loading";
+import createToast from "../../../hooks/toastify";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../_redux/store";
 
 function RightSectionSigin() {
+    var lang = useSelector((state: RootState) => state.setting.language) || 'fr';
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -23,6 +28,7 @@ function RightSectionSigin() {
     const handleSubmit = async () => {
         setError2('');
         setError3('');
+        console.log(lang);
 
 
 
@@ -47,10 +53,29 @@ function RightSectionSigin() {
         // declencher 
         if (email && password && notValidEmail == "" && notValidPassword == "") {
             setLoading(true);
-            const signUpResult = await signInApi({ email: email, mot_de_passe: password });
+            var signUpResult = null;
+            try {
+                signUpResult = await signInApi({ email: email, mot_de_passe: password });
 
-            if (signUpResult.success) {
-                window.location.href = '/dashboard';
+                if (signUpResult.success) {
+                    createToast((signUpResult.message as any)[lang], '', 0)
+                } else {
+                    createToast((signUpResult.message as any)[lang], '', 1)
+
+                }
+
+
+            } catch (e) {
+
+
+                console.log('erreur catch ' + e);
+                setLoading(false)
+
+            }
+
+            if (signUpResult?.success === true) {
+                window.location.href = '/';
+                setLoading(false)
             }
             setLoading(false)
         }
@@ -130,7 +155,7 @@ function RightSectionSigin() {
                                 </Link>
                             </div>
                             {/*  rediriger vers se connecter */}
-                          
+
 
                         </div>
 

@@ -11,60 +11,34 @@ import { NotFound, NotFoundIsAuth } from './pages/NotFound/NotFound.js';
 import DashBoardAmin from './pages/Admin/Dashboard_admin.js';
 import DashboardTeacher from './pages/Enseignant/Dashboard_teacher.js';
 import DashBoardStudent from './pages/Etudiant/Dashboard_student.js';
-import { useDispatch, useSelector } from 'react-redux';
-import { PropsUserState, setUser } from './_redux/features/user_slice.js';
-import { RootState } from './_redux/store.js';
+import { useDispatch } from 'react-redux';
 import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
 import ResetPassword from './pages/Authentication/ResetPassword.js';
+import { isUserAuthenticated } from './middlewares/auth_middleware.js';
+import { setMinimumUser } from './_redux/features/user_slice.js';
+import createToast from './hooks/toastify.js';
 
 
 function App() {
 
-
-  var dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
-
-  const [loading, setLoading] = useState<boolean>(true);
-  // var isAuth = isUserAuthenticated();
-  const isAuth = { status: true };
   const roles = config.roles;
+  const [userRole, setUserRole] = useState<String>('');
+
+  const [loading, setLoading] = useState<boolean>(false);
+  // recuperer les info en local storage
+  var isAuth = isUserAuthenticated();
+
   const sommesRoutesDelegateStudent = [...routeStudent, ...routeDelegate];
-
-  const userTest = [
-    {
-      id: '1',
-      role: 'admin',
-      username: 'Idriss Jordane',
-      email: 'jordane.idriss@gmail.com',
-    },
-    {
-      id: '2',
-      role: 'teacher',
-      username: 'Junior Arnold',
-      email: 'arnold.junior@gmail.com',
-    },
-    {
-      id: '3',
-      role: 'delegate',
-      username: 'Daryl Anderson',
-      email: 'daryl.anderson@gmail.com',
-    },
-    {
-      id: '4',
-      role: 'student',
-      username: 'Pombo emmanuel',
-      email: 'emmanuel.pombo@gmail.com',
-    }
-  ];
-
-
 
 
   // au lencement de la page
   useEffect(() => {
+    setLoading(true);
     const checkIfMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (checkIfMobileOrTablet) {
@@ -72,40 +46,41 @@ function App() {
     } else {
       setIsMobileOrTablet(true);
     }
-    // temps de latence (Test), pour passe de la page common vers /dashboard  ou /sigin
-    const timeout = setTimeout(() => {
-      setLoading(false);
 
-      // on save en state le user connecter dans le state global de l'app
-      const currentUser: PropsUserState = userTest[0]; // 0=admin, 1=enseignant 2=delegué 3=etudiant
-      dispatch(setUser(currentUser))
-    }, 0);
-    return () => clearTimeout(timeout);
   }, []);
 
 
 
-  const userRole = useSelector((state: RootState) => state.user.role);
+  // recuperer les info du token si le user est connecter
+  useEffect(() => {
+    const handleAuthentication = async () => {
+      if (isAuth != null) {
+        if (isAuth.status) {
+          const localUser = isAuth.value;
 
-  // const options = {
-  //   resources: {
-  //     en: {
-  //       translation: enTranslations, // Contenu de votre fichier en.json
-  //     },
-  //     fr: {
-  //       translation: frTranslations, // Contenu de votre fichier fr.json
-  //     },
-  //   },
-  //   lng: useSelector(selectLanguage), // Langue par défaut (peut être modifiée dynamiquement)
-  //   interpolation: {
-  //     escapeValue: false, // Optionnel : configuration des interpolations
-  //   },
-  // };
+          if (localUser) {
+            const { userId, role, nom, prenom } = localUser;
 
-  // i18next
-  //   .use(initReactI18next)
-  //   .init(options);
+            dispatch(setMinimumUser({
+              _id: userId,
+              role: role,
+              nom: nom,
+              prenom: prenom,
+            }));
 
+            setUserRole(role);
+          }
+          setLoading(false);
+        } else {
+          if (isAuth.value != null)
+            createToast(isAuth.value, "", 1);
+        }
+      }
+      setLoading(false);
+    };
+
+    handleAuthentication();
+  }, [isAuth]);
 
 
 
@@ -122,7 +97,6 @@ function App() {
 
         {/* Menu de gauche pour les differents roles  */}
         <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/signin'} />}>
-
 
           {/*  Page de droites   */}
           {/* page dashboard est celle selectionner par defaut */}

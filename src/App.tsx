@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import SignIn from './pages/Authentication/SignIn.js';
 import { ToastContainer } from 'react-toastify';
-import LoaderCircular from './components/Loader/LoaderCircular.js';
 import routeAdmin from './routes/routes.admin.js'
 import routeTeacher from './routes/routes.teacher.js'
 import routeStudent from './routes/routes.student.js'
@@ -22,7 +21,6 @@ import { setMinimumUser } from './_redux/features/user_slice.js';
 import createToast from './hooks/toastify.js';
 import Loading from './components/ui/loading.js';
 
-
 function App() {
 
   const dispatch = useDispatch();
@@ -39,13 +37,19 @@ function App() {
 
   // au lencement de la page
   useEffect(() => {
+
     setLoading(true);
     const checkIfMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (checkIfMobileOrTablet) {
       setIsMobileOrTablet(false);
+      console.log('is mobile');
+
     } else {
+
       setIsMobileOrTablet(true);
+      console.log('is pc');
+
     }
 
   }, []);
@@ -102,15 +106,15 @@ function App() {
           {/*  Page de droites   */}
           {/* page dashboard est celle selectionner par defaut */}
           <Route index element={
-            (roles.admin || roles.superAdmin) === userRole ? <DashBoardAmin /> :
-              roles.enseignant === userRole ? <DashboardTeacher /> :
+           (roles.superAdmin === userRole || roles.admin === userRole) ? <DashBoardAmin /> :
+            roles.enseignant === userRole ? <DashboardTeacher /> :
                 roles.etudiant === userRole ? <DashBoardStudent /> :
                   roles.delegue === userRole ? <DashboardDelegate /> :
                     <NotFoundIsAuth />
           } />
           {/* autres pagges pour chaque type de compte */}
           {
-            userRole === roles.admin ?
+            (userRole === roles.admin || userRole === roles.superAdmin) ?
               (
                 routeAdmin.map((route, index) => {
                   const { path, component: Component } = route;

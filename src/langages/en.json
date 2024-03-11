@@ -1,4 +1,10 @@
 {
+  "super-admin": "Super Administrator",
+  "admin": "Administrator",
+  "enseignant": "Teacher",
+  "etudiant": "Student",
+  "delegue": "Delegate",
+  
   "toast": {
     "email_invalide": "Email is not valid.",
     "mot_de_passe_min_longueur": "Password must be at least 8 characters long.",

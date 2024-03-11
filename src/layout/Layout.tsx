@@ -25,9 +25,9 @@ const Layout = ({ isMobileOrTablet }: LayoutProps) => {
             <div className="flex h-screen overflow-hidden">
                 {/* <!-- ===== Sidebar Start ===== --> */}
                 {
-                    roles.admin === userRole ?
+                    (roles.superAdmin === userRole || roles.admin === userRole) ?
                         <SidebarAdmin sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> :
-                        roles.teacher === userRole ?
+                        roles.enseignant === userRole ?
                             <SidebarTeacher sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> :
                             <SidebarStudent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 

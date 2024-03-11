@@ -1,13 +1,7 @@
-import { useEffect, useState } from 'react';
 import DarkModeSwitcher from './DarkModeSwitcher';
 import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../_redux/store';
-// import { changeLanguage } from '../../_redux/features/setting_slice';
-import i18next from '../../langages/i18n';
-import { setShowLanguage } from '../../_redux/features/setting_slice';
-import { useTranslation } from 'react-i18next';
+import LanguageToogle from '../ui/language_toggle';
 
 
 
@@ -15,26 +9,9 @@ const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
-  const { t } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState('fr');
-  const dispatch = useDispatch();
-  const language = localStorage.getItem('lang')?.toString() ?? 'fr';
-
-  useEffect(() => {
-    i18next.changeLanguage(language);
-    setSelectedLanguage(language);
-  }, [language]);
+  
 
 
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = e.target.value;
-    setSelectedLanguage(newLanguage);
-
-    localStorage.setItem('lang', newLanguage);
-
-    dispatch(setShowLanguage(newLanguage));
-  };
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none max-h-[55px]">
       <div className="flex flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11">
@@ -45,6 +22,8 @@ const Header = (props: {
             onClick={(e) => {
               e.stopPropagation();
               props.setSidebarOpen(!props.sidebarOpen);
+              console.log('ffff');
+              
             }}
             className="z-99999 block rounded-sm bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark "
           >
@@ -80,13 +59,8 @@ const Header = (props: {
 
 
         <div className="flex items-center gap-3 2xsm:gap-7">
-          <div className="lang-selector">
-            {/* <label htmlFor="lang">{t('header.langue')}</label> */}
-            <select id="lang" value={selectedLanguage} onChange={handleLanguageChange}>
-              <option value="fr">{t('header.francais')}</option>
-              <option value="en">{t('header.anglais')}</option>
-            </select>
-          </div>
+
+          <LanguageToogle />
           <ul className="flex items-center gap-2 2xsm:gap-4">
             <DarkModeSwitcher />
             <DropdownNotification />

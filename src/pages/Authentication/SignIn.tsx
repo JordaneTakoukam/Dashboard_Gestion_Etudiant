@@ -21,7 +21,10 @@ const SignIn = () => {
         {/* Droite */}
         <div className='bg-white h-screen w-full lg:w-1/2 overflow-auto'>
           {/* uniquement sur mobile : haut */}
-          <LanguageToogle />
+          <div className="mt-8 mb-10">
+            <LanguageToogle />
+          </div>
+          
           <MobileHead />
           <RightSectionSigin />
         </div>

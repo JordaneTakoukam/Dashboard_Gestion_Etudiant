@@ -15,15 +15,12 @@ interface CardDashboardProps {
 
 
 
-
-
-
 const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: CardDashboardProps) => {
     return (
         <div className={`
         
         text-black bg-white
-        
+      dark:bg-boxdark dark:text-gray
        relative rounded-sm border border-stroke  py-6 px-5 shadow-default dark:border-strokedark  w-full`}>
             {/* icone position en haut a gauche */}
             {

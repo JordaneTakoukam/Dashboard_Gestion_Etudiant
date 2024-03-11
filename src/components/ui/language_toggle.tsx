@@ -7,14 +7,16 @@ import { setShowLanguage } from '../../_redux/features/setting_slice';
 
 function LanguageToogle() {
     const { t } = useTranslation();
-    const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('lang')?.toString() ?? 'fr');
+    const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('lang')?.toString() || 'fr');
     const dispatch = useDispatch();
     const language = useSelector((state: RootState) => state.setting.language);
+
     useEffect(() => {
         i18next.changeLanguage(language);
     }, [language]);
 
     const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        
         const newLanguage = e.target.value;
         setSelectedLanguage(newLanguage);
         localStorage.setItem('lang', newLanguage);
@@ -22,11 +24,11 @@ function LanguageToogle() {
     };
 
     return (
-        <div className='w-full flex items-center justify-center mt-8 mb-10'>
-            <div className="flex items-center justify-center">
+        <div className='flex items-center justify-center bg-white dark:bg-boxdark'>
+            <div className="flex items-center justify-center dark:bg-boxdark">
                 <img src={language === 'fr' ? '/france.png' : '/united-kingdom.png'} alt='drapeau' className='h-[18px] w-[18px] mr-.5' />
                 {/* <label htmlFor="lang">{t('header.langue')}</label> */}
-                <select id="lang" value={selectedLanguage} onChange={handleLanguageChange} className="px-2 py-2">  
+                <select id="lang" value={selectedLanguage} onChange={handleLanguageChange} className="px-2 py-2 dark:bg-boxdark">  
                     <option value="fr">{t('header.francais')}</option>
                     <option value="en">{t('header.anglais')}</option>
                 </select>

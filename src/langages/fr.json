@@ -1,4 +1,10 @@
 {
+  "super-admin": "Super Administrateur",
+  "admin": "Administrateur",
+  "enseignant": "Enseignant",
+  "etudiant": "Étudiant",
+  "delegue": "Délégué",
+  
   "toast": {
     "email_invalide": "L'adresse e-mail n'est pas valide.",
     "mot_de_passe_min_longueur": "Le mot de passe doit contenir au moins 8 caractères.",

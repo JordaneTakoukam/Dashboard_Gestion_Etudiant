@@ -1,18 +1,8 @@
 import { config } from "../config";
 import CryptoJS from 'crypto-js';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from "react-redux";
-import { RootState } from "../_redux/store";
 
 
 
-export function formatRoleName(value: string) {
-  const roles = config.roles;
-  return value === roles.superAdmin ? 'Super Administrateur' : value === roles.admin ? 'Administrateur' :
-    value === roles.enseignant ? 'Enseignant' :
-      value === roles.delegue ? 'Délégué' :
-        'Étudiant'
-}
 
 export function capitalizeFirstLetter(text: string) {
   if (text.length === 0) {

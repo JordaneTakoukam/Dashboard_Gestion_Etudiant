@@ -9,22 +9,22 @@ import { logoutFunction } from '../../api/auth/logout';
 import { useSelector } from 'react-redux';
 import { RootState } from "./../../_redux/store";
 import { config } from '../../config';
-import { formatRoleName } from '../../fonctions/fonction';
 import { BiLogOutCircle } from "react-icons/bi";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
 import { useTranslation } from 'react-i18next';
+import Loading from '../ui/loading';
 
 
 const DropdownUser = () => {
   // const pageIsLoading = useSelector((state: RootState) => state.setting.pageIsLoading);
   const pageIsLoading = false;
-  const {t}=useTranslation();
+  const { t } = useTranslation();
   const roles = config.roles;
 
   const userState = useSelector((state: RootState) => state.user);
 
-  const user = { username: userState.username, role: userState.role };
+  const user = { nom_et_prenom: `${userState.nom + ' ' + userState.prenom}`, role: userState.role };
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -59,6 +59,7 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+
   return (
     <div className="relative">
       <Link
@@ -69,24 +70,23 @@ const DropdownUser = () => {
       >
         {
           pageIsLoading ?
-            <div className={`flex items-center justify-center  bg-transparent'}`}>
-              <div className="h-6 w-6 mx-10 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
-            </div>
+            <Loading />
 
             : <span className="hidden text-right lg:block">
-              <span className="block text-sm font-medium text-black dark:text-white">
-                {user.username}
+              <span className="block text-sm font-medium text-black dark:text-white ">
+                {user.nom_et_prenom}
               </span>
-              <span className="block text-xs">{formatRoleName(user.role)}</span>
+              <span className="block text-xs">{t(user.role)}</span>
             </span>
         }
 
-        <span className={`rounded-full ${user.role === roles.teacher ? 'h-9 w-9' : 'h-10 w-10 '}`}>
+        <span className={`rounded-full ${user.role === roles.enseignant ? 'h-9 w-9' : 'h-10 w-10 '}`}>
           <img src={
-            user.role === roles.admin ? ImageAdmin :
-              user.role === roles.teacher ? ImageTeacher :
-                user.role === roles.delegate ? ImageDelegate :
-                  ImageStudent
+            user.role === roles.superAdmin ? ImageAdmin :
+              user.role === roles.admin ? ImageAdmin :
+                user.role === roles.enseignant ? ImageTeacher :
+                  user.role === roles.delegue ? ImageDelegate :
+                    ImageStudent
           } alt="User" />
         </span>
 
@@ -131,16 +131,6 @@ const DropdownUser = () => {
           </NavLink>
 
 
-          {/* <NavLink
-            to="/settings"
-            onClick={() => { setDropdownOpen(false) }}
-            className=" flex items-center gap-3.5 py-3 px-5 text-sm font-medium duration-300 ease-in-out  lg:text-base hover:bg-gray dark:hover:bg-black">
-            <div className='text-lg text-[23px]'>
-              <IoSettingsOutline />
-
-            </div>
-            Paramètres
-          </NavLink> */}
         </ul>
 
 

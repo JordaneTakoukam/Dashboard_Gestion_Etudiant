@@ -1,4 +1,17 @@
 {
+  "toast": {
+    "email_invalide": "Email is not valid.",
+    "mot_de_passe_min_longueur": "Password must be at least 8 characters long.",
+    "mot_de_passe_lettre_chiffre": "Password must contain at least one letter and one digit.",
+    "texte_par_defaut": "Enter your text",
+    "email_requis": "Email is required.",
+    "mot_de_passe_requis": "Password is required."
+  },
+  "auth": {
+    "se_connecter": "Log in",
+    "content_de": "Happy to see you again",
+    "connectez_vous": "Log in to your account."
+  },
   "header": {
     "title": "Dashboard",
     "langue": "Language",
@@ -7,7 +20,6 @@
     "profil": "My profile",
     "deconnexion": "Log out"
   },
-  
   "menu": {
     "menu": "MENU",
     "tableau_de_bord": "Dashboard",
@@ -19,19 +31,18 @@
     "emploi": "Timetable",
     "calendrier": "Academic Calendar",
     "autres": "OTHERS",
-    "parametres": "Settings", 
+    "parametres": "Settings",
     "discipline_etudiant": "Student Discipline",
     "discipline_enseignant": "Teacher Discipline",
     "absences": "Absences",
     "profil": "My profile"
   },
-
   "sub_menu": {
     "liste_etudiant": "Student List",
     "liste_enseignant": "Teacher List",
     "discipline": "Discipline",
     "liste_matiere": "Subject List",
-    "chapitres":"Chapters",
+    "chapitres": "Chapters",
     "progression": "Progression",
     "sections": "Sections",
     "cycles": "Cycles",
@@ -46,7 +57,6 @@
     "departements": "Departments",
     "communes": "Communes"
   },
-
   "tableau_de_bord": {
     "title": "Dashboard",
     "total_etudiants": "Total number of students",
@@ -63,15 +73,14 @@
     "aucun_cour": "No scheduled courses at the moment",
     "alertes": "Recent alerts",
     "aucune_alerte": "No alerts at the moment",
-    "liste_alerte":"List of recent alerts"
+    "liste_alerte": "List of recent alerts"
   },
-
   "label": {
     "matricule": "Registration N°",
     "nom": "First Name",
     "prenom": "Last Name",
     "genre": "Gender",
-    "date":"date",
+    "date": "date",
     "date_naiss": "Date of Birth",
     "lieu_naiss": "Place of Birth",
     "contact": "Contact",
@@ -125,33 +134,32 @@
     "photo_profil": "Profile Picture",
     "editer_photo": "Edit your profile picture",
     "telecharger_photo": "Click here to upload",
-    "glisser_photo":"or drag and drop",
-    "changer_pass":"Change password",
-    "actuel_pass":"Current password",
-    "nouveau_pass":"New password",
+    "glisser_photo": "or drag and drop",
+    "changer_pass": "Change password",
+    "actuel_pass": "Current password",
+    "nouveau_pass": "New password",
     "nombre_chapitre": "Number of Chapters",
     "volume_horaire": "Hourly Volume",
-    "tableau_vide":"No data recorded during this period.",
-    "heure":"hour",
-    "total_heure_absence":"Total absence time",
-    "aucune_absence":"No absences recorded this semester",
-    "nombre_heure":"Number of hours",
-    "horaire":"Timetable",
-    "lundi":"Monday",
-    "mardi":"Tuesday",
-    "mercredi":"Wednesday",
-    "jeudi":"Thursday",
-    "vendredi":"Friday",
-    "samedi":"Saturday",
-    "dimanche":"Sunday",
-    "confirm_sup":"Confirm deletion",
-    "jour":"Day",
-    "se_connecter":"Sign in",
-    "entree_email":"Enter your e-mail address",
-    "entree_pass":"Enter your password",
-    "content":"Welcome back !"
+    "tableau_vide": "No data recorded during this period.",
+    "heure": "hour",
+    "total_heure_absence": "Total absence time",
+    "aucune_absence": "No absences recorded this semester",
+    "nombre_heure": "Number of hours",
+    "horaire": "Timetable",
+    "lundi": "Monday",
+    "mardi": "Tuesday",
+    "mercredi": "Wednesday",
+    "jeudi": "Thursday",
+    "vendredi": "Friday",
+    "samedi": "Saturday",
+    "dimanche": "Sunday",
+    "confirm_sup": "Confirm deletion",
+    "jour": "Day",
+    "se_connecter": "Sign in",
+    "entree_email": "Enter your e-mail address",
+    "entree_pass": "Enter your password",
+    "content": "Welcome back !"
   },
-
   "recherche": {
     "rechercher": "Search ",
     "etudiant": "a student",
@@ -172,8 +180,8 @@
     "departement": "a department",
     "commune": "a commune"
   },
-
   "boutton": {
+    "recevoir_un_nouveau_mdp": "Receive a new password",
     "enregistrer": "Save",
     "sauvegarder": "Save",
     "annuler": "Cancel",
@@ -204,14 +212,13 @@
     "ajouter_type": "Add a Teaching Type",
     "ajouter_obj": "Add an objective",
     "ajouter_comp": "Add a competency",
-    "oui":"Yes",
-    "non":"No",
-    "signaler_absence":"Report my abscence",
-    "se_connecter":"Sign in",
-    "oublie_pass":"Password forgotten?",
-    "reinit_pass":"Reset password"
+    "oui": "Yes",
+    "non": "No",
+    "signaler_absence": "Report my abscence",
+    "se_connecter": "Sign in",
+    "oublie_pass": "Password forgotten?",
+    "reinit_pass": "Reset password"
   },
-
   "select_par_defaut": {
     "selectionnez": "Select ",
     "section": "a section",
@@ -232,7 +239,6 @@
     "salle": "a classroom",
     "type_ens": "a type of teaching"
   },
-
   "filtre": {
     "filtrer": "Filter",
     "etudiant": "Filter the list of students by:",
@@ -245,9 +251,8 @@
     "evenement": "Display the list of events by:",
     "departement": "Filter the list of departments by:",
     "commune": "Filter the list of communes by:",
-    "absence":"Filter my absences by : "
+    "absence": "Filter my absences by : "
   },
-
   "form_save": {
     "enregistrer": "Save ",
     "etudiant": "a new student",
@@ -269,10 +274,9 @@
     "periode": "a new period",
     "evenement": "a new event"
   },
-
   "form_update": {
     "absence": "Add an absence : ",
-    "signaler":"Report my abscence",
+    "signaler": "Report my abscence",
     "enregistrer": "Update Information ",
     "etudiant": "of the student",
     "enseignant": "of the teacher",
@@ -293,7 +297,6 @@
     "periode": "of the period",
     "evenement": "of the event"
   },
-
   "form_delete": {
     "supprimer": "Delete",
     "suppression": "Deletion ",
@@ -317,7 +320,6 @@
     "periode": "of the period",
     "evenement": "of the event"
   },
-
   "error": {
     "code": "The code field is required.",
     "libelle": "The label field is required.",
@@ -346,5 +348,4 @@
     "type_ens_periode": "The type of teaching field is required.",
     "salle": "The classroom field is required."
   }
-  
 }

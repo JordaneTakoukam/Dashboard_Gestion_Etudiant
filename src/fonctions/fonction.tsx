@@ -1,5 +1,8 @@
 import { config } from "../config";
 import CryptoJS from 'crypto-js';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from "react-redux";
+import { RootState } from "../_redux/store";
 
 
 
@@ -39,16 +42,23 @@ export async function decrypt(encryptedValue: String) {
 }
 
 
-export function isValidEmail(email: string) {
+export function validateEmail(email: string) {
+
+  if (!email) {
+    return "toast.email_requis";
+  }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return "L'adresse e-mail n'est pas valide.";
   }
   return '';
 }
 
-export function isValidPassword(password: string) {
+export function validatePassword(password: string) {
+  if (!password) {
+    return "toast.mot_de_passe_requis";
+  }
   if (!password || password.trim().length < 8) {
-    return "Le mot de passe doit contenir au moins 8 caractères.";
+    return "toast.mot_de_passe_min_longueur";
   }
 
   // Vérifie la présence d'au moins une lettre et un chiffre dans le mot de passe
@@ -56,7 +66,7 @@ export function isValidPassword(password: string) {
   const containsNumber = /\d/.test(password);
 
   if (!containsLetter || !containsNumber) {
-    return "Le mot de passe doit contenir au moins une lettre et un chiffre.";
+    return "toast.mot_de_passe_lettre_chiffre";
   }
 
   return '';

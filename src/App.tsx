@@ -20,6 +20,7 @@ import ResetPassword from './pages/Authentication/ResetPassword.js';
 import { isUserAuthenticated } from './middlewares/auth_middleware.js';
 import { setMinimumUser } from './_redux/features/user_slice.js';
 import createToast from './hooks/toastify.js';
+import Loading from './components/ui/loading.js';
 
 
 function App() {
@@ -118,7 +119,7 @@ function App() {
                       key={index}
                       path={path}
                       element={
-                        <Suspense fallback={<LoaderCircular />}>
+                        <Suspense fallback={<Loading />}>
                           <Component />
                         </Suspense>
                       }
@@ -135,7 +136,7 @@ function App() {
                         key={index}
                         path={path}
                         element={
-                          <Suspense fallback={<LoaderCircular />}>
+                          <Suspense fallback={<Loading />}>
                             <Component />
                           </Suspense>
                         }
@@ -152,7 +153,7 @@ function App() {
                           key={index}
                           path={path}
                           element={
-                            <Suspense fallback={<LoaderCircular />}>
+                            <Suspense fallback={<Loading />}>
                               <Component />
                             </Suspense>
                           }
@@ -169,7 +170,7 @@ function App() {
                             key={index}
                             path={path}
                             element={
-                              <Suspense fallback={<LoaderCircular />}>
+                              <Suspense fallback={<Loading />}>
                                 <Component />
                               </Suspense>
                             }

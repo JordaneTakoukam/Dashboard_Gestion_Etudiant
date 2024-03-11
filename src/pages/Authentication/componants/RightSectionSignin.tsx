@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ErrorInput, LabelInput } from "./Label"
 import { useEffect, useState } from 'react';
-import { isValidEmail, isValidPassword } from "../../../fonctions/fonction";
 import { signInApi } from "../../../api/auth/api_signin";
 import Input from "../../../components/ui/input";
 import ButtonCustom from "../../../components/ui/button";
@@ -9,8 +8,12 @@ import Loading from "../../../components/ui/loading";
 import createToast from "../../../hooks/toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
+import { useTranslation } from 'react-i18next';
+import { validateEmail, validatePassword } from "../../../fonctions/fonction";
 
 function RightSectionSigin() {
+    const { t } = useTranslation();
+
     var lang = useSelector((state: RootState) => state.setting.language) || 'fr';
 
     const [email, setEmail] = useState('');
@@ -32,21 +35,16 @@ function RightSectionSigin() {
 
 
 
-        if (!email) {
-            setError2("L'email est requis");
-        } else {
-            notValidEmail = isValidEmail(email);
-            if (notValidEmail) {
-                setError2(notValidEmail);
-            }
+
+        notValidEmail = validateEmail(email);
+        if (notValidEmail) {
+            setError2(t(notValidEmail));
         }
-        if (!password) {
-            setError3("Le mot de passe est requis");
-        } else {
-            notValidPassword = isValidPassword(password);
-            if (notValidPassword) {
-                setError3(notValidPassword);
-            }
+
+
+        notValidPassword = validatePassword(password);
+        if (notValidPassword) {
+            setError3(t(notValidPassword));
         }
 
 
@@ -95,13 +93,13 @@ function RightSectionSigin() {
 
     return (
         <div>
-            <div className="w-full h-full border-stroke dark:border-strokedark xl:border-l-2 overflow-auto mt-[4%]">
-                <div className='card shadow-8 mx-6 lg:mx-[100px] m-0 lg:my-10 h-[80%]'>
+            <div className="w-full h-full border-stroke dark:border-strokedark xl:border-l-2 overflow-auto mt-[2%]">
+                <div className='card shadow-8 mx-6 lg:mx-[100px] m-0 lg:my-0'>
                     <div className="flex flex-col items-center justify-center w-full p-2 sm:p-12.5 px-5 py-8 xl:px-10">
 
                         {/* titre */}
-                        <h1 className="mb-9 text-lg lg:text-2xl font-bold text-black dark:text-white ">
-                            Se connecter
+                        <h1 className="mb-8 text-lg lg:text-2xl font-bold text-black dark:text-white ">
+                            {t('boutton.se_connecter')}
                         </h1>
 
                         <div className="flex flex-col items-start w-full">
@@ -109,10 +107,10 @@ function RightSectionSigin() {
 
                             {/* email */}
                             <div className="mb-4 w-full ">
-                                <LabelInput title='Email' />
+                                <LabelInput title={t('label.email')} />
                                 <Input
                                     type="text"
-                                    placeholder="Entrez votre adresse email"
+                                    placeholder={t('label.entree_email')}
                                     value={email}
                                     setValue={setEmail}
                                 />
@@ -121,10 +119,10 @@ function RightSectionSigin() {
 
                             {/* mot de passe */}
                             <div className="mb-4 w-full">
-                                <LabelInput title='Mot de passe' />
+                                <LabelInput title={t('label.mot_de_passe')} />
                                 <Input
                                     type="password"
-                                    placeholder="Entrez un mot de passe"
+                                    placeholder={t('label.entree_pass')}
                                     value={password}
                                     setValue={setPassword}
                                 />
@@ -142,16 +140,17 @@ function RightSectionSigin() {
 
                                         :
                                         <ButtonCustom
-                                            title={'Se connecter'}
+                                            title={t('boutton.se_connecter')}
                                             onClick={handleSubmit}
                                             next={true}
                                         />
                                 }
                             </div>
 
-                            <div className="mt-6 text-center text-[15px] flex justify-end items-end w-full mb-[6%]">
+                            <div className="mt-6 text-center text-[15px] flex justify-end items-end w-full">
                                 <Link to="/reset-password" className="text-primary font-medium">
-                                    Mot de passe oublier
+                                    {t('boutton.oublie_pass')}
+
                                 </Link>
                             </div>
                             {/*  rediriger vers se connecter */}

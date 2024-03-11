@@ -6,9 +6,12 @@ import { FaInstagram } from 'react-icons/fa';
 import { config } from '../../../config'
 import LogoPng from "./../../../images/logo/logo.png";
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 
 function LeftSectionAuth() {
+    const { t } = useTranslation();
+
     return (
         <div className="flex flex-col justify-start items-start h-screen w-full">
             <div className='mx-30'>
@@ -34,10 +37,10 @@ function LeftSectionAuth() {
                 {/* body */}
                 <div className='mt-[40%]'>
                     <h1 className='text-white font-normal text-4xl w-[400px]'>
-                        Content de vous revoir
+                    {t('label.content')}
                     </h1>
                     <p className='text-md text-white pt-4'>
-                        Connectez-vous à votre compte.
+                        {t('auth.connectez_vous')}
                     </p>
                 </div>
             </div>

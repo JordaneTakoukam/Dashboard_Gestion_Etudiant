@@ -1,11 +1,15 @@
 import { ErrorInput, LabelInput } from "./Label"
 import { useEffect, useState } from 'react';
-import { isValidEmail } from "../../../fonctions/fonction";
 import Input from "../../../components/ui/input";
 import Loading from "../../../components/ui/loading";
 import ButtonCustom from "../../../components/ui/button";
+import { useTranslation } from 'react-i18next';
+import { validateEmail } from "../../../fonctions/fonction";
+
 
 function RightSectionResetPassword() {
+    const { t } = useTranslation();
+
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -16,23 +20,13 @@ function RightSectionResetPassword() {
 
     const handleSubmit = () => {
 
-        if (!email) {
-            setError2("L'email est requis")
-        }
-
-
-        // 
-        if (!email) {
-            setError2("L'email est requis");
-        } else {
-            notValidEmail = isValidEmail(email);
-            if (notValidEmail) {
-                setError2(notValidEmail);
-            }
+        notValidEmail = validateEmail(email);
+        if (notValidEmail) {
+            setError2(t(notValidEmail));
         }
 
         // declencher 
-        if (email && notValidEmail == "") {
+        if (notValidEmail == "") {
             setLoading(true)
 
             //
@@ -48,35 +42,6 @@ function RightSectionResetPassword() {
     }, [email])
 
 
-    // const handleSubmit = async () => {
-
-    //     // if (email && password) {
-    //     setLoading(true);
-
-    //     const signInResult = await signinApi({ email: email, password: password });
-
-    //     if (signInResult.success) {
-    //         window.location.href = '/';
-    //         createToast(signInResult.message, "", 0);
-
-    //     }
-
-    //     // if (signInResult.success) {
-    //     // createToast(signInResult.message, "", 0);
-    //     // window.location.href = '/';
-
-
-    //     // } else {
-    //     //   createToast(signInResult.message, "", 2);
-    //     // }
-    //     setLoading(false);
-
-    //     // } else {
-    //     //   alert("Veuillez renseigner tous les champs!")
-    //     // }
-
-
-    // };
     return (
         <div>
             <div className="w-full h-full border-stroke dark:border-strokedark xl:border-l-2 overflow-auto mt-[15%]">
@@ -85,7 +50,7 @@ function RightSectionResetPassword() {
 
                         {/* titre */}
                         <h1 className="mb-9 text-lg lg:text-2xl font-bold text-black dark:text-white ">
-                            Réinitialiser le mot de passe
+                            {t('boutton.reinit_pass')}
                         </h1>
 
                         <div className="flex flex-col items-start w-full">
@@ -93,10 +58,10 @@ function RightSectionResetPassword() {
 
                             {/* email */}
                             <div className="mb-4 w-full ">
-                                <LabelInput title='Email' />
+                                <LabelInput title={t('label.email')} />
                                 <Input
                                     type="text"
-                                    placeholder="Entrez l'adresse mail associer à votre compte"
+                                    placeholder={t('label.entree_email')}
                                     value={email}
                                     setValue={setEmail}
                                 />
@@ -114,7 +79,7 @@ function RightSectionResetPassword() {
 
                                         :
                                         <ButtonCustom
-                                            title={'Recoir un nouveau mot de passe'}
+                                            title={t('boutton.recevoir_un_nouveau_mdp')}
                                             onClick={handleSubmit}
                                             next={true}
                                         />

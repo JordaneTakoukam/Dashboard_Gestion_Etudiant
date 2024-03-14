@@ -37,22 +37,14 @@ function App() {
 
   // au lencement de la page
   useEffect(() => {
-
-    setLoading(true);
     const checkIfMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
+   
     if (checkIfMobileOrTablet) {
       setIsMobileOrTablet(false);
-      console.log('is mobile');
-
     } else {
-
       setIsMobileOrTablet(true);
-      console.log('is pc');
-
     }
-
-  }, []);
+  }, [isAuth.status]);
 
 
 
@@ -106,8 +98,8 @@ function App() {
           {/*  Page de droites   */}
           {/* page dashboard est celle selectionner par defaut */}
           <Route index element={
-           (roles.superAdmin === userRole || roles.admin === userRole) ? <DashBoardAmin /> :
-            roles.enseignant === userRole ? <DashboardTeacher /> :
+            (roles.superAdmin === userRole || roles.admin === userRole) ? <DashBoardAmin /> :
+              roles.enseignant === userRole ? <DashboardTeacher /> :
                 roles.etudiant === userRole ? <DashBoardStudent /> :
                   roles.delegue === userRole ? <DashboardDelegate /> :
                     <NotFoundIsAuth />

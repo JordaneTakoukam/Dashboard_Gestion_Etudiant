@@ -4,19 +4,19 @@ import FormCreateUpdate from "../../components/Modals/ModalCommune/FormCreateUpd
 import FormDelete from "../../components/Modals/ModalCommune/FormDelete";
 import Table from "../../components/Tables/TableCommune/Table";
 import { Departement } from "./Departements";
-import { Region } from "./Regions";
 import { useTranslation } from "react-i18next";
+import { CommonSettingProps } from "../../_redux/features/data_setting_slice";
 
-export interface Commune{
-    id?:number;
-    code:string;
-    libelle:string;
+export interface Commune {
+    id?: number;
+    code: string;
+    libelle: string;
     departement: Departement;
 }
 
 const Communes = () => {
     const [selectedCommune, setSelectedCommune] = useState<Commune | null>(null);
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const handleEditDepartement = (commune: Commune) => {
         setSelectedCommune(commune);
     }
@@ -27,68 +27,68 @@ const Communes = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.communes')} />
-            <Table data={communes}  onCreate={handleAddDepartement} onEdit={handleEditDepartement}/>
+            <Table data={communes} onCreate={handleAddDepartement} onEdit={handleEditDepartement} />
 
-            <FormCreateUpdate commune={selectedCommune}/>
-            <FormDelete commune={selectedCommune}/>
+            <FormCreateUpdate commune={selectedCommune} />
+            <FormDelete commune={selectedCommune} />
 
         </>
     );
 };
 
 export default Communes;
-const centre:Region={
-    id:1,
-    code:"CE",
-    libelle:"Centre"
+const centre: CommonSettingProps = {
+    _id: '55',
+    code: "CE",
+    libelle: "Centre"
 }
-const departement:Departement={
-    id:1,
-    code:"HS",
-    libelle:"Haute Sanaga",
-    region:centre
+const departement: Departement = {
+    id: 1,
+    code: "HS",
+    libelle: "Haute Sanaga",
+    region: centre
 }
 export const communes: Commune[] = [
     {
-        id:1,
-        code:"YI",
-        libelle:"Yaoundé I",
-        departement:departement,
+        id: 1,
+        code: "YI",
+        libelle: "Yaoundé I",
+        departement: departement,
     },
     {
-        id:2,
-        code:"YII",
-        libelle:"Yaoundé II",
-        departement:departement,
+        id: 2,
+        code: "YII",
+        libelle: "Yaoundé II",
+        departement: departement,
     },
     {
-        id:3,
-        code:"YIII",
-        libelle:"Yaoundé III",
-        departement:departement,
+        id: 3,
+        code: "YIII",
+        libelle: "Yaoundé III",
+        departement: departement,
     },
     {
-        id:4,
-        code:"YIV",
-        libelle:"Yaoundé IV",
-        departement:departement,
+        id: 4,
+        code: "YIV",
+        libelle: "Yaoundé IV",
+        departement: departement,
     },
     {
-        id:5,
-        code:"YV",
-        libelle:"Yaoundé V",
-        departement:departement,
+        id: 5,
+        code: "YV",
+        libelle: "Yaoundé V",
+        departement: departement,
     },
     {
-        id:6,
-        code:"YVI",
-        libelle:"Yaoundé VI",
-        departement:departement,
+        id: 6,
+        code: "YVI",
+        libelle: "Yaoundé VI",
+        departement: departement,
     },
     {
-        id:7,
-        code:"YVII",
-        libelle:"Yaoundé VII",
-        departement:departement,
+        id: 7,
+        code: "YVII",
+        libelle: "Yaoundé VII",
+        departement: departement,
     }
 ];

@@ -4,7 +4,6 @@
   "enseignant": "Teacher",
   "etudiant": "Student",
   "delegue": "Delegate",
-  
   "toast": {
     "email_invalide": "Email is not valid.",
     "mot_de_passe_min_longueur": "Password must be at least 8 characters long.",
@@ -82,6 +81,7 @@
     "liste_alerte": "List of recent alerts"
   },
   "label": {
+    "ajouter": "Add",
     "matricule": "Registration N°",
     "nom": "First Name",
     "prenom": "Last Name",
@@ -107,6 +107,8 @@
     "annee": "Year",
     "code": "Code",
     "libelle": "Label",
+    "libelle_fr": "Label in french",
+    "libelle_en": "Label in english",
     "nom_chose": "Name",
     "actions": "Actions",
     "nombre_place": "Number of Seats",
@@ -353,5 +355,8 @@
     "matiere": "The subject field is required.",
     "type_ens_periode": "The type of teaching field is required.",
     "salle": "The classroom field is required."
+  },
+  "message": {
+    "erreur": "An error occurred"
   }
 }

@@ -20,11 +20,14 @@ import { isUserAuthenticated } from './middlewares/auth_middleware.js';
 import { setMinimumUser } from './_redux/features/user_slice.js';
 import createToast from './hooks/toastify.js';
 import Loading from './components/ui/loading.js';
+import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from './_redux/features/data_setting_slice.js';
+import { apiGetAllSettings } from './api/settings/api_data_setting.js';
+import { setSaveDeviceType } from './_redux/features/setting.js';
 
 function App() {
 
   const dispatch = useDispatch();
-  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(true);
   const roles = config.roles;
   const [userRole, setUserRole] = useState<String>('');
 
@@ -36,17 +39,24 @@ function App() {
 
 
   // au lencement de la page
+  const checkIfMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   useEffect(() => {
-    const checkIfMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-   
+    dispatch(setSaveDeviceType(checkIfMobileOrTablet))
     if (checkIfMobileOrTablet) {
       setIsMobileOrTablet(false);
-    } else {
-      setIsMobileOrTablet(true);
     }
-  }, [isAuth.status]);
+  }, [checkIfMobileOrTablet]);
 
 
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
   // recuperer les info du token si le user est connecter
   useEffect(() => {
@@ -66,18 +76,63 @@ function App() {
             }));
 
             setUserRole(role);
+
+            setLoading(false);
+
           }
-          setLoading(false);
+
         } else {
           if (isAuth.value != null)
             createToast(isAuth.value, "", 1);
         }
       }
-      setLoading(false);
     };
 
     handleAuthentication();
   }, [isAuth]);
+
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // recuperer les settings 
+  const fetchSettingsData = async () => {
+
+    dispatch(setLoadingDataSetting(true));
+    try {
+      const settingsData = await apiGetAllSettings();
+      dispatch(setDataSetting(settingsData));
+
+
+    } catch (error) {
+      console.error('Error fetching settings data:', error);
+      dispatch(setErrorDataSetting('une erreur est survenue'))
+
+    } finally {
+      dispatch(setLoadingDataSetting(false));
+
+    }
+  };
+
+  useEffect(() => {
+
+    const fetchSettingsDataIfAuth = async () => {
+      if (isAuth) {
+        await fetchSettingsData();
+      } else {
+      }
+    };
+
+    fetchSettingsDataIfAuth();
+  }, []);
+
 
 
 
@@ -106,7 +161,7 @@ function App() {
           } />
           {/* autres pagges pour chaque type de compte */}
           {
-            (userRole === roles.admin || userRole === roles.superAdmin) ?
+            (userRole === roles.superAdmin) ?
               (
                 routeAdmin.map((route, index) => {
                   const { path, component: Component } = route;
@@ -123,9 +178,9 @@ function App() {
                   );
                 })
               ) :
-              userRole === roles.enseignant ?
+              (userRole === roles.admin) ?
                 (
-                  routeTeacher.map((route, index) => {
+                  routeAdmin.map((route, index) => {
                     const { path, component: Component } = route;
                     return (
                       <Route
@@ -140,9 +195,9 @@ function App() {
                     );
                   })
                 ) :
-                userRole === roles.etudiant ?
+                userRole === roles.enseignant ?
                   (
-                    routeStudent.map((route, index) => {
+                    routeTeacher.map((route, index) => {
                       const { path, component: Component } = route;
                       return (
                         <Route
@@ -157,9 +212,9 @@ function App() {
                       );
                     })
                   ) :
-                  userRole === roles.delegue ?
+                  userRole === roles.etudiant ?
                     (
-                      sommesRoutesDelegateStudent.map((route, index) => {
+                      routeStudent.map((route, index) => {
                         const { path, component: Component } = route;
                         return (
                           <Route
@@ -173,17 +228,34 @@ function App() {
                           />
                         );
                       })
-                    )
+                    ) :
+                    userRole === roles.delegue ?
+                      (
+                        sommesRoutesDelegateStudent.map((route, index) => {
+                          const { path, component: Component } = route;
+                          return (
+                            <Route
+                              key={index}
+                              path={path}
+                              element={
+                                <Suspense fallback={<Loading />}>
+                                  <Component />
+                                </Suspense>
+                              }
+                            />
+                          );
+                        })
+                      )
 
 
-                    : <Route element={<NotFound />} />
+                      : <Route element={<NotFoundIsAuth />} />
 
           }
         </Route>
 
 
         {/* si mauvaises url est rechercher */}
-        <Route path='*' element={<NotFound />} />
+        <Route path='*' element={isAuth.status ? <div className='h-screen w-screen flex  items-center justify-center ml-[150px]'><Loading /></div> : <NotFound />} />
       </Routes>
     </>
   );

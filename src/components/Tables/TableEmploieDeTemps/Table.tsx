@@ -9,7 +9,7 @@ import HeaderTable from "./HeaderTable";
 import { PeriodeCours, jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
-import { setShowModal } from "../../../_redux/features/setting_slice";
+import { setShowModal } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";

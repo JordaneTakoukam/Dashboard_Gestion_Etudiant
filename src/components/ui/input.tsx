@@ -8,6 +8,7 @@ interface InputProps {
   showIcon?: boolean;
   icon?: ReactNode;
   placeholder?: string;
+  hasBackground?: boolean; // Nouvelle prop pour gérer l'arrière-plan
 }
 
 const Input: React.FC<InputProps> = ({
@@ -16,7 +17,8 @@ const Input: React.FC<InputProps> = ({
   type = 'text',
   showIcon = false,
   icon,
-  placeholder = 'Enter your text',
+  placeholder = '',
+  hasBackground = false, // Définition de la prop par défaut
 }) => {
   const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
 
@@ -25,7 +27,9 @@ const Input: React.FC<InputProps> = ({
       <input
         type={showPassword ? 'text' : type}
         placeholder={placeholder}
-        className="w-full rounded text-sm border border-stroke bg-transparent py-2 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+        className={`w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary
+         py-2 pl-4 pr-10 outline-none focus:border-primary focus-visible:shadow-none 
+        ${hasBackground ? 'bg-gray dark:bg-meta-4 text-black dark:text-white' : 'bg-transparent dark:bg-form-input dark:border-form-strokedark'}`}
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
@@ -38,7 +42,7 @@ const Input: React.FC<InputProps> = ({
         </span>
       )}
 
-      {(showIcon && type != "password") && (
+      {(showIcon && type !== "password") && (
         <span
           className="absolute right-4 top-2 cursor-pointer text-md lg:text-[18px]"
         >

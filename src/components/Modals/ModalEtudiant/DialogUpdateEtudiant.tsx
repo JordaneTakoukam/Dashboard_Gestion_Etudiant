@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalUpdate } from '../../../_redux/features/setting_slice';
+import { setShowModalUpdate } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 

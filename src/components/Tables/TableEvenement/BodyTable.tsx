@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { Evenement } from "../../../pages/CommonPage/CalendrierAcademique"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"

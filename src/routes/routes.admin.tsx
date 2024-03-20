@@ -10,7 +10,6 @@ import SallesDeCours from '../pages/Admin/SallesDeCours';
 import Sections from '../pages/Admin/Sections';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
 import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
-import Administration from '../pages/Admin/Administration';
 import MonProfil from '../pages/CommonPage/Profil';
 import AnneeSemestre from '../pages/Admin/AnneeSemestreCourant';
 import Services from '../pages/Admin/Services';
@@ -18,14 +17,13 @@ import Fonctions from '../pages/Admin/Fonctions';
 import Grades from '../pages/Admin/Grades';
 import Categories from '../pages/Admin/Categories';
 import Regions from '../pages/Admin/Regions';
-import Departements from '../pages/Admin/Departements';
 import Communes from '../pages/Admin/Communes';
-import Chapitres from '../pages/Admin/Chapitres';
 import Rubriques from '../pages/Admin/Rubriques';
 import GroupeQuestions from '../pages/Admin/GroupeQuestions';
 import Questions from '../pages/Admin/Questions';
 import ListeDesSondages from '../pages/Admin/Sondages';
 import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
+import { Departements } from '../pages/Admin/Departements';
 
 
 

@@ -1,11 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
-import { config } from './../../../config.js'
+import { config } from '../../config.js'
+import { SettingProps } from '../../_redux/features/data_setting_slice.js';
 
 const api = `${config.apiUrl}/api/v1/settings`;
 
 const token = localStorage.getItem(config.jwt_key);
 
-export async function apiGetAllSettings(): Promise<any[]> {
+export async function apiGetAllSettings(): Promise<SettingProps> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}`,
@@ -18,7 +19,7 @@ export async function apiGetAllSettings(): Promise<any[]> {
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const settings: any[] = response.data.settings;
+        const settings: SettingProps = response.data.settings;
 
         return settings;
     } catch (error) {

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Matiere } from "../../../pages/Admin/ListeMatieres";
+
 
 interface ButtonCrudProps {
     onClickEdit?: () => void; //Editer un élément

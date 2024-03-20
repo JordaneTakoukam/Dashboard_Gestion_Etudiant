@@ -10,9 +10,9 @@ import { Fonction } from "./Fonctions";
 import { Service } from "./Services";
 import { Grade } from "./Grades";
 import { Categorie } from "./Categories";
-import { Region } from "./Regions";
 import { Departement } from "./Departements";
 import { useTranslation } from "react-i18next";
+import { CommonSettingProps } from "../../_redux/features/data_setting_slice";
 
 export interface Enseignant {
     id?:number
@@ -29,7 +29,7 @@ export interface Enseignant {
     categorie?:Categorie;
     fonction?:Fonction;
     service?:Service;
-    region?:Region;
+    region?:CommonSettingProps;
     departement?:Departement;
     commune?:Commune;
     dateEntreeAdmin?:string;

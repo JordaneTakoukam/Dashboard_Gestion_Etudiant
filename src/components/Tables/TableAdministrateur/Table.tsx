@@ -3,7 +3,7 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal} from "../../../_redux/features/setting_slice";
+import { setShowModal} from "../../../_redux/features/setting";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";

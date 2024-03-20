@@ -1,21 +1,25 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting_slice';
+import { setShowModal } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
-import {Commune, communes } from '../../../pages/Admin/Communes';
+import { Commune, communes } from '../../../pages/Admin/Communes';
 import { Service, services } from '../../../pages/Admin/Services';
 import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
 import { Grade, grades } from '../../../pages/Admin/Grades';
 import { Categorie, categories } from '../../../pages/Admin/Categories';
-import { Region, regions } from '../../../pages/Admin/Regions';
-import { Departement, departements } from '../../../pages/Admin/Departements';
 import { useTranslation } from 'react-i18next';
+import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_interface';
 
 
-function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
-    const {t}=useTranslation();
+function ModalCreateUpdate({ enseignant }: { enseignant: Enseignant | null }) {
+
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
+
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+
+    const { t } = useTranslation();
 
     const dispatch = useDispatch();
     const [nom, setNom] = useState("");
@@ -33,8 +37,8 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
     const [categorie, setCategorie] = useState<Categorie>();
     const [fonction, setFonction] = useState<Fonction>();
     const [service, setService] = useState<Service>();
-    const [region, setRegion] = useState<Region>();
-    const [departement, setDepartement] = useState<Departement>();
+    const [region, setRegion] = useState<CommonSettingProps>();
+    const [departement, setDepartement] = useState<DepartementProps>();
     const [commune, setCommune] = useState<Commune>();
     const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
 
@@ -51,9 +55,9 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
 
     useEffect(() => {
         if (enseignant) {
-            setModalTitle(t('form_update.enregistrer')+t('form_update.enseignant'));
+            setModalTitle(t('form_update.enregistrer') + t('form_update.enseignant'));
             setNom(enseignant.nom);
-            setPrenom(enseignant.prenom?enseignant.prenom:"");setGenre(enseignant.genre);
+            setPrenom(enseignant.prenom ? enseignant.prenom : ""); setGenre(enseignant.genre);
             setDateNaiss(enseignant.dateNaiss ? enseignant.dateNaiss : "");
             setLieuNaiss(enseignant.lieuNaiss ? enseignant.lieuNaiss : "");
             setEmail(enseignant.email);
@@ -71,7 +75,7 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
             setCommune(enseignant.commune ? enseignant.commune : undefined);
             setDateEntreeAdmin(enseignant.dateEntreeAdmin ? enseignant.dateEntreeAdmin : "");
         } else {
-            setModalTitle(t('form_save.enregistrer')+t('form_save.enseignant'));
+            setModalTitle(t('form_save.enregistrer') + t('form_save.enseignant'));
             setNom("");
             setPrenom("");
             setGenre("");
@@ -105,15 +109,15 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
         }
     }, [enseignant, isFirstRender, t]);
 
-    const closeModal = () => { 
-        setErrorNom(""); 
+    const closeModal = () => {
+        setErrorNom("");
         setErrorGenre("");
         setErrorEmail("");
         // setErrorSection("");
         // setErrorCycle("");
         // setErrorNiveau("");
         setIsFirstRender(true);
-        dispatch(setShowModal()); 
+        dispatch(setShowModal());
     };
 
     const validateEmail = () => {
@@ -201,8 +205,8 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
             setCommune(selectedCommune);
         }
     };
-    
-    
+
+
 
     const handleCreateEnseignant = () => {
         if (!nom || !genre || !email) {
@@ -212,20 +216,20 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
             if (!genre) {
                 setErrorGenre(t('error.genre'));
             }
-    
+
             if (!email) {
                 setErrorEmail(t('error.email'));
             }
-            
+
             return;
         }
         if (!validateEmail()) {
             return;
         }
-        
+
         if (enseignant) {
             console.log("student update");
-        }else{
+        } else {
             console.log("student add");
         }
         closeModal();
@@ -252,7 +256,7 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={nom}
-                    onChange={(e) => {setNom(e.target.value); setErrorNom("")}}
+                    onChange={(e) => { setNom(e.target.value); setErrorNom("") }}
                 />
                 {errorNom && <p className="text-red-500" >{errorNom}</p>}
                 <label>{t('label.prenom')}</label><input
@@ -272,7 +276,7 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={lieuNaiss}
-                    onChange={(e) => {setLieuNaiss(e.target.value)}}
+                    onChange={(e) => { setLieuNaiss(e.target.value) }}
                 />
                 <label>{t('label.genre')}</label><label className="text-red-500"> *</label>
                 <div>
@@ -283,10 +287,10 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                         name="genre"
                         value={t('label.homee')}
                         checked={genre === "H"}
-                        onChange={() =>{ setGenre("H"); setErrorGenre("")}}
+                        onChange={() => { setGenre("H"); setErrorGenre("") }}
                     />
                     <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
-                    
+
                     <input
                         className='radio-label-space'
                         type="radio"
@@ -294,7 +298,7 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                         name="genre"
                         value={t('label.femme')}
                         checked={genre === "F"}
-                        onChange={() =>{ setGenre("F"); setErrorGenre("")}}
+                        onChange={() => { setGenre("F"); setErrorGenre("") }}
                     />
                     <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                 </div>
@@ -304,7 +308,7 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="e-mail"
                     value={email}
-                    onChange={(e) => {setEmail(e.target.value); setErrorEmail("");}}
+                    onChange={(e) => { setEmail(e.target.value); setErrorEmail(""); }}
                 />
                 {errorEmail && <p className="text-red-500">{errorEmail}</p>}
                 <label>{t('label.contact')}</label>
@@ -312,82 +316,82 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={contact}
-                    onChange={(e) => {setContact(e.target.value)}}
+                    onChange={(e) => { setContact(e.target.value) }}
                 />
-                
+
                 <label>{t('label.grade')}</label>
                 <select
-                    value={grade ? grade.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}
+                    value={grade ? grade.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
                     onChange={handleGradeChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
                     {grades.map(grade => (
                         <option key={grade.id} value={grade.libelle}>{grade.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.categorie')}</label>
                 <select
-                    value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}
+                    value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
                     onChange={handleCategorieChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
                     {categories.map(categorie => (
                         <option key={categorie.id} value={categorie.libelle}>{categorie.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.fonction')}</label>
                 <select
-                    value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}
+                    value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
                     onChange={handleFonctionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
                     {fonctions.map(fonction => (
                         <option key={fonction.id} value={fonction.libelle}>{fonction.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.service')}</label>
                 <select
-                    value={service ? service.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}
+                    value={service ? service.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
                     onChange={handleServiceChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
                     {services.map(service => (
                         <option key={service.id} value={service.libelle}>{service.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.region')}</label>
                 <select
-                    value={region ? region.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}
+                    value={region ? region.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
                     onChange={handleRegionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
                     {regions.map(region => (
-                        <option key={region.id} value={region.libelle}>{region.libelle}</option>
+                        <option key={region._id} value={region.libelle}>{region.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.departement')}</label>
                 <select
-                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}
+                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
                     onChange={handleDepartementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
                     {departements.map(departement => (
                         <option key={departement.id} value={departement.libelle}>{departement.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.commune')}</label>
                 <select
-                    value={commune ? commune.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}
+                    value={commune ? commune.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
                     onChange={handleCommuneChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
                     {communes.map(commune => (
                         <option key={commune.id} value={commune.libelle}>{commune.libelle}</option>
                     ))}
@@ -397,7 +401,7 @@ function ModalCreateUpdate({ enseignant }: { enseignant : Enseignant | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
                     value={dateEntreeAdmin}
-                    onChange={(e) => {setDateEntreeAdmin(e.target.value)}}
+                    onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
                 />
             </CustomDialogModal>
 

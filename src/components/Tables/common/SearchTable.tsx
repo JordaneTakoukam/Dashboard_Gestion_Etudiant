@@ -3,14 +3,17 @@ import { useState } from "react";
 
 interface SearchProps {
     hintText: string;
-    onSubmit: () => void;
+    onSubmit: (text: string) => void;
 }
 
 const InputSearch = ({ hintText, onSubmit }: SearchProps) => {
     const [inputValue, setInputValue] = useState("");
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value);
+        const text = event.target.value;
+        setInputValue(text);
+        // Appeler onSubmit à chaque changement de valeur dans l'input
+        onSubmit(text);
     };
 
     return (
@@ -23,15 +26,7 @@ const InputSearch = ({ hintText, onSubmit }: SearchProps) => {
                     value={inputValue}
                     onChange={handleChange}
                 />
-                <button
-                    onClick={onSubmit}
-                    className="
-                    flex items-center justify-center rounded h-full w-[53px]
-                    hover:bg-primary hover:text-white focus:outline-none bg-primary text-[22px] text-white"
-                >
-                    <BsSearch />   
 
-                </button>
             </div>
         </div>
     );

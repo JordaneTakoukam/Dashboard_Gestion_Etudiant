@@ -10,10 +10,10 @@ import { Service } from "./Services";
 import { Fonction } from "./Fonctions";
 import { Grade } from "./Grades";
 import { Categorie } from "./Categories";
-import { Region } from "./Regions";
 import { Departement } from "./Departements";
 import { Commune } from "./Communes";
 import { useTranslation } from "react-i18next";
+import { CommonSettingProps } from "../../_redux/features/data_setting_slice";
 
 export interface Etudiant {
     id?:number
@@ -30,7 +30,7 @@ export interface Etudiant {
     categorie?:Categorie;
     fonction?:Fonction;
     service?:Service;
-    region?:Region;
+    region?:CommonSettingProps;
     departement?:Departement;
     commune?:Commune;
     dateEntreeAdmin?:string;

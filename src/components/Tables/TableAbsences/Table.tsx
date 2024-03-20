@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";

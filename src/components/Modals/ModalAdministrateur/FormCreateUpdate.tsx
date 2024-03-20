@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting_slice';
+import { setShowModal} from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
@@ -9,12 +9,15 @@ import { Service, services } from '../../../pages/Admin/Services';
 import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
 import { Grade, grades } from '../../../pages/Admin/Grades';
 import { Categorie, categories } from '../../../pages/Admin/Categories';
-import { Region, regions } from '../../../pages/Admin/Regions';
-import { Departement, departements } from '../../../pages/Admin/Departements';
 import { useTranslation } from 'react-i18next';
+import { DepartementProps } from '../../../_types/data_setting_interface';
 
 
 function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur | null }) {
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
+
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const [nom, setNom] = useState("");
@@ -32,7 +35,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
     const [categorie, setCategorie] = useState<Categorie>();
     const [fonction, setFonction] = useState<Fonction>();
     const [service, setService] = useState<Service>();
-    const [region, setRegion] = useState<Region>();
+    const [region, setRegion] = useState<CommonSettingProps>();
     const [departement, setDepartement] = useState<Departement>();
     const [commune, setCommune] = useState<Commune>();
     const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
@@ -366,7 +369,7 @@ function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur
                 >
                     <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
                     {regions.map(region => (
-                        <option key={region.id} value={region.libelle}>{region.libelle}</option>
+                        <option key={region._id} value={region.libelle}>{region.libelle}</option>
                     ))}
                 </select>
                 <label>{t('label.departement')}</label>

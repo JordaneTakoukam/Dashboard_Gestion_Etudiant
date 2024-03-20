@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting"
 import { Commune } from "../../../pages/Admin/Communes";
 
 const BodyTable = ({ data, onEdit }: { data: Commune[], onEdit: (commune: Commune) => void }) => {

@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux"
 import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModalUpdate } from "../../../_redux/features/setting"
 import { PeriodeCours } from "../../../pages/CommonPage/EmploiDeTemp"
 
 

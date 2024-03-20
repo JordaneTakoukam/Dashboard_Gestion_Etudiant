@@ -4,7 +4,6 @@
   "enseignant": "Enseignant",
   "etudiant": "Étudiant",
   "delegue": "Délégué",
-  
   "toast": {
     "email_invalide": "L'adresse e-mail n'est pas valide.",
     "mot_de_passe_min_longueur": "Le mot de passe doit contenir au moins 8 caractères.",
@@ -80,6 +79,7 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "ajouter": "Ajouter",
     "matricule": "Matricule",
     "nom": "Nom",
     "prenom": "Prénom",
@@ -105,6 +105,8 @@
     "annee": "Année",
     "code": "Code",
     "libelle": "Libelle",
+    "libelle_fr": "Libelle en français",
+    "libelle_en": "Libelle en anglais",
     "nom_chose": "Nom",
     "actions": "Actions",
     "nombre_place": "Nombre de place",
@@ -351,5 +353,8 @@
     "matiere": "Le champ matiere est obligatoire.",
     "type_ens_periode": "Le champ type d'enseignement est obligatoire.",
     "salle": "Le champ salle de cours est obligatoire."
+  },
+  "message": {
+    "erreur": "Une erreur est survenue"
   }
 }

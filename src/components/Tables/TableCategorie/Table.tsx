@@ -3,7 +3,7 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal} from "../../../_redux/features/setting_slice";
+import { setShowModal} from "../../../_redux/features/setting";
 import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";

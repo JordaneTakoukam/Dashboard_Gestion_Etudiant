@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Matiere } from '../pages/Admin/ListeMatieres';
 import { useTranslation } from 'react-i18next';
 
 interface BreadcrumbProps {

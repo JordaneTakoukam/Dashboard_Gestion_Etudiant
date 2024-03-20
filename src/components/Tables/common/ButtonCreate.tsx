@@ -1,5 +1,6 @@
 import { IoMdAdd } from "react-icons/io";
 
+import { useTranslation } from "react-i18next";
 
 interface ButtonNewProps {
     title: string;
@@ -7,6 +8,8 @@ interface ButtonNewProps {
 }
 
 const ButtonCreate = ({ title, onClick }: ButtonNewProps) => {
+    const { t } = useTranslation();
+
     return (
         <button
             onClick={onClick}
@@ -19,7 +22,7 @@ const ButtonCreate = ({ title, onClick }: ButtonNewProps) => {
                 <IoMdAdd />
             </div>
             <h1 className='hidden lg:block pr-1'>
-                {title}
+                {t('label.ajouter')}
             </h1>
         </button>
     );

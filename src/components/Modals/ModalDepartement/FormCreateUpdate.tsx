@@ -1,19 +1,20 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting_slice';
+import { setShowModal} from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Departement } from '../../../pages/Admin/Departements';
-import { Region, regions } from '../../../pages/Admin/Regions';
 import { useTranslation } from 'react-i18next';
+import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_interface';
 
 
-function ModalCreateUpdate({ departement }: { departement : Departement | null }) {
+function ModalCreateUpdate({ departement }: { departement : DepartementProps | null }) {
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
-    const [region, setRegion] = useState<Region>();
+    const [region, setRegion] = useState<CommonSettingProps>();
     
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelle, setErrorLibelle] = useState("");
@@ -120,7 +121,7 @@ function ModalCreateUpdate({ departement }: { departement : Departement | null }
                 >
                     <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
                     {regions.map(region => (
-                        <option key={region.id} value={region.libelle}>{region.libelle}</option>
+                        <option key={region._id} value={region.libelle}>{region.libelle}</option>
                     ))}
                 </select>
                 {errorRegion && <p className="text-red-500">{errorRegion}</p>}

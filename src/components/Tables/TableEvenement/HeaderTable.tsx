@@ -44,7 +44,7 @@ const HeaderTable = () => {
                 </th>
 
                 {/* Actions  */}
-                {roles.admin === userRole && (<th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
+                {roles.admin === userRole || roles.superAdmin === userRole && (<th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
                     {t('label.actions')}
                 </th>)}
             </tr>

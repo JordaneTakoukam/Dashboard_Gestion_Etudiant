@@ -30,8 +30,8 @@ const Abscences = () => {
         <>
             {/* <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} /> */}
             <Breadcrumb pageName={t('menu.absences')} />
-            {(userRole===roles.student || userRole===roles.delegate) && <Table data={etudiant} onEdit={handleEditHourUser}/>}
-            {userRole===roles.teacher && <Table data={enseignant} onEdit={handleEditHourUser}/>}
+            {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={etudiant} onEdit={handleEditHourUser}/>}
+            {userRole===roles.enseignant && <Table data={enseignant} onEdit={handleEditHourUser}/>}
 
             <FormCreateUpdate user={selectedUser} isSignaled={true} isHourRemove={false} /> 
         </>

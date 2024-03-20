@@ -46,7 +46,7 @@ const BodyTable = ({ data, onEdit }: { data: Evenement[], onEdit:(evenement:Even
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                {roles.admin === userRole && (<td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                {roles.admin === userRole || roles.superAdmin === userRole && (<td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);

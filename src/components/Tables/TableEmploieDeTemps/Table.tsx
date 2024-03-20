@@ -72,7 +72,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                     const jourCell = row.insertCell();
                     const coursJour = periodes.find((cours) => cours.jour.ordre === jours.indexOf(jour) + 1);
                     jourCell.style.textAlign='center';
-                    if (roles.admin === userRole) {
+                    if (roles.admin === userRole  || roles.superAdmin === userRole) {
                         jourCell.onmouseover = () => {
                             jourCell.style.backgroundColor = '#afeeee';
                         };
@@ -83,12 +83,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                     }
                     if (coursJour) {
                         jourCell.textContent = `${coursJour.matiere.code} (${coursJour.typeUE.code}) - ${coursJour.matiere.enseignant.nom} ${coursJour.matiere.enseignant.prenom}/${coursJour.matiere.enseignantSup?coursJour.matiere.enseignantSup.nom:"--"} - ${coursJour.salle.code}`;
-                        if (roles.admin === userRole) {
+                        if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
                             jourCell.style.cursor = 'pointer';
                         }
                     }else{
-                        if (roles.admin === userRole) {
+                        if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode();
                             jourCell.style.cursor = 'pointer';
                         }
@@ -178,7 +178,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     return (
         <div>
-            {roles.admin === userRole && <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+            {roles.admin === userRole || roles.superAdmin === userRole && <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.periode_cours')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}

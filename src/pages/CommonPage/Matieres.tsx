@@ -10,7 +10,7 @@ const Matieres = () => {
 
     return (
         <>
-            <Breadcrumb pageName={`Matières ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} />
+            <Breadcrumb pageName={`Matières ${roles.enseignant === userRole ? "de l'enseignant" : roles.etudiant === userRole ? "" : ""}`} />
 
         </>
     );

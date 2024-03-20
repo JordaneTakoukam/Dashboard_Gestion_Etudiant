@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../_redux/store';
 import i18next from 'i18next';
-import { setShowLanguage } from '../../_redux/features/setting_slice';
+import { setShowLanguage } from '../../_redux/features/setting';
 
 function LanguageToogle() {
     const { t } = useTranslation();

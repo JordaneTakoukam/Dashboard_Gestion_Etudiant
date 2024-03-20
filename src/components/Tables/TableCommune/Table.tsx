@@ -1,32 +1,35 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting_slice";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
 import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import { Commune } from "../../../pages/Admin/Communes";
-import { Region, regions } from "../../../pages/Admin/Regions";
-import { Departement, departements } from "../../../pages/Admin/Departements";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
+import { CommonSettingProps, DepartementProps } from "../../../_types/data_setting_type";
 
 interface TableCommuneProps {
     data: Commune[];
-    onCreate:()=>void;
-    onEdit: (commune:Commune) => void;
+    onCreate: () => void;
+    onEdit: (commune: Commune) => void;
 }
 
 
 const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
-    
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
+
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+
     const pageIsLoading = false;
     const dispatch = useDispatch();
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     // Fonction pour basculer la visibilité des CustomDropDown
@@ -37,12 +40,12 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     // const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
     const [filtreRegion, setFiltreRegion] = useState(regions[0]);
     const [filtreDepartement, setFiltreDepartement] = useState(departements[0]);
-    const handleRegionSelect = (selected: Region | undefined) => {
+    const handleRegionSelect = (selected: CommonSettingProps | undefined) => {
         // setFiltreRegion(selected);
         console.log(selected);
     };
 
-    const handleDepartementSelect = (selected: Departement | undefined) => {
+    const handleDepartementSelect = (selected: DepartementProps | undefined) => {
         // setFiltreDepartement(selected);
         console.log(selected);
     };
@@ -92,9 +95,9 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.nouvelle_commune')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.commune')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.commune')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -106,14 +109,14 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<Region>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.region')}
                                 items={regions}
                                 defaultValue={regions[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(region: Region) => `${region.libelle}`}
+                                displayProperty={(region: CommonSettingProps) => `${region.libelle}`}
                                 onSelect={handleRegionSelect}
                             />
-                            <CustomDropDown2<Departement>
+                            <CustomDropDown2<any>
                                 title={t('label.departement')}
                                 items={departements}
                                 defaultValue={departements[0]} // ou spécifie une valeur par défaut
@@ -130,14 +133,14 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<Region>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.region')}
                                 items={regions}
                                 defaultValue={regions[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(region: Region) => `${region.libelle}`}
+                                displayProperty={(region: CommonSettingProps) => `${region.libelle}`}
                                 onSelect={handleRegionSelect}
                             />
-                            <CustomDropDown2<Departement>
+                            <CustomDropDown2<any>
                                 title={t('label.departement')}
                                 items={departements}
                                 defaultValue={departements[0]} // ou spécifie une valeur par défaut
@@ -168,7 +171,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
                         }
 
 

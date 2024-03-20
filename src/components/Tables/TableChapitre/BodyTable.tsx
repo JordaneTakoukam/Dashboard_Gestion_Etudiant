@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { Chapitre } from "../../../pages/Admin/Chapitres";
 
 const BodyTable = ({ data, onEdit }: { data?: Chapitre[], onEdit: (chapitre: Chapitre) => void }) => {

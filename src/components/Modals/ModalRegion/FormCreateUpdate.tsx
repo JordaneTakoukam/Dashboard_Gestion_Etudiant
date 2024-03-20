@@ -1,73 +1,159 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting_slice';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Region } from '../../../pages/Admin/Regions';
 import { useTranslation } from 'react-i18next';
+import { setShowModal } from '../../../_redux/features/setting';
+import Input from '../../ui/input';
+import { CommonSettingProps } from '../../../_types/data_setting_type';
+import { ErrorMessage, Label } from '../../ui/Label';
+import { apiCreateRegion, apiUpdateRegion } from '../../../api/settings/api_region';
+import { ReponseApiPros } from '../../../api/interface_reponse';
+import createToast from '../../../hooks/toastify';
+import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 
 
-function ModalCreateUpdate({ region }: { region : Region | null }) {
-    const {t}=useTranslation();
+function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
+    const { t } = useTranslation();
 
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
-    const [libelle, setLibelle] = useState("");
-    
+    const [libelleFr, setLibelleFr] = useState("");
+    const [libelleEn, setLibelleEn] = useState("");
 
     const [errorCode, setErrorCode] = useState("");
-    const [errorLibelle, setErrorLibelle] = useState("");
+    const [errorLibelleFr, setErrorLibelleFr] = useState("");
+    const [errorLibelleEn, setErrorLibelleEn] = useState("");
+
     const [isFirstRender, setIsFirstRender] = useState(true);
-    
+
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
+    const lang = useSelector((state: RootState) => state.setting.language);
 
     useEffect(() => {
         if (region) {
-            setModalTitle(t('form_update.enregistrer')+t('form_update.region'));
+            setModalTitle(t('form_update.enregistrer') + t('form_update.region'));
             setCode(region.code);
-            setLibelle(region.libelle);
-            
-        } else {
-            setModalTitle(t('form_save.enregistrer')+t('form_save.region'));
-            setCode("");
-            setLibelle("");
-        }
+            setLibelleFr(region.libelleFr);
+            setLibelleEn(region.libelleEn);
 
+        } else {
+            setModalTitle(t('form_save.enregistrer') + t('form_save.region'));
+            setCode("");
+            setLibelleFr("");
+            setLibelleEn("");
+        }
 
         if (isFirstRender) {
             setErrorCode("");
-            setErrorLibelle("");
+            setErrorLibelleEn("");
+            setErrorLibelleFr("");
             setIsFirstRender(false);
         }
     }, [region, isFirstRender, t]);
 
-    const closeModal = () => { 
-        setErrorCode(""); 
-        setErrorLibelle("");
+    const closeModal = () => {
+        setErrorCode("");
+        setErrorLibelleFr("");
+        setErrorLibelleEn("");
         setIsFirstRender(true);
-        dispatch(setShowModal()); 
+        dispatch(setShowModal());
     };
 
 
-    
-    
-    
+    const handleCreateUpdate = async () => {
+        // create
+        if (!region) {
+            if (!code || !libelleFr || !libelleEn) {
+                if (!code) {
+                    setErrorCode(t('error.code'));
+                }
+                if (!libelleFr) {
+                    setErrorLibelleFr(t('error.libelle'));
+                }
+                if (!libelleEn) {
+                    setErrorLibelleEn(t('error.libelle'));
+                }
 
-    const handleCreateUpdate = () => {
-        if (!code || !libelle) {
-            if (!code) {
-                setErrorCode(t('error.code'));
-            }
-            if (!libelle) {
-                setErrorLibelle(t('error.libelle'));
-            }
+            } else {
+                // creation
+                await apiCreateRegion(
+                    { code, libelleFr, libelleEn }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(createSettingItem({
+                            tableName: 'region', newItem: {
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                date_creation: e.data.date_creation,
+                                _id: e.data._id,
+                            }
+                        }));
 
-            return;
+                        closeModal();
+
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
         }
-        
-        closeModal();
+
+        //update
+        else {
+
+            if (!code || !libelleFr || !libelleEn) {
+                if (!code) {
+                    setErrorCode(t('error.code'));
+                }
+                if (!libelleFr) {
+                    setErrorLibelleFr(t('error.libelle'));
+                }
+                if (!libelleEn) {
+                    setErrorLibelleEn(t('error.libelle'));
+                }
+
+            } else {
+                //
+                //
+                // mise a jour
+                await apiUpdateRegion(
+                    { _id: region._id, code, libelleFr, libelleEn }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(updateSettingItem({
+                            tableName: 'region',
+                            updatedItem: {
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                date_creation: e.data.date_creation,
+                                _id: e.data._id,
+                            }
+                        }));
+
+                        closeModal();
+
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
+
+
     }
 
     return (
@@ -79,23 +165,39 @@ function ModalCreateUpdate({ region }: { region : Region | null }) {
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="text"
+
+                {/* input 1 */}
+                <Label text={t('label.code')} required />
+                <Input
                     value={code}
-                    onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
+                    type='text'
+                    setValue={(value) => { setCode(value); setErrorCode("") }}
+                    hasBackground={true}
                 />
-                {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="text"
-                    value={libelle}
-                    onChange={(e) =>{setLibelle(e.target.value); setErrorLibelle("");} }
+                <ErrorMessage message={errorCode} />
+
+
+                {/* input 2 */}
+                <Label text={t('label.libelle_fr')} required />
+                <Input
+                    value={libelleFr}
+                    type='text'
+                    setValue={(value) => { setLibelleFr(value); setErrorLibelleFr(""); }}
+                    hasBackground={true}
                 />
-                {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
+                <ErrorMessage message={errorLibelleFr} />
+
+
+                {/* input 3 */}
+                <Label text={t('label.libelle_en')} required />
+                <Input
+                    value={libelleEn}
+                    type='text'
+                    setValue={(value) => { setLibelleEn(value); setErrorLibelleEn(""); }}
+                    hasBackground={true}
+                />
+                <ErrorMessage message={errorLibelleEn} />
+
             </CustomDialogModal>
 
         </>
@@ -103,3 +205,4 @@ function ModalCreateUpdate({ region }: { region : Region | null }) {
 }
 
 export default ModalCreateUpdate;
+

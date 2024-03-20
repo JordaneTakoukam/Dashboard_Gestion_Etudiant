@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete} from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete} from "../../../_redux/features/setting"
 import { Administrateur } from "../../../pages/Admin/ListeAdministrateurs"
 
 const BodyTable = ({ data, onEdit }: { data: Administrateur[], onEdit:(enseigant:Administrateur)=>void }) => {

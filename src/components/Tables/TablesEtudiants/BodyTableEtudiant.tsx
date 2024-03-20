@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux"
 import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import { Etudiant } from "../../../pages/Admin/ListeEtudiants"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting"
 
 const BodyTableEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdit: (etudiant: Etudiant) => void }) => {
 

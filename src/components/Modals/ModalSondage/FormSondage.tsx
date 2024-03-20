@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalToDOSondage} from '../../../_redux/features/setting_slice';
+import { setShowModalToDOSondage} from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import { useEffect, useState } from 'react';
 import { Sondage } from '../../../pages/Admin/Sondages';

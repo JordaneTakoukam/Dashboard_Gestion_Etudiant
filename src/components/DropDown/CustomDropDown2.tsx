@@ -25,15 +25,19 @@ function CustomDropDown2<T>({ title, items, defaultValue, onSelect, displayPrope
 
     return (
         <div className="custom-dropdown">
-            <label htmlFor={title}>{title}</label>
+            <label className="text-sm lg:text-md" htmlFor={title}>{title}</label>
             <select
+               
                 id={title}
                 value={selectedItem ? displayProperty(selectedItem) : ""}
                 onChange={handleSelectChange}
-                className="w-full mt-1 rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary">
+                className="w-full  text-sm lg:text-md
+                mt-1 rounded border border-stroke bg-gray py-1 lg:py-3 pl-4 pr-4.5 text-black
+                 focus:border-primary focus-visible:outline-none dark:border-strokedark 
+                 dark:bg-meta-4 dark:text-white dark:focus:border-primary">
                 {defaultValue === null && <option value=""></option>}
                 {items.map((item, index) => (
-                    <option key={index} value={displayProperty(item)}>{displayProperty(item)}</option>
+                    <option className="" key={index} value={displayProperty(item)}>{displayProperty(item)}</option>
                 ))}
             </select>
         </div>

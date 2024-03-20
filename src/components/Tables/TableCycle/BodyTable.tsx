@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting"
 import { Cycle } from "../../../pages/Admin/Cycles";
 
 const BodyTable = ({ data, onEdit }: { data: Cycle[], onEdit: (cycle: Cycle) => void  }) => {

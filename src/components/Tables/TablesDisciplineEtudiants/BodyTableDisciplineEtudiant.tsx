@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { Etudiant } from "../../../pages/Admin/ListeEtudiants"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting_slice"
+import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting"
 import { nbTotal } from "../TableAbsences/Table"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"

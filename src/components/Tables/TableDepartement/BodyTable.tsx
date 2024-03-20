@@ -1,11 +1,14 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting_slice"
-import { Departement } from "../../../pages/Admin/Departements";
+import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
+import { DepartementProps } from "../../../_types/data_setting_type";
+import { RootState } from "../../../_redux/store";
 
-const BodyTable = ({ data, onEdit }: { data: Departement[], onEdit: (departement: Departement) => void  }) => {
+const BodyTable = ({ data, onEdit }: { data: DepartementProps[], onEdit: (departement: DepartementProps) => void }) => {
 
     const dispatch = useDispatch();
+
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     return <tbody>
         {data.map((item, index) => (
@@ -22,7 +25,7 @@ const BodyTable = ({ data, onEdit }: { data: Departement[], onEdit: (departement
 
                 {/* libelle */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.libelle}</h5>
+                    <h5> {lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}

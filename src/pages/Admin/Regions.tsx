@@ -4,85 +4,30 @@ import Table from "../../components/Tables/TableRegion/Table";
 import FormCreateUpdate from "../../components/Modals/ModalRegion/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalRegion/FormDelete";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
+import { CommonSettingProps } from "../../_types/data_setting_type";
 
-export interface Region{
-    id?:number;
-    code:string;
-    libelle:string;
-}
 
 const Regions = () => {
-    const {t}=useTranslation();
-    const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
-    const handleEditRegion = (region : Region) => {
-        setSelectedRegion(region);
-    }
+    const { t } = useTranslation();
+    const [selectedRegion, setSelectedRegion] = useState<CommonSettingProps | null>(null);
 
-    const handleAddRegion = () => {
-        setSelectedRegion(null);
-    }
+    // data depuis le store de redux
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region);
+    
+    const handleEditRegion = (region: CommonSettingProps) => { setSelectedRegion(region) }
+    const handleAddRegion = () => { setSelectedRegion(null) }
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.regions')} />
-            <Table data={regions} onCreate={handleAddRegion} onEdit={handleEditRegion}/>
+            <Table data={regions} onCreate={handleAddRegion} onEdit={handleEditRegion} />
 
-            <FormCreateUpdate region={selectedRegion}/>
-            <FormDelete region={selectedRegion}/>
+            <FormCreateUpdate region={selectedRegion} />
+            <FormDelete region={selectedRegion} />
 
         </>
     );
 };
 
 export default Regions;
-export const regions: Region[] = [
-    {
-        id:1,
-        code:"CE",
-        libelle:"Centre",
-    },
-    {
-        id:2,
-        code:"LT",
-        libelle:"Littoral",
-    },
-    {
-        id:3,
-        code:"AD",
-        libelle:"Adamaoua",
-    },
-    {
-        id:4,
-        code:"NO",
-        libelle:"Nord",
-    },
-    {
-        id:5,
-        code:"SU",
-        libelle:"Sud",
-    },
-    {
-        id:6,
-        code:"ES",
-        libelle:"Est",
-    },
-    {
-        id:7,
-        code:"OU",
-        libelle:"Ouest",
-    },
-    {
-        id:8,
-        code:"EN",
-        libelle:"Extrême Nord",
-    },
-    {
-        id:9,
-        code:"NW",
-        libelle:"Nord Ouest",
-    },
-    {
-        id:10,
-        code:"SW",
-        libelle:"Sud Ouest",
-    },
-];

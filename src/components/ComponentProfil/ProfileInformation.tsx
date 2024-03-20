@@ -1,7 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import { GoPerson } from "react-icons/go";
-import { Region, regions } from "../../pages/Admin/Regions";
-import { Departement, departements } from "../../pages/Admin/Departements";
 import { Commune, communes } from "../../pages/Admin/Communes";
 import { MdOutlinePhone } from "react-icons/md";
 import { MdOutlineMail } from "react-icons/md";
@@ -13,6 +11,9 @@ import { Fonction, fonctions } from "../../pages/Admin/Fonctions";
 import { Grade, grades } from "../../pages/Admin/Grades";
 import { Service, services } from "../../pages/Admin/Services";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
+import { CommonSettingProps, DepartementProps } from "../../_types/data_setting_type";
 
 interface Props {
     icone: ReactNode; // Type de la variable icone
@@ -31,7 +32,7 @@ function IconeInput({ icone }: Props) {
 
 interface LabelInputProps {
     title: string;
-    required?:boolean;
+    required?: boolean;
 }
 
 function LabelInput({ title, required }: LabelInputProps) {
@@ -40,7 +41,7 @@ function LabelInput({ title, required }: LabelInputProps) {
             className="mb-3 block text-sm font-medium text-black dark:text-white"
             htmlFor="fullName"
         >
-            {title}{required?<label className="text-red-500"> *</label>:""}
+            {title}{required ? <label className="text-red-500"> *</label> : ""}
         </label>
     );
 }
@@ -49,7 +50,10 @@ function LabelInput({ title, required }: LabelInputProps) {
 
 
 function ProfileInformation() {
-    const {t}=useTranslation();
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
+
+    const { t } = useTranslation();
     const [user, setUser] = useState({
         nom: "John",
         prenom: "Doe",
@@ -81,8 +85,8 @@ function ProfileInformation() {
     const [service, setService] = useState<Service>();
     const [fonction, setFonction] = useState<Fonction>();
     const [categorie, setCategorie] = useState<Categorie>();
-    const [region, setRegion] = useState<Region>();
-    const [departement, setDepartement] = useState<Departement>();
+    const [region, setRegion] = useState<CommonSettingProps>();
+    const [departement, setDepartement] = useState<DepartementProps>();
     const [commune, setCommune] = useState<Commune>();
     const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
 
@@ -157,21 +161,21 @@ function ProfileInformation() {
         if (!nom || !genre || !email) {
             if (!nom) {
                 setErrorNom(t('error.nom'));
-            }else{
+            } else {
                 setErrorNom("");
             }
             if (!genre) {
                 setErrorGenre(t('error.genre'));
-            }else{
+            } else {
                 setErrorGenre("");
             }
-    
+
             if (!email) {
                 setErrorEmail(t('error.email'));
-            }else{
+            } else {
                 setErrorEmail("");
             }
-            
+
             return;
         }
         if (!validateEmail()) {
@@ -215,7 +219,7 @@ function ProfileInformation() {
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                     type="date"
                                     value={dateEntreeAdmin}
-                                    onChange={(e) => {setDateEntreeAdmin(e.target.value)}}
+                                    onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
                                 />
                             </div>
                         </div>
@@ -224,7 +228,7 @@ function ProfileInformation() {
                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                         {/* NOM */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.nom')} required={true}/>
+                            <LabelInput title={t('label.nom')} required={true} />
 
                             <div className="relative">
                                 <IconeInput icone={<GoPerson />} />
@@ -233,7 +237,7 @@ function ProfileInformation() {
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                     type="text"
                                     value={nom}
-                                    onChange={(e) => {setNom(e.target.value); setErrorNom("")}} // Suppression du setNom("") dans onChange
+                                    onChange={(e) => { setNom(e.target.value); setErrorNom("") }} // Suppression du setNom("") dans onChange
                                 />
                             </div>
                             {errorNom && <p className="text-red-500 pt-2 text-sm " >{errorNom}</p>}
@@ -276,7 +280,7 @@ function ProfileInformation() {
 
                         {/* E-mail */}
                         <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.email')} required={true}/>
+                            <LabelInput title={t('label.email')} required={true} />
 
                             <div className="relative">
                                 <IconeInput icone={<MdOutlineMail />} />
@@ -285,7 +289,7 @@ function ProfileInformation() {
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                     type="email"
                                     value={email}
-                                    onChange={(e) => { setEmail(e.target.value); setErrorEmail("")}}
+                                    onChange={(e) => { setEmail(e.target.value); setErrorEmail("") }}
                                 />
                             </div>
                             {errorEmail && <p className="text-red-500 pt-2 text-sm " >{errorEmail}</p>}
@@ -294,7 +298,7 @@ function ProfileInformation() {
 
                     {/* genre */}
                     <div className="w-full mb-5.5">
-                        <LabelInput title={t('label.genre')} required={true}/>
+                        <LabelInput title={t('label.genre')} required={true} />
 
                         <div className="relative">
                             {/* <IconeInput icone={<MdOutlineMail />} /> */}
@@ -366,11 +370,11 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={grade ? grade.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}
+                                    value={grade ? grade.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
                                     onChange={handleGradeChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.grade')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
                                     {grades.map(grade => (
                                         <option key={grade.id} value={grade.libelle}>{grade.libelle}</option>
                                     ))}
@@ -383,11 +387,11 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}
+                                    value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
                                     onChange={handleCategorieChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.categorie')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
                                     {categories.map(categorie => (
                                         <option key={categorie.id} value={categorie.libelle}>{categorie.libelle}</option>
                                     ))}
@@ -403,11 +407,11 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}
+                                    value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
                                     onChange={handleFonctionChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.fonction')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
                                     {fonctions.map(fonction => (
                                         <option key={fonction.id} value={fonction.libelle}>{fonction.libelle}</option>
                                     ))}
@@ -420,11 +424,11 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={service ? service.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}
+                                    value={service ? service.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
                                     onChange={handleServiceChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.service')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
                                     {services.map(service => (
                                         <option key={service.id} value={service.libelle}>{service.libelle}</option>
                                     ))}
@@ -440,13 +444,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={region ? region.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}
+                                    value={region ? region.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
                                     onChange={handleRegionChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.region')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
                                     {regions.map(region => (
-                                        <option key={region.id} value={region.libelle}>{region.libelle}</option>
+                                        <option key={region._id} value={region.libelle}>{region.libelle}</option>
                                     ))}
                                 </select>
                             </div>
@@ -457,11 +461,11 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}
+                                    value={departement ? departement.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
                                     onChange={handleDepartementChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.departement')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
                                     {departements.map(departement => (
                                         <option key={departement.id} value={departement.libelle}>{departement.libelle}</option>
                                     ))}
@@ -474,11 +478,11 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={commune ? commune.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}
+                                    value={commune ? commune.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
                                     onChange={handleCommuneChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
-                                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.commune')}</option>
+                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
                                     {communes.map(commune => (
                                         <option key={commune.id} value={commune.libelle}>{commune.libelle}</option>
                                     ))}

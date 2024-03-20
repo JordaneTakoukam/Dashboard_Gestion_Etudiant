@@ -19,7 +19,7 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
-                <Dialog open={isModalOpen} as="div" className="relative z-999999" onClose={()=>{}}>
+                <Dialog open={isModalOpen} as="div" className="relative z-999999 " onClose={()=>{}}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -43,7 +43,7 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="mt-[90px] w-[600px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Panel className=" my-20 w-full md:w-[500px] lg:w-[600px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title
                                         as="h3"
                                         className=" font-medium leading-6 text-gray-900 "
@@ -63,14 +63,14 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
 
                                     <div className="flex justify-end gap-4.5 mt-8">
                                         <button
-                                            className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-2 lg:px-8 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] "
+                                            className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-8  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm"
                                             type="submit"
                                             onClick={closeModal}
                                         >
                                             {!isDelete?t('boutton.annuler'):t('boutton.non')}
                                         </button>
                                         <button
-                                            className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70"
+                                            className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm"
                                             onClick={handleConfirm}
                                         >
                                             {!isDelete?t('boutton.enregistrer'):t('boutton.oui')}

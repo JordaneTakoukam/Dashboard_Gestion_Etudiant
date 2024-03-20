@@ -3,6 +3,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 interface SettingState {
     [x: string]: any;
     language: string;
+    isMobile: boolean | null,
     showModal: {
         create: boolean,
         update: boolean,
@@ -16,6 +17,7 @@ interface SettingState {
 
 const initialState: SettingState = {
     language: localStorage.getItem('lang')?.toString() || 'fr',
+    isMobile: null,
     showModal: {
         create: false,
         update: false,
@@ -36,6 +38,7 @@ export const settingSlice = createSlice({
         setShowModalCreate: (state) => {
             state.showModal.create = !state.showModal.create;
         },
+
         setShowModalUpdate: (state) => {
             state.showModal.update = !state.showModal.update;
         },
@@ -59,11 +62,16 @@ export const settingSlice = createSlice({
             state.language = action.payload;
         },
 
+        setSaveDeviceType: (state, action: PayloadAction<boolean>) => {
+            state.isMobile = action.payload;
+        },
+
     },
 });
 
 export const {
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
+    , setSaveDeviceType
 } = settingSlice.actions;
 
 // export const changeLanguage = createAction<string>('setting/changeLanguage');

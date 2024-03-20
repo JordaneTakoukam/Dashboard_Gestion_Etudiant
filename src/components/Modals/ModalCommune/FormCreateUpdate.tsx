@@ -5,7 +5,7 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Commune } from '../../../pages/Admin/Communes';
 import { useTranslation } from 'react-i18next';
-import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_interface';
+import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
 
 
 function ModalCreateUpdate({ commune }: { commune: Commune | null }) {

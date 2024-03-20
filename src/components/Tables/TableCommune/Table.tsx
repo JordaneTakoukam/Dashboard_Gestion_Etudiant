@@ -13,7 +13,7 @@ import { Commune } from "../../../pages/Admin/Communes";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { CommonSettingProps, DepartementProps } from "../../../_types/data_setting_interface";
+import { CommonSettingProps, DepartementProps } from "../../../_types/data_setting_type";
 
 interface TableCommuneProps {
     data: Commune[];

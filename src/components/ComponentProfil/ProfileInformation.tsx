@@ -13,7 +13,7 @@ import { Service, services } from "../../pages/Admin/Services";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
-import { CommonSettingProps, DepartementProps } from "../../_types/data_setting_interface";
+import { CommonSettingProps, DepartementProps } from "../../_types/data_setting_type";
 
 interface Props {
     icone: ReactNode; // Type de la variable icone

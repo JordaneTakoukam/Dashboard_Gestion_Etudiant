@@ -1,4 +1,5 @@
 
+
 interface Props {
     required?: boolean;
     text: string;
@@ -26,9 +27,14 @@ interface ErrorProps {
 const ErrorMessage = ({ message }: ErrorProps) => {
     return (
         <div>
-            {message && <p className="text-red-500">{message}</p>}
+            {message && <p className="text-red-500 text-[13px] py-0.5">{message}</p>}
         </div>
     );
 };
+
+
+
+
+
 
 export { Label, ErrorMessage };

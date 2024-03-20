@@ -27,7 +27,7 @@ const Input: React.FC<InputProps> = ({
       <input
         type={showPassword ? 'text' : type}
         placeholder={placeholder}
-        className={`w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary
+        className={`w-full rounded border border-stroke bg-gray  text-black  focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary
          py-2 pl-4 pr-10 outline-none focus:border-primary focus-visible:shadow-none 
         ${hasBackground ? 'bg-gray dark:bg-meta-4 text-black dark:text-white' : 'bg-transparent dark:bg-form-input dark:border-form-strokedark'}`}
         value={value}

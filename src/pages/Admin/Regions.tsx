@@ -6,7 +6,7 @@ import FormDelete from "../../components/Modals/ModalRegion/FormDelete";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
-import { CommonSettingProps } from "../../_types/data_setting_interface";
+import { CommonSettingProps } from "../../_types/data_setting_type";
 
 
 const Regions = () => {
@@ -15,15 +15,9 @@ const Regions = () => {
 
     // data depuis le store de redux
     const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region);
-
-
-    const handleEditRegion = (region: CommonSettingProps) => {
-        setSelectedRegion(region);
-    }
-
-    const handleAddRegion = () => {
-        setSelectedRegion(null);
-    }
+    
+    const handleEditRegion = (region: CommonSettingProps) => { setSelectedRegion(region) }
+    const handleAddRegion = () => { setSelectedRegion(null) }
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.regions')} />

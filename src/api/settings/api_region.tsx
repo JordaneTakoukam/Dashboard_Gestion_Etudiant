@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { config } from '../../config.js';
 import { ReponseApiPros } from '../interface_reponse.js';
-import { CommonSettingProps } from '../../_types/data_setting_interface.js';
+import { CommonSettingProps } from '../../_types/data_setting_type.js';
 
 const api = `${config.apiUrl}/api/v1/setting`;
 

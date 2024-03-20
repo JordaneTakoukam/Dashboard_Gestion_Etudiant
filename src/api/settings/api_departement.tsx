@@ -1,17 +1,17 @@
 import axios, { AxiosResponse } from 'axios';
 import { config } from '../../config.js';
 import { ReponseApiPros } from '../interface_reponse.js';
-import { CommonSettingProps } from '../../_types/data_setting_interface.js';
+import { DepartementProps } from '../../_types/data_setting_type.js';
 
 const api = `${config.apiUrl}/api/v1/setting`;
 
 const token = localStorage.getItem(config.jwt_key);
 
-export async function apiCreateDepartement({ code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+export async function apiCreateDepartement({ code, region, libelleFr, libelleEn }: DepartementProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
-            `${api}/region/create`,
-            { code, libelleFr, libelleEn },
+            `${api}/departement/create`,
+            { code, region, libelleFr, libelleEn },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,11 +27,11 @@ export async function apiCreateDepartement({ code, libelleFr, libelleEn }: Commo
     }
 }
 
-export async function apiUpdateDepartement({ _id, code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+export async function apiUpdateDepartement({ _id, code, libelleFr, libelleEn, region }: DepartementProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
-            `${api}/region/update/${_id}`,
-            { code, libelleFr, libelleEn },
+            `${api}/departement/update/${_id}`,
+            { code, libelleFr, libelleEn, region },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,10 +47,10 @@ export async function apiUpdateDepartement({ _id, code, libelleFr, libelleEn }: 
     }
 }
 
-export async function apiDeleteDepartement(regionId: string): Promise<ReponseApiPros> {
+export async function apiDeleteDepartement(departementId: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
-            `${api}/region/delete/${regionId}`,
+            `${api}/departement/delete/${departementId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

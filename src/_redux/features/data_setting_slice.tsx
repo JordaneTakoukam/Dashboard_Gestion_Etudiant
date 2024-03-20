@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CommonSettingProps, CommuneProps, CycleProps, DataSettingProps, DataSettingSlice, DepartementProps, NiveauProps } from "../../_types/data_setting_interface";
+import { CommonSettingProps, CommuneProps, CycleProps, DataSettingProps, DataSettingSlice, DepartementProps, NiveauProps } from "../../_types/data_setting_type";
 
 
 // Initial state
@@ -49,7 +49,9 @@ const dataSettingSlice = createSlice({
         //
         //
         // create
-        createSettingItem(state, action: PayloadAction<{ tableName: keyof DataSettingProps; newItem: { code: string, libelleFr: string, libelleEn: string, date_creation: string, _id: string } }>) {
+        createSettingItem(state, action: PayloadAction<{
+            tableName: keyof DataSettingProps; newItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps
+        }>) {
             const { tableName, newItem } = action.payload;
 
             const table = state.dataSetting[tableName] as (CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps)[];

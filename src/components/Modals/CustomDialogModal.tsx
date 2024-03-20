@@ -19,7 +19,7 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
-                <Dialog open={isModalOpen} as="div" className="relative z-999999" onClose={()=>{}}>
+                <Dialog open={isModalOpen} as="div" className="relative z-999999 " onClose={()=>{}}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -43,7 +43,7 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="mt-[90px] w-[600px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Panel className=" my-20 w-full md:w-[500px] lg:w-[600px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title
                                         as="h3"
                                         className=" font-medium leading-6 text-gray-900 "

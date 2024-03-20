@@ -10,7 +10,7 @@ import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
 import { Grade, grades } from '../../../pages/Admin/Grades';
 import { Categorie, categories } from '../../../pages/Admin/Categories';
 import { useTranslation } from 'react-i18next';
-import { DepartementProps } from '../../../_types/data_setting_interface';
+import { DepartementProps } from '../../../_types/data_setting_type';
 
 
 function ModalCreateUpdate({ administrateur }: { administrateur : Administrateur | null }) {

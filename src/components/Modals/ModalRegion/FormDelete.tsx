@@ -7,7 +7,7 @@ import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteRegion } from '../../../api/settings/api_region';
 import createToast from '../../../hooks/toastify';
 import { ReponseApiPros } from '../../../api/interface_reponse';
-import { CommonSettingProps } from '../../../_types/data_setting_interface';
+import { CommonSettingProps } from '../../../_types/data_setting_type';
 
 
 function ModalDelete({ region }: { region: CommonSettingProps | null }) {
@@ -23,20 +23,25 @@ function ModalDelete({ region }: { region: CommonSettingProps | null }) {
 
     const handleDelete = async () => {
 
-        if (region) {
+        if (region?._id != undefined) {
             await apiDeleteRegion(region._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
-                    // dispatch(setShowModalDelete());
-                    dispatch(deleteSettingItem({ tableName: 'region', itemId: region._id }));
 
+                    if (region._id) {
+                        dispatch(deleteSettingItem({ tableName: 'region', itemId: region._id }));
+                    }
+
+                    closeModal();
                 } else {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);
                 }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+
             })
         }
 
-        closeModal();
     }
 
     return (

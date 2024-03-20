@@ -13,7 +13,7 @@ import { Grade, grades } from '../../../pages/Admin/Grades';
 import { Categorie, categories } from '../../../pages/Admin/Categories';
 import { Commune, communes } from '../../../pages/Admin/Communes';
 import { useTranslation } from 'react-i18next';
-import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_interface';
+import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
 
 
 function ModalCreateEtudiant({ etudiant }: { etudiant: Etudiant | null }) {

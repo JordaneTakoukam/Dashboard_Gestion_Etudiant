@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setShowModal } from '../../../_redux/features/setting';
 import Input from '../../ui/input';
-import { CommonSettingProps } from '../../../_types/data_setting_interface';
+import { CommonSettingProps } from '../../../_types/data_setting_type';
 import { ErrorMessage, Label } from '../../ui/Label';
-import { apiCreateRegion, apiDeleteRegion, apiUpdateRegion } from '../../../api/settings/api_region';
+import { apiCreateRegion, apiUpdateRegion } from '../../../api/settings/api_region';
 import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
-import { createSettingItem, deleteSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
+import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 
 
 function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
@@ -24,6 +24,7 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
+
     const [isFirstRender, setIsFirstRender] = useState(true);
 
 
@@ -98,9 +99,10 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
 
                     } else {
                         createToast(e.message[lang as keyof typeof e.message], '', 2);
-                        closeModal();
 
                     }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
             }
         }
@@ -144,9 +146,9 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
 
                     } else {
                         createToast(e.message[lang as keyof typeof e.message], '', 2);
-                        closeModal();
-
                     }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
             }
         }

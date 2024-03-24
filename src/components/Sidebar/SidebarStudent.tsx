@@ -23,7 +23,7 @@ interface SidebarProps {
 }
 
 const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const location = useLocation();
     const { pathname } = location;
     const trigger = useRef<any>(null);
@@ -63,7 +63,9 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     return (
         <nav
             ref={sidebar}
-            className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark   ${sidebarOpen ? 'translate-x-0 duration-300 lg:static lg:translate-x-0' : '-translate-x-full '
+            className={`
+            text-[14px]  lg:text-[15px] 
+            absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark   ${sidebarOpen ? 'translate-x-0 duration-300 lg:static lg:translate-x-0' : '-translate-x-full '
                 }`}
         >
             {/* <!-- SIDEBAR HEADER --> */}
@@ -133,7 +135,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                             {/* Discipline etudiant */}
                             {
-                                roles.delegate === userRole && (
+                                roles.delegue === userRole && (
                                     <li>
                                         <NavLink
                                             to="/student/disciplines"
@@ -154,7 +156,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             }
 
                             {
-                                roles.delegate === userRole && (
+                                roles.delegue === userRole && (
                                     <li>
                                         <NavLink
                                             to="/delegate/teachers"
@@ -264,7 +266,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                     {/* <!-- Autres --> */}
                     <div>
-                       
+
                         <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
                             {t('menu.autres')}
                         </h3>

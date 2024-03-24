@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import SignIn from './pages/Authentication/SignIn.js';
 import { ToastContainer } from 'react-toastify';
 import routeAdmin from './routes/routes.admin.js'
@@ -10,7 +10,7 @@ import { NotFound, NotFoundIsAuth } from './pages/NotFound/NotFound.js';
 import DashBoardAmin from './pages/Admin/Dashboard_admin.js';
 import DashboardTeacher from './pages/Enseignant/Dashboard_teacher.js';
 import DashBoardStudent from './pages/Etudiant/Dashboard_student.js';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { config } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
@@ -23,12 +23,18 @@ import Loading from './components/ui/loading.js';
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from './_redux/features/data_setting_slice.js';
 import { apiGetAllSettings } from './api/settings/api_data_setting.js';
 import { setSaveDeviceType } from './_redux/features/setting.js';
+import ChoisirCompte from './pages/ChoisirCompte/ChoisirCompte.js';
+import { RootState } from './_redux/store.js';
 
 function App() {
 
   const dispatch = useDispatch();
+
+
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(true);
   const roles = config.roles;
+
+
   const [userRole, setUserRole] = useState<String>('');
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -66,16 +72,19 @@ function App() {
           const localUser = isAuth.value;
 
           if (localUser) {
-            const { userId, role, nom, prenom } = localUser;
+            const { userId, roles, role, nom, prenom } = localUser;
 
-            dispatch(setMinimumUser({
-              _id: userId,
-              role: role,
-              nom: nom,
-              prenom: prenom,
-            }));
+            if (role !== "" && role !== null && role !== undefined) {
+              dispatch(setMinimumUser({
+                _id: userId,
+                roles: roles,
+                role: role,
+                nom: nom,
+                prenom: prenom,
+              }));
 
-            setUserRole(role);
+              setUserRole(role);
+            }
 
             setLoading(false);
 
@@ -107,8 +116,8 @@ function App() {
 
     dispatch(setLoadingDataSetting(true));
     try {
-      const settingsData = await apiGetAllSettings();
-      dispatch(setDataSetting(settingsData));
+      // const settingsData = await apiGetAllSettings();
+      // dispatch(setDataSetting(settingsData));
 
 
     } catch (error) {
@@ -146,6 +155,7 @@ function App() {
         {/* Redirect to /auth/signup if not authenticated */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/choose-account" element={<ChoisirCompte />} />
 
         {/* Menu de gauche pour les differents roles  */}
         <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/signin'} />}>
@@ -158,6 +168,7 @@ function App() {
                 roles.etudiant === userRole ? <DashBoardStudent /> :
                   roles.delegue === userRole ? <DashboardDelegate /> :
                     <NotFoundIsAuth />
+
           } />
           {/* autres pagges pour chaque type de compte */}
           {
@@ -256,7 +267,7 @@ function App() {
 
         {/* si mauvaises url est rechercher */}
         <Route path='*' element={isAuth.status ? <div className='h-screen w-screen flex  items-center justify-center ml-[150px]'><Loading /></div> : <NotFound />} />
-      </Routes>
+      </Routes >
     </>
   );
 }

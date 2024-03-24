@@ -5,15 +5,23 @@ interface ButtomCustomProps {
     title: String,
     onClick: () => void,
     next?: boolean,
+    outline?: boolean,
+    desactivated?: boolean,
 
 }
 
 
 
-function ButtonCustom({ title, onClick, next }: ButtomCustomProps) {
+function ButtonCustom({ title, onClick, next, outline, desactivated }: ButtomCustomProps) {
     return (
         <button
-            className=" flex items-center justify-center gap-x-4 w-full cursor-pointer rounded-lg border border-primary bg-primary px-4 py-2 text-white transition hover:bg-opacity-90"
+            className={` 
+            ${desactivated ? 'cursor-not-allowed pointer-events-none '  : ' cursor-pointer'}
+            duraction-300
+            ${outline ? "text-white hover:bg-primary hover:text-white" : "border-primary bg-primary text-white hover:bg-[#3d3a95] hover:border-[#3d3a95] "}
+            flex items-center justify-center gap-x-4 w-full cursor-pointer
+             rounded-lg border  px-4 py-2 
+              transition hover:bg-opacity-90`}
             onClick={onClick}
 
         >

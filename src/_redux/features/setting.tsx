@@ -11,8 +11,8 @@ interface SettingState {
         open: boolean,
         openChapitre: boolean,
         toDoSondage: boolean,
-
     };
+    currentIndexUserRole: number,
 }
 
 const initialState: SettingState = {
@@ -25,7 +25,8 @@ const initialState: SettingState = {
         open: false,
         openChapitre: false,
         toDoSondage: false,
-    }
+    },
+    currentIndexUserRole: 0,
 };
 
 
@@ -33,10 +34,13 @@ export const settingSlice = createSlice({
     name: "settingSlice",
     initialState,
     reducers: {
-
-        // afficher ou fermer toutes les modal de l'application
         setShowModalCreate: (state) => {
             state.showModal.create = !state.showModal.create;
+        },
+
+        // afficher ou fermer toutes les modal de l'application
+        setCurrentIndexUserRole: (state, action) => {
+            state.currentIndexUserRole = action.payload;
         },
 
         setShowModalUpdate: (state) => {
@@ -71,7 +75,8 @@ export const settingSlice = createSlice({
 
 export const {
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
-    , setSaveDeviceType
+    , setSaveDeviceType,
+    setCurrentIndexUserRole,
 } = settingSlice.actions;
 
 // export const changeLanguage = createAction<string>('setting/changeLanguage');

@@ -41,8 +41,9 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
     useEffect(() => {
         if (departement) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.departement'));
-            const currentRegion = regions.find(region => region._id === departement.region);
-
+            const regionId =""+departement.region;
+            const currentRegion = regions.find(region => region._id === regionId);
+            console.log("region "+departement.region);
             setCode(departement.code);
             setLibelleFr(departement.libelleFr);
             setLibelleEn(departement.libelleEn);
@@ -124,7 +125,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                             code,
                             libelleFr,
                             libelleEn,
-                            region: region?._id,
+                            region: region,
                         }
                     ).then((e: ReponseApiPros) => {
                         if (e.success) {
@@ -181,7 +182,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                             code,
                             libelleFr,
                             libelleEn,
-                            region: region._id,
+                            region: region,
                             _id: departement._id,
                         }
                     ).then((e: ReponseApiPros) => {

@@ -9,12 +9,12 @@ export interface CommonSettingProps {
 
 // Interface des propriétés spécifiques au département
 export interface DepartementProps extends CommonSettingProps {
-    region: string;
+    region: CommonSettingProps;
 }
 
 // Interface des propriétés spécifiques à la commune
 export interface CommuneProps extends CommonSettingProps {
-    departement: string;
+    departement: DepartementProps;
 }
 
 // Interface des propriétés spécifiques au niveau

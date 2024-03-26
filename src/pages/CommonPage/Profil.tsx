@@ -14,7 +14,7 @@ const MonProfil = () => {
 
             <div className="grid grid-cols-5 gap-8">
                 {/* info de profil */}
-                <ProfileInformation />
+                {/* <ProfileInformation /> */}
                 {/* ajouter une photo de profile  */}
                 <div className="col-span-5 xl:col-span-2">
                     <PickPhoto />

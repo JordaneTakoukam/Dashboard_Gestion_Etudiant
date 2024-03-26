@@ -3,31 +3,39 @@ import Breadcrumb from "../../components/Breadcrumb";
 import FormCreateUpdate from "../../components/Modals/ModalCommune/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCommune/FormDelete";
 import Table from "../../components/Tables/TableCommune/Table";
-import { Departement } from "./Departements";
+// import { Commune } from "./Communes";
 import { useTranslation } from "react-i18next";
-import { CommonSettingProps } from "../../_redux/features/data_setting_slice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
+import { CommonSettingProps, CommuneProps } from "../../_types/data_setting_type";
 
 export interface Commune {
     id?: number;
     code: string;
     libelle: string;
-    departement: Departement;
+    commune: Commune;
 }
 
 const Communes = () => {
-    const [selectedCommune, setSelectedCommune] = useState<Commune | null>(null);
+    // const [selectedCommune, setSelectedCommune] = useState<Commune | null>(null);
     const { t } = useTranslation();
-    const handleEditDepartement = (commune: Commune) => {
-        setSelectedCommune(commune);
-    }
+    // const handleEditCommune = (commune: Commune) => {
+    //     setSelectedCommune(commune);
+    // }
 
-    const handleAddDepartement = () => {
-        setSelectedCommune(null);
-    }
+    // const handleAddCommune = () => {
+    //     setSelectedCommune(null);
+    // }
+    const communes = useSelector((state: RootState) => state.dataSetting.dataSetting.communes);
+
+    const [selectedCommune, setSelectedCommune] = useState<CommuneProps | null>(null);
+
+    const handleEditCommune = (commune: CommuneProps) => { setSelectedCommune(commune) }
+    const handleAddCommune = () => { setSelectedCommune(null) }
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.communes')} />
-            <Table data={communes} onCreate={handleAddDepartement} onEdit={handleEditDepartement} />
+            <Table data={communes} onCreate={handleAddCommune} onEdit={handleEditCommune} />
 
             <FormCreateUpdate commune={selectedCommune} />
             <FormDelete commune={selectedCommune} />
@@ -37,58 +45,4 @@ const Communes = () => {
 };
 
 export default Communes;
-const centre: CommonSettingProps = {
-    _id: '55',
-    code: "CE",
-    libelle: "Centre"
-}
-const departement: Departement = {
-    id: 1,
-    code: "HS",
-    libelle: "Haute Sanaga",
-    region: centre
-}
-export const communes: Commune[] = [
-    {
-        id: 1,
-        code: "YI",
-        libelle: "Yaoundé I",
-        departement: departement,
-    },
-    {
-        id: 2,
-        code: "YII",
-        libelle: "Yaoundé II",
-        departement: departement,
-    },
-    {
-        id: 3,
-        code: "YIII",
-        libelle: "Yaoundé III",
-        departement: departement,
-    },
-    {
-        id: 4,
-        code: "YIV",
-        libelle: "Yaoundé IV",
-        departement: departement,
-    },
-    {
-        id: 5,
-        code: "YV",
-        libelle: "Yaoundé V",
-        departement: departement,
-    },
-    {
-        id: 6,
-        code: "YVI",
-        libelle: "Yaoundé VI",
-        departement: departement,
-    },
-    {
-        id: 7,
-        code: "YVII",
-        libelle: "Yaoundé VII",
-        departement: departement,
-    }
-];
+

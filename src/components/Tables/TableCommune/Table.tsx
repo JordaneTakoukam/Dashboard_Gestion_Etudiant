@@ -4,7 +4,7 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
@@ -13,69 +13,92 @@ import { Commune } from "../../../pages/Admin/Communes";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { CommonSettingProps, DepartementProps } from "../../../_types/data_setting_type";
+import { CommonSettingProps, CommuneProps, DepartementProps } from "../../../_types/data_setting_type";
 
 interface TableCommuneProps {
-    data: Commune[];
+    data: CommuneProps[];
     onCreate: () => void;
-    onEdit: (commune: Commune) => void;
+    onEdit: (commune: CommuneProps) => void;
 }
 
 
 const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
-    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
-
-    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
-
-    const pageIsLoading = false;
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+
+    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
+    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    // fournira les donnees a la page
+    const [filteredCommune, setFilteredCommune] = useState<CommuneProps[]>([]);
+    // État du texte de recherche
+    const [searchText, setSearchText] = useState<string>('');
+    
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-    // const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreRegion, setFiltreRegion] = useState(regions[0]);
-    const [filtreDepartement, setFiltreDepartement] = useState(departements[0]);
+   
+    // valeur de la l'id de la region selectionner
+    const [selectRegionId, setSelectIdRegion] = useState<string>('');
+
+    // recuperer l'id de la region suite au click sur l'input select
     const handleRegionSelect = (selected: CommonSettingProps | undefined) => {
-        // setFiltreRegion(selected);
-        console.log(selected);
+        if (selected?._id) {
+            setSelectIdRegion(selected._id);
+            filterDepartementByRegion(selected._id);
+            setSelectIdRegion('');
+        }
     };
 
-    const handleDepartementSelect = (selected: DepartementProps | undefined) => {
-        // setFiltreDepartement(selected);
-        console.log(selected);
+
+
+    // valeur de la l'id du département selectionner
+    const [selectDepartementId, setSelectIdDepartement] = useState<string>('');
+    const handleDepartementSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdDepartement(selected._id);
+            filterCommuneByDepartement(selected._id);
+            setSelectIdDepartement('');
+        }
     };
-    // const [filtreCommune, setFiltreCommune] = useState("");
-    // const [formatToDownload, setFormatToDownload] = useState("");
+    // Filtrer les régions en fonction de la langue
+    const filterDepartementByContent = (departements: DepartementProps[]) => {
+        return departements.filter(departement => {
+            const libelle = lang === 'fr' ? departement.libelleFr : departement.libelleEn;
+            // Vérifie si le code ou le libellé contient le texte de recherche
+            return departement.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+        });
+    };
 
-    // const handleAnneeSelect = (selected: string) => {
-    //     setFiltreAnnee(selected);
-    //     console.log(selected)
-    // };
-    // const handleRegionSelect = (selected: string) => {
-    //     setFiltreRegion(selected);
-    //     console.log(selected);
-    // };
+    // fournira les donnees a la page
+    const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[]>([]);
 
-    // const handleDepartementSelect = (selected: string) => {
-    //     setFiltreDepartement(selected);
-    //     console.log(selected);
-    // };
+    // filtrer les donnee a partir de l'id de la region selectionner
+    const filterDepartementByRegion = (regionId: string | undefined) => {
+        if (regionId && regionId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: DepartementProps[] = departements.filter(depart => depart.region === regionId);
 
-    // const handleCommuneSelect = (selected: string) => {
-    //     setFiltreCommune(selected);
-    //     console.log(selected);
-    // };
-    // const handleDownloadSelect = (selected: string) => {
-    //     setFormatToDownload(selected);
-    //     console.log(selected);
-    //     // methode pour download
-    // };
+            setFilteredDepartement(result);
+            
+        }
+    };
 
+    // filtrer les donnee a partir de l'id du departement selectionner
+    const filterCommuneByDepartement = (departementId: string | undefined) => {
+        if (departementId && departementId !== '') {
+            // Filtrer les commune en fonction de l'ID du département
+            const result: CommuneProps[] = data.filter(commune => commune.departement === departementId);
+
+            setFilteredCommune(result)
+        }
+    };
 
     // variable pour la pagination
     //
@@ -88,7 +111,21 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+    const [isFirstRender, setIsFirstRender] = useState(true);
 
+    useEffect(() => {
+        if (regions && regions.length > 0) {
+            filterDepartementByRegion(regions[0]?._id);
+        }
+    }, [regions]);
+
+    useEffect(() => {
+        if (filteredDepartement && filteredDepartement.length > 0) {
+            filterCommuneByDepartement(filteredDepartement[0]?._id);
+        }
+    }, [filteredDepartement]);
+
+    
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -113,15 +150,15 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                                 title={t('label.region')}
                                 items={regions}
                                 defaultValue={regions[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(region: CommonSettingProps) => `${region.libelle}`}
+                                displayProperty={(region: CommonSettingProps) => `${lang === 'fr' ? region.libelleFr : region.libelleEn}`}
                                 onSelect={handleRegionSelect}
                             />
-                            <CustomDropDown2<any>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.departement')}
-                                items={departements}
-                                defaultValue={departements[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(departement: Departement) => `${departement.libelle}`}
-                                onSelect={handleRegionSelect}
+                                items={filteredDepartement}
+                                defaultValue={filteredDepartement[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(departement: CommonSettingProps) => `${lang === 'fr' ? departement.libelleFr : departement.libelleEn}`}
+                                onSelect={handleDepartementSelect}
                             />
                             {/* <CustomDropDown title="Région" items={regions} defaultValue={regions[0]} displayProperty={(region: Region) => `${region.libelle}`} onSelect={handleRegionSelect} />
                             <CustomDropDown title="Département" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleDepartementSelect} /> */}
@@ -137,15 +174,15 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                                 title={t('label.region')}
                                 items={regions}
                                 defaultValue={regions[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(region: CommonSettingProps) => `${region.libelle}`}
+                                displayProperty={(region: CommonSettingProps) => `${lang === 'fr' ? region.libelleFr : region.libelleEn}`}
                                 onSelect={handleRegionSelect}
                             />
-                            <CustomDropDown2<any>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.departement')}
-                                items={departements}
-                                defaultValue={departements[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(departement: Departement) => `${departement.libelle}`}
-                                onSelect={handleRegionSelect}
+                                items={filteredDepartement}
+                                defaultValue={filteredDepartement[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(departement: CommonSettingProps) => `${lang === 'fr' ? departement.libelleFr : departement.libelleEn}`}
+                                onSelect={handleDepartementSelect}
                             />
                             {/* <CustomDropDown title="Région" items={regions} defaultValue={regions[0]} displayProperty={(region: Region) => `${region.libelle}`} onSelect={handleRegionSelect} />
                             <CustomDropDown title="Département" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleDepartementSelect} /> */}
@@ -163,7 +200,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : data.length === 0 ?
+                                : filteredCommune.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -171,7 +208,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
+                            !pageIsLoading && <BodyTable data={filteredCommune} onEdit={onEdit} />
                         }
 
 

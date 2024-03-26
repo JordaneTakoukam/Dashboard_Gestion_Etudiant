@@ -1,3 +1,4 @@
+
 // Interface des propriétés communes
 interface CommonSettingProps {
     date_creation?: string;
@@ -27,6 +28,11 @@ interface CycleProps extends CommonSettingProps {
     section: string;
 }
 
+//interface des propriétés de la salle de cours
+interface SalleDeCoursProps extends CommonSettingProps{
+    nbPlace:number;
+}
+
 
 
 // Interface des propriétés de Setting
@@ -38,9 +44,12 @@ interface DataSettingProps {
     region: CommonSettingProps[];
     departement: DepartementProps[];
     communes: CommuneProps[];
-    sections: CommonSettingProps[];
+    section: CommonSettingProps[];
     cycles: CycleProps[];
     niveaux: NiveauProps[];
+    salleDeCours:SalleDeCoursProps[];
+    typesEnseignement:CommonSettingProps[];
+    // roles:CommonSettingProps[];
     __v: number;
 }
 

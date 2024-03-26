@@ -3,17 +3,14 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
+import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
-import { Commune } from "../../../pages/Admin/Communes";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { CommonSettingProps, CommuneProps, DepartementProps } from "../../../_types/data_setting_type";
 
 interface TableCommuneProps {
     data: CommuneProps[];
@@ -45,34 +42,40 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
 
    
     // valeur de la l'id de la region selectionner
-    const [selectRegionId, setSelectIdRegion] = useState<string>('');
+    const [selectRegionId, setSelectIdRegion] = useState<string | undefined>('');
+    const [isFirstRender, setIsFirstRender] = useState(true);
 
     // recuperer l'id de la region suite au click sur l'input select
     const handleRegionSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
             setSelectIdRegion(selected._id);
             filterDepartementByRegion(selected._id);
-            setSelectIdRegion('');
+            // setSelectIdRegion('');
         }
     };
 
 
 
     // valeur de la l'id du département selectionner
-    const [selectDepartementId, setSelectIdDepartement] = useState<string>('');
+    const [selectDepartementId, setSelectIdDepartement] = useState<string | undefined>('');
     const handleDepartementSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
             setSelectIdDepartement(selected._id);
             filterCommuneByDepartement(selected._id);
-            setSelectIdDepartement('');
+            // setSelectIdDepartement('');
         }
     };
-    // Filtrer les régions en fonction de la langue
-    const filterDepartementByContent = (departements: DepartementProps[]) => {
-        return departements.filter(departement => {
-            const libelle = lang === 'fr' ? departement.libelleFr : departement.libelleEn;
+    // Filtrer les communes en fonction de la langue
+    const filterCommunesByContenet = (communes: CommuneProps[]) => {
+        if (searchText === '' && filteredDepartement && filteredDepartement.length>0) {
+            const result: CommuneProps[] = data.filter(commune => commune.departement === filteredDepartement[0]?._id);
+            return result;
+        }
+
+        return communes.filter(commune => {
+            const libelle = lang === 'fr' ? commune.libelleFr : commune.libelleEn;
             // Vérifie si le code ou le libellé contient le texte de recherche
-            return departement.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+            return commune.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
         });
     };
 
@@ -111,21 +114,31 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const [isFirstRender, setIsFirstRender] = useState(true);
 
+    //fournir initialement les données à la page
     useEffect(() => {
         if (regions && regions.length > 0) {
             filterDepartementByRegion(regions[0]?._id);
         }
+           
     }, [regions]);
 
     useEffect(() => {
         if (filteredDepartement && filteredDepartement.length > 0) {
-            filterCommuneByDepartement(filteredDepartement[0]?._id);
-        }
-    }, [filteredDepartement]);
+            if(!selectDepartementId){
+                filterCommuneByDepartement(filteredDepartement[0]?._id);
+            }else{
+                filterCommuneByDepartement(selectDepartementId);
+            }
+                
+        }        
+    }, [filteredDepartement, data]);
 
-    
+    // modifier les donner de la page lors de la recherche
+    useEffect(() => {
+        const result = filterCommunesByContenet(data);
+        setFilteredCommune(result);
+    }, [searchText]);
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -134,7 +147,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                     title={t('boutton.nouvelle_commune')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.commune')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.commune')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

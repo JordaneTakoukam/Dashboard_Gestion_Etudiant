@@ -4,6 +4,8 @@ import FormCreateUpdate from "../../components/Modals/ModalSalleCours/FormCreate
 import FormDelete from "../../components/Modals/ModalSalleCours/FormDelete";
 import Table from "../../components/Tables/TableSalleCours/Table";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
 export interface SalleCours{
     id?:number;
@@ -14,68 +16,26 @@ export interface SalleCours{
 
 const SallesDeCours = () => {
     const {t}=useTranslation();
-    const [selectedSalleCours, setSelectedSalleCours] = useState<SalleCours | null>(null);
-    const handleEditSection = (salleCours : SalleCours) => {
+    const [selectedSalleCours, setSelectedSalleCours] = useState<SalleDeCoursProps | null>(null);
+    const handleEditSection = (salleCours : SalleDeCoursProps) => {
         setSelectedSalleCours(salleCours);
     }
 
     const handleAddSection = () => {
         setSelectedSalleCours(null);
     }
+    const sallesDecours = useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours);
     return (
         <>
             <Breadcrumb pageName={t('menu.salles')} />
-            <Table data={sallesCours} onCreate={handleAddSection} onEdit={handleEditSection}/>
+            <Table data={sallesDecours} onCreate={handleAddSection} onEdit={handleEditSection}/>
 
-            <FormCreateUpdate salleCours={selectedSalleCours}/>
-            <FormDelete salleCours={selectedSalleCours}/>
+            <FormCreateUpdate salleDeCours={selectedSalleCours}/>
+            <FormDelete salleDeCours={selectedSalleCours}/>
 
         </>
     );
 };
 
 export default SallesDeCours;
-export const sallesCours: SalleCours[] = [
-    {
-        id:1,
-        code:"S1",
-        nom:"S001",
-        nbPlace:100
-    },
-    {
-        id:2,
-        code:"S2",
-        nom:"S002",
-        nbPlace:100
-    },
-    {
-        id:3,
-        code:"S3",
-        nom:"S003",
-        nbPlace:100
-    },
-    {
-        id:4,
-        code:"1001",
-        nom:"Amphi 1001",
-        nbPlace:1500
-    },
-    {
-        id:5,
-        code:"1002",
-        nom:"Amphi 1002",
-        nbPlace:1500
-    },
-    {
-        id:6,
-        code:"501",
-        nom:"Amphi 501",
-        nbPlace:700
-    },
-    {
-        id:7,
-        code:"502",
-        nom:"Amphi 502",
-        nbPlace:700
-    },
-];
+export const sallesCours: SalleCours[] = [];

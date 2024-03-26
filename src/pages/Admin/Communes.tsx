@@ -14,17 +14,8 @@ export interface Commune {
     libelle: string;
     commune: Commune;
 }
-
 const Communes = () => {
-    // const [selectedCommune, setSelectedCommune] = useState<Commune | null>(null);
     const { t } = useTranslation();
-    // const handleEditCommune = (commune: Commune) => {
-    //     setSelectedCommune(commune);
-    // }
-
-    // const handleAddCommune = () => {
-    //     setSelectedCommune(null);
-    // }
     const communes = useSelector((state: RootState) => state.dataSetting.dataSetting.communes);
 
     const [selectedCommune, setSelectedCommune] = useState<CommuneProps | null>(null);

@@ -6,11 +6,11 @@ const api = `${apiUrl}/setting`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateRegion({ code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+export async function apiCreateSalleDeCours({ code, libelleFr, libelleEn, nbPlace }: SalleDeCoursProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
-            `${api}/region/create`,
-            { code, libelleFr, libelleEn },
+            `${api}/salle-de-cour/create`,
+            { code, libelleFr, libelleEn, nbPlace},
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -21,16 +21,16 @@ export async function apiCreateRegion({ code, libelleFr, libelleEn }: CommonSett
 
         return response.data;
     } catch (error) {
-        console.error('Error creating region:', error);
+        console.error('Error creating salle de cours:', error);
         throw error;
     }
 }
 
-export async function apiUpdateRegion({ _id, code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+export async function apiUpdateSalleDeCours({ _id, code, libelleFr, libelleEn, nbPlace }: SalleDeCoursProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
-            `${api}/region/update/${_id}`,
-            { code, libelleFr, libelleEn },
+            `${api}/salle-de-cour/update/${_id}`,
+            { code, libelleFr, libelleEn, nbPlace },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,15 +41,15 @@ export async function apiUpdateRegion({ _id, code, libelleFr, libelleEn }: Commo
 
         return response.data;
     } catch (error) {
-        console.error('Error updating region:', error);
+        console.error('Error updating salle de cours:', error);
         throw error;
     }
 }
 
-export async function apiDeleteRegion(regionId: string): Promise<ReponseApiPros> {
+export async function apiDeleteSalleDeCours(salleDeCoursId: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
-            `${api}/region/delete/${regionId}`,
+            `${api}/salle-de-cour/delete/${salleDeCoursId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export async function apiDeleteRegion(regionId: string): Promise<ReponseApiPros>
 
         return response.data;
     } catch (error) {
-        console.error('Error deleting region:', error);
+        console.error('Error deleting salle de cours:', error);
         throw error;
     }
 }

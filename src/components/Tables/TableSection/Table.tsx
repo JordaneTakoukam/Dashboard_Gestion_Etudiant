@@ -25,13 +25,17 @@ const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
-    // Filtrer les régions en fonction de la langue
+    // Filtrer les section en fonction de la langue
     const filterSections = (sections: CommonSettingProps[]) => {
-        return sections.filter(section => {
-            const libelle = lang === 'fr' ? section.libelleFr : section.libelleEn;
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return section.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
-        });
+        if (sections) {
+            return sections.filter(section => {
+                const libelle = lang === 'fr' ? section.libelleFr : section.libelleEn;
+                // Vérifie si le code ou le libellé contient le texte de recherche
+                return section.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+            });
+        } else {
+            return [];
+        }
     };
 
     // État du texte de recherche

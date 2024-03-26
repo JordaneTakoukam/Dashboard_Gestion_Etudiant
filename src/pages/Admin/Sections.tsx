@@ -14,7 +14,7 @@ const Sections = () => {
     const handleEditSection = (section : CommonSettingProps) => {
         setSelectedSection(section);
     }
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections);
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section);
     const handleAddSection = () => {
         setSelectedSection(null);
     }

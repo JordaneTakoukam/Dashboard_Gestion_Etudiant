@@ -33,13 +33,14 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
     const lang = useSelector((state: RootState) => state.setting.language);
-    
+    // fournira les donnees a la page
+    const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[] | undefined>([]);
     useEffect(() => {
         if (commune) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.commune'));
             const currentDepartement = departements.find(departement => departement._id === ""+commune.departement);
             const currentRegion = currentDepartement && regions.find(region => region._id === ""+currentDepartement.region);
-            
+            currentRegion && filterDepartementByRegion(currentRegion._id);
             setCode(commune.code);
             setLibelleFr(commune.libelleFr);
             setLibelleEn(commune.libelleEn);
@@ -54,6 +55,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
             setLibelleEn("");
             setRegion(undefined);
             setDepartement(undefined);
+            setFilteredDepartement(undefined);
         }
 
 
@@ -65,8 +67,8 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
             setErrorDepartement("");
             setIsFirstRender(false);
         }
-    }, [commune, t]);
-
+    }, [commune, isFirstRender, t]);
+    
     const closeModal = () => {
         setErrorCode("");
         setErrorLibelleFr("");
@@ -76,9 +78,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
         setIsFirstRender(true);
         dispatch(setShowModal());
     };
-    // fournira les donnees a la page
     
-    const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[]>([]);
     // filtrer les donnee a partir de l'id de la region selectionner
     const filterDepartementByRegion = (regionId: string | undefined) => {
         if (regionId && regionId !== '') {
@@ -88,6 +88,8 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
             setFilteredDepartement(result);
         }
     };
+
+    
     const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRegionLibelle = e.target.value;
         var selectedRegion = null;
@@ -113,11 +115,11 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
         var selectedDepartement = null;
 
         if (lang === 'fr') {
-            selectedDepartement = filteredDepartement.find(departement => departement.libelleFr === selectedDepartementLibelle);
+            selectedDepartement = filteredDepartement && filteredDepartement.find(departement => departement.libelleFr === selectedDepartementLibelle);
 
         }
         else {
-            selectedDepartement = filteredDepartement.find(departement => departement.libelleEn === selectedDepartementLibelle);
+            selectedDepartement = filteredDepartement && filteredDepartement.find(departement => departement.libelleEn === selectedDepartementLibelle);
 
         }
 
@@ -203,7 +205,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
                                 date_creation: e.data.date_creation,
-                                region: e.data.region,
+                                departement: e.data.departement,
                                 _id: e.data._id,
                             }
                         }));
@@ -277,7 +279,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
-                    {filteredDepartement.map(departement => (
+                    {filteredDepartement && filteredDepartement.map(departement => (
                         <option key={departement._id} value={lang === 'fr' ? departement.libelleFr : departement.libelleEn}>{lang === 'fr' ? departement.libelleFr : departement.libelleEn}</option>
                     ))}
                 </select>

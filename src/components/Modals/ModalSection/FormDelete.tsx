@@ -28,7 +28,7 @@ function ModalDelete({ section }: { section: CommonSettingProps | null }) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (section._id) {
-                        dispatch(deleteSettingItem({ tableName: 'sections', itemId: section._id }));
+                        dispatch(deleteSettingItem({ tableName: 'section', itemId: section._id }));
                     }
 
                     closeModal();

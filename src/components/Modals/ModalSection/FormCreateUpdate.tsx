@@ -84,7 +84,7 @@ function ModalCreateUpdate({ section }: { section: CommonSettingProps | null }) 
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(createSettingItem({
-                            tableName: 'sections', newItem: {
+                            tableName: 'section', newItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
@@ -130,7 +130,7 @@ function ModalCreateUpdate({ section }: { section: CommonSettingProps | null }) 
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(updateSettingItem({
-                            tableName: 'sections',
+                            tableName: 'section',
                             updatedItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,

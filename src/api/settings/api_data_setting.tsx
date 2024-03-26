@@ -24,3 +24,5 @@ export async function apiGetAllSettings(): Promise<DataSettingProps> {
         throw error;
     }
 }
+
+

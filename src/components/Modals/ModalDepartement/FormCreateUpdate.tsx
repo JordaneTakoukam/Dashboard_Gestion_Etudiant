@@ -4,7 +4,6 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
 import { ErrorMessage, Label } from '../../ui/Label';
 import Input from '../../ui/input';
 import { apiCreateDepartement, apiUpdateDepartement } from '../../../api/settings/api_departement';
@@ -43,7 +42,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
             setModalTitle(t('form_update.enregistrer') + t('form_update.departement'));
             const regionId =""+departement.region;
             const currentRegion = regions.find(region => region._id === regionId);
-            console.log("region "+departement.region);
+            
             setCode(departement.code);
             setLibelleFr(departement.libelleFr);
             setLibelleEn(departement.libelleEn);
@@ -125,7 +124,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                             code,
                             libelleFr,
                             libelleEn,
-                            region: region,
+                            region: region._id,
                         }
                     ).then((e: ReponseApiPros) => {
                         if (e.success) {
@@ -182,7 +181,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                             code,
                             libelleFr,
                             libelleEn,
-                            region: region,
+                            region: region._id,
                             _id: departement._id,
                         }
                     ).then((e: ReponseApiPros) => {

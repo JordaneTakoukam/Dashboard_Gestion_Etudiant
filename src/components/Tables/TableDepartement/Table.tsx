@@ -11,9 +11,7 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { CommonSettingProps, DepartementProps } from "../../../_types/data_setting_type";
 import ErrorTable from "../common/ErrorTable";
-import FilterButtons from "../../ui/BoutonFiltrer";
 import FilterTableSection from "../../ui/FilterTableSection";
 
 
@@ -61,7 +59,7 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
 
 
     //
-    // Filtrer les régions en fonction de la langue
+    // Filtrer les départements en fonction de la langue
     const filterDepartementByContent = (departements: DepartementProps[]) => {
         return departements.filter(departement => {
             const libelle = lang === 'fr' ? departement.libelleFr : departement.libelleEn;
@@ -97,7 +95,9 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
 
     // fournir initialement les donnee a la page
     useEffect(() => {
+        console.log('init');
         setFilteredDepartement(data);
+        
     }, [data]);
 
     // modifier les donner de la page lors de la recherche

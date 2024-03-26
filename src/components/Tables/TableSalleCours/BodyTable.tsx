@@ -1,10 +1,10 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting"
-import { SalleCours } from "../../../pages/Admin/SallesDeCours"
+import { RootState } from "../../../_redux/store";
 
-const BodyTable = ({ data, onEdit }: { data: SalleCours[], onEdit: (salleCours: SalleCours) => void }) => {
-
+const BodyTable = ({ data, onEdit }: { data: SalleDeCoursProps[], onEdit: (salleCours: SalleDeCoursProps) => void }) => {
+    const lang = useSelector((state: RootState) => state.setting.language);
     const dispatch = useDispatch();
 
     return <tbody>
@@ -22,12 +22,12 @@ const BodyTable = ({ data, onEdit }: { data: SalleCours[], onEdit: (salleCours: 
 
                 {/* nom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.nom}</h5>
+                    <h5>{lang == 'fr' ? item.libelleFr : item.libelleEn}</h5>   
                 </td>
 
                 {/* Nombre de place */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.nbPlace}</h5>
+                    <h5>{""+item.nbPlace}</h5>
                 </td>
 
                 {/* classes

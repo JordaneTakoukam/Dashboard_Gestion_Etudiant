@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
-import { DepartementProps } from "../../../_types/data_setting_type";
 import { RootState } from "../../../_redux/store";
 
 const BodyTable = ({ data, onEdit }: { data: DepartementProps[], onEdit: (departement: DepartementProps) => void }) => {

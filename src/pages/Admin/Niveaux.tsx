@@ -5,6 +5,8 @@ import FormDelete from "../../components/Modals/ModalNiveau/FormDelete";
 import Table from "../../components/Tables/TableNiveau/Table";
 import { Cycle } from "./Cycles";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
 export interface Niveau{
     id?:number;
@@ -15,20 +17,21 @@ export interface Niveau{
 
 const Niveaux = () => {
     const {t}=useTranslation();
-    const [selectedNiveau, setSelectedNiveau] = useState<Niveau | null>(null);
-    const handleEditCycle = (niveau: Niveau) => {
+    const [selectedNiveau, setSelectedNiveau] = useState<NiveauProps | null>(null);
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau);
+    const handleEditNiveau = (niveau: NiveauProps) => {
         setSelectedNiveau(niveau);
     }
 
-    const handleAddCycle = () => {
+    const handleAddNiveau = () => {
         setSelectedNiveau(null);
     }
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.niveaux')} />
-            <Table data={niveaux}  onCreate={handleAddCycle} onEdit={handleEditCycle}/>
+            <Table data={niveaux}  onCreate={handleAddNiveau} onEdit={handleEditNiveau}/>
 
-            {/* <FormCreateUpdate niveau={selectedNiveau}/> */}
+            <FormCreateUpdate niveau={selectedNiveau}/>
             <FormDelete niveau={selectedNiveau}/>
 
         </>
@@ -47,27 +50,4 @@ export const niveau:Niveau={
         
     },
 }
-export const niveaux: Niveau[] = [
-    {
-        id:1,
-        code:"N1",
-        libelle:"1ère année",
-        cycle:{
-            id:1,
-            code:"CA",
-            libelle:"Cycle A",
-            
-        },
-    },
-    {
-        id:2,
-        code:"N2",
-        libelle:"2ème année",
-        cycle : {
-            id:1,
-            code:"CA",
-            libelle:"Cycle A",
-            
-        },
-    },
-];
+export const niveaux: Niveau[] = [];

@@ -3,7 +3,6 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import { DepartementProps } from '../../../_types/data_setting_type';
 import { apiDeleteDepartement } from '../../../api/settings/api_departement';
 import { ReponseApiPros } from '../../../api/interface_reponse';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';

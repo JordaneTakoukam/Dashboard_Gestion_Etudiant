@@ -1,174 +1,193 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { useState } from "react";
+import { setShowModal } from "../../../_redux/features/setting";
+import { useEffect, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Cycle } from "../../../pages/Admin/Cycles";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
 
 
 interface TableCycleProps {
-    data: Cycle[];
+    data: CycleProps[];
     onCreate:()=>void;
-    onEdit: (cycle: Cycle) => void;
+    onEdit: (cycle: CycleProps) => void;
 }
 
-// const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
-//     const pageIsLoading = false;
-//     const dispatch = useDispatch();
-//     const {t}=useTranslation();
-//     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
+    const dispatch = useDispatch();
+    const {t}=useTranslation();
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-//     // Fonction pour basculer la visibilité des CustomDropDown
-//     const toggleDropdownVisibility = () => {
-//         setIsDropdownVisible(!isDropdownVisible);
-//     };
+    // Fonction pour basculer la visibilité des CustomDropDown
+    const toggleDropdownVisibility = () => {
+        setIsDropdownVisible(!isDropdownVisible);
+    };
+    // fournira les donnees a la page
+    const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
 
-//     // const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-//     const [filtreSection, setFiltreSection] = useState("");
-//     // const [filtreCycle, setFiltreCycle] = useState("");
-//     // const [filtreNiveau, setFiltreNiveau] = useState("");
-//     // const [formatToDownload, setFormatToDownload] = useState("");
+    // valeur de la l'id de la section selectionnée
+    const [selectSectionId, setSelectIdSection] = useState<string>('');
 
-//     // const handleAnneeSelect = (selected: string) => {
-//     //     setFiltreAnnee(selected);
-//     //     console.log(selected)
-//     // };
-//     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
-//         // setFiltreSection(selected);
-//         console.log(selected);
-//     };
+    // État du texte de recherche
+    const [searchText, setSearchText] = useState<string>('');
+    
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
+    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
-//     // const handleCycleSelect = (selected: string) => {
-//     //     setFiltreCycle(selected);
-//     //     console.log(selected);
-//     // };
+    // recuperer l'id de la section suite au click sur l'input select
+    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdSection(selected._id);
+            filterCyleBySection(selected._id);
+        }
+    };
 
-//     // const handleNiveauSelect = (selected: string) => {
-//     //     setFiltreNiveau(selected);
-//     //     console.log(selected);
-//     // };
-//     // const handleDownloadSelect = (selected: string) => {
-//     //     setFormatToDownload(selected);
-//     //     console.log(selected);
-//     //     // methode pour download
-//     // };
+    
+    // Filtrer les cycles en fonction de la langue
+    const filterCycleByContent = (cycles: CycleProps[]) => {
+        if (searchText === '' && sections && sections.length>0) {
+            const result: CycleProps[] = data.filter(cycle => cycle.section === sections[0]?._id);
+            return result;
+        }
+        return cycles.filter(cycle => {
+            const libelle = lang === 'fr' ? cycle.libelleFr : cycle.libelleEn;
+            // Vérifie si le code ou le libellé contient le texte de recherche
+            return cycle.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+        });
+    };
 
+    // filtrer les donnee a partir de l'id de la region selectionner
+    const filterCyleBySection = (sectionId: string | undefined) => {
+        if (sectionId && sectionId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: CycleProps[] = data.filter(cycle => cycle.section === sectionId);
 
-//     // variable pour la pagination
-//     //
-//     const itemsPerPage = 10; // nombre delements maximum par page
-//     const [currentPage, setCurrentPage] = useState<number>(1);
-//     const indexOfLastItem = currentPage * itemsPerPage;
-//     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-//     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+            setFilteredCycle(result)
+        }
+    };
 
-//     const handlePageClick = (pageNumber: number) => {
-//         setCurrentPage(pageNumber);
-//     };
+    // fournir initialement les donnee a la page
+    useEffect(() => {
+        if (sections && sections.length > 0) {
+            // Si l'ID de section sélectionné est vide, utiliser la première section par défaut
+            const sectionIdToFilter = selectSectionId || sections[0]?._id;
+            filterCyleBySection(sectionIdToFilter);
+        }
+    }, [sections, selectSectionId]);
+    
+    // modifier les données de la page lors de la recherche ou de la sélection de la section
+    useEffect(() => {
+        const result = filterCycleByContent(data);
+        setFilteredCycle(result);
+    }, [searchText, data, sections]);
 
-//     return (
-//         <div>
-//             {/* bouton creer ajouter un nouvel ... et search bar */}
-//             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-//                 <ButtonCreate
-//                     title={t('boutton.nouveau_cycle')}
-//                     onClick={() => { onCreate();dispatch(setShowModal()) }}
-//                 />
-//                 <InputSearch hintText={t('recherche.rechercher')+t('recherche.cycle')} onSubmit={() => { }} />
-//             </div>
-//             {/*! bouton creer ajouter un nouvel ... et search bar */}
+    // variable pour la pagination
+    //
+    const itemsPerPage = 10; // nombre delements maximum par page
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
-//             {/*  */}
-//             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-//                 <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.cycle')} </h1>
-//                 <div className="block lg:hidden">
-//                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
-//                     {isDropdownVisible && (
-//                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-//                             <CustomDropDown2<CommonSettingProps>
-//                                 title={t('label.section')}
-//                                 items={sections}
-//                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-//                                 displayProperty={(section: CommonSettingProps) => `${section.libelle}`}
-//                                 onSelect={handleSectionSelect}
-//                             />
-//                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-//                             {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} /> */}
-//                             {/* <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-//                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
-//                         </div>
-//                     )}
-//                 </div>
-
-//                 <div className="hidden lg:block">
-//                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
-//                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-//                             <CustomDropDown2<Section>
-//                                 title={t('label.section')}
-//                                 items={sections}
-//                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-//                                 displayProperty={(section: Section) => `${section.libelle}`}
-//                                 onSelect={handleSectionSelect}
-//                             />
-//                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-//                             {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} /> */}
-//                             {/* <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-//                             <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
-//                         </div>
-//                     </div>
-//                 </div>
+    return (
+        <div>
+            {/* bouton creer ajouter un nouvel ... et search bar */}
+            <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+                <ButtonCreate
+                    title={t('boutton.nouveau_cycle')}
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.cycle')} onSubmit={(text) => setSearchText(text)} />
+            </div>
+            {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
+            {/*  */}
+            <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.cycle')} </h1>
+                <div className="block lg:hidden">
+                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
+                    {isDropdownVisible && (
+                        <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
+                            <CustomDropDown2<CommonSettingProps>
+                                title={t('label.section')}
+                                items={sections}
+                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                onSelect={handleSectionSelect}
+                            />
+                        </div>
+                    )}
+                </div>
 
-
-//                 {/* DEBUT DU TABLE */}
-//                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
-//                     <table className="w-full table-auto">
-//                         {/* en tete du tableau */}
-//                         {
-//                             pageIsLoading ?
-//                                 <LoadingTable />
-//                                 : data.length === 0 ?
-//                                     <NoDataTable /> :
-//                                     <HeaderTable />
-//                         }
-
-//                         {/* corp du tableau*/}
-
-//                         {
-//                             !pageIsLoading && <BodyTable data={data} onEdit={onEdit} />
-//                         }
-
+                <div className="hidden lg:block">
+                    <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
+                        <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
+                            <CustomDropDown2<CommonSettingProps>
+                                title={t('label.section')}
+                                items={sections}
+                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                onSelect={handleSectionSelect}
+                            />
+                        </div>
+                    </div>
+                </div>
 
 
 
-//                     </table>
-//                 </div>
 
-//                 {/* Pagination */}
+                {/* DEBUT DU TABLE */}
+                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
+                    <table className="w-full table-auto">
+                        {/* en tete du tableau */}
+                        {
+                            pageIsLoading ?
+                                <LoadingTable />
+                                : filteredCycle.length === 0 ?
+                                    <NoDataTable /> :
+                                    <HeaderTable />
+                        }
 
-//                 <h1>Pagination ici</h1>
+                        {/* corp du tableau*/}
 
-//             </div>
+                        {
+                            !pageIsLoading && <BodyTable data={filteredCycle} onEdit={onEdit} />
+                        }
 
-//             {/* bouton downlod Download */}
-//             {/* <div className="mt-7 mb-10">
-//                 <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
 
-//             </div> */}
 
-//         </div>
-//     );
-// };
-const Table = ({  }: TableCycleProps) => {}
+
+                    </table>
+                </div>
+
+                {/* Pagination */}
+
+                <h1>Pagination ici</h1>
+
+            </div>
+
+            {/* bouton downlod Download */}
+            {/* <div className="mt-7 mb-10">
+                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
+
+            </div> */}
+
+        </div>
+    );
+};
 
 
 export default Table;

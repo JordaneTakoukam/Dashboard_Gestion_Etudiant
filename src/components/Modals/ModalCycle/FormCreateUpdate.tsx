@@ -1,134 +1,283 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting';
+import { setShowModal } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Cycle } from '../../../pages/Admin/Cycles';
 import { useTranslation } from 'react-i18next';
+import { ErrorMessage, Label } from '../../ui/Label';
+import Input from '../../ui/input';
+import { apiCreateCycle, apiUpdateCycle } from '../../../api/settings/api_cycle';
+import { ReponseApiPros } from '../../../api/interface_reponse';
+import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
+import createToast from '../../../hooks/toastify';
 
 
+function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
 
-// function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {
-//     const {t}=useTranslation();
-//     const dispatch = useDispatch();
-//     const [code, setCode] = useState("");
-//     const [libelle, setLibelle] = useState("");
-//     const [section, setSection] = useState<CommonSettingProps>();
-    
-//     const [errorCode, setErrorCode] = useState("");
-//     const [errorLibelle, setErrorLibelle] = useState("");
-//     const [errorSection, setErrorSection] = useState("");
-//     const [isFirstRender, setIsFirstRender] = useState(true);
-    
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
 
-//     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
-//     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
+    const [code, setCode] = useState("");
+    const [libelleFr, setLibelleFr] = useState("");
+    const [libelleEn, setLibelleEn] = useState("");
+    const [section, setSection] = useState<CommonSettingProps>();
 
-//     useEffect(() => {
-//         if (cycle) {
-//             setModalTitle(t('form_update.enregistrer')+t('form_update.cycle'));
-//             setCode(cycle.code);
-//             setLibelle(cycle.libelle);
-//             setSection(cycle.section);
+    const [errorCode, setErrorCode] = useState("");
+    const [errorLibelleFr, setErrorLibelleFr] = useState("");
+    const [errorLibelleEn, setErrorLibelleEn] = useState("");
+    const [errorSection, setErrorSection] = useState("");
+
+    const [isFirstRender, setIsFirstRender] = useState(true);
+
+
+    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
+    const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
+
+    const lang = useSelector((state: RootState) => state.setting.language);
+
+    useEffect(() => {
+        if (cycle) {
+            setModalTitle(t('form_update.enregistrer') + t('form_update.cycle'));
+            const sectionId =""+cycle.section;
+            const currentSection = sections.find(section => section._id === sectionId);
             
-//         } else {
-//             setModalTitle(t('form_save.enregistrer')+t('form_save.cycle'));
-//             setCode("");
-//             setLibelle("");
-//             setSection(undefined);
-//         }
+            setCode(cycle.code);
+            setLibelleFr(cycle.libelleFr);
+            setLibelleEn(cycle.libelleEn);
+            setSection(currentSection);
+
+        } else {
+            setModalTitle(t('form_save.enregistrer') + t('form_save.cycle'));
+            setCode("");
+            setLibelleFr("");
+            setLibelleEn("");
+            setSection(undefined);
+        }
 
 
-//         if (isFirstRender) {
-//             setErrorCode("");
-//             setErrorLibelle("");
-//             setErrorSection("");
-//             setIsFirstRender(false);
-//         }
-//     }, [cycle, isFirstRender, t]);
+        if (isFirstRender) {
+            setErrorCode("");
+            setErrorLibelleEn("");
+            setErrorLibelleFr("");
+            setErrorSection("");
+            setIsFirstRender(false);
+        }
+    }, [cycle, isFirstRender, t]);
 
-//     const closeModal = () => { 
-//         setErrorCode(""); 
-//         setErrorLibelle("");
-//         setErrorSection("");
-//         setIsFirstRender(true);
-//         dispatch(setShowModal()); 
-//     };
+    const closeModal = () => {
+        setErrorCode("");
+        setErrorLibelleFr("");
+        setErrorLibelleEn("");
+        setErrorSection("");
+        setIsFirstRender(true);
+        dispatch(setShowModal());
+    };
 
-//     const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedSectionLibelle = e.target.value;
-//         const selectedSection = sections.find(section => section.libelle === selectedSectionLibelle);
-//         if (selectedSection) {
-//             setSection(selectedSection);
-//             setErrorSection("");
-//         }
-//     };
-    
-    
-    
+    const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSectionLibelle = e.target.value;
+        var selectedSection = null;
 
-//     const handleCreateUpdate = () => {
-//         if (!code || !libelle || !section) {
-//             if (!code) {
-//                 setErrorCode(t('error.code'));
-//             }
-//             if (!libelle) {
-//                 setErrorLibelle(t('error.libelle'));
-//             }
-//             if (!section) {
-//                 setErrorSection(t('error.section'));
-//             }
+        if (lang === 'fr') {
+            selectedSection = sections.find(section => section.libelleFr === selectedSectionLibelle);
+
+        }
+        else {
+            selectedSection = sections.find(section => section.libelleEn === selectedSectionLibelle);
+
+        }
 
 
-//             return;
-//         }
-        
-//         closeModal();
-//     }
+        if (selectedSection) {
+            setSection(selectedSection);
+            setErrorSection("");
+        }
+    };
 
-//     return (
-//         <>
-//             <CustomDialogModal
-//                 title={modalTitle} // Utilisation du titre dynamique
-//                 isModalOpen={isModalOpen}
-//                 isDelete={false}
-//                 closeModal={closeModal}
-//                 handleConfirm={handleCreateUpdate}
-//             >
-                
-//                 <label>{t('label.code')}</label><label className="text-red-500"> *</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={code}
-//                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
-//                 />
-//                 {errorCode && <p className="text-red-500" >{errorCode}</p>}
-//                 <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={libelle}
-//                     onChange={(e) => {setLibelle(e.target.value); setErrorLibelle("")}}
-//                 />
-//                 {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
-//                 <label>{t('label.section')}</label><label className="text-red-500"> *</label>
-//                 <select
-//                     value={section ? section.libelle : t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}
-//                     onChange={handleSectionChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.cycle')}</option>
-//                     {sections.map(section => (
-//                         <option key={section.id} value={section.libelle}>{section.libelle}</option>
-//                     ))}
-//                 </select>
-//                 {errorSection && <p className="text-red-500">{errorSection}</p>}
-//             </CustomDialogModal>
 
-//         </>
-//     );
-// }
-function ModalCreateUpdate({ cycle }: { cycle : Cycle | null }) {}
+
+
+    const handleCreateUpdate = async () => {
+        // create
+        if (!cycle) {
+            if (!code || !libelleFr || !libelleEn || !section) {
+                if (!code) {
+                    setErrorCode(t('error.code'));
+                }
+                if (!libelleFr) {
+                    setErrorLibelleFr(t('error.libelle'));
+                }
+                if (!libelleEn) {
+                    setErrorLibelleEn(t('error.libelle'));
+                }
+                if (!section) {
+                    setErrorSection(t('error.section'));
+                }
+
+            } else {
+                // creation
+
+                if (section._id) {
+                    await apiCreateCycle(
+                        {
+                            code,
+                            libelleFr,
+                            libelleEn,
+                            section: section._id,
+                        }
+                    ).then((e: ReponseApiPros) => {
+                        if (e.success) {
+                            createToast(e.message[lang as keyof typeof e.message], '', 0);
+                            dispatch(createSettingItem({
+                                tableName: 'cycle', newItem: {
+                                    code: e.data.code,
+                                    libelleFr: e.data.libelleFr,
+                                    libelleEn: e.data.libelleEn,
+                                    date_creation: e.data.date_creation,
+                                    section: e.data.section,
+                                    _id: e.data._id,
+                                }
+                            }));
+
+                            closeModal();
+
+                        } else {
+                            createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                        }
+                    }).catch((e) => {
+                        createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    })
+                }
+
+            }
+        }
+
+        //update
+        else {
+
+            if (!code || !libelleFr || !libelleEn || !section) {
+                if (!code) {
+                    setErrorCode(t('error.code'));
+                }
+                if (!libelleFr) {
+                    setErrorLibelleFr(t('error.libelle'));
+                }
+                if (!libelleEn) {
+                    setErrorLibelleEn(t('error.libelle'));
+                }
+                if (!section) {
+                    setErrorSection(t('error.section'));
+                }
+            } else {
+
+
+                //
+                //  mise a jour
+                if (section._id) {
+                    await apiUpdateCycle(
+                        {
+                            code,
+                            libelleFr,
+                            libelleEn,
+                            section: section._id,
+                            _id: cycle._id,
+                        }
+                    ).then((e: ReponseApiPros) => {
+                        if (e.success) {
+                            createToast(e.message[lang as keyof typeof e.message], '', 0);
+                            dispatch(updateSettingItem({
+                                tableName: 'cycle',
+                                updatedItem: {
+                                    code: e.data.code,
+                                    libelleFr: e.data.libelleFr,
+                                    libelleEn: e.data.libelleEn,
+                                    date_creation: e.data.date_creation,
+                                    section: e.data.section,
+                                    _id: e.data._id,
+                                }
+                            }));
+
+                            closeModal();
+
+
+                        } else {
+                            createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                        }
+                    }).catch((e) => {
+                        createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    })
+                }
+            }
+        }
+
+
+    }
+
+
+    return (
+        <>
+            <CustomDialogModal
+                title={modalTitle} // Utilisation du titre dynamique
+                isModalOpen={isModalOpen}
+                isDelete={false}
+                closeModal={closeModal}
+                handleConfirm={handleCreateUpdate}
+            >
+
+                {/* input 1 */}
+                <Label text={t('label.code')} required />
+                <Input
+                    value={code}
+                    type='text'
+                    setValue={(value) => { setCode(value); setErrorCode("") }}
+                    hasBackground={true}
+                />
+                <ErrorMessage message={errorCode} />
+
+
+                {/* input 2 */}
+                <Label text={t('label.libelle_fr')} required />
+                <Input
+                    value={libelleFr}
+                    type='text'
+                    setValue={(value) => { setLibelleFr(value); setErrorLibelleFr(""); }}
+                    hasBackground={true}
+                />
+                <ErrorMessage message={errorLibelleFr} />
+
+                {/* input 3 */}
+                <Label text={t('label.libelle_en')} required />
+                <Input
+                    value={libelleEn}
+                    type='text'
+                    setValue={(value) => { setLibelleEn(value); setErrorLibelleEn(""); }}
+                    hasBackground={true}
+                />
+                <ErrorMessage message={errorLibelleEn} />
+
+                {/* input 4 */}
+
+                <Label text={t('label.section')} required />
+
+
+                <select
+                    value={section ? (lang === 'fr' ? section.libelleFr : section.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.section')}
+                    onChange={handleSectionChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.section')}</option>
+                    {sections.map(section => (
+                        <option key={section._id} value={lang === 'fr' ? section.libelleFr : section.libelleEn}>{lang === 'fr' ? section.libelleFr : section.libelleEn}</option>
+                    ))}
+                </select>
+                <ErrorMessage message={errorSection} />
+            </CustomDialogModal>
+
+        </>
+    );
+}
 
 export default ModalCreateUpdate;

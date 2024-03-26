@@ -45,8 +45,8 @@ interface DataSettingProps {
     departement: DepartementProps[];
     communes: CommuneProps[];
     section: CommonSettingProps[];
-    cycles: CycleProps[];
-    niveaux: NiveauProps[];
+    cycle: CycleProps[];
+    niveau: NiveauProps[];
     salleDeCours:SalleDeCoursProps[];
     typesEnseignement:CommonSettingProps[];
     // roles:CommonSettingProps[];

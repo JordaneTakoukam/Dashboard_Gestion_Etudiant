@@ -4,6 +4,8 @@ import Table from "../../components/Tables/TableCycle/Table";
 import FormCreateUpdate from "../../components/Modals/ModalCycle/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCycle/FormDelete";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
 export interface Cycle{
     id?:number,
@@ -14,8 +16,9 @@ export interface Cycle{
 
 const Cycles = () => {
     const {t}=useTranslation();
-    const [selectedCycle, setSelectedCycle] = useState<Cycle | null>(null);
-    const handleEditCycle = (cycle: Cycle) => {
+    const [selectedCycle, setSelectedCycle] = useState<CycleProps | null>(null);
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle);
+    const handleEditCycle = (cycle: CycleProps) => {
         setSelectedCycle(cycle);
     }
 
@@ -25,10 +28,10 @@ const Cycles = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.cycles')} />
-            {/* <Table data={cycles} onCreate={handleAddCycle} onEdit={handleEditCycle}/>
+            <Table data={cycles} onCreate={handleAddCycle} onEdit={handleEditCycle}/>
 
             <FormCreateUpdate cycle={selectedCycle}/>
-            <FormDelete cycle={selectedCycle}/> */}
+            <FormDelete cycle={selectedCycle}/>
 
         </>
     );

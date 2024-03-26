@@ -1,69 +1,106 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { useState } from "react";
+import { setShowModal } from "../../../_redux/features/setting";
+import { useEffect, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
-import { Niveau } from "../../../pages/Admin/Niveaux";
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
 
 interface TableNiveauProps {
-    data: Niveau[];
-    onCreate:()=>void;
-    onEdit: (niveau:Niveau) => void;
+    data: NiveauProps[];
+    onCreate: () => void;
+    onEdit: (niveau: NiveauProps) => void;
 }
 
 
 const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
-    const {t}=useTranslation();
-    const pageIsLoading = false;
     const dispatch = useDispatch();
-
+    const { t } = useTranslation();
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+
+    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
+    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    // fournira les donnees a la page
+    const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[]>([]);
+    // État du texte de recherche
+    const [searchText, setSearchText] = useState<string>('');
+    
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-    // const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreSection, setFiltreSection] = useState("");
-    const [filtreCycle, setFiltreCycle] = useState("");
-    // const [filtreNiveau, setFiltreNiveau] = useState("");
-    // const [formatToDownload, setFormatToDownload] = useState("");
+   
+    // valeur de la l'id de la section selectionner
+    const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
 
-    // const handleAnneeSelect = (selected: string) => {
-    //     setFiltreAnnee(selected);
-    //     console.log(selected)
-    // };
-    
-    // const handleSectionSelect = (selected: Section | undefined) => {
-    //     // setFiltreSection(selected);
-    //     console.log(selected);
-    // };
-
-    const handleCycleSelect = (selected: Cycle | undefined) => {
-        // setFiltreCycle(selected);
-        console.log(selected);
+    // recuperer l'id de la section suite au click sur l'input select
+    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdSection(selected._id);
+            filterCycleBySection(selected._id);
+            // setSelectIdSection('');
+        }
     };
 
-    // const handleNiveauSelect = (selected: string) => {
-    //     setFiltreNiveau(selected);
-    //     console.log(selected);
-    // };
-    // const handleDownloadSelect = (selected: string) => {
-    //     setFormatToDownload(selected);
-    //     console.log(selected);
-    //     // methode pour download
-    // };
 
+
+    // valeur de la l'id du cycle selectionner
+    const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
+    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdCycle(selected._id);
+            filterNiveauByCycle(selected._id);
+            // setSelectIdCycle('');
+        }
+    };
+    // Filtrer les niveaus en fonction de la langue
+    const filterNiveausByContenet = (niveaus: NiveauProps[]) => {
+        if (searchText === '' && filteredCycle && filteredCycle.length>0) {
+            const result: NiveauProps[] = data.filter(niveau => niveau.cycle === filteredCycle[0]?._id);
+            return result;
+        }
+
+        return niveaus.filter(niveau => {
+            const libelle = lang === 'fr' ? niveau.libelleFr : niveau.libelleEn;
+            // Vérifie si le code ou le libellé contient le texte de recherche
+            return niveau.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+        });
+    };
+
+    // fournira les donnees a la page
+    const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCycleBySection = (sectionId: string | undefined) => {
+        if (sectionId && sectionId !== '') {
+            // Filtrer les cycles en fonction de l'ID de la section
+            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
+
+            setFilteredCycle(result);
+            
+        }
+    };
+
+    // filtrer les donnee a partir de l'id du cycle selectionner
+    const filterNiveauByCycle = (cycleId: string | undefined) => {
+        if (cycleId && cycleId !== '') {
+            // Filtrer les niveau en fonction de l'ID du cycle
+            const result: NiveauProps[] = data.filter(niveau => niveau.cycle === cycleId);
+
+            setFilteredNiveau(result)
+        }
+    };
 
     // variable pour la pagination
     //
@@ -77,43 +114,66 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
         setCurrentPage(pageNumber);
     };
 
+    //fournir initialement les données à la page
+    useEffect(() => {
+        if (sections && sections.length > 0) {
+            filterCycleBySection(sections[0]?._id);
+        }
+           
+    }, [sections]);
+
+    useEffect(() => {
+        if (filteredCycle && filteredCycle.length > 0) {
+            if(!selectCycleId){
+                filterNiveauByCycle(filteredCycle[0]?._id);
+            }else{
+                filterNiveauByCycle(selectCycleId);
+            }
+                
+        }        
+    }, [filteredCycle, data]);
+
+    // modifier les donner de la page lors de la recherche
+    useEffect(() => {
+        const result = filterNiveausByContenet(data);
+        setFilteredNiveau(result);
+    }, [searchText]);
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.nouveau_niveau')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.niveau')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.niveau')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.niveau')}</h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.niveau')} </h1>
                 <div className="block lg:hidden">
-                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
+                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            {/* <CustomDropDown2<Section>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.cycle')}
-                                items={cycles}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                items={filteredCycle}
+                                defaultValue={filteredCycle[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} /> */}
+                            {/* <CustomDropDown title="Section" items={sections} defaultValue={sections[0]} displayProperty={(section: Section) => `${section.libelle}`} onSelect={handleSectionSelect} />
+                            <CustomDropDown title="Cycle" items={cycles} defaultValue={cycles[0]} displayProperty={(cycle: Cycle) => `${cycle.libelle}`} onSelect={handleCycleSelect} /> */}
                             {/* <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>
                     )}
@@ -122,24 +182,22 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            {/* <CustomDropDown2<Section>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.cycle')}
-                                items={cycles}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                items={filteredCycle}
+                                defaultValue={filteredCycle[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} /> */}
-                            {/* <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
+                            {/* <CustomDropDown title="Section" items={sections} defaultValue={sections[0]} displayProperty={(section: Section) => `${section.libelle}`} onSelect={handleSectionSelect} />
+                            <CustomDropDown title="Cycle" items={cycles} defaultValue={cycles[0]} displayProperty={(cycle: Cycle) => `${cycle.libelle}`} onSelect={handleCycleSelect} /> */}
                         </div>
                     </div>
                 </div>
@@ -154,7 +212,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : data.length === 0 ?
+                                : filteredNiveau.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -162,7 +220,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
+                            !pageIsLoading && <BodyTable data={filteredNiveau} onEdit={onEdit} />
                         }
 
 

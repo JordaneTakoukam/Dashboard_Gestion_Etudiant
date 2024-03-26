@@ -43,7 +43,6 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
    
     // valeur de la l'id de la region selectionner
     const [selectRegionId, setSelectIdRegion] = useState<string | undefined>('');
-    const [isFirstRender, setIsFirstRender] = useState(true);
 
     // recuperer l'id de la region suite au click sur l'input select
     const handleRegionSelect = (selected: CommonSettingProps | undefined) => {

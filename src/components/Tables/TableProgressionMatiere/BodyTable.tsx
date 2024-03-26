@@ -15,7 +15,7 @@ const BodyTable = ({ data }: { data: Matiere | undefined }) => {
     }, [data]);
 
     const handleCheckboxChange = (chapitreIndex: number, objectifIndex: number) => {
-        if (roles.admin === userRole || roles.teacher === userRole ) {
+        if (roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole ) {
             if(matiereData && matiereData.chapitres){
                 const updatedChapitres = matiereData.chapitres.map((chapitre, index) => {
                     if (index === chapitreIndex) {

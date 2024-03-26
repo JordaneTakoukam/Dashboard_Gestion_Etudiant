@@ -60,7 +60,7 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant:
                             onEdit(item, false);
                             dispatch(setShowModal())
                         } }
-                        onClickRemovHour={roles.admin === userRole ?() => {
+                        onClickRemovHour={roles.admin === userRole || roles.superAdmin === userRole ?() => {
                             onEdit(item, true);
                             dispatch(setShowModal())
                         }:undefined }                                             

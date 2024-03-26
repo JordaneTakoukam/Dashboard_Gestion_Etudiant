@@ -52,7 +52,7 @@ export async function signInApi({ email, mot_de_passe }: SignInApiProps): Promis
         return {
             success: data.success,
             data: data.data,
-            message: null,
+            message: undefined,
 
         };
 

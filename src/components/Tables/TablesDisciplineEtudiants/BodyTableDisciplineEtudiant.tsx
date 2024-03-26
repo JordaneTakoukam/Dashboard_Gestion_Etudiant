@@ -58,7 +58,7 @@ const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdi
                             onEdit(item, false);
                             dispatch(setShowModal())
                         } }
-                        onClickRemovHour={(roles.admin === userRole  || roles.teacher === userRole )?() => {
+                        onClickRemovHour={(roles.admin === userRole || roles.superAdmin === userRole  || roles.enseignant === userRole )?() => {
                             onEdit(item, true);
                             dispatch(setShowModal())
                         }:undefined}                                             

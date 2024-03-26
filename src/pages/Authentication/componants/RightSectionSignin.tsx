@@ -6,12 +6,17 @@ import Input from "../../../components/ui/input";
 import ButtonCustom from "../../../components/ui/button";
 import Loading from "../../../components/ui/loading";
 import createToast from "../../../hooks/toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
 import { useTranslation } from 'react-i18next';
 import { validateEmail, validatePassword } from "../../../fonctions/fonction";
+import { UserState } from "../../../_types/user_type";
+import { setUser } from "../../../_redux/features/user_slice";
+import { useNavigate } from 'react-router-dom';
 
 function RightSectionSigin() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     var lang = useSelector((state: RootState) => state.setting.language) || 'fr';
@@ -28,13 +33,12 @@ function RightSectionSigin() {
     let notValidEmail = '';
     let notValidPassword = '';
 
+
+    const userId = useSelector((state: RootState) => state.user._id);
+
     const handleSubmit = async () => {
         setError2('');
         setError3('');
-        console.log(lang);
-
-
-
 
         notValidEmail = validateEmail(email);
         if (notValidEmail) {
@@ -47,34 +51,51 @@ function RightSectionSigin() {
             setError3(t(notValidPassword));
         }
 
-
         // declencher 
         if (email && password && notValidEmail == "" && notValidPassword == "") {
             setLoading(true);
             var signUpResult = null;
             try {
                 signUpResult = await signInApi({ email: email, mot_de_passe: password });
-
                 if (signUpResult.success) {
-                    createToast((signUpResult.message as any)[lang], '', 0)
-                } else {
-                    createToast((signUpResult.message as any)[lang], '', 1)
+                    if (signUpResult.message !== null) {
+                        createToast((signUpResult.message as any)[lang], '', 0)
 
+                    }
+                } else {
+                    if (signUpResult.message !== null) {
+                        createToast((signUpResult.message as any)[lang], '', 1)
+
+                    }
                 }
 
+                if (signUpResult?.success === true) {
+                    const userData = signUpResult.data as UserState;
+
+                    dispatch(setUser(userData))
+
+
+                    if (userData.roles.length === 1) {
+                        window.location.href = '/';
+                    } else {
+                        console.log('ooooooooooooooook');
+
+                        navigate('/choose-account');
+                        // window.location.href = '/choose-account';
+
+                    }
+                    setLoading(false)
+                }
 
             } catch (e) {
-
 
                 console.log('erreur catch ' + e);
                 setLoading(false)
 
             }
 
-            if (signUpResult?.success === true) {
-                window.location.href = '/';
-                setLoading(false)
-            }
+
+
             setLoading(false)
         }
 
@@ -96,7 +117,6 @@ function RightSectionSigin() {
             <div className="w-full h-full border-stroke dark:border-strokedark xl:border-l-2 overflow-auto mt-[2%]">
                 <div className='card shadow-8 mx-6 lg:mx-[100px] m-0 lg:my-0'>
                     <div className="flex flex-col items-center justify-center w-full p-2 sm:p-12.5 px-5 py-8 xl:px-10">
-
                         {/* titre */}
                         <h1 className="mb-8 text-lg lg:text-2xl font-bold text-black dark:text-white ">
                             {t('boutton.se_connecter')}

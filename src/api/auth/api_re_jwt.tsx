@@ -1,33 +1,33 @@
 import axios, { AxiosError } from 'axios';
 import { storeTokenInLocalStorage } from '../../middlewares/auth_middleware.js';
-import { config } from './../../config.js'
+import { config } from '../../config.js'
 
 const api = `${config.apiUrl}/api/v1`;
 
 interface ApiResponse<T> {
     success: boolean;
     data?: any;
-    message?: string;
+    message: string;
     token?: string;
 }
 
 interface SignInApiResponse {
     success: boolean;
-    message: any;
+    message: string;
     token?: string;
     data?: any; // Adapter cette interface en fonction de la structure de données de l'utilisateur
 }
 
-interface SignInApiProps {
-    email: string;
-    mot_de_passe: string;
+interface Props {
+    role: string;
+    userId: string;
 }
 
-export async function signInApi({ email, mot_de_passe }: SignInApiProps): Promise<ApiResponse<string>> {
+export async function reJwtApi({ role, userId }: Props): Promise<ApiResponse<string>> {
     try {
         const response = await axios.post<SignInApiResponse>(
-            `${api}/auth/signin`,
-            { email, mot_de_passe },
+            `${api}/auth/signin/re-jwt`,
+            { role, userId },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,29 +35,19 @@ export async function signInApi({ email, mot_de_passe }: SignInApiProps): Promis
             },
         );
 
+
         const data = response.data;
 
-        if (data.data.roles.length === 1) {
-            if (data.token) {
-                storeTokenInLocalStorage(data.token);
-                return {
-                    success: data.success,
-                    message: data.message,
-                    token: data.token,
-                    data: data.data,
-                };
-            }
-
+        if (data.token) {
+            storeTokenInLocalStorage(data.token);
         }
+
         return {
             success: data.success,
+            message: data.message,
+            token: data.token,
             data: data.data,
-            message: null,
-
         };
-
-
-
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
             const axiosError: AxiosError<ApiResponse<string>> = error;

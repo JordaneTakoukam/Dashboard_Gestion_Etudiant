@@ -1,5 +1,6 @@
 import { useJwt } from "react-jwt";
 import { config } from "./../config.js";
+
 const isUserAuthenticated = () => {
     const token = localStorage.getItem(config.jwt_key);
 

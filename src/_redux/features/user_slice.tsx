@@ -1,26 +1,33 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PropsUserMinState, UserState } from "../../_types/user_type";
 
-
 // État initial de l'utilisateur
 const initialState: UserState = {
     _id: '',
+    roles: [],
     role: '',
     genre: '',
     date_creation: null,
     nom: '',
-    prenom: null,
+    prenom: '',
     email: '',
-    mot_de_passe: '',
-    id_commune: null,
-    id_categorie: null,
-    id_service: null,
-    id_grade: null,
-    matricule: null,
+    section: '',
+    cycle: '',
+    niveau: '',
+    grades: '',
+    categories: '',
+    fonction: '',
+    service: '',
+    region: '',
+    departement: '',
+    communes: '',
+    matricule: '',
     date_naiss: null,
-    lieu_naiss: null,
-    contact: null,
-    status: 'actif',
+    date_entree: null,
+    lieu_naiss: '',
+    contact: '',
+    photo_profil: '',
+    status: '',
     abscences: [],
     historique_connexion: [],
 };
@@ -41,11 +48,15 @@ export const userSlice = createSlice({
             state.nom = action.payload.nom;
             state.prenom = action.payload.prenom;
         },
+        // Mettre à jour l'utilisateur avec de nouvelles propriétés
+        updateUser: (state, action: PayloadAction<Partial<UserState>>) => {
+            return { ...state, ...action.payload };
+        },
     },
 });
 
 // Exporter les actions
-export const { setUser, setMinimumUser } = userSlice.actions;
+export const { setUser, setMinimumUser, updateUser } = userSlice.actions;
 
 // Exporter le reducer
 export default userSlice.reducer;

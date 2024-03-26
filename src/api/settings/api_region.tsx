@@ -1,11 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
-import { config } from '../../config.js';
+import { apiUrl, wstjqer } from '../../config.js';
 import { ReponseApiPros } from '../interface_reponse.js';
-import { CommonSettingProps } from '../../_types/data_setting_type.js';
 
-const api = `${config.apiUrl}/api/v1/setting`;
+const api = `${apiUrl}/api/v1/setting`;
 
-const token = localStorage.getItem(config.jwt_key);
+const token = localStorage.getItem(wstjqer);
 
 export async function apiCreateRegion({ code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
     try {

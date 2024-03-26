@@ -4,23 +4,21 @@ import Table from "../../components/Tables/TableFonction/Table";
 import FormCreateUpdate from "../../components/Modals/ModalFonction/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalFonction/FormDelete";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
-export interface Fonction{
-    id?:number;
-    code:string;
-    libelle:string;
-}
 
 const Fonctions = () => {
     const {t}=useTranslation();
-    const [selectedFonction, setSelectedFonction] = useState<Fonction | null>(null);
-    const handleEditFonction = (fonction : Fonction) => {
+    const [selectedFonction, setSelectedFonction] = useState<CommonSettingProps | null>(null);
+    const handleEditFonction = (fonction : CommonSettingProps) => {
         setSelectedFonction(fonction);
     }
 
     const handleAddFonction = () => {
         setSelectedFonction(null);
     }
+    const fonctions = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions);
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.fonctions')} />
@@ -35,4 +33,3 @@ const Fonctions = () => {
 
 
 export default Fonctions;
-export const fonctions : Fonction[]=[];

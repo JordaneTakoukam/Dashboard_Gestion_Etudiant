@@ -1,16 +1,16 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal } from '../../../_redux/features/setting';
-import { RootState } from '../../../_redux/store';
-import CustomDialogModal from '../CustomDialogModal';
-import { useEffect, useState } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { setShowModal } from '../../../_redux/features/setting';
+// import { RootState } from '../../../_redux/store';
+// import CustomDialogModal from '../CustomDialogModal';
+// import { useEffect, useState } from 'react';
 import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
-import { Commune } from '../../../pages/Admin/Communes';
-import { Service, services } from '../../../pages/Admin/Services';
-import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
-import { Grade, grades } from '../../../pages/Admin/Grades';
-import { Categorie, categories } from '../../../pages/Admin/Categories';
-import { useTranslation } from 'react-i18next';
-import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
+// import { Commune } from '../../../pages/Admin/Communes';
+// import { Service, services } from '../../../pages/Admin/Services';
+// import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
+// import { Grade, grades } from '../../../pages/Admin/Grades';
+// import { Categorie, categories } from '../../../pages/Admin/Categories';
+// import { useTranslation } from 'react-i18next';
+// import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
 
 
 // function ModalCreateUpdate({ enseignant }: { enseignant: Enseignant | null }) {

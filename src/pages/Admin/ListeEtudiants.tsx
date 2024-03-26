@@ -6,14 +6,10 @@ import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDel
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 import { Niveau } from "./Niveaux";
 import { Abscences, absencesEtudiant } from "../CommonPage/Abscences";
-import { Service } from "./Services";
-import { Fonction } from "./Fonctions";
 import { Grade } from "./Grades";
 import { Categorie } from "./Categories";
-import { Departement } from "./Departements";
 import { Commune } from "./Communes";
 import { useTranslation } from "react-i18next";
-import { CommonSettingProps } from "../../_redux/features/data_setting_slice";
 
 export interface Etudiant {
     id?:number
@@ -28,10 +24,7 @@ export interface Etudiant {
     niveau: Niveau;
     grade?:Grade;
     categorie?:Categorie;
-    fonction?:Fonction;
-    service?:Service;
     region?:CommonSettingProps;
-    departement?:Departement;
     commune?:Commune;
     dateEntreeAdmin?:string;
     abscences:Abscences[];
@@ -58,7 +51,7 @@ const ListeDesEtudiants = () => {
             <TableEtudiant data={listTest} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
 
             {/* Boite de dialogue */}
-            <ModalCreateEtudiant etudiant={selectedEtudiant} /> {/*Créer ou modifier un étudiant*/}
+            {/* <ModalCreateEtudiant etudiant={selectedEtudiant} /> Créer ou modifier un étudiant */}
             <ModalDeleteEtudiant etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
         </>
     );
@@ -83,291 +76,13 @@ export const etudiant:Etudiant={
             id:1,
             code:"CA",
             libelle:"Cycle A",
-            section:{
-                code:"S001",
-                libelle:"Douane",
-            }
+            
         },
     },
-    service : {
-        id : 1,
-        code : "S01",
-        libelle : "Cellule informatique"
-    },
+    
     abscences:absencesEtudiant,
 }
 
-export const listTest: Etudiant[] = [
-    {
-        id : 1,
-        nom: "Jane",
-        prenom: "Smith",
-        email: "test@123",
-        contact: "655484959",
-        matricule: "CD5678",
-        dateNaiss : "2000-02-17",
-        genre:"H",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        },
-        service : {
-            id : 1,
-            code : "S01",
-            libelle : "Cellule informatique"
-        },
-        abscences:[],
-    },
-    {
-        id : 2,
-        nom: "Alice",
-        prenom: "Johnson",
-        email: "test@123",
-        contact: "677988866",
-        matricule: "EF9012",
-        genre:"F",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        },
-        abscences:[],
-    },
-    {
-        id : 3,
-        nom: "Alice",
-        prenom: "Johnson",
-        email: "test@123",
-        contact: "677988866",
-        matricule: "EF9012",
-        genre:"F",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 4,
-        nom: "Bob",
-        prenom: "Brown",
-        email: "test@123",
-        contact: "677978745",
-        matricule: "GH3456",
-        genre:"H",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 5,
-        nom: "Emily",
-        prenom: "Taylor",
-        email: "test@123",
-        contact: "677966888",
-        matricule: "IJ7890",
-        genre:"F",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 6,
-        nom: "Michael",
-        prenom: "Anderson",
-        email: "test@123",
-        contact: "655489566",
-        matricule: "KL2345",
-        genre:"H",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 7,
-        nom: "Sophia",
-        prenom: "Martinez",
-        email: "test@123",
-        contact: "677944777",
-        matricule: "MN6789",
-        genre:"F",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 8,
-        nom: "William",
-        prenom: "Garcia",
-        email: "test@123",
-        contact: "655484343",
-        matricule: "OP0123",
-        genre:"H",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 9,
-        nom: "Olivia",
-        prenom: "Hernandez",
-        email: "test@123",
-        contact: "677955666",
-        matricule: "QR4567",
-        genre:"F",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        },
-        abscences:[],
-    },
-    {
-        id : 10,
-        nom: "James",
-        prenom: "Lopez",
-        email: "test@123",
-        contact: "677988877",
-        matricule: "ST8901",
-        genre:"H",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    },
-    {
-        id : 11,
-        nom: "Maria",
-        prenom: "Ramirez",
-        email: "test@123",
-        contact: "677999888",
-        matricule: "UV2345",
-        genre:"F",
-        niveau: {
-            id:1,
-            code:"N1",
-            libelle:"1ère année",
-            cycle:{
-                id:1,
-                code:"CA",
-                libelle:"Cycle A",
-                section:{
-                    code:"S001",
-                    libelle:"Douane",
-                }
-            },
-        }, 
-        abscences:[],
-    }
-];
+export const listTest: Etudiant[] = [];
 
 

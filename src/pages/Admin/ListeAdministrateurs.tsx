@@ -5,14 +5,10 @@ import FormDelete from "../../components/Modals/ModalAdministrateur/FormDelete";
 import {Commune } from "./Communes";
 import { Niveau } from "./Niveaux";
 import { Abscences} from "../CommonPage/Abscences";
-import { Fonction } from "./Fonctions";
-import { Service } from "./Services";
 import { Grade } from "./Grades";
 import { Categorie } from "./Categories";
-import { Departement } from "./Departements";
 import Table from "../../components/Tables/TableAdministrateur/Table";
 import { useTranslation } from "react-i18next";
-import { CommonSettingProps } from "../../_redux/features/data_setting_slice";
 
 export interface Administrateur {
     id?:number
@@ -27,10 +23,7 @@ export interface Administrateur {
     niveaux?: Niveau[];
     grade?:Grade;
     categorie?:Categorie;
-    fonction?:Fonction;
-    service?:Service;
     region?:CommonSettingProps;
-    departement?:Departement;
     commune?:Commune;
     dateEntreeAdmin?:string;
     abscences:Abscences[];
@@ -54,7 +47,7 @@ const ListeDesAdministrateur = () => {
 
 
             {/* Boite de dialogue */}
-            <FormCreateUpdate administrateur={selectedAdministrateur}/>
+            {/* <FormCreateUpdate administrateur={selectedAdministrateur}/> */}
             <FormDelete administrateur={selectedAdministrateur}/>
 
         </>

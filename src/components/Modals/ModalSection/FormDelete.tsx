@@ -2,22 +2,45 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { Section } from '../../../pages/Admin/Sections';
 import { useTranslation } from 'react-i18next';
+import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
+import { apiDeleteSection } from '../../../api/settings/api_section';
+import createToast from '../../../hooks/toastify';
+import { ReponseApiPros } from '../../../api/interface_reponse';
 
 
-
-function ModalDelete({ section }: { section : Section|null}) {
-    const {t}=useTranslation();
+function ModalDelete({ section }: { section: CommonSettingProps | null }) {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
+
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
 
+    const lang = useSelector((state: RootState) => state.setting.language);
 
-    const handleDelete = () => {
-        console.log("delete ok");
-        closeModal();
+
+    const handleDelete = async () => {
+
+        if (section?._id != undefined) {
+            await apiDeleteSection(section._id).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+
+                    if (section._id) {
+                        dispatch(deleteSettingItem({ tableName: 'sections', itemId: section._id }));
+                    }
+
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+
+            })
+        }
+
     }
 
     return (
@@ -29,7 +52,7 @@ function ModalDelete({ section }: { section : Section|null}) {
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.section')} : {section?section.libelle:""}</h1>
+                <h1>{t('form_delete.suppression') + t('form_delete.section')} : {section ? (lang == "fr" ? section.libelleFr : section.libelleEn) : ""}</h1>
             </CustomDialogModal>
         </>
     );

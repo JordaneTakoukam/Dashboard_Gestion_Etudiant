@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import { setShowModal } from "../../../_redux/features/setting";
 import { RootState } from "../../../_redux/store";
 import ErrorTable from "../common/ErrorTable";
-import { CommonSettingProps } from "../../../_types/data_setting_type";
 
 interface TableRegionProps {
     data: CommonSettingProps[];

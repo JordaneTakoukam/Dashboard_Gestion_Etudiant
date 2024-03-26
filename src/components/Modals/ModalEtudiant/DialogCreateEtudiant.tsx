@@ -1,19 +1,19 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal } from '../../../_redux/features/setting';
-import { RootState } from '../../../_redux/store';
-import CustomDialogModal from '../CustomDialogModal';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { setShowModal } from '../../../_redux/features/setting';
+// import { RootState } from '../../../_redux/store';
+// import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
-import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
-import { Section, sections } from '../../../pages/Admin/Sections';
-import { Cycle, cycles } from '../../../pages/Admin/Cycles';
-import { Service, services } from '../../../pages/Admin/Services';
-import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
-import { Grade, grades } from '../../../pages/Admin/Grades';
-import { Categorie, categories } from '../../../pages/Admin/Categories';
-import { Commune } from '../../../pages/Admin/Communes';
-import { useTranslation } from 'react-i18next';
-import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
+// import { Niveau, niveaux } from '../../../pages/Admin/Niveaux';
+// import { Section, sections } from '../../../pages/Admin/Sections';
+// import { Cycle, cycles } from '../../../pages/Admin/Cycles';
+// import { Service, services } from '../../../pages/Admin/Services';
+// import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
+// import { Grade, grades } from '../../../pages/Admin/Grades';
+// import { Categorie, categories } from '../../../pages/Admin/Categories';
+// import { Commune } from '../../../pages/Admin/Communes';
+// import { useTranslation } from 'react-i18next';
+// import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
 
 
 // function ModalCreateEtudiant({ etudiant }: { etudiant: Etudiant | null }) {

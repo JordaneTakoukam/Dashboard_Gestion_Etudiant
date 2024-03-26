@@ -39,7 +39,7 @@ const EmploiDeTemp = () => {
         <>
             <Breadcrumb pageName={t('menu.emploi')} />
             <Table data={listPeriode} onCreate={handleAddPeriode} onEdit={handleEditPeriode}/>
-            <FormCreateUpdate periodecours={selectedPeriode}/>
+            {/* <FormCreateUpdate periodecours={selectedPeriode}/> */}
 
         </>
     );

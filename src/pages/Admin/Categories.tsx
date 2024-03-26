@@ -4,6 +4,8 @@ import Table from "../../components/Tables/TableCategorie/Table";
 import FormCreateUpdate from "../../components/Modals/ModalCategorie/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCategorie/FormDelete";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
 export interface Categorie{
     id?:number;
@@ -12,12 +14,12 @@ export interface Categorie{
 }
 
 const Categories = () => {
-    const [selectedCategorie, setSelectedCategorie] = useState<Categorie | null>(null);
+    const [selectedCategorie, setSelectedCategorie] = useState<CommonSettingProps | null>(null);
     const { t } = useTranslation();
-    const handleEditCategorie = (categorie : Categorie) => {
+    const handleEditCategorie = (categorie : CommonSettingProps) => {
         setSelectedCategorie(categorie);
     }
-
+    const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories);
     const handleAddCategorie = () => {
         setSelectedCategorie(null);
     }
@@ -34,20 +36,3 @@ const Categories = () => {
 };
 
 export default Categories;
-export const categories: Categorie[] = [
-    {
-        id:1,
-        code:"C1",
-        libelle:"1",
-    },
-    {
-        id:2,
-        code:"C2",
-        libelle:"2",
-    },
-    {
-        id:3,
-        code:"C3",
-        libelle:"3",
-    },
-];

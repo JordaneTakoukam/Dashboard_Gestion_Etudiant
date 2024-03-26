@@ -2,12 +2,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { Grade } from '../../../pages/Admin/Grades';
 import { useTranslation } from 'react-i18next';
+import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
+import { ReponseApiPros } from '../../../api/interface_reponse';
+import { apiDeleteGrade } from '../../../api/settings/api_grade';
+import createToast from '../../../hooks/toastify';
 
 
 
-function ModalDelete({ grade }: { grade : Grade|null}) {
+function ModalDelete({ grade }: { grade : CommonSettingProps|null}) {
     const {t}=useTranslation();
     const dispatch = useDispatch();
 
@@ -15,9 +18,30 @@ function ModalDelete({ grade }: { grade : Grade|null}) {
     const closeModal = () => { dispatch(setShowModalDelete()); };
 
 
-    const handleDelete = () => {
-        console.log("delete ok");
-        closeModal();
+    const lang = useSelector((state: RootState) => state.setting.language);
+
+
+    const handleDelete = async () => {
+
+        if (grade?._id != undefined) {
+            await apiDeleteGrade(grade._id).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+
+                    if (grade._id) {
+                        dispatch(deleteSettingItem({ tableName: 'grades', itemId: grade._id }));
+                    }
+
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+
+            })
+        }
+
     }
 
     return (
@@ -29,7 +53,7 @@ function ModalDelete({ grade }: { grade : Grade|null}) {
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.grade')} : {grade?grade.libelle:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.grade')} : {grade ? (lang == "fr" ? grade.libelleFr : grade.libelleEn) : ""}</h1>
             </CustomDialogModal>
         </>
     );

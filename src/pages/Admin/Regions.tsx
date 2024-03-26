@@ -6,8 +6,6 @@ import FormDelete from "../../components/Modals/ModalRegion/FormDelete";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
-import { CommonSettingProps } from "../../_types/data_setting_type";
-
 
 const Regions = () => {
     const { t } = useTranslation();

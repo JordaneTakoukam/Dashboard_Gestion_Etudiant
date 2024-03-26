@@ -28,7 +28,7 @@ const Niveaux = () => {
             <Breadcrumb pageName={t('sub_menu.niveaux')} />
             <Table data={niveaux}  onCreate={handleAddCycle} onEdit={handleEditCycle}/>
 
-            <FormCreateUpdate niveau={selectedNiveau}/>
+            {/* <FormCreateUpdate niveau={selectedNiveau}/> */}
             <FormDelete niveau={selectedNiveau}/>
 
         </>
@@ -44,10 +44,7 @@ export const niveau:Niveau={
         id:1,
         code:"CA",
         libelle:"Cycle A",
-        section:{
-            code:"S001",
-            libelle:"Douane",
-        }
+        
     },
 }
 export const niveaux: Niveau[] = [
@@ -59,10 +56,7 @@ export const niveaux: Niveau[] = [
             id:1,
             code:"CA",
             libelle:"Cycle A",
-            section:{
-                code:"S001",
-                libelle:"Douane",
-            }
+            
         },
     },
     {
@@ -73,10 +67,7 @@ export const niveaux: Niveau[] = [
             id:1,
             code:"CA",
             libelle:"Cycle A",
-            section:{
-                code:"S001",
-                libelle:"Douane",
-            }
+            
         },
     },
 ];

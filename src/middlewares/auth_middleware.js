@@ -1,8 +1,8 @@
 import { useJwt } from "react-jwt";
-import { config } from "./../config.js";
+import { wstjqer } from "../config";
 
 const isUserAuthenticated = () => {
-    const token = localStorage.getItem(config.jwt_key);
+    const token = localStorage.getItem(wstjqer);
 
     if (token) {
         try {
@@ -43,7 +43,7 @@ const isUserAuthenticated = () => {
 
 const storeTokenInLocalStorage = (token) => {
     try {
-        localStorage.setItem(config.jwt_key, token);
+        localStorage.setItem(wstjqer, token);
         // console.log("Token stocké avec succès dans le localStorage.");
     } catch (error) {
         // console.error("Erreur lors du stockage du token dans le localStorage :", error);

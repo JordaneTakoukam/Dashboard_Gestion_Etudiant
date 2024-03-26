@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setShowModal } from '../../../_redux/features/setting';
 import Input from '../../ui/input';
-import { CommonSettingProps } from '../../../_types/data_setting_type';
 import { ErrorMessage, Label } from '../../ui/Label';
 import { apiCreateRegion, apiUpdateRegion } from '../../../api/settings/api_region';
 import { ReponseApiPros } from '../../../api/interface_reponse';

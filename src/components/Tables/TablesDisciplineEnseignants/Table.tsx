@@ -10,7 +10,6 @@ import BodyTable from "./BodyTable";
 import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
-import { Section, sections } from "../../../pages/Admin/Sections";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 
@@ -44,10 +43,10 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         console.log(selected)
     };
     
-    const handleSectionSelect = (selected: Section | undefined) => {
-        // setFiltreSection(selected);
-        console.log(selected);
-    };
+    // const handleSectionSelect = (selected: Section | undefined) => {
+    //     // setFiltreSection(selected);
+    //     console.log(selected);
+    // };
 
     const handleCycleSelect = (selected: Cycle | undefined) => {
         // setFiltreCycle(selected);
@@ -106,13 +105,13 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<Section>
+                            {/* <CustomDropDown2<Section>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: Section) => `${section.libelle}`}
                                 onSelect={handleSectionSelect}
-                            />
+                            /> */}
                             <CustomDropDown2<Cycle>
                                 title={t('label.cycle')}
                                 items={cycles}
@@ -153,13 +152,13 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<Section>
+                            {/* <CustomDropDown2<Section>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: Section) => `${section.libelle}`}
                                 onSelect={handleSectionSelect}
-                            />
+                            /> */}
                             <CustomDropDown2<Cycle>
                                 title={t('label.cycle')}
                                 items={cycles}

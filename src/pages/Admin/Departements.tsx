@@ -6,7 +6,6 @@ import FormDelete from "../../components/Modals/ModalDepartement/FormDelete";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
-import { DepartementProps } from "../../_types/data_setting_type";
 
 
 export const Departements = () => {
@@ -17,7 +16,10 @@ export const Departements = () => {
 
     const handleEditDepartement = (departement: DepartementProps) => { setSelectedDepartement(departement) }
     const handleAddDepartement = () => { setSelectedDepartement(null) }
-    
+
+
+    // LOADING AND ERROR
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.departements')} />

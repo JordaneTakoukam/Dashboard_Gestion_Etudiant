@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CommonSettingProps, CommuneProps, CycleProps, DataSettingProps, DataSettingSlice, DepartementProps, NiveauProps } from "../../_types/data_setting_type";
-
 
 // Initial state
 const initialState: DataSettingSlice = {

@@ -7,7 +7,6 @@ import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteRegion } from '../../../api/settings/api_region';
 import createToast from '../../../hooks/toastify';
 import { ReponseApiPros } from '../../../api/interface_reponse';
-import { CommonSettingProps } from '../../../_types/data_setting_type';
 
 
 function ModalDelete({ region }: { region: CommonSettingProps | null }) {

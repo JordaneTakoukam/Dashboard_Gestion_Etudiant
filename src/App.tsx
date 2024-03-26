@@ -116,8 +116,9 @@ function App() {
 
     dispatch(setLoadingDataSetting(true));
     try {
-      // const settingsData = await apiGetAllSettings();
-      // dispatch(setDataSetting(settingsData));
+      const settingsData = await apiGetAllSettings();
+      dispatch(setDataSetting(settingsData));
+      
 
 
     } catch (error) {
@@ -156,7 +157,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/choose-account" element={<ChoisirCompte />} />
-
+    
         {/* Menu de gauche pour les differents roles  */}
         <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/signin'} />}>
 

@@ -4,20 +4,17 @@ import Table from "../../components/Tables/TableSection/Table";
 import FormCreateUpdate from "../../components/Modals/ModalSection/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalSection/FormDelete";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
-export interface Section{
-    id?:number;
-    code:string;
-    libelle:string;
-}
 
 const Sections = () => {
     const {t}=useTranslation();
-    const [selectedSection, setSelectedSection] = useState<Section | null>(null);
-    const handleEditSection = (section : Section) => {
+    const [selectedSection, setSelectedSection] = useState<CommonSettingProps | null>(null);
+    const handleEditSection = (section : CommonSettingProps) => {
         setSelectedSection(section);
     }
-
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections);
     const handleAddSection = () => {
         setSelectedSection(null);
     }
@@ -34,30 +31,3 @@ const Sections = () => {
 };
 
 export default Sections;
-export const sections: Section[] = [
-    {
-        id:1,
-        code:"S001",
-        libelle:"Douane",
-    },
-    {
-        id:2,
-        code:"S002",
-        libelle:"Impôt",
-    },
-    {
-        id:3,
-        code:"S003",
-        libelle:"Greffier",
-    },
-    {
-        id:4,
-        code:"S004",
-        libelle:"Magistrat",
-    },
-    {
-        id:5,
-        code:"S005",
-        libelle:"Maître",
-    },
-];

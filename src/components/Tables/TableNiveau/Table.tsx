@@ -11,7 +11,6 @@ import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import { Niveau } from "../../../pages/Admin/Niveaux";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
-import { Section, sections } from "../../../pages/Admin/Sections";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 
@@ -45,10 +44,10 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
     //     console.log(selected)
     // };
     
-    const handleSectionSelect = (selected: Section | undefined) => {
-        // setFiltreSection(selected);
-        console.log(selected);
-    };
+    // const handleSectionSelect = (selected: Section | undefined) => {
+    //     // setFiltreSection(selected);
+    //     console.log(selected);
+    // };
 
     const handleCycleSelect = (selected: Cycle | undefined) => {
         // setFiltreCycle(selected);
@@ -98,13 +97,13 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<Section>
+                            {/* <CustomDropDown2<Section>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: Section) => `${section.libelle}`}
                                 onSelect={handleSectionSelect}
-                            />
+                            /> */}
                             <CustomDropDown2<Cycle>
                                 title={t('label.cycle')}
                                 items={cycles}
@@ -123,13 +122,13 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<Section>
+                            {/* <CustomDropDown2<Section>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: Section) => `${section.libelle}`}
                                 onSelect={handleSectionSelect}
-                            />
+                            /> */}
                             <CustomDropDown2<Cycle>
                                 title={t('label.cycle')}
                                 items={cycles}

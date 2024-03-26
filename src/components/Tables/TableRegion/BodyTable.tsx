@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
-import { CommonSettingProps } from "../../../_types/data_setting_type";
 import { RootState } from "../../../_redux/store";
 
 

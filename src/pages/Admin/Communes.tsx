@@ -7,7 +7,6 @@ import Table from "../../components/Tables/TableCommune/Table";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
-import { CommonSettingProps, CommuneProps } from "../../_types/data_setting_type";
 
 export interface Commune {
     id?: number;

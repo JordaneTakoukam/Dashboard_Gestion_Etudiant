@@ -46,7 +46,7 @@ const ListeDesSondages = () => {
             <Breadcrumb pageName="Liste des matières" />
             <Table data={sondages} onCreate={handleAddSondage} onEdit={handleEditSondage} toDo={handletoDoSondage} />
             
-            <FormCreateUpdate sondage={selectedSondage}/>
+            {/* <FormCreateUpdate sondage={selectedSondage}/> */}
             <FormSondage sondage={selectedSondage}/>
             <FormDelete sondage={selectedSondage}/>
         </>
@@ -58,10 +58,7 @@ const cycle:Cycle={
     id:1,
     code:"CA",
     libelle:"Cycle A",
-    section:{
-        code:"S001",
-        libelle:"Douane",
-    }
+    
 }
 const niveau:Niveau={
     id:1,

@@ -1,72 +1,158 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Categorie } from '../../../pages/Admin/Categories';
 import { useTranslation } from 'react-i18next';
+import { setShowModal } from '../../../_redux/features/setting';
+import Input from '../../ui/input';
+import { ErrorMessage, Label } from '../../ui/Label';
+import { apiCreateCategorie, apiUpdateCategorie } from '../../../api/settings/api_categorie';
+import { ReponseApiPros } from '../../../api/interface_reponse';
+import createToast from '../../../hooks/toastify';
+import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 
 
-function ModalCreateUpdate({ categorie }: { categorie : Categorie | null }) {
-    const {t}=useTranslation();
+function ModalCreateUpdate({ categorie }: { categorie: CommonSettingProps | null }) {
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
-    const [libelle, setLibelle] = useState("");
-    
+    const [libelleFr, setLibelleFr] = useState("");
+    const [libelleEn, setLibelleEn] = useState("");
 
     const [errorCode, setErrorCode] = useState("");
-    const [errorLibelle, setErrorLibelle] = useState("");
+    const [errorLibelleFr, setErrorLibelleFr] = useState("");
+    const [errorLibelleEn, setErrorLibelleEn] = useState("");
+
     const [isFirstRender, setIsFirstRender] = useState(true);
-    
+
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
+    const lang = useSelector((state: RootState) => state.setting.language);
 
     useEffect(() => {
         if (categorie) {
-            setModalTitle(t('form_update.enregistrer')+t('form_update.categorie'));
+            setModalTitle(t('form_update.enregistrer') + t('form_update.categorie'));
             setCode(categorie.code);
-            setLibelle(categorie.libelle);
-            
-        } else {
-            setModalTitle(t('form_save.enregistrer')+t('form_save.categorie'));
-            setCode("");
-            setLibelle("");
-        }
+            setLibelleFr(categorie.libelleFr);
+            setLibelleEn(categorie.libelleEn);
 
+        } else {
+            setModalTitle(t('form_save.enregistrer') + t('form_save.categorie'));
+            setCode("");
+            setLibelleFr("");
+            setLibelleEn("");
+        }
 
         if (isFirstRender) {
             setErrorCode("");
-            setErrorLibelle("");
+            setErrorLibelleEn("");
+            setErrorLibelleFr("");
             setIsFirstRender(false);
         }
     }, [categorie, isFirstRender, t]);
 
-    const closeModal = () => { 
-        setErrorCode(""); 
-        setErrorLibelle("");
+    const closeModal = () => {
+        setErrorCode("");
+        setErrorLibelleFr("");
+        setErrorLibelleEn("");
         setIsFirstRender(true);
-        dispatch(setShowModal()); 
+        dispatch(setShowModal());
     };
 
 
-    
-    
-    
+    const handleCreateUpdate = async () => {
+        // create
+        if (!categorie) {
+            if (!code || !libelleFr || !libelleEn) {
+                if (!code) {
+                    setErrorCode(t('error.code'));
+                }
+                if (!libelleFr) {
+                    setErrorLibelleFr(t('error.libelle'));
+                }
+                if (!libelleEn) {
+                    setErrorLibelleEn(t('error.libelle'));
+                }
 
-    const handleCreateUpdate = () => {
-        if (!code || !libelle) {
-            if (!code) {
-                setErrorCode(t('error.code'));
-            }
-            if (!libelle) {
-                setErrorLibelle(t('error.libelle'));
-            }
+            } else {
+                // creation
+                await apiCreateCategorie(
+                    { code, libelleFr, libelleEn }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(createSettingItem({
+                            tableName: 'categories', newItem: {
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                date_creation: e.data.date_creation,
+                                _id: e.data._id,
+                            }
+                        }));
 
-            return;
+                        closeModal();
+
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
         }
-        
-        closeModal();
+
+        //update
+        else {
+
+            if (!code || !libelleFr || !libelleEn) {
+                if (!code) {
+                    setErrorCode(t('error.code'));
+                }
+                if (!libelleFr) {
+                    setErrorLibelleFr(t('error.libelle'));
+                }
+                if (!libelleEn) {
+                    setErrorLibelleEn(t('error.libelle'));
+                }
+
+            } else {
+                //
+                //
+                // mise a jour
+                await apiUpdateCategorie(
+                    { _id: categorie._id, code, libelleFr, libelleEn }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(updateSettingItem({
+                            tableName: 'categories',
+                            updatedItem: {
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                date_creation: e.data.date_creation,
+                                _id: e.data._id,
+                            }
+                        }));
+
+                        closeModal();
+
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
+
+
     }
 
     return (
@@ -78,23 +164,39 @@ function ModalCreateUpdate({ categorie }: { categorie : Categorie | null }) {
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="text"
+
+                {/* input 1 */}
+                <Label text={t('label.code')} required />
+                <Input
                     value={code}
-                    onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
+                    type='text'
+                    setValue={(value) => { setCode(value); setErrorCode("") }}
+                    hasBackground={true}
                 />
-                {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="text"
-                    value={libelle}
-                    onChange={(e) =>{setLibelle(e.target.value); setErrorLibelle("");} }
+                <ErrorMessage message={errorCode} />
+
+
+                {/* input 2 */}
+                <Label text={t('label.libelle_fr')} required />
+                <Input
+                    value={libelleFr}
+                    type='text'
+                    setValue={(value) => { setLibelleFr(value); setErrorLibelleFr(""); }}
+                    hasBackground={true}
                 />
-                {errorLibelle && <p className="text-red-500">{errorLibelle}</p>}
+                <ErrorMessage message={errorLibelleFr} />
+
+
+                {/* input 3 */}
+                <Label text={t('label.libelle_en')} required />
+                <Input
+                    value={libelleEn}
+                    type='text'
+                    setValue={(value) => { setLibelleEn(value); setErrorLibelleEn(""); }}
+                    hasBackground={true}
+                />
+                <ErrorMessage message={errorLibelleEn} />
+
             </CustomDialogModal>
 
         </>
@@ -102,3 +204,4 @@ function ModalCreateUpdate({ categorie }: { categorie : Categorie | null }) {
 }
 
 export default ModalCreateUpdate;
+

@@ -10,9 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
 import { useTranslation } from 'react-i18next';
 import { validateEmail, validatePassword } from "../../../fonctions/fonction";
-import { UserState } from "../../../_types/user_type";
 import { setUser } from "../../../_redux/features/user_slice";
 import { useNavigate } from 'react-router-dom';
+import { apiUrl } from "../../../config";
 
 function RightSectionSigin() {
     const dispatch = useDispatch();
@@ -39,7 +39,7 @@ function RightSectionSigin() {
     const handleSubmit = async () => {
         setError2('');
         setError3('');
-
+        console.log('url === '+apiUrl);
         notValidEmail = validateEmail(email);
         if (notValidEmail) {
             setError2(t(notValidEmail));
@@ -70,6 +70,7 @@ function RightSectionSigin() {
                 }
 
                 if (signUpResult?.success === true) {
+                    
                     const userData = signUpResult.data as UserState;
 
                     dispatch(setUser(userData))

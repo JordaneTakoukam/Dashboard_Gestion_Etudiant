@@ -4,7 +4,6 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CommonSettingProps, CommuneProps, DepartementProps } from '../../../_types/data_setting_type';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 import { ReponseApiPros } from '../../../api/interface_reponse';
 import { apiCreateCommune, apiUpdateCommune } from '../../../api/settings/api_commune';
@@ -158,7 +157,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                         code,
                         libelleFr,
                         libelleEn,
-                        departement: departement,
+                        departement: departement._id,
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -191,7 +190,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                         code,
                         libelleFr,
                         libelleEn,
-                        departement: departement,
+                        departement: departement._id,
                         _id: commune._id,
                     }
                 ).then((e: ReponseApiPros) => {

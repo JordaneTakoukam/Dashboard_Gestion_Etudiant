@@ -4,6 +4,8 @@ import Table from "../../components/Tables/TableGrade/Table";
 import FormCreateUpdate from "../../components/Modals/ModalGrade/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalGrade/FormDelete";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
 export interface Grade{
     id?:number;
@@ -13,14 +15,15 @@ export interface Grade{
 
 const Grades = () => {
     const {t}=useTranslation();
-    const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
-    const handleEditGrade = (grade : Grade) => {
+    const [selectedGrade, setSelectedGrade] = useState<CommonSettingProps | null>(null);
+    const handleEditGrade = (grade : CommonSettingProps | null) => {
         setSelectedGrade(grade);
     }
 
     const handleAddGrade = () => {
         setSelectedGrade(null);
     }
+    const grades = useSelector((state: RootState) => state.dataSetting.dataSetting.grades);
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.grades')} />
@@ -34,20 +37,3 @@ const Grades = () => {
 };
 
 export default Grades;
-export const grades : Grade[]=[
-    {
-        id : 1,
-        code : "A",
-        libelle : "A"
-    },
-    {
-        id : 2,
-        code : "B",
-        libelle : "B"
-    },
-    {
-        id : 3,
-        code : "C",
-        libelle : "C"
-    }
-];

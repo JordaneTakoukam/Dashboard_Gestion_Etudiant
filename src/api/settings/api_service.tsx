@@ -1,74 +1,66 @@
-// import axios, { AxiosResponse } from 'axios';
-// import { config } from '../../config.js'
+import axios, { AxiosResponse } from 'axios';
+import { apiUrl, wstjqer } from '../../config.js';
+import { ReponseApiPros } from '../interface_reponse.js';
 
-// interface ServiceData {
-//     success: boolean;
-//     message: {
-//         [key: string]: string;
-//     };
-//     data: any;
-// }
+const api = `${apiUrl}/api/v1/setting`;
 
-// const api = `${config.apiUrl}/api/v1/setting/service`;
+const token = localStorage.getItem(wstjqer);
 
-// const token = localStorage.getItem(config.jwt_key);
+export async function apiCreateService({ code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/service/create`,
+            { code, libelleFr, libelleEn },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
 
-// export async function apiCreateService({ code, libelle }: { code: string; libelle: string }): Promise<ServiceData> {
-//     try {
-//         const response: AxiosResponse<ServiceData> = await axios.post(
-//             `${api}/create`,
-//             { code, libelle },
-//             {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'token': token,
-//                 },
+        return response.data;
+    } catch (error) {
+        console.error('Error creating service:', error);
+        throw error;
+    }
+}
 
-//             },
-//         );
+export async function apiUpdateService({ _id, code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${api}/service/update/${_id}`,
+            { code, libelleFr, libelleEn },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
 
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error creating service:', error);
-//         throw error;
-//     }
-// }
+        return response.data;
+    } catch (error) {
+        console.error('Error updating service:', error);
+        throw error;
+    }
+}
 
-// export async function apiUpdateService({ code, libelle, serviceId }: { code: string; libelle: string; serviceId: string }): Promise<ServiceData> {
-//     try {
-//         const response: AxiosResponse<ServiceData> = await axios.put(
-//             `${api}/update/${serviceId}`,
-//             { code, libelle },
-//             {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'token': token,
-//                 },
-//             },
-//         );
+export async function apiDeleteService(serviceId: string): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.delete(
+            `${api}/service/delete/${serviceId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
 
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error updating service:', error);
-//         throw error;
-//     }
-// }
-
-// export async function apiDeleteService({ serviceId }: { serviceId: string }): Promise<ServiceData> {
-//     try {
-//         const response: AxiosResponse<ServiceData> = await axios.delete(
-//             `${api}/delete/${serviceId}`,
-//             {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'token': token,
-//                 },
-//             },
-//         );
-
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error deleting service:', error);
-//         throw error;
-//     }
-// }
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting service:', error);
+        throw error;
+    }
+}

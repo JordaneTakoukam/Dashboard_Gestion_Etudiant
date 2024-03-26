@@ -13,7 +13,6 @@ import BodyTable from "./BodyTable";
 import { Administrateur } from "../../../pages/Admin/ListeAdministrateurs";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
-import { Section, sections } from "../../../pages/Admin/Sections";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 
@@ -48,10 +47,10 @@ const Table = ({ data, onCreate, onEdit }:TableAdministrateurProps) => {
         console.log(selected)
     };
     
-    const handleSectionSelect = (selected: Section | undefined) => {
-        // setFiltreSection(selected);
-        console.log(selected);
-    };
+    // const handleSectionSelect = (selected: Section | undefined) => {
+    //     // setFiltreSection(selected);
+    //     console.log(selected);
+    // };
 
     const handleCycleSelect = (selected: Cycle | undefined) => {
         // setFiltreCycle(selected);

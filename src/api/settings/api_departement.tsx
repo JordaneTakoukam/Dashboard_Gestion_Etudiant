@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
-import { config } from '../../config.js';
+import { apiUrl, wstjqer } from '../../config.js';
 import { ReponseApiPros } from '../interface_reponse.js';
-import { DepartementProps } from '../../_types/data_setting_type.js';
 
-const api = `${config.apiUrl}/api/v1/setting`;
 
-const token = localStorage.getItem(config.jwt_key);
+const api = `${apiUrl}/setting`;
+
+const token = localStorage.getItem(wstjqer);
 
 export async function apiCreateDepartement({ code, region, libelleFr, libelleEn }: DepartementProps): Promise<ReponseApiPros> {
     try {

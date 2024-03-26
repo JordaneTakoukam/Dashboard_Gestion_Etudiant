@@ -17,7 +17,10 @@ export const Departements = () => {
 
     const handleEditDepartement = (departement: DepartementProps) => { setSelectedDepartement(departement) }
     const handleAddDepartement = () => { setSelectedDepartement(null) }
-    
+
+
+    // LOADING AND ERROR
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.departements')} />

@@ -1,5 +1,4 @@
 export const config = {
-    apiUrl: 'http://localhost:8085',
     roles: { superAdmin: "super-admin", admin: "admin", enseignant: 'enseignant', etudiant: 'etudiant', delegue: 'delegue' },
     nameApp: "EduSchool",
     copyRight: '2024 - 2025',
@@ -8,5 +7,12 @@ export const config = {
     facebook: "#",
     instagram: "#",
     twitter: "#",
-    jwt_key: "dpnfebfnpemgpgjkrwpejpfsbonlkmxcvpjnklsdfcbonjlkmeonsfldckvmn",
 }
+
+
+
+export const apiUrl = import.meta.env.VITE_APP_API_URL || "non defini";
+export const wstjqer = import.meta.env.VITE_APP_WSTJQER || "non defini"; 
+
+
+

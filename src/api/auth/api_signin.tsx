@@ -1,13 +1,13 @@
 import axios, { AxiosError } from 'axios';
 import { storeTokenInLocalStorage } from '../../middlewares/auth_middleware.js';
-import { config } from './../../config.js'
+import { apiUrl } from './../../config.js'
 
-const api = `${config.apiUrl}/api/v1`;
+const api = `${apiUrl}`;
 
 interface ApiResponse<T> {
     success: boolean;
     data?: any;
-    message?: string;
+    message?: string | null;
     token?: string;
 }
 

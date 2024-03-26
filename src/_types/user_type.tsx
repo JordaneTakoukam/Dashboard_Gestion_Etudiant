@@ -1,4 +1,4 @@
-export interface UserState {
+interface UserState {
     _id: string;
     roles: string[];
     role: string;
@@ -43,7 +43,7 @@ interface Absence {
 
 
 // Interface pour les propriétés minimales de l'utilisateur
-export interface PropsUserMinState {
+interface PropsUserMinState {
     _id: string;
     roles: string[];
     role: string;

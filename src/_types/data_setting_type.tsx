@@ -1,5 +1,5 @@
 // Interface des propriétés communes
-export interface CommonSettingProps {
+interface CommonSettingProps {
     date_creation?: string;
     code: string;
     libelleFr: string;
@@ -8,29 +8,29 @@ export interface CommonSettingProps {
 }
 
 // Interface des propriétés spécifiques au département
-export interface DepartementProps extends CommonSettingProps {
+interface DepartementProps extends CommonSettingProps {
     region: string;
 }
 
 // Interface des propriétés spécifiques à la commune
-export interface CommuneProps extends CommonSettingProps {
+interface CommuneProps extends CommonSettingProps {
     departement: string;
 }
 
 // Interface des propriétés spécifiques au niveau
-export interface NiveauProps extends CommonSettingProps {
+interface NiveauProps extends CommonSettingProps {
     cycle: string;
 }
 
 // Interface des propriétés spécifiques au cycle
-export interface CycleProps extends CommonSettingProps {
+interface CycleProps extends CommonSettingProps {
     section: string;
 }
 
 
 
 // Interface des propriétés de Setting
-export interface DataSettingProps {
+interface DataSettingProps {
     services: CommonSettingProps[];
     fonctions: CommonSettingProps[];
     grades: CommonSettingProps[];
@@ -45,7 +45,7 @@ export interface DataSettingProps {
 }
 
 // Interface de l'état du Slice
-export interface DataSettingSlice {
+interface DataSettingSlice {
     dataSetting: DataSettingProps;
     loading: boolean;
     error: string | null;

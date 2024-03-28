@@ -81,13 +81,13 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
             const sectionIdToFilter = selectSectionId || sections[0]?._id;
             filterCyleBySection(sectionIdToFilter);
         }
-    }, [sections, selectSectionId]);
+    }, [sections, data]);
     
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     useEffect(() => {
         const result = filterCycleByContent(data);
         setFilteredCycle(result);
-    }, [searchText, data, sections]);
+    }, [searchText]);
 
     // variable pour la pagination
     //

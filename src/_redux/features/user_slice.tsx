@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { PropsUserMinState, UserState } from "../../_types/user_type";
 
 // État initial de l'utilisateur
 const initialState: UserState = {

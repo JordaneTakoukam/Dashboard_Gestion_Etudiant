@@ -46,16 +46,17 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+        setFilteredCycle([]);
+        console.log("filterd == "+filteredCycle);
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
-            // setSelectIdSection('');
         }
     };
 
 
 
-    // valeur de la l'id du cycle selectionner
+    // valeur de la l'id du département selectionner
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
@@ -63,15 +64,16 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
             filterNiveauByCycle(selected._id);
             // setSelectIdCycle('');
         }
+        
     };
-    // Filtrer les niveaus en fonction de la langue
-    const filterNiveausByContenet = (niveaus: NiveauProps[]) => {
+    // Filtrer les niveaux en fonction de la langue
+    const filterNiveauxByContenet = (niveaux: NiveauProps[]) => {
         if (searchText === '' && filteredCycle && filteredCycle.length>0) {
             const result: NiveauProps[] = data.filter(niveau => niveau.cycle === filteredCycle[0]?._id);
             return result;
         }
 
-        return niveaus.filter(niveau => {
+        return niveaux.filter(niveau => {
             const libelle = lang === 'fr' ? niveau.libelleFr : niveau.libelleEn;
             // Vérifie si le code ou le libellé contient le texte de recherche
             return niveau.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
@@ -84,18 +86,20 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
-            // Filtrer les cycles en fonction de l'ID de la section
+            // Filtrer les départements en fonction de l'ID de la région
             const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
-
+            if (result.length > 0) {
+                setSelectIdCycle(result[0]._id);
+            }
             setFilteredCycle(result);
-            
+          
         }
     };
 
     // filtrer les donnee a partir de l'id du cycle selectionner
     const filterNiveauByCycle = (cycleId: string | undefined) => {
         if (cycleId && cycleId !== '') {
-            // Filtrer les niveau en fonction de l'ID du cycle
+            // Filtrer les niveau en fonction de l'ID du département
             const result: NiveauProps[] = data.filter(niveau => niveau.cycle === cycleId);
 
             setFilteredNiveau(result)
@@ -133,9 +137,11 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
         }        
     }, [filteredCycle, data]);
 
+    
+
     // modifier les donner de la page lors de la recherche
     useEffect(() => {
-        const result = filterNiveausByContenet(data);
+        const result = filterNiveauxByContenet(data);
         setFilteredNiveau(result);
     }, [searchText]);
     return (
@@ -143,7 +149,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title={t('boutton.nouveau_niveau')}
+                    title={t('boutton.nouvelle_niveau')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.niveau')} onSubmit={(text) => setSearchText(text)} />
@@ -172,9 +178,9 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            {/* <CustomDropDown title="Section" items={sections} defaultValue={sections[0]} displayProperty={(section: Section) => `${section.libelle}`} onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={cycles} defaultValue={cycles[0]} displayProperty={(cycle: Cycle) => `${cycle.libelle}`} onSelect={handleCycleSelect} /> */}
-                            {/* <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
+                            {/* <CustomDropDown title="Région" items={sections} defaultValue={sections[0]} displayProperty={(section: Section) => `${section.libelle}`} onSelect={handleSectionSelect} />
+                            <CustomDropDown title="Département" items={cycles} defaultValue={cycles[0]} displayProperty={(cycle: Cycle) => `${cycle.libelle}`} onSelect={handleCycleSelect} /> */}
+                            {/* <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauxelect} /> */}
                         </div>
                     )}
                 </div>
@@ -196,8 +202,8 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            {/* <CustomDropDown title="Section" items={sections} defaultValue={sections[0]} displayProperty={(section: Section) => `${section.libelle}`} onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={cycles} defaultValue={cycles[0]} displayProperty={(cycle: Cycle) => `${cycle.libelle}`} onSelect={handleCycleSelect} /> */}
+                            {/* <CustomDropDown title="Région" items={sections} defaultValue={sections[0]} displayProperty={(section: Section) => `${section.libelle}`} onSelect={handleSectionSelect} />
+                            <CustomDropDown title="Département" items={cycles} defaultValue={cycles[0]} displayProperty={(cycle: Cycle) => `${cycle.libelle}`} onSelect={handleCycleSelect} /> */}
                         </div>
                     </div>
                 </div>

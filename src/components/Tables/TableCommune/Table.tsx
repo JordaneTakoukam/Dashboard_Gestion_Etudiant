@@ -46,10 +46,11 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
 
     // recuperer l'id de la region suite au click sur l'input select
     const handleRegionSelect = (selected: CommonSettingProps | undefined) => {
+        setFilteredDepartement([]);
+        console.log("filterd == "+filteredDepartement);
         if (selected?._id) {
             setSelectIdRegion(selected._id);
             filterDepartementByRegion(selected._id);
-            // setSelectIdRegion('');
         }
     };
 
@@ -63,6 +64,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
             filterCommuneByDepartement(selected._id);
             // setSelectIdDepartement('');
         }
+        
     };
     // Filtrer les communes en fonction de la langue
     const filterCommunesByContenet = (communes: CommuneProps[]) => {
@@ -86,9 +88,11 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
         if (regionId && regionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
             const result: DepartementProps[] = departements.filter(depart => depart.region === regionId);
-
+            if (result.length > 0) {
+                setSelectIdDepartement(result[0]._id);
+            }
             setFilteredDepartement(result);
-            
+          
         }
     };
 
@@ -132,6 +136,8 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                 
         }        
     }, [filteredDepartement, data]);
+
+    
 
     // modifier les donner de la page lors de la recherche
     useEffect(() => {

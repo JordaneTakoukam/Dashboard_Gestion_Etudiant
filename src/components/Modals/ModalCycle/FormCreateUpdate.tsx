@@ -147,6 +147,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
 
                         }
                     }).catch((e) => {
+                        console.log(e);
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                     })
                 }

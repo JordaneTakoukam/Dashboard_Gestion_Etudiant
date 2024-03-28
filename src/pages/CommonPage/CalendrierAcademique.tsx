@@ -4,6 +4,8 @@ import FormCreateUpdate from "../../components/Modals/ModalCalendrier/FormCreate
 import FormDelete from "../../components/Modals/ModalCalendrier/FormDelete";
 import Table from "../../components/Tables/TableEvenement/Table";
 import { useTranslation } from "react-i18next";
+import { getEvenementsByYear } from "../../api/api_evenement";
+import EvenementProps from "../../_types/evenement_type";
 
 export interface Evenement{
     id?:number;
@@ -17,6 +19,7 @@ export interface Evenement{
 const CalendrierAcademique = () => {
     const {t}=useTranslation();
     const [selectedEvenement, setSelectedEvenement] = useState<Evenement | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<EvenementProps | null>(null);
     const handleEditSection = (evenement : Evenement) => {
         setSelectedEvenement(evenement);
     }
@@ -29,7 +32,7 @@ const CalendrierAcademique = () => {
             <Breadcrumb pageName={t('menu.calendrier')} />
             <Table data={evenements} onCreate={handleAddSection} onEdit={handleEditSection}/>
 
-            <FormCreateUpdate evenement={selectedEvenement}/>
+            <FormCreateUpdate evenement={selectedEvent}/>
             <FormDelete evenement={selectedEvenement}/>
         </>
     );

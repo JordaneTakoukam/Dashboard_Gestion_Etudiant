@@ -15,6 +15,7 @@ const initialState: DataSettingSlice = {
         niveau: [],
         salleDeCours:[],
         typesEnseignement:[],
+        etatEvenement:[],
         // roles:[],
         __v: 0,
     },

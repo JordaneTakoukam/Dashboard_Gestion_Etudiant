@@ -49,6 +49,7 @@ interface DataSettingProps {
     niveau: NiveauProps[];
     salleDeCours:SalleDeCoursProps[];
     typesEnseignement:CommonSettingProps[];
+    etatEvenement:CommonSettingProps[];
     // roles:CommonSettingProps[];
     __v: number;
 }

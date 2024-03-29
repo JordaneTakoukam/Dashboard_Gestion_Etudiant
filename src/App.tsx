@@ -119,8 +119,7 @@ function App() {
       const settingsData = await apiGetAllSettings();
       console.log(settingsData);
       dispatch(setDataSetting(settingsData));
-      
-
+    
 
     } catch (error) {
       console.error('Error fetching settings data:', error);
@@ -135,7 +134,7 @@ function App() {
   useEffect(() => {
 
     const fetchSettingsDataIfAuth = async () => {
-      if (isAuth) {
+      if (isAuth.status) {
         await fetchSettingsData();
       } else {
       }

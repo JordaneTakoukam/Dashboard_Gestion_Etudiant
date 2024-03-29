@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { validateEmail, validatePassword } from "../../../fonctions/fonction";
 import { setUser } from "../../../_redux/features/user_slice";
 import { useNavigate } from 'react-router-dom';
-import { apiUrl } from "../../../config";
 
 function RightSectionSigin() {
     const dispatch = useDispatch();
@@ -33,13 +32,9 @@ function RightSectionSigin() {
     let notValidEmail = '';
     let notValidPassword = '';
 
-
-    const userId = useSelector((state: RootState) => state.user._id);
-
     const handleSubmit = async () => {
         setError2('');
         setError3('');
-        console.log('url === '+apiUrl);
         notValidEmail = validateEmail(email);
         if (notValidEmail) {
             setError2(t(notValidEmail));
@@ -58,29 +53,25 @@ function RightSectionSigin() {
             try {
                 signUpResult = await signInApi({ email: email, mot_de_passe: password });
                 if (signUpResult.success) {
-                    if (signUpResult.message !== null) {
+                    if (signUpResult.message !== null && signUpResult.message !== undefined) {
                         createToast((signUpResult.message as any)[lang], '', 0)
 
                     }
                 } else {
-                    if (signUpResult.message !== null) {
+                    if (signUpResult.message !== null && signUpResult.message !== undefined) {
                         createToast((signUpResult.message as any)[lang], '', 1)
-
                     }
                 }
 
                 if (signUpResult?.success === true) {
-                    
+
                     const userData = signUpResult.data as UserState;
 
                     dispatch(setUser(userData))
 
-
                     if (userData.roles.length === 1) {
                         window.location.href = '/';
                     } else {
-                        console.log('ooooooooooooooook');
-
                         navigate('/choose-account');
                         // window.location.href = '/choose-account';
 

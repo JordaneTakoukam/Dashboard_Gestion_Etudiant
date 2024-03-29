@@ -1,14 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
 import { ReponseApiPros } from './interface_reponse.js';
-import EvenementProps from '../_types/evenement_type.js';
+import createToast from '../hooks/toastify.js';
 
 
 const api = `${apiUrl}/evenement`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementProps): Promise<ReponseApiPros> {
+export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
@@ -28,7 +28,7 @@ export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut
     }
 }
 
-export async function apiUpdateEvenement({ _id, code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementProps): Promise<ReponseApiPros> {
+export async function apiUpdateEvenement({ _id, code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
@@ -67,8 +67,8 @@ export async function apiDeleteEvenement(evenementId: string): Promise<ReponseAp
     }
 }
 
-export async function getEvenementsByYear(annee:String, page:number): Promise<EvenementProps> {
-    const pageSize : number = 10;
+export async function getEvenementsByYear({ annee, page }: { annee: string, page: number }): Promise<EvenementReturnGetType> {
+    const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getByYearByPage/${annee}`,
@@ -85,7 +85,7 @@ export async function getEvenementsByYear(annee:String, page:number): Promise<Ev
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const evenements: EvenementProps = response.data;
+        const evenements: EvenementReturnGetType = response.data.data;
 
         return evenements;
     } catch (error) {

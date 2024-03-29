@@ -1,92 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import FormCreateUpdate from "../../components/Modals/ModalCalendrier/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCalendrier/FormDelete";
-import Table from "../../components/Tables/TableEvenement/Table";
 import { useTranslation } from "react-i18next";
 import { getEvenementsByYear } from "../../api/api_evenement";
-import EvenementProps from "../../_types/evenement_type";
-
-export interface Evenement{
-    id?:number;
-    numEvenement:number;
-    libelle:string;
-    periode:string;
-    personnel?:string;
-    description?:string;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
+import { setErrorPageEvenement, setEvenementLoading, setEvenements } from "../../_redux/features/evenement_slice";
+import Table from "../../components/Tables/TableEvenement/Table";
+import createToast from "../../hooks/toastify";
 
 const CalendrierAcademique = () => {
-    const {t}=useTranslation();
-    const [selectedEvenement, setSelectedEvenement] = useState<Evenement | null>(null);
-    const [selectedEvent, setSelectedEvent] = useState<EvenementProps | null>(null);
-    const handleEditSection = (evenement : Evenement) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [selectedEvenement, setSelectedEvenement] = useState<EvenementType | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<EvenementType | null>(null);
+
+    const currentYear = '2024';
+
+    // Utilisez useSelector pour accéder à l'état du reducer
+    const { data: { evenements } } = useSelector((state: RootState) => state.evenementSlice);
+
+    useEffect(() => {
+        const fetchEvenements = async () => {
+            dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const fetchedEvenements = await getEvenementsByYear({ annee: currentYear, page: 1 });
+                // Mettez à jour l'état Redux avec les données récupérées
+                dispatch(setEvenements(fetchedEvenements));
+                console.log(fetchedEvenements);
+
+                dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageEvenement(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
+            }
+        };
+
+        fetchEvenements();
+    }, [currentYear, dispatch]);
+
+    const handleEditSection = (evenement: EvenementType) => {
         setSelectedEvenement(evenement);
     }
 
     const handleAddSection = () => {
         setSelectedEvenement(null);
     }
+
     return (
         <>
             <Breadcrumb pageName={t('menu.calendrier')} />
-            <Table data={evenements} onCreate={handleAddSection} onEdit={handleEditSection}/>
-
-            <FormCreateUpdate evenement={selectedEvent}/>
-            <FormDelete evenement={selectedEvenement}/>
+            {/* Affichez le tableau uniquement lorsque les données sont chargées avec succès */}
+            <Table data={evenements} onCreate={handleAddSection} onEdit={handleEditSection} />
+            <FormCreateUpdate evenement={selectedEvent} />
+            <FormDelete evenement={selectedEvenement} />
         </>
     );
 };
 
 export default CalendrierAcademique;
-export const evenements: Evenement[] = [
-    {
-        id:1,
-        numEvenement:1,
-        libelle:"Acceuil des nouveaux promus",
-        periode: "Mardi 27 décembre 2022",
-        personnel:"Administration, Nouveaux promus, Corp enseignants",
-        description:""
-    },
-    {
-        id:2,
-        numEvenement:2,
-        libelle:"Visites médicales en vue de la préparation Militaire Supérieure",
-        periode: "Dès le Mercredi 10 Janvier 2023",
-        personnel:"Etudiants",
-        description:""
-    },
-    {
-        id:3,
-        numEvenement:3,
-        libelle:"Préparation Militaire Supérieure",
-        periode: "du 14 Janvier au 14 Mars 2023",
-        personnel:"Etudiants",
-        description:""
-    },
-    {
-        id:4,
-        numEvenement:4,
-        libelle:"Visite à mi-parcours de la Préparation Militaire Supérieur",
-        periode: "Du 23 au 24 Février 2023",
-        personnel:"Etudiants",
-        description:""
-    },
-    {
-        id:5,
-        numEvenement:5,
-        libelle:"Fin de la PMS",
-        periode: "Mardi 14 mars 2023",
-        personnel:"Etudiants",
-        description:""
-    },
-    {
-        id:6,
-        numEvenement:6,
-        libelle:"Trêve post PMS",
-        periode: "Du Mercredi 15 mars au vendredi 31 mars 2023",
-        personnel:"Etudiants",
-        description:""
-    },
-    
-];

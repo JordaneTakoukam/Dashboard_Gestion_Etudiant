@@ -1,6 +1,7 @@
+
 // Définir le type de données pour un événement
-interface EvenementProps {
-    _id:string;
+interface EvenementType {
+    _id: string;
     code: string;
     libelleFr: string;
     libelleEn: string;
@@ -14,6 +15,35 @@ interface EvenementProps {
     descriptionObservationFr: string,
     descriptionObservationEn: string,
     annee: string;
-};
+}
 
-export default EvenementProps;
+interface EvenementInitialData {
+    data: {
+        evenements: EvenementType[];
+        currentPage: number;
+        totalPages: number;
+        totalItems: number;
+    };
+    pageIsLoading: boolean;
+    pageError: string | null;
+}
+
+interface CreateEvenementPayload {
+    evenement: EvenementType; // Données de l'événement à créer
+}
+
+interface UpdateEvenementPayload {
+    id: string; // ID de l'événement à mettre à jour
+    evenementData: Partial<EvenementType>; // Données mises à jour de l'événement
+}
+
+interface DeleteEvenementPayload {
+    id: string; // ID de l'événement à supprimer
+}
+
+interface EvenementReturnGetType {
+    evenements: EvenementType[];
+    currentPage: number;
+    totalItems: number;
+    totalPages: number;
+}

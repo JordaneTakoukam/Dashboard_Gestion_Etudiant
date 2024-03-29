@@ -10,7 +10,6 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Evenement } from "../../../pages/CommonPage/CalendrierAcademique";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
@@ -18,14 +17,14 @@ import { useTranslation } from "react-i18next";
 
 
 interface TableEvenementProps {
-    data: Evenement[];
-    onCreate:()=>void;
-    onEdit: (evenement : Evenement) => void;
+    data: EvenementType[];
+    onCreate: () => void;
+    onEdit: (evenement: EvenementType) => void;
 }
 
-const Table = ({ data, onCreate, onEdit}: TableEvenementProps) => {
-    const {t}=useTranslation();
-    const pageIsLoading = false;
+const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
+    const { t } = useTranslation();
+    const pageIsLoading = useSelector((state: RootState) => state.evenementSlice.pageIsLoading);
     const dispatch = useDispatch();
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -86,9 +85,9 @@ const Table = ({ data, onCreate, onEdit}: TableEvenementProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === userRole || roles.superAdmin === userRole && (<ButtonCreate
                     title={t('boutton.nouvel_evenement')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.evenement')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.evenement')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -105,7 +104,7 @@ const Table = ({ data, onCreate, onEdit}: TableEvenementProps) => {
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
@@ -124,7 +123,7 @@ const Table = ({ data, onCreate, onEdit}: TableEvenementProps) => {
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
@@ -145,15 +144,15 @@ const Table = ({ data, onCreate, onEdit}: TableEvenementProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : data.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
+                            : data.length === 0 ?
+                                <NoDataTable /> :
+                                <HeaderTable />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} /> 
                         }
 
 

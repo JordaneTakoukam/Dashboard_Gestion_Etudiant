@@ -5,11 +5,12 @@ import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 import { Chapitre, Objectif } from "../../../pages/Admin/Chapitres";
 
-const BodyTable = ({ data }: { data: Matiere | undefined }) => {
+const BodyTable = ({ data }: { data: MatiereType | undefined }) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
-    const [matiereData, setMatiereData] = useState<Matiere | undefined>(data); // État de la matière
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const [matiereData, setMatiereData] = useState<MatiereType | undefined>(data); // État de la matière
     useEffect(() => {
         setMatiereData(data);
     }, [data]);
@@ -39,19 +40,19 @@ const BodyTable = ({ data }: { data: Matiere | undefined }) => {
 
     return (
         <tbody>
-            {matiereData && matiereData.chapitres && matiereData.chapitres.map((chapitre: Chapitre, indexChapitre: number) => (
+            {matiereData && matiereData.chapitres && matiereData.chapitres.map((chapitre: ChapitreType, indexChapitre: number) => (
                 <React.Fragment key={indexChapitre + 1}>
-                    {chapitre.objectifs.map((objectif: Objectif, indexObjectif: number) => (
+                    {chapitre.objectifs && chapitre.objectifs.map((objectif: ObjectifType, indexObjectif: number) => (
                         <tr key={`${indexChapitre}-${indexObjectif}`} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
                             {/* Nom du chapitre */}
                             {indexObjectif === 0 && (
                                 <td rowSpan={chapitre.objectifs.length} className="border-b border-[#eee] py-0 lg:py-4 pl-4 md:pl-5 lg:pl-6 xl:pl-5 dark:border-strokedark bg-gray-2 dark:bg-black">
-                                    <h5>{chapitre.libelle}</h5>
+                                    <h5>{lang==='fr' ? chapitre.libelleFr : chapitre.libelleEn}</h5>
                                 </td>
                             )}
                             {/* Objectif du chapitre */}
                             <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                                <h5>{objectif.libelle}</h5>
+                                <h5>{lang==='fr' ? objectif.libelleFr : objectif.libelleEn }</h5>
                             </td>
                             {/* Case à cocher pour l'état de l'objectif */}
                             <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">

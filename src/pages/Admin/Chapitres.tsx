@@ -35,13 +35,13 @@ export interface Competence{
 }
 
 interface ChapitresProps {
-    matiereSelectionnee?: Matiere | null; 
+    matiereSelectionnee?: MatiereType | null; 
     returnWithMatiere?:()=>void;
 }
 
 const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) => {
-    const [selectedChapitre, setSelectedChapitre] = useState<Chapitre | null>(null);
-    const handleEditCycle = (chapitre: Chapitre) => {
+    const [selectedChapitre, setSelectedChapitre] = useState<ChapitreType | null>(null);
+    const handleEditCycle = (chapitre: ChapitreType) => {
         setSelectedChapitre(chapitre);
     }
     const {t}=useTranslation();

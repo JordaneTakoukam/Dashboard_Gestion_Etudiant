@@ -56,7 +56,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
 
 
-    // valeur de la l'id du département selectionner
+    // valeur de la l'id du cycle selectionner
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {

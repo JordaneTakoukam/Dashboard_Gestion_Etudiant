@@ -8,15 +8,16 @@ import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 
 interface BodyMatiereProps {
-    data: Matiere[];
-    onEdit: (matiere : Matiere) => void;
-    onAddChap:(matiere : Matiere)=>void;
+    data: MatiereType[];
+    onEdit: (matiere : MatiereType) => void;
+    onAddChap:(matiere : MatiereType)=>void;
 }
 
 const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
-    const [selectedMatiere, setSelectedMatiere] = useState<Matiere>();
+    const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
-    const handleAddChapitre = (matiere: Matiere) => {
+    const lang = useSelector((state: RootState) => state.setting.language);
+    const handleAddChapitre = (matiere: MatiereType) => {
         onAddChap(matiere); // Appeler la fonction onAddChap avec la matière sélectionnée
         navigate("save/chapitres"); // Rediriger vers l'interface d'ajout de chapitres
     };
@@ -44,7 +45,7 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
-    function nombreDeChapitres(matiere:Matiere) {
+    function nombreDeChapitres(matiere:MatiereType) {
         // Vérifier si la matière existe et si elle a une liste de chapitres
         if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
             // Retourner la longueur de la liste des chapitres
@@ -55,7 +56,7 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
         }
     }
 
-    function volumeHoraireGlobal(matiere:Matiere) {
+    function volumeHoraireGlobal(matiere:MatiereType) {
         let volumeTotal = 0;
     
         // Vérifier si la matière existe et si elle a une liste de chapitres
@@ -94,7 +95,7 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
 
                 {/* libelle */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.libelle}</h5>
+                    <h5> {lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
 
                 {/* nombre de chapitre */}

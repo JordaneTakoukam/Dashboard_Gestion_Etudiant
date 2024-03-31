@@ -1,20 +1,20 @@
-import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Matiere, matieres } from "../../../pages/Admin/ListeMatieres";
-import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
+import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_redux/features/progession_matiere_slice";
+import { getMatieresByNiveau } from "../../../api/api_matiere";
+import createToast from "../../../hooks/toastify";
 
 
-const Table = ({ data }: { data: Matiere }) => {
+const Table = ({ data }: { data: MatiereType }) => {
     const {t}=useTranslation();
-    const pageIsLoading = false;
     const dispatch = useDispatch();
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -25,17 +25,20 @@ const Table = ({ data }: { data: Matiere }) => {
     };
 
     //Calcul de la progression de chaque leçon
-    const calculateProgress = (matiere : Matiere | undefined) => {
+    const calculateProgress = (matiere : MatiereType | undefined) => {
         let totalObjectifs = 0;
         let objectifsAvecEtat1 = 0;
         if(matiere && matiere.chapitres){
             matiere.chapitres.forEach((chapitre) => {
-                totalObjectifs += chapitre.objectifs.length;
-                chapitre.objectifs.forEach((objectif) => {
-                    if (objectif.etat === 1) {
-                        objectifsAvecEtat1++;
-                    }
-                });
+                if(chapitre.objectifs){
+                    totalObjectifs += chapitre.objectifs.length;
+                    chapitre.objectifs.forEach((objectif) => {
+                        if (objectif.etat === 1) {
+                            objectifsAvecEtat1++;
+                        }
+                    });
+                }
+                
             });
         }
         
@@ -47,46 +50,114 @@ const Table = ({ data }: { data: Matiere }) => {
 
     // let matiere:Matiere=listMatieres[0];
 
-    const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreSection, setFiltreSection] = useState("");
-    const [filtreCycle, setFiltreCycle] = useState("");
-    const [filtreNiveau, setFiltreNiveau] = useState("");
-    const [filtreSemestre, setFiltreSemestre] = useState("");
-    const [filtreMatiere, setFiltreMatiere] = useState<Matiere | undefined>(matieres[0]);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const matieres: MatiereType[] = useSelector((state: RootState) => state.progressionMatiereSlice.data.matieres) ?? [];
+    const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
+    const [filteredMatiere, setFilteredMatiere] = useState<MatiereType | undefined>(data);
     const [formatToDownload, setFormatToDownload] = useState("");
-    const [progress, setProgress] = useState(calculateProgress(matieres[0]));
+    const [progress, setProgress] = useState(calculateProgress(data));
 
-    // Fonction pour calculer la progression en pourcentage
+    const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
+    const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
+    const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
 
+    const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
+    const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
 
-
-    const handleAnneeSelect = (selected: String | undefined) => {
-        // setFiltreAnnee(selected);
-        console.log(selected)
-    };
     
-    // const handleSectionSelect = (selected: Section | undefined) => {
-    //     // setFiltreSection(selected);
-    //     console.log(selected);
-    // };
 
-    const handleCycleSelect = (selected: Cycle | undefined) => {
-        // setFiltreCycle(selected);
-        console.log(selected);
+
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCycleBySection = (sectionId: string | undefined) => {
+        if (sectionId && sectionId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
+            if (result.length > 0) {
+                setSelectIdCycle(result[0]._id);
+            }
+            setFilteredCycle(result);
+          
+        }
     };
+
+
+    // filtrer les donnee a partir de l'id du cycle selectionner
+    const filterNiveauxByCycle = (cycleId: string | undefined) => {
+        
+        if (cycleId && cycleId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
+            if (result.length > 0) {
+                setSelectIdNiveau(result[0]._id);
+                
+            }
+            setFilteredNiveaux(result);
+        }
+    };
+
+    // filtrer les donnee a partir de l'id du cycle selectionner
+    const filterMatiereByNiveau = (niveauId: string | undefined) => {
+        
+        if (niveauId && niveauId !== '') {
+            fetchMatieres(niveauId); 
+        }
+    };
+
+    const fetchMatieres = async (currentNiveauId: string) => {
+        dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
+        try {
+            if (currentNiveauId) {
+                const fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId });
+                if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                    dispatch(setMatieres(fetchedMatieres));
+                   
+                } else {
+                    
+                    // Traitez le cas où fetchedMatieres est faux, vide ou indéfini
+                    // Vous pouvez ignorer cette condition si vous souhaitez simplement ne rien faire dans ce cas
+                }
+            } // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            dispatch(setErrorPageMatiere(t('message.erreur')));
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+        }
+    }
     
-    const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
-        // Logique à exécuter lorsque le niveau est sélectionné
-        // console.log("Niveau sélectionné :", selectedNiveau);
-    };
-    const handleSemestreSelect = (selected: String | undefined) => {
-        // setFiltreSemestre(selected);
-        console.log(selected);
+    
+    // recuperer l'id de la section suite au click sur l'input select
+    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdSection(selected._id);
+            filterCycleBySection(selected._id);
+        }
     };
 
-    const handleMatiereSelect = (selected: Matiere | undefined) => {
-        setFiltreMatiere(selected);
+    // valeur de la l'id du cycle selectionner    
+    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdCycle(selected._id);
+            filterNiveauxByCycle(selected._id);
+        }
+    };
+
+    // valeur de la l'id du niveau selectionner    
+    const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected && selected?._id) {
+            setSelectIdNiveau(selected._id);
+            fetchMatieres(selected._id);    
+        }
+    };
+
+    const handleMatiereSelect = (selected: MatiereType | undefined) => {
+        setFilteredMatiere(selected);
         setProgress(calculateProgress(selected));
+        console.log(selected)
     };
 
     const handleDownloadSelect = (selected: string) => {
@@ -95,30 +166,47 @@ const Table = ({ data }: { data: Matiere }) => {
         // methode pour download
     };
 
+    //fournir initialement les données à la page
+    useEffect(() => {
+        if (sections && sections.length > 0) {
+            filterCycleBySection(sections[0]?._id);
+        }
+           
+    }, [sections]);
 
-    // variable pour la pagination
-    //
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    // const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    useEffect(() => {
+        if (filteredCycle && filteredCycle.length > 0) {
+            if(!selectCycleId){
+                filterNiveauxByCycle(filteredCycle[0]?._id);
+            }else{
+                filterNiveauxByCycle(selectCycleId);
+            }
+                
+        }        
+    }, [filteredCycle]);
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-    const [niveau, setNiveau] = useState<Niveau>();
-    
+    useEffect(() => {
+        if (filteredNiveaux && filteredNiveaux.length > 0) {
+            if(!selectNiveauId){
+                filterMatiereByNiveau(filteredNiveaux[0]?._id);
+            }else{
+                filterMatiereByNiveau(selectNiveauId);
+            }
+                
+        }        
+    }, [filteredNiveaux, data]);
+    // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
+    useEffect(() => {
+        // Récupérer les matières lorsque le niveau est sélectionné initialement
+        if (selectNiveauId) {
+            fetchMatieres(selectNiveauId);    
+        }
+    }, [selectNiveauId]);
+
 
     return (
         <div>
-            {/* bouton creer ajouter un nouvel ... et search bar */}
-            {/* <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText="Rechercher un enseignant" onSubmit={() => { }} />
-            </div> */}
-            {/*! bouton creer ajouter un nouvel ... et search bar */}
-
-
+            
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.progression')} </h1>
@@ -127,53 +215,47 @@ const Table = ({ data }: { data: Matiere }) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<String>
+                            {/* <CustomDropDown2<String>
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
                                 
                                 onSelect={handleAnneeSelect}
-                            />
-                            {/* <CustomDropDown2<Section>
+                            /> */}
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.cycle')}
-                                items={cycles}
+                                items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<Niveau>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.niveau')}
-                                items={niveaux}
+                                items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
-                            />
-                            <CustomDropDown2<String>
+                            />                          
+                            {/* <CustomDropDown2<String>
                                 title={t('label.semestre')}
                                 items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
-                            />
-                            <CustomDropDown2<Matiere>
+                            /> */}
+                            <CustomDropDown2<MatiereType>
                                 title={t('label.matiere')}
                                 items={matieres}
                                 defaultValue={matieres[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(matiere: Matiere) => `${matiere.libelle}`}
+                                displayProperty={(matiere: MatiereType) => `${lang === 'fr'?matiere.libelleFr:matiere.libelleEn}`}
                                 onSelect={handleMatiereSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} /> */}
-                            {/* <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
-                            {/* <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
-                            <CustomDropDown title="Matiere" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} /> */}
                         </div>
                     )}
                 </div>
@@ -182,53 +264,47 @@ const Table = ({ data }: { data: Matiere }) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<String>
+                            {/* <CustomDropDown2<String>
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
                                 
                                 onSelect={handleAnneeSelect}
-                            />
-                            {/* <CustomDropDown2<Section>
+                            /> */}
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.cycle')}
-                                items={cycles}
+                                items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<Niveau>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.niveau')}
-                                items={niveaux}
+                                items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
-                            />
-                            <CustomDropDown2<String>
+                            /> 
+                            {/* <CustomDropDown2<String>
                                 title={t('label.semestre')}
                                 items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
-                            />
-                            <CustomDropDown2<Matiere>
+                            /> */}
+                            <CustomDropDown2<MatiereType>
                                 title={t('label.matiere')}
                                 items={matieres}
                                 defaultValue={matieres[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(matiere: Matiere) => `${matiere.libelle}`}
+                                displayProperty={(matiere: MatiereType) => `${lang === 'fr'?matiere.libelleFr:matiere.libelleEn}`}
                                 onSelect={handleMatiereSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} />
-                            <CustomDropDown title="Matière" items={matieres} defaultValue={matieres[0]} displayProperty={(matiere: Matiere) => `${matiere.code} : ${matiere.libelle}`} onSelect={handleMatiereSelect} /> */}
                         </div>
                     </div>
                 </div>
@@ -255,13 +331,13 @@ const Table = ({ data }: { data: Matiere }) => {
                             //     <LoadingTable />
                             //     : !data.chapitres?
                             //         <NoDataTable/> :
-                                    <HeaderTable matiere={filtreMatiere} />
+                                    <HeaderTable matiere={filteredMatiere} />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filtreMatiere} />
+                            !pageIsLoading && <BodyTable data={filteredMatiere} />
                         }
 
 
@@ -271,8 +347,6 @@ const Table = ({ data }: { data: Matiere }) => {
                 </div>
 
                 {/* Pagination */}
-
-                <h1>Pagination ici</h1>
 
             </div>
 

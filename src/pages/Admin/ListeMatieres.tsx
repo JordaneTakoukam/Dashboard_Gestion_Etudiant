@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableMatiere/Table";
 import { Niveau } from "./Niveaux";
-import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
+import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
 import { Enseignant } from "./ListeEnseignants";
 import Chapitres, { Chapitre } from "./Chapitres";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
+import { getMatieresByNiveauWithPagination } from "../../api/api_matiere";
+import createToast from "../../hooks/toastify";
+import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redux/features/matiere_slice";
 
 export interface Matiere {
     id? : number;
@@ -26,9 +31,44 @@ export interface Matiere {
 
 const ListeDesMatieres = () => {
     const {t}=useTranslation();
-    const [selectedMatiere, setSelectedMatiere] = useState<Matiere | null>(null);
+    const dispatch = useDispatch();
     const [openChapitres, setOpenChapitre]=useState(false);
-    const handleEditMatiere = (matiere : Matiere) => {
+    const [selectedMatiere, setSelectedMatiere] = useState<MatiereType | null>(null);
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau);
+    const currentNiveauId =niveaux && niveaux.length>0 && niveaux[0]._id;
+    // Utilisez useSelector pour accéder à l'état du reducer
+    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+
+    useEffect(() => {
+        const fetchMatieres = async () => {
+            dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                if (currentNiveauId) {
+                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: 1 });
+                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                        dispatch(setMatieres(fetchedMatieres));
+                        console.log(matieres);
+                    } else {
+                        // Traitez le cas où fetchedMatieres est faux, vide ou indéfini
+                        // Vous pouvez ignorer cette condition si vous souhaitez simplement ne rien faire dans ce cas
+                    }
+                } // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageMatiere(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+            }
+        };
+
+        fetchMatieres();
+    }, [currentNiveauId, dispatch]);
+
+    const handleEditSection = (matiere: MatiereType) => {
+        setSelectedMatiere(matiere);
+    }
+
+    const handleEditMatiere = (matiere : MatiereType) => {
         setSelectedMatiere(matiere);
         setOpenChapitre(false);
     }
@@ -39,7 +79,7 @@ const ListeDesMatieres = () => {
         setOpenChapitre(false);
     }
 
-    const handleOpenChapitres = (matiere: Matiere) => {
+    const handleOpenChapitres = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);
         setOpenChapitre(true);
     };
@@ -48,7 +88,7 @@ const ListeDesMatieres = () => {
             {!openChapitres && <Breadcrumb pageName={t('sub_menu.liste_matiere')} />}
             {!openChapitres && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres}/>}
             
-            {/* {!openChapitres && <FormCreateUpdate matiere={selectedMatiere}/>} */}
+            {!openChapitres && <FormCreateUpdate matiere={selectedMatiere}/>}
             {!openChapitres && <FormDelete matiere={selectedMatiere}/>}
             {openChapitres && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere}/>}
         </>
@@ -57,121 +97,6 @@ const ListeDesMatieres = () => {
 
 export default ListeDesMatieres;
 
-export const enseignants: Enseignant[] = [
-    {
-        id:1,
-        nom: "Jane",
-        prenom: "Smith",
-        email: "test@123",
-        contact: "655484959",
-        matricule: "CD5678",
-        genre:"H",
-        abscences:[],
-        
-    },
-    {
-        id:2,
-        nom: "Alice",
-        prenom: "Johnson",
-        email: "test@123",
-        contact: "677988866",
-        matricule: "EF9012",
-        genre: "M", 
-        abscences:[],
-    },
-    {
-        id:3,
-        nom: "Alice",
-        prenom: "Johnson",
-        email: "test@123",
-        contact: "677988866",
-        matricule: "EF9012",
-        genre: "F", 
-        abscences:[],
-    },
-    {
-        id:4,
-        nom: "Bob",
-        prenom: "Brown",
-        email: "test@123",
-        contact: "677978745",
-        matricule: "GH3456",
-        genre: "H", 
-        abscences:[],
-    },
-    {
-        id:5,
-        nom: "Emily",
-        prenom: "Taylor",
-        email: "test@123",
-        contact: "677966888",
-        matricule: "IJ7890",
-        genre: "F", 
-        abscences:[],
-    },
-    {
-        id:6,
-        nom: "Michael",
-        prenom: "Anderson",
-        email: "test@123",
-        contact: "655489566",
-        matricule: "KL2345",
-        genre: "H", 
-        abscences:[],
-    },
-    {
-        id:7,
-        nom: "Sophia",
-        prenom: "Martinez",
-        email: "test@123",
-        contact: "677944777",
-        matricule: "MN6789",
-        genre: "F", 
-        abscences:[],
-    },
-    {
-        id:8,
-        nom: "William",
-        prenom: "Garcia",
-        email: "test@123",
-        contact: "655484343",
-        matricule: "OP0123",
-        genre: "H", 
-        abscences:[],
-    },
-    {
-        id:9,
-        nom: "Olivia",
-        prenom: "Hernandez",
-        email: "test@123",
-        contact: "677955666",
-        matricule: "QR4567",
-        genre: "F", 
-        abscences:[],
-    },
-    {
-        id:10,
-        nom: "James",
-        prenom: "Lopez",
-        email: "test@123",
-        contact: "677988877",
-        matricule: "ST8901",
-        genre: "H", 
-        abscences:[],
-    },
-    {
-        id:11,
-        nom: "Maria",
-        prenom: "Ramirez",
-        email: "test@123",
-        contact: "677999888",
-        matricule: "UV2345",
-        genre: "F", 
-        abscences:[],
-    }
-];
+export const enseignants: Enseignant[] = [];
 
 export const matieres: Matiere[] = [];
-
-
-

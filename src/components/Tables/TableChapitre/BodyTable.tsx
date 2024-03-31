@@ -1,10 +1,11 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { Chapitre } from "../../../pages/Admin/Chapitres";
+import { RootState } from "../../../_redux/store";
 
-const BodyTable = ({ data, onEdit }: { data?: Chapitre[], onEdit: (chapitre: Chapitre) => void }) => {
-
+const BodyTable = ({ data, onEdit }: { data?: ChapitreType[], onEdit: (chapitre: ChapitreType) => void }) => {
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
 
     return <tbody>
@@ -22,16 +23,16 @@ const BodyTable = ({ data, onEdit }: { data?: Chapitre[], onEdit: (chapitre: Cha
 
                 {/* libelle */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.libelle}</h5>
+                    <h5>{lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{item.typesEnseignement[0].volumeHoraire}</h5>
+                    <h5>{item.typesEnseignement && item.typesEnseignement.length>0 && item.typesEnseignement[0].volumeHoraire}</h5>
                 </td>
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
-                    <h5>{item.typesEnseignement[1].volumeHoraire}</h5>
+                    <h5>{item.typesEnseignement && item.typesEnseignement.length>1 && item.typesEnseignement[1].volumeHoraire}</h5>
                 </td>
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.typesEnseignement[2].volumeHoraire}</h5>
+                    <h5>{item.typesEnseignement && item.typesEnseignement.length>2 && item.typesEnseignement[2].volumeHoraire}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}

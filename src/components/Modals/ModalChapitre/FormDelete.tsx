@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 
 
-function ModalDelete({ chapitre }: { chapitre : Chapitre|null}) {
+function ModalDelete({ chapitre }: { chapitre : ChapitreType|null}) {
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
@@ -27,7 +28,7 @@ function ModalDelete({ chapitre }: { chapitre : Chapitre|null}) {
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.chapitre')} : {chapitre?chapitre.libelle:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.chapitre')} : {chapitre? lang === 'fr' ? chapitre.libelleFr: chapitre.libelleEn:""}</h1>
             </CustomDialogModal>
         </>
     );

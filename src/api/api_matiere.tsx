@@ -4,15 +4,15 @@ import { ReponseApiPros } from './interface_reponse.js';
 import createToast from '../hooks/toastify.js';
 
 
-const api = `${apiUrl}/evenement`;
+const api = `${apiUrl}/matiere`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
+export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement }: MatiereType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee },
+            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,11 +28,11 @@ export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut
     }
 }
 
-export async function apiUpdateEvenement({ _id, code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
+export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement }: MatiereType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee },
+            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,10 +48,10 @@ export async function apiUpdateEvenement({ _id, code, libelleFr, libelleEn, date
     }
 }
 
-export async function apiDeleteEvenement(evenementId: string): Promise<ReponseApiPros> {
+export async function apiDeleteMatiere(matiereId: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
-            `${api}/delete/${evenementId}`,
+            `${api}/delete/${matiereId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,11 +67,11 @@ export async function apiDeleteEvenement(evenementId: string): Promise<ReponseAp
     }
 }
 
-export async function getEvenementsByYear({ annee, page }: { annee: number, page: number }): Promise<EvenementReturnGetType> {
+export async function getMatieresByNiveauWithPagination({ niveauId, page }: { niveauId: string, page: number }): Promise<MatiereReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getByYearByPage/${annee}`,
+            `${api}/getMatieresByNiveauWithPagination/${niveauId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,9 +85,31 @@ export async function getEvenementsByYear({ annee, page }: { annee: number, page
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const evenements: EvenementReturnGetType = response.data.data;
+        const matieres: MatiereReturnGetType = response.data.data;
+        
+        return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 
-        return evenements;
+export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Promise<ProgressionMatiereReturnGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getMatieresByNiveau/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const matieres: ProgressionMatiereReturnGetType = response.data.data;
+
+        return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;

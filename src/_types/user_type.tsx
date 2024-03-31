@@ -40,7 +40,9 @@ interface Absence {
 }
 
 
-
+interface UserReturnGetType {
+    users: UserState[];
+}
 
 // Interface pour les propriétés minimales de l'utilisateur
 interface PropsUserMinState {

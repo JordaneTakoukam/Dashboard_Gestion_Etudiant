@@ -4,15 +4,20 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import EvenementProps from '../../../_types/evenement_type';
+import { formatDateForInput, formatYear } from '../../../fonctions/fonction';
+import { apiCreateEvenement, apiUpdateEvenement } from '../../../api/api_evenement';
+import createToast from '../../../hooks/toastify';
+import { createEvenement, updateEvenement } from '../../../_redux/features/evenement_slice';
+import { ReponseApiPros } from '../../../api/interface_reponse';
 
 
-function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null }) {  
+function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) {  
     const etats: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.etatEvenement) ?? []; 
     const lang = useSelector((state: RootState) => state.setting.language);
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const [annee, setAnnee] = useState("");
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const [annee, setAnnee] = useState(currentYear);
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
@@ -23,8 +28,8 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
     const [etat, setEtat] = useState<CommonSettingProps>();
     const [personnelFr, setPersonnelFr] = useState("");
     const [personnelEn, setPersonnelEn] = useState("");
-    const [descriptionFr, setDescriptionFr] = useState("");
-    const [descriptionEn, setDescriptionEn] = useState("");
+    const [descriptionObservationFr, setDescriptionObservationFr] = useState("");
+    const [descriptionObservationEn, setDescriptionObservationEn] = useState("");
     
 
     const [errorCode, setErrorCode] = useState("");
@@ -48,22 +53,22 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
             setAnnee(evenement.annee);
             setCode(evenement.code);
             setLibelleFr(evenement.libelleFr);
-            setLibelleFr(evenement.libelleEn);
+            setLibelleEn(evenement.libelleEn);
             setPeriodeFr(evenement.periodeFr);
             setPeriodeEn(evenement.periodeEn);
-            setDateDebut(evenement.dateDebut);
-            setDateFin(evenement.dateFin);
+            setDateDebut(formatDateForInput(evenement.dateDebut));
+            setDateFin(formatDateForInput(evenement.dateFin));
             setEtat(currentEtat);
             setPersonnelFr(evenement.personnelFr?evenement.personnelFr:"");
             setPersonnelEn(evenement.personnelEn?evenement.personnelEn:"");
-            setDescriptionFr(evenement.descriptionObservationFr?evenement.descriptionObservationFr:"");
-            setDescriptionEn(evenement.descriptionObservationEn?evenement.descriptionObservationEn:"");
+            setDescriptionObservationFr(evenement.descriptionObservationFr?evenement.descriptionObservationFr:"");
+            setDescriptionObservationEn(evenement.descriptionObservationEn?evenement.descriptionObservationEn:"");
         } else {
             setModalTitle(t('form_save.enregistrer')+t('form_save.evenement'));
-            setAnnee("");
+            setAnnee(currentYear);
             setCode("");
             setLibelleFr("");
-            setLibelleFr("");
+            setLibelleEn("");
             setPeriodeFr("");
             setPeriodeEn("");
             setDateDebut("");
@@ -71,8 +76,8 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
             setEtat(undefined);
             setPersonnelFr("");
             setPersonnelEn("");
-            setDescriptionFr("");
-            setDescriptionEn("");
+            setDescriptionObservationFr("");
+            setDescriptionObservationEn("");
         }
 
 
@@ -124,7 +129,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
     
     
 
-    const handleCreateUpdate = () => {
+    const handleCreateUpdate = async () => {
         if (!code || !libelleFr || !periodeFr || !periodeEn || !dateDebut || !dateFin || !etat) {
             if (!code) {
                 setErrorCode(t('error.code'));
@@ -153,8 +158,111 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
 
             return;
         }
+        if(!evenement){
+            if (etat._id) {
+                await apiCreateEvenement(
+                    {
+                        code, 
+                        libelleFr, 
+                        libelleEn, 
+                        dateDebut, 
+                        dateFin, 
+                        periodeFr, 
+                        periodeEn, 
+                        etat : etat._id, 
+                        personnelFr, 
+                        personnelEn, 
+                        descriptionObservationFr, 
+                        descriptionObservationEn, 
+                        annee
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(createEvenement({
+                            
+                            evenement: {
+                                _id: e.data._id,
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                dateDebut: e.data.dateDebut,
+                                dateFin: e.data.dateFin,
+                                periodeFr: e.data.periodeFr,
+                                periodeEn: e.data.periodeEn,
+                                etat: e.data.etat,
+                                personnelFr: e.data.personnelFr,
+                                personnelEn: e.data.personnelEn,
+                                descriptionObservationFr: e.data.descriptionObservationFr,
+                                descriptionObservationEn: e.data.descriptionObservationEn,
+                                annee: e.data.annee
+                            }
+                            
+                        }));
+
+                        closeModal();
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }else{
+            if (etat._id) {
+                await apiUpdateEvenement(
+                    {
+                        code, 
+                        libelleFr, 
+                        libelleEn, 
+                        dateDebut, 
+                        dateFin, 
+                        periodeFr, 
+                        periodeEn, 
+                        etat : etat._id, 
+                        personnelFr, 
+                        personnelEn, 
+                        descriptionObservationFr, 
+                        descriptionObservationEn, 
+                        annee,
+                        _id:evenement._id
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(
+                            updateEvenement({
+                                id: e.data._id,
+                                evenementData: {
+                                    _id: e.data._id,
+                                    code: e.data.code,
+                                    libelleFr: e.data.libelleFr,
+                                    libelleEn: e.data.libelleEn,
+                                    dateDebut: e.data.dateDebut,
+                                    dateFin: e.data.dateFin,
+                                    periodeFr: e.data.periodeFr,
+                                    periodeEn: e.data.periodeEn,
+                                    etat: e.data.etat,
+                                    personnelFr: e.data.personnelFr,
+                                    personnelEn: e.data.personnelEn,
+                                    descriptionObservationFr: e.data.descriptionObservationFr,
+                                    descriptionObservationEn: e.data.descriptionObservationEn,
+                                    annee: e.data.annee
+                                }
+                            }));
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
         
-        closeModal();
     }
 
     return (
@@ -170,8 +278,8 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={annee}
-                    onChange={(e) => {setAnnee(e.target.value); setErrorCode("")}}
+                    value={formatYear(annee)}
+                    onChange={(e) => {setAnnee(parseInt(e.target.value)); setErrorCode("")}}
                 />
                 <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
@@ -224,7 +332,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
                 <label>{t('label.dateFin')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="text"
+                    type="date"
                     value={dateFin}
                     onChange={(e) =>{setDateFin(e.target.value); setErrorDateFin("");} }
                 />
@@ -259,15 +367,15 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementProps | null })
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={descriptionFr}
-                    onChange={(e) =>{setDescriptionFr(e.target.value)} }
+                    value={descriptionObservationFr}
+                    onChange={(e) =>{setDescriptionObservationFr(e.target.value)} }
                 />
                 <label>{t('label.description_en')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={descriptionEn}
-                    onChange={(e) =>{setDescriptionEn(e.target.value)} }
+                    value={descriptionObservationEn}
+                    onChange={(e) =>{setDescriptionObservationEn(e.target.value)} }
                 />
             </CustomDialogModal>
 

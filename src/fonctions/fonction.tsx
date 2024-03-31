@@ -61,3 +61,30 @@ export function validatePassword(password: string) {
 
   return '';
 }
+
+export function formatDateForInput(dateString : string) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
+}
+
+export function formatYear(year:number) {
+  return `${year}/${year + 1}`;
+}
+
+export function extractYear(yearRange:string) {
+  const parts = yearRange.split('/');
+  return parseInt(parts[0]);
+}
+
+export function generateYearRange(currentYear:number, startYear:number) {
+  const yearRange = [];
+  for (let year = currentYear; year >= startYear; year--) {
+      const nextYear = year + 1;
+      yearRange.push(`${year}/${nextYear}`);
+  }
+  return yearRange;
+}

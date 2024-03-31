@@ -5,7 +5,7 @@ import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
@@ -14,6 +14,11 @@ import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import Pagination from "../../Pagination/Pagination";
+import { setEvenementLoading, setEvenements, setErrorPageEvenement } from "../../../_redux/features/evenement_slice";
+import { getEvenementsByYear } from "../../../api/api_evenement";
+import createToast from "../../../hooks/toastify";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 
 
 interface TableEvenementProps {
@@ -26,6 +31,8 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
     const { t } = useTranslation();
     const pageIsLoading = useSelector((state: RootState) => state.evenementSlice.pageIsLoading);
     const dispatch = useDispatch();
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -34,30 +41,32 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-    const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    // const [filtreSection, setFiltreSection] = useState("");
-    // const [filtreCycle, setFiltreCycle] = useState("");
-    // const [filtreNiveau, setFiltreNiveau] = useState("");
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
     const [formatToDownload, setFormatToDownload] = useState("");
 
     const handleAnneeSelect = (selected: String | undefined) => {
         // setFiltreAnnee(selected);
-        console.log(selected)
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
+        
+        console.log(selectedYear)
     };
-    // const handleSectionSelect = (selected: string) => {
-    //     setFiltreSection(selected);
-    //     console.log(selected);
-    // };
+    const [searchText, setSearchText] = useState<string>('');
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    // Filtrer les évènement en fonction de la langue
+    const filterEventByContent = (evenements: EvenementType[]) => {
+        if (searchText === '') {
+            const result: EvenementType[] = evenements;
+            return result;
+        }
+        return evenements.filter(evenement => {
+            const libelle = lang === 'fr' ? evenement.libelleFr : evenement.libelleEn;
+            // Vérifie si le code ou le libellé contient le texte de recherche
+            return evenement.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+        });
+    };
 
-    // const handleCycleSelect = (selected: string) => {
-    //     setFiltreCycle(selected);
-    //     console.log(selected);
-    // };
-
-    // const handleNiveauSelect = (selected: string) => {
-    //     setFiltreNiveau(selected);
-    //     console.log(selected);
-    // };
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
@@ -67,17 +76,64 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
 
     // variable pour la pagination
     //
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+     // variable pour la pagination
+     const itemsPerPage = useSelector((state: RootState) => state.evenementSlice.data.pageSize);; // nombre delements maximum par page
+     const [currentPage, setCurrentPage] = useState<number>(1);
+ 
+     const indexOfLastItem = currentPage * itemsPerPage;
+     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+     const count =useSelector((state: RootState) => state.evenementSlice.data.totalItems);
+     const handlePageClick = (pageNumber: number) => {
+         setCurrentPage(pageNumber);
+     };
+     // Render page numbers
+     const pageNumbers = [];
+     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+         pageNumbers.push(i);
+     }
+ 
+     const hasPrevious = currentPage > 1;
+     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+ 
+     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+     const endItem = Math.min(count, indexOfLastItem);
+
+     // Fonction pour récupérer les événements en fonction de l'année et de la page actuelle
+    const fetchEvenements = async (annee: number, page: number) => {
+        dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
+        try {
+            const fetchedEvenements = await getEvenementsByYear({ annee: annee, page: page });
+            // Mettez à jour l'état Redux avec les données récupérées
+            dispatch(setEvenements(fetchedEvenements));
+            // console.log(fetchedEvenements.evenements[0].etat);
+
+            dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            dispatch(setErrorPageEvenement(t('message.erreur')));
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
+        }
     };
+
+    // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
+    useEffect(() => {
+        const annee = selectedYear; // Remplacez par l'année souhaitée
+        fetchEvenements(annee, currentPage);
+    }, [currentPage, selectedYear]); // Déclencher l'effet lorsque currentPage change
+
+    // modifier les données de la page lors de la recherche ou de la sélection de la section
+    const [filteredData, setFilteredData] = useState<EvenementType[]>(data);
+
+    useEffect(() => {
+        const result = filterEventByContent(data);
+        setFilteredData(result);
+    }, [searchText, data]);
 
     return (
         <div>
@@ -87,7 +143,7 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                     title={t('boutton.nouvel_evenement')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.evenement')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.evenement')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -102,15 +158,11 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>
                     )}
                 </div>
@@ -121,15 +173,11 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>
                     </div>
                 </div>
@@ -144,7 +192,7 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                            : data.length === 0 ?
+                            : filteredData.length === 0 ?
                                 <NoDataTable /> :
                                 <HeaderTable />
                         }
@@ -152,7 +200,7 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit} /> 
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} /> 
                         }
 
 
@@ -163,7 +211,18 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
+
+                />
 
             </div>
 

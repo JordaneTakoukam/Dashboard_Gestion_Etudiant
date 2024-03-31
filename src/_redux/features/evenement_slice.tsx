@@ -8,7 +8,8 @@ const initialState: EvenementInitialData = {
         evenements: [],
         currentPage: 0,
         totalItems: 0,
-        totalPages: 0
+        totalPages: 0,
+        pageSize:0,
     },
     pageIsLoading: false,
     pageError: null,

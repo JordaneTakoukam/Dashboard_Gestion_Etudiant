@@ -1,7 +1,7 @@
 
 // Définir le type de données pour un événement
 interface EvenementType {
-    _id: string;
+    _id?: string;
     code: string;
     libelleFr: string;
     libelleEn: string;
@@ -9,12 +9,12 @@ interface EvenementType {
     dateFin: string;
     periodeFr: string;
     periodeEn: string;
-    etat: CommonSettingProps;
+    etat: string;
     personnelFr: string;
     personnelEn: string;
     descriptionObservationFr: string,
     descriptionObservationEn: string,
-    annee: string;
+    annee: number;
 }
 
 interface EvenementInitialData {
@@ -23,6 +23,7 @@ interface EvenementInitialData {
         currentPage: number;
         totalPages: number;
         totalItems: number;
+        pageSize : number;
     };
     pageIsLoading: boolean;
     pageError: string | null;
@@ -46,4 +47,5 @@ interface EvenementReturnGetType {
     currentPage: number;
     totalItems: number;
     totalPages: number;
+    pageSize : number;
 }

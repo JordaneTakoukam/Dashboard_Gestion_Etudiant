@@ -67,8 +67,8 @@ export async function apiDeleteEvenement(evenementId: string): Promise<ReponseAp
     }
 }
 
-export async function getEvenementsByYear({ annee, page }: { annee: string, page: number }): Promise<EvenementReturnGetType> {
-    const pageSize: number = 10;
+export async function getEvenementsByYear({ annee, page }: { annee: number, page: number }): Promise<EvenementReturnGetType> {
+    const pageSize: number = 3;
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getByYearByPage/${annee}`,

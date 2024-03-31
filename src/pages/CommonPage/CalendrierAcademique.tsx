@@ -14,10 +14,8 @@ const CalendrierAcademique = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [selectedEvenement, setSelectedEvenement] = useState<EvenementType | null>(null);
-    const [selectedEvent, setSelectedEvent] = useState<EvenementType | null>(null);
 
-    const currentYear = '2024';
-
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     // Utilisez useSelector pour accéder à l'état du reducer
     const { data: { evenements } } = useSelector((state: RootState) => state.evenementSlice);
 
@@ -28,7 +26,6 @@ const CalendrierAcademique = () => {
                 const fetchedEvenements = await getEvenementsByYear({ annee: currentYear, page: 1 });
                 // Mettez à jour l'état Redux avec les données récupérées
                 dispatch(setEvenements(fetchedEvenements));
-                console.log(fetchedEvenements);
 
                 dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
             } catch (error) {
@@ -55,7 +52,7 @@ const CalendrierAcademique = () => {
             <Breadcrumb pageName={t('menu.calendrier')} />
             {/* Affichez le tableau uniquement lorsque les données sont chargées avec succès */}
             <Table data={evenements} onCreate={handleAddSection} onEdit={handleEditSection} />
-            <FormCreateUpdate evenement={selectedEvent} />
+            <FormCreateUpdate evenement={selectedEvenement} />
             <FormDelete evenement={selectedEvenement} />
         </>
     );

@@ -1,31 +1,42 @@
 import { useDispatch, useSelector } from "react-redux";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
-import { PeriodeCours, jours } from "../../../pages/CommonPage/EmploiDeTemp";
+import { jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 import { setShowModal } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
-import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import { extractYear, formatYear, generateYearRange, premierElement } from "../../../fonctions/fonction";
+import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../../_redux/features/periode_slice";
+import { getPeriodesByNiveau } from "../../../api/api_periode";
+import createToast from "../../../hooks/toastify";
 
 
 interface TablePeriodeProps {
-    data: PeriodeCours[];
+    data: PeriodeType[];
     onCreate:()=>void;
-    onEdit: (periode : PeriodeCours) => void;
+    onEdit: (periode : PeriodeType) => void;
 }
 
 const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const {t}=useTranslation();
-    const ouvrirFormulairePeriode = (periode?: PeriodeCours) => {
+    const pageIsLoading = useSelector((state: RootState) => state.periodeSlice.pageIsLoading);
+    const dispatch = useDispatch();
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typeEnseignement); 
+    const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
             onEdit(periode);
         }else{
@@ -36,6 +47,9 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     };
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
+
+    
+    
     useEffect(() => {
         
         
@@ -49,7 +63,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         });
         if (table) {
             table.innerHTML = '';
-            const groupedPeriodes: { [key: string]: PeriodeCours[] } = {};
+            const groupedPeriodes: { [key: string]: PeriodeType[] } = {};
             //Les évènements de la même période de cours sont groupés entre eux
             sortedPeriodes.forEach((periode) => {
                 const horaire = `${periode.heureDebut} - ${periode.heureFin}`;
@@ -58,9 +72,9 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 }
                 groupedPeriodes[horaire].push(periode);
             });
-        
             Object.entries(groupedPeriodes).forEach(([horaire, periodes], index) => {
                 const row = table.insertRow();
+                
                 const classNames = index % 2 === 0 ?
                         "border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black" :
                         "border-b border-[#eee] py-0 px-0 dark:border-strokedark";
@@ -69,7 +83,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 horaireCell.textContent = horaire;
                 jours.forEach((jour) => {
                     const jourCell = row.insertCell();
-                    const coursJour = periodes.find((cours) => cours.jour.ordre === jours.indexOf(jour) + 1);
+                    const coursJour = periodes.find((cours) => cours.jour == jour.ordre); // Modifier cette ligne
                     jourCell.style.textAlign='center';
                     if (roles.admin === userRole  || roles.superAdmin === userRole) {
                         jourCell.onmouseover = () => {
@@ -80,8 +94,15 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                             jourCell.style.backgroundColor = '';
                         };
                     }
+                    
                     if (coursJour) {
-                        jourCell.textContent = `${coursJour.matiere.code} (${coursJour.typeUE.code}) - ${coursJour.matiere.enseignant.nom} ${coursJour.matiere.enseignant.prenom}/${coursJour.matiere.enseignantSup?coursJour.matiere.enseignantSup.nom:"--"} - ${coursJour.salle.code}`;
+                        
+                        
+                        const codeTypeEns = typesEnseignement && typesEnseignement.find(type => type._id === coursJour.typeEnseignement);
+                        const codeSalleCours = sallesCours && sallesCours.find(salle => salle._id === coursJour.salleCours);
+                        const enseignantPrincipal = coursJour.enseignantPrincipal;
+                        const enseignantSuppleant = coursJour.enseignantSuppleant;
+                        jourCell.textContent = `${coursJour.matiere.code} (${codeTypeEns?codeTypeEns.code:""}) - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
                         if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
                             jourCell.style.cursor = 'pointer';
@@ -113,9 +134,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         setShowAddRowButton(false);
     };
 
-    const pageIsLoading = false;
-    const dispatch = useDispatch();
-
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     // Fonction pour basculer la visibilité des CustomDropDown
@@ -124,36 +143,76 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     };
 
     const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreSection, setFiltreSection] = useState("");
-    const [filtreCycle, setFiltreCycle] = useState("");
-    const [filtreNiveau, setFiltreNiveau] = useState("");
-    const [filtreSemestre, setFiltreSemestre] = useState("");
-    const [formatToDownload, setFormatToDownload] = useState("");
+    const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
+    const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
+    const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(1);
+
+    const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
+    const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCycleBySection = (sectionId: string | undefined) => {
+        if (sectionId && sectionId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
+            if (result.length > 0) {
+                setSelectIdCycle(result[0]._id);
+            }
+            setFilteredCycle(result);
+          
+        }
+    };
+
+    // filtrer les donnee a partir de l'id du cycle selectionner
+    const filterNiveauxByCycle = (cycleId: string | undefined) => {
+        
+        if (cycleId && cycleId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
+            if (result.length > 0) {
+                setSelectIdNiveau(result[0]._id);
+            }else{
+                setSelectIdNiveau(undefined);
+            }
+            setFilteredNiveaux(result);
+        }
+    };
 
     const handleAnneeSelect = (selected: String | undefined) => {
-        // setFiltreAnnee(selected);
-        console.log(selected)
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
     };
 
-    // const handleSectionSelect = (selected: Section | undefined) => {
-    //     // setFiltreSection(selected);
-    //     console.log(selected);
-    // };
-
-    const handleCycleSelect = (selected: Cycle | undefined) => {
-        // setFiltreCycle(selected);
-        console.log(selected);
-    };
-    
-    const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
-        // Logique à exécuter lorsque le niveau est sélectionné
-        // console.log("Niveau sélectionné :", selectedNiveau);
-    };
-    const handleSemestreSelect = (selected: String | undefined) => {
-        // setFiltreSemestre(selected);
-        console.log(selected);
+    // recuperer l'id de la section suite au click sur l'input select
+    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdSection(selected._id);
+            filterCycleBySection(selected._id);
+        }
     };
 
+    // valeur de la l'id du cycle selectionner    
+    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdCycle(selected._id);
+            filterNiveauxByCycle(selected._id);
+        }
+    };
+
+    // valeur de la l'id du niveau selectionner    
+    const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected && selected?._id) {
+            setSelectIdNiveau(selected._id);
+        }
+    };
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
+        }
+    };
+    const [formatToDownload, setFormatToDownload] = useState("");
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
@@ -161,18 +220,61 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     };
 
 
-    // variable pour la pagination
-    //
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+   // Effet pour filtrer les options des CustomDropDown
+    useEffect(() => {
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
+        }
+        
+        
+    }, [sections, selectSectionId]);
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
+   
 
+    useEffect(() => {
+        if (filteredCycle && filteredCycle.length > 0) {
+            if(!selectCycleId){
+                filterNiveauxByCycle(filteredCycle[0]?._id);
+            }else{
+                filterNiveauxByCycle(selectCycleId);
+            }
+                
+        }        
+    }, [filteredCycle]);
+    useEffect(() => {
+        const fetchPeriodes = async () => {
+            dispatch(setPeriodeLoading(true));
+            try {
+                const periodes:PeriodeReturnGetType={
+                    periodes: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                };
+                if (selectNiveauId) {
+                    const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: selectNiveauId, annee: currentYear, semestre: selectedSemestre });
+                    dispatch(setPeriodes(fetchedPeriodes));
+                }else{
+                    dispatch(setPeriodes(periodes)); 
+                }
+                dispatch(setErrorPagePeriode(null));
+            } catch (error) {
+                dispatch(setErrorPagePeriode(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2);
+            } finally {
+                dispatch(setPeriodeLoading(false));
+            }
+        };
+
+        fetchPeriodes();
+    }, [dispatch, currentYear, selectedSemestre, selectNiveauId, t]);
     
 
     return (
@@ -194,43 +296,39 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
+
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.cycle')}
-                                items={cycles}
+                                items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<Niveau>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.niveau')}
-                                items={niveaux}
+                                items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            <CustomDropDown2<String>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
-                                items={["1", "2"]}
-                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
+                            
                         </div>
                     )}
                 </div>
@@ -239,45 +337,41 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                        <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
+
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
+                            
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.cycle')}
-                                items={cycles}
+                                items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<Niveau>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.niveau')}
-                                items={niveaux}
+                                items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            <CustomDropDown2<String>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
-                                items={["1", "2"]}
-                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
                         </div>
                     </div>
                 </div>

@@ -88,3 +88,14 @@ export function generateYearRange(currentYear:number, startYear:number) {
   }
   return yearRange;
 }
+
+export function premierElement(value : String) {
+  // Diviser la chaîne en fonction des espaces
+  if(value){
+    const elements = value.split(" ");
+    // Récupérer le premier élément
+    const premier = elements[0];
+    return premier;
+  }
+  return undefined;
+}

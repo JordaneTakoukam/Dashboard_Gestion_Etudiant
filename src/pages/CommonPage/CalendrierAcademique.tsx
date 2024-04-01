@@ -39,11 +39,11 @@ const CalendrierAcademique = () => {
         fetchEvenements();
     }, [currentYear, dispatch]);
 
-    const handleEditSection = (evenement: EvenementType) => {
+    const handleEditEvenement = (evenement: EvenementType) => {
         setSelectedEvenement(evenement);
     }
 
-    const handleAddSection = () => {
+    const handleAddEvenement = () => {
         setSelectedEvenement(null);
     }
 
@@ -51,7 +51,7 @@ const CalendrierAcademique = () => {
         <>
             <Breadcrumb pageName={t('menu.calendrier')} />
             {/* Affichez le tableau uniquement lorsque les données sont chargées avec succès */}
-            <Table data={evenements} onCreate={handleAddSection} onEdit={handleEditSection} />
+            <Table data={evenements} onCreate={handleAddEvenement} onEdit={handleEditEvenement} />
             <FormCreateUpdate evenement={selectedEvenement} />
             <FormDelete evenement={selectedEvenement} />
         </>

@@ -28,7 +28,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
 
-    const [enseignements, setEnseignements] = useState<Enseignement[]>([]);
+    const [enseignements, setEnseignements] = useState<Enseignement[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
@@ -88,26 +88,39 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
         setEnseignements(prevState => {
             const updatedTypes = [...prevState];
             updatedTypes[index] = type;
+            if(updatedTypes && enseignements[0].enseignantPrincipal){
+                setErrorTypeEns("");
+            }
             return updatedTypes;
         });
     };
     const [enseignants, setEnseignants] = useState<UserState[]>([]);
     
-    // Fonction pour charger les enseignants au montage du composant
-    const fetchEnseignants = async () => {
-        try {
-            const enseignantsData = await getUsersWithRole({ role: "enseignant" });
-            console.log("ens "+enseignantsData.users[0]);
-            setEnseignants(enseignantsData.users);
-        } catch (error) {
-            console.error('Error fetching enseignants:', error);
-        }
-    }
-
-        
 
     useEffect(() => {
+        const fetchEnseignants = async () => {
+            // dispatch(setUserLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                
+                const fetchedEnseignants = await getUsersWithRole({ role: "enseignant" });
+                console.log(fetchedEnseignants.users);
+                if (fetchedEnseignants) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                    setEnseignants(fetchedEnseignants.users);
+                } else {
+                    setEnseignants([]);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                
+            }
+        };
+
         fetchEnseignants();
+    }, []);
+
+    useEffect(() => {
+        
         if (matiere) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.matiere'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + matiere.niveau);
@@ -228,26 +241,25 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             setErrorNiveau("");
         }
     };
-    const [enseignantsSuggérés, setEnseignantsSuggérés] = useState<UserState[]>([]);
+    const [enseignantsSuggeres, setEnseignantsSuggeres] = useState<UserState[]>([]);
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const saisieUtilisateur = e.target.value.toLowerCase(); // Convertir la saisie de l'utilisateur en minuscules pour une comparaison insensible à la casse
 
         // Filtrer les enseignants en fonction de la saisie de l'utilisateur
-        const enseignantsFiltrés = enseignants.filter(enseignant =>{
-            if(enseignant.prenom){
-                (enseignant.nom.toLowerCase() + ' ' + enseignant.prenom.toLowerCase()).includes(saisieUtilisateur)
-            }else{
-                (enseignant.nom.toLowerCase()).includes(saisieUtilisateur)
-            }
-
+        const enseignantsFiltres = enseignants.filter(enseignant => {
+            // Assurez-vous de retourner le résultat du test d'inclusion
+            return enseignant.nom.toLowerCase().includes(saisieUtilisateur.toLowerCase());
         });
-
+        if(enseignantsFiltres.length>0 && enseignements[0].typeEnseignement){
+            setErrorTypeEns("");
+        }
         // Mettre à jour les enseignants suggérés avec les résultats filtrés
-        setEnseignantsSuggérés(enseignantsFiltrés);
+        setEnseignantsSuggeres(enseignantsFiltres);
     };
 
 
     const handleCreateUpdate = () => {
+        console.log(enseignements);
         if (!code || !libelleFr || !libelleEn || !section || !cycle || !niveau) {
             if (!code) {
                 setErrorCode(t('error.code'));
@@ -268,6 +280,12 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 setErrorNiveau(t('error.niveau'));
             }
 
+            if(enseignements.length>0){
+                if(!enseignements[0].typeEnseignement || !enseignements[0].enseignantPrincipal){
+                    setErrorTypeEns(t('error.enseignement'))
+                }
+            }
+
 
             return;
         }
@@ -284,22 +302,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                <div>
-            {/* Champ de saisie pour rechercher un enseignant */}
-            <input
-                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                type="text"
-                placeholder="Rechercher un enseignant"
-                onChange={handleInputChange} // Appeler la fonction handleInputChange lorsque la saisie change
-            />
-
-            {/* Liste des enseignants suggérés */}
-            <ul>
-                {enseignantsSuggérés.map((enseignant, index) => (
-                    <li key={index}>{enseignant.nom} {enseignant.prenom}</li>
-                ))}
-            </ul>
-        </div>
+                
                 <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -403,9 +406,9 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
                 <div>
-                    <h3>Types d'enseignement :</h3>
+                    <h3>{t('label.types_ens')}</h3>
                     {enseignements.map((type, index) => (
-                        <div key={index} className="flex items-center">
+                        <div key={index} className="enseignement-container">
                             <select
                                 value={type.typeEnseignement ? (lang === 'fr' ? type.typeEnseignement : type.typeEnseignement) : 'Sélectionnez un type d\'enseignement'}
                                 onChange={(e) => {
@@ -415,37 +418,55 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                         handleEnseignementChange(index, {...type, typeEnseignement: selectedType._id});
                                     }
                                 }}
-                                className="w-1/3 p-2 border border-gray-300 rounded-lg"
+                                className="select-field w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             >
                                 <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
                                 {typesEnseignement.map((t, i) => (
-                                    <option key={i} value={t.code}>{lang === 'fr' ? t.libelleFr : t.libelleEn}</option>
+                                    <option key={i} value={t.code}>{t.code}</option>
                                 ))}
                             </select>
-                            <input
-                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                type="text"
-                                placeholder={t('label.enseignant')}
-                                value={type.enseignantPrincipal ? type.enseignantPrincipal.nom+" "+type.enseignantPrincipal.prenom : ""}
-                               // onChange={(e) => handleEnseignementChange(index, {...type, enseignantPrincipal: e.target.value})}
-                            />
-                            <input
-                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                type="text"
-                                placeholder={t('label.enseignant_sup')}
-                                value={type.enseignantSuppleant ? type.enseignantSuppleant.nom+" "+type.enseignantSuppleant.prenom : ""}
-                                //onChange={(e) => handleEnseignementChange(index, {...type, enseignantSuppleant: e.target.value})}
-                            />
-                            {index !== 0 && ( // Ne pas afficher le bouton de suppression pour le premier type
+                            <div className="enseignant-input">
+                                <input
+                                    type="text"
+                                    id={`enseignant-${index}`}
+                                    placeholder={t('label.enseignant')}
+                                    list={`enseignants-list-${index}`}
+                                    className="input-field w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                    onChange={handleInputChange}
+                                />
+                                <datalist id={`enseignants-list-${index}`}>
+                                    {enseignantsSuggeres.map((enseignant, index) => (
+                                        <option key={index} value={`${enseignant.nom} ${enseignant.prenom}`} />
+                                    ))}
+                                </datalist>
+                            </div>
+                            <div className="enseignant-sup-input">
+                                <input
+                                    type="text"
+                                    id={`enseignant-sup-${index}`}
+                                    list={`enseignants-sup-list-${index}`}
+                                    placeholder={t('label.enseignant_sup')}
+                                    className="input-field w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                    onChange={handleInputChange}
+                                />
+                                <datalist id={`enseignants-sup-list-${index}`}>
+                                    {enseignantsSuggeres.map((enseignant, index) => (
+                                        <option key={index} value={`${enseignant.nom} ${enseignant.prenom}`} />
+                                    ))}
+                                </datalist>
+                            </div>
+                            {index !== 0 && (
                                 <button type="button" onClick={() => handleRemoveEnseignement(index)}>
-                                    Supprimer
+                                    {t('boutton.supprimer')}
                                 </button>
                             )}
                         </div>
                     ))}
+                    {errorTypeEns && <p className="text-red-500">{errorTypeEns}</p>}
+
                     {enseignements.length < typesEnseignement.length && ( // Afficher le bouton d'ajout si tous les types n'ont pas été ajoutés
                         <button type="button" onClick={handleAddEnseignement}>
-                            Ajouter un type d'enseignement
+                            {t('boutton.ajouter_type')}
                         </button>
                     )}
                 </div>

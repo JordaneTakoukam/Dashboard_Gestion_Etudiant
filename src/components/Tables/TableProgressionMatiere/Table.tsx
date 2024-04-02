@@ -11,9 +11,11 @@ import { RootState } from "../../../_redux/store";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_redux/features/progession_matiere_slice";
 import { getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
+import LoadingTable from "../common/LoadingTable";
+import NoDataTable from "../common/NoDataTable";
 
 
-const Table = ({ data }: { data: MatiereType }) => {
+const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
 
@@ -54,7 +56,6 @@ const Table = ({ data }: { data: MatiereType }) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
-    const matieres: MatiereType[] = useSelector((state: RootState) => state.progressionMatiereSlice.data.matieres) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
     const [filteredMatiere, setFilteredMatiere] = useState<MatiereType | undefined>(data);
     const [formatToDownload, setFormatToDownload] = useState("");
@@ -93,7 +94,8 @@ const Table = ({ data }: { data: MatiereType }) => {
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
-                
+            }else{
+                setSelectIdNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
@@ -103,33 +105,11 @@ const Table = ({ data }: { data: MatiereType }) => {
     const filterMatiereByNiveau = (niveauId: string | undefined) => {
         
         if (niveauId && niveauId !== '') {
-            fetchMatieres(niveauId); 
+            
         }
     };
 
-    const fetchMatieres = async (currentNiveauId: string) => {
-        dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
-        try {
-            if (currentNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId });
-                if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                    dispatch(setMatieres(fetchedMatieres));
-                   
-                } else {
-                    
-                    // Traitez le cas où fetchedMatieres est faux, vide ou indéfini
-                    // Vous pouvez ignorer cette condition si vous souhaitez simplement ne rien faire dans ce cas
-                }
-            } // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageMatiere(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
-    
-    
+
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
@@ -150,7 +130,7 @@ const Table = ({ data }: { data: MatiereType }) => {
     const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
-            fetchMatieres(selected._id);    
+            
         }
     };
 
@@ -195,13 +175,56 @@ const Table = ({ data }: { data: MatiereType }) => {
                 
         }        
     }, [filteredNiveaux, data]);
-    // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
     useEffect(() => {
-        // Récupérer les matières lorsque le niveau est sélectionné initialement
-        if (selectNiveauId) {
-            fetchMatieres(selectNiveauId);    
+        const fetchMatieres = async () => {
+            const matieres : ProgressionMatiereReturnGetType = {
+                matieres: [],
+                currentPage: 0,
+                totalItems: 0,
+                totalPages: 0,
+                pageSize: 0
+            }
+            if (sections.length > 0 && cycles.length > 0 && niveaux.length > 0) {
+                dispatch(setMatiereLoading(true)); // Définir le chargement à true avant de récupérer les données
+                try {
+                   
+                    if (selectNiveauId) {
+                        const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
+                        if(fetchedMatieres){
+                            dispatch(setMatieres(fetchedMatieres));    
+                        }else{
+                            dispatch(setMatieres(matieres));    
+                        }
+                        
+                    }else{
+                        dispatch(setMatieres(matieres));
+                    }
+                    dispatch(setErrorPageMatiere(null)); // Réinitialiser les erreurs s'il y en a
+                } catch (error) {
+                    dispatch(setErrorPageMatiere(t('message.erreur')));
+                    createToast(t('message.erreur'), "", 2);
+                } finally {
+                    dispatch(setMatiereLoading(false)); // Définir le chargement à false après avoir récupéré les données
+                }
+            }else{
+                dispatch(setMatieres(matieres));
+            }
+        };
+
+        fetchMatieres();
+    }, [dispatch, selectNiveauId, t]);
+
+    useEffect(() => {
+        if (matieres && matieres.length > 0) {
+            console.log('if');
+            // Sélectionner la première matière et mettre à jour les états nécessaires
+            setFilteredMatiere(matieres[0]);
+            setProgress(calculateProgress(matieres[0]));
+        }else{
+            setFilteredMatiere(undefined);
+            setProgress(0);
         }
-    }, [selectNiveauId]);
+    }, [matieres]);
 
 
     return (
@@ -327,10 +350,10 @@ const Table = ({ data }: { data: MatiereType }) => {
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
                         {
-                            // pageIsLoading ?
-                            //     <LoadingTable />
-                            //     : !data.chapitres?
-                            //         <NoDataTable/> :
+                            pageIsLoading ?
+                                <LoadingTable />:
+                                // : !data.chapitres?
+                                //     <NoDataTable/> :
                                     <HeaderTable matiere={filteredMatiere} />
                         }
 

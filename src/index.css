@@ -178,6 +178,30 @@ span.flatpickr-weekday,
   display: none !important;
 }
 
+.enseignement-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Trois colonnes de taille égale */
+  gap: 1px; /* Espacement de 1px entre les éléments */
+}
+
+.select-field,
+.input-field {
+  width: 100%;
+}
+
+/* Ajoutez les styles supplémentaires pour les champs d'entrée si nécessaire */
+.enseignant-input,
+.enseignant-sup-input {
+  position: relative; /* Pour empêcher le dépassement des éléments sur les mobiles */
+}
+
+@media screen and (max-width: 600px) {
+  .enseignement-container {
+      grid-template-columns: 1fr; /* Une seule colonne sur les mobiles */
+  }
+}
+
+
 
 .card {
   @apply rounded-2xl shadow-md;

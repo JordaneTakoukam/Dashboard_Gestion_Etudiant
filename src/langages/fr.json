@@ -349,6 +349,7 @@
     "libelle_fr": "Le champ libellé en français est obligatoire.",
     "libelle_en": "Le champ libellé en anglais est obligatoire.",
     "type_ens": "Au moins un type d'enseignement doit être défini.",
+    "enseignement": "Au moins un enseignement doit être défini.",
     "objectif": "Au moins un objectif doit être défini.",
     "competence": "Au moins une compétence doit être défini.",
     "region": "Le champ région est obligatoire.",

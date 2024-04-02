@@ -27,6 +27,13 @@ const progressionMatiereSlice = createSlice({
         setErrorPageMatiere(state, action: PayloadAction<string | null>) {
             state.pageError = action.payload;
         },
+        updateMatiere(state, action: PayloadAction<UpdateMatierePayload>) {
+            const { id, matiereData } = action.payload;
+            const index = state.data.matieres.findIndex(e => e._id === id);
+            if (index !== -1) {
+                state.data.matieres[index] = { ...state.data.matieres[index], ...matiereData };
+            }
+        },
         setMatieres(state, action: PayloadAction<ProgressionMatiereReturnGetType>) {
             state.data = action.payload;
         },
@@ -39,6 +46,7 @@ export const {
     setMatiereLoading,
     setErrorPageMatiere,
     setMatieres,
+    updateMatiere,
 } = progressionMatiereSlice.actions;
 
 // Reducer exporté

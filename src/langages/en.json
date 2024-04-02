@@ -352,6 +352,7 @@
     "libelle_fr": "French label field is required.",
     "libelle_en": "English label field is required.",
     "type_ens": "At least one type of teaching must be defined.",
+    "enseignement": "At least one teaching must be defined.",
     "objectif": "At least one objective must be defined.",
     "competence": "At least one competence must be defined.",
     "region": "Region field is required.",

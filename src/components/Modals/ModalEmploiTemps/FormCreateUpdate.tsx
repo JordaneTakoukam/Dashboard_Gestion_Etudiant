@@ -141,7 +141,54 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
         }
     };
 
+    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    const [matieresLoaded, setMatieresLoaded] = useState(false);
+
     useEffect(() => {
+        
+        const fetchMatieres = async () => {
+            dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const matieresV:MatiereReturnGetType={
+                    matieres: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                if(periodeCours){
+                    const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
+                    setNiveau(currentNiveau);
+                }
+                if (niveau && niveau._id) {
+                    
+                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: niveau._id, page: 1 });
+                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                        dispatch(setMatieres(fetchedMatieres));
+                    } else {
+                        
+                        dispatch(setMatieres(matieresV));
+                    }
+                }else{
+                   
+                    dispatch(setMatieres(matieresV));
+                    
+                } // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageMatiere(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+            }
+        };
+
+        fetchMatieres();
+    }, [periodeCours, niveau, dispatch]);
+
+    
+
+    useEffect(() => {
+        
         if (periodeCours) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.periode'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
@@ -155,8 +202,9 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
-            const matiere = matieres.find(matiere=> matiere._id === periodeCours.matiere._id);
-            setMatiere(matiere);
+            const mat = matieres.find(matiere=> matiere._id === periodeCours.matiere._id);
+            setMatiere(mat);
+        
             const salleCours = sallesCours.find(salle=>salle._id===periodeCours.salleCours);
             setSalleCours(salleCours);
             const listeTypesEnseignementDeMatiere = matiere &&  matiere.typesEnseignement
@@ -184,6 +232,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
             setTypesEnseignementMat([]);
             
         }
+        
 
 
         if (isFirstRender) {
@@ -200,40 +249,26 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
             setErrorTypeEnseignement("");
             setIsFirstRender(false);
         }
-    }, [periodeCours, isFirstRender, t]);
-
-    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    }, [periodeCours, isFirstRender, matieres,  t]);
+    // Troisième useEffect pour gérer le changement de matière sélectionnée
     useEffect(() => {
-        const fetchMatieres = async () => {
-            dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                const matieresV:MatiereReturnGetType={
-                    matieres: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
+        if (matiere) {
+            const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
+                .map(type => type.typeEnseignement)
+                .map(objectId => typesEnseignement.find(type => type._id === objectId))
+                .filter(type => type !== undefined) as CommonSettingProps[];
+            setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+    
+            // Vérifier si le type d'enseignement de la période correspond à l'un des types d'enseignement de la matière
+            if(periodeCours){
+                const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === periodeCours.typeEnseignement);
+                if (typeEnseignementPeriode) {
+                    setTypeEnseignement(typeEnseignementPeriode);
                 }
-                if (niveau && niveau._id) {
-                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: niveau._id, page: 1 });
-                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                        dispatch(setMatieres(fetchedMatieres));
-                    } else {
-                        dispatch(setMatieres(matieresV));
-                    }
-                }else{
-                    dispatch(setMatieres(matieresV));
-                } // Réinitialisez les erreurs s'il y en a
-            } catch (error) {
-                dispatch(setErrorPageMatiere(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2)
-            } finally {
-                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
             }
-        };
-
-        fetchMatieres();
-    }, [niveau, dispatch]);
+                
+        }
+    }, [matiere, typesEnseignement, periodeCours]);
 
     const closeModal = () => { 
         setErrorJour("");
@@ -300,27 +335,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
         }
     };
 
-    // Vérifie si une période chevauche une autre période dans l'emploi du temps
-    // const verifierChevauchementPeriode = (periode: PeriodeType): boolean => {
-    //     for (const autrePeriode of listPeriode) {
-    //         // Convertir les heures de début et de fin en minutes pour faciliter la comparaison
-    //         const heureDebutPeriode = convertirHeureVersMinutes(periode.heureDebut);
-    //         const heureFinPeriode = convertirHeureVersMinutes(periode.heureFin);
-    //         const heureDebutAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureDebut);
-    //         const heureFinAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureFin);
-
-    //         // Vérifier si les périodes se chevauchent
-    //         if (
-    //             (heureDebutPeriode >= heureDebutAutrePeriode && heureDebutPeriode < heureFinAutrePeriode) ||
-    //             (heureFinPeriode > heureDebutAutrePeriode && heureFinPeriode <= heureFinAutrePeriode) ||
-    //             (heureDebutPeriode <= heureDebutAutrePeriode && heureFinPeriode >= heureFinAutrePeriode)
-    //         ) {
-    //             return true; // Il y a un chevauchement
-    //         }
-    //     }
-    //     return false; // Aucun chevauchement trouvé
-    // };
-
     //verifier si l'heure de fin vient avant l'heure de début
     const verifierHeureFinApresDebut = (heureDebut: string, heureFin: string): boolean => {
         const debutMinutes = convertirHeureVersMinutes(heureDebut);
@@ -337,148 +351,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
     
     
 
-    const handleCreatePeriodeCours = async () => {
-        if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau || !matiere || !semestre 
-            || !typeEnseignement || !salleCours) {
-            if (!jour) {
-                setErrorJour(t('error.jour'));
-            }
-            if (!heureDebut) {
-                setErrorHeureDebut(t('error.heure_debut'));
-            }
-            if (!heureFin) {
-                setErrorHeureFin(t('error.heure_fin'));
-            }
-                
-            if (!section) {
-                setErrorSection(t('error.section'));
-            }
-            if (!cycle) {
-                setErrorCycle(t('error.cycle'));
-            }
-            if (!niveau) {
-                setErrorNiveau(t('error.niveau'));
-            }
-
-            if (!matiere) {
-                setErrorMatiere(t('error.matiere'));
-            }
-
-            if (!semestre) {
-                setErrorSemestre(t('error.semestre'));
-            }
-
-            if (!typeEnseignement) {
-                setErrorTypeEnseignement(t('error.type_ens_periode'));
-            }
-
-            if (!salleCours) {
-                setErrorSalle(t('error.salle'));
-            }
-
-            return;
-        }
-
-        if(verifierHeureFinApresDebut(heureDebut, heureFin)){
-            setErrorHeureFin(t('error.debut_sup_fin_periode'));
-            return;
-        }
-        
-        if (!periodeCours) {
-            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
-                await apiCreatePeriode(
-                    {
-                        jour : jour.ordre,
-                        semestre,
-                        annee,
-                        niveau:niveau._id,
-                        matiere : matiere,
-                        typeEnseignement : typeEnseignement._id,
-                        heureDebut,
-                        heureFin,
-                        salleCours:salleCours._id
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(createPeriode({
-                            
-                            periode: {
-                                _id: e.data._id,
-                                jour: e.data.jour,
-                                annee: e.data.annee,
-                                semestre: e.data.semestre,
-                                niveau: e.data.niveau,
-                                matiere: e.data.matiere,
-                                salleCours: e.data.salleCours,
-                                heureDebut: e.data.heureDebut,
-                                heureFin: e.data.heureFin,
-                                typeEnseignement: e.data.typeEnseignement,
-                                enseignantPrincipal:e.data.enseignantPrincipal,
-                                enseignantSuppleant:e.data.enseignantSuppleant,
-                                
-                            }
-                            
-                        }));
-
-                        closeModal();
-
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-
-                    }
-                }).catch((e) => {
-                    console.log(e);
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
-            }
-        }else{
-            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
-                await apiUpdatePeriode(
-                    {
-                        jour : jour.ordre,
-                        semestre,
-                        annee,
-                        niveau:niveau._id,
-                        matiere : matiere,
-                        typeEnseignement : typeEnseignement._id,
-                        heureDebut,
-                        heureFin,
-                        salleCours:salleCours._id,
-                        _id:periodeCours._id
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(
-                            updatePeriode({
-                                id: e.data._id,
-                                periodeData: {
-                                    _id: e.data._id,
-                                    jour: e.data.jour,
-                                    annee: e.data.annee,
-                                    semestre: e.data.semestre,
-                                    niveau: e.data.niveau,
-                                    matiere: e.data.matiere,
-                                    salleCours: e.data.salleCours,
-                                    heureDebut: e.data.heureDebut,
-                                    heureFin: e.data.heureFin,
-                                    typeEnseignement: e.data.typeEnseignement,
-                                    enseignantPrincipal:e.data.enseignantPrincipal,
-                                    enseignantSuppleant:e.data.enseignantSuppleant,
-                                }
-                            }));
-                        closeModal();
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-                    }
-                }).catch((e) => {
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
-            }
-        }
-        
-    }
+    
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleToggleDelete = () => {
@@ -507,6 +380,10 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours : PeriodeType | null
         }
         
     };
+
+    function handleCreatePeriodeCours(): void {
+        throw new Error('Function not implemented.');
+    }
 
     return (
         <>

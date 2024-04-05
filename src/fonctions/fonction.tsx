@@ -99,3 +99,24 @@ export function premierElement(value : String) {
   }
   return undefined;
 }
+
+ // Vérifie si une période chevauche une autre période dans l'emploi du temps
+    // const verifierChevauchementPeriode = (periode: PeriodeType): boolean => {
+    //     for (const autrePeriode of listPeriode) {
+    //         // Convertir les heures de début et de fin en minutes pour faciliter la comparaison
+    //         const heureDebutPeriode = convertirHeureVersMinutes(periode.heureDebut);
+    //         const heureFinPeriode = convertirHeureVersMinutes(periode.heureFin);
+    //         const heureDebutAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureDebut);
+    //         const heureFinAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureFin);
+
+    //         // Vérifier si les périodes se chevauchent
+    //         if (
+    //             (heureDebutPeriode >= heureDebutAutrePeriode && heureDebutPeriode < heureFinAutrePeriode) ||
+    //             (heureFinPeriode > heureDebutAutrePeriode && heureFinPeriode <= heureFinAutrePeriode) ||
+    //             (heureDebutPeriode <= heureDebutAutrePeriode && heureFinPeriode >= heureFinAutrePeriode)
+    //         ) {
+    //             return true; // Il y a un chevauchement
+    //         }
+    //     }
+    //     return false; // Aucun chevauchement trouvé
+    // };

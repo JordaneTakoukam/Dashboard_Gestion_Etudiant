@@ -7,6 +7,7 @@ import periodeReducer from "./features/periode_slice.tsx";
 import matiereReducer from "./features/matiere_slice.tsx";
 import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
+import AdminReducer from "./features/admin_slice.tsx";
 
 const store = configureStore({
   reducer: {
@@ -16,8 +17,11 @@ const store = configureStore({
     evenementSlice: evenementReducer,
     periodeSlice: periodeReducer,
     matiereSlice: matiereReducer,
-    chapitreSlice:chapitreReducer,
-    progressionMatiereSlice:progressionMatiereReducer,
+    chapitreSlice: chapitreReducer,
+    progressionMatiereSlice: progressionMatiereReducer,
+
+    // 
+    admin: AdminReducer,
 
   },
   preloadedState: {

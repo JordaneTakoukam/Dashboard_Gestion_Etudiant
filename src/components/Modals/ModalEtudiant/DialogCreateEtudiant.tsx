@@ -20,9 +20,9 @@ import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 //     const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
 //     const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
 
-//     const { t } = useTranslation();
+    // const { t } = useTranslation();
 
-//     const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 //     const [nom, setNom] = useState("");
 //     const [prenom, setPrenom] = useState("");
 //     const [genre, setGenre] = useState("");
@@ -49,14 +49,14 @@ import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 //     const [errorSection, setErrorSection] = useState("");
 //     const [errorCycle, setErrorCycle] = useState("");
 //     const [errorNiveau, setErrorNiveau] = useState("");
-//     const [isFirstRender, setIsFirstRender] = useState(true);
+    // const [isFirstRender, setIsFirstRender] = useState(true);
 
-//     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
-//     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
+    // const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
+    // const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
 
-//     useEffect(() => {
-//         if (etudiant) {
-//             setModalTitle(t('form_update.enregistrer') + t('form_update.etudiant'));
+    // useEffect(() => {
+    //     if (etudiant) {
+            // setModalTitle(t('form_update.enregistrer') + t('form_update.etudiant'));
 //             setNom(etudiant.nom);
 //             setPrenom(etudiant.prenom ? etudiant.prenom : ""); setGenre(etudiant.genre);
 //             setDateNaiss(etudiant.dateNaiss ? etudiant.dateNaiss : "");
@@ -76,7 +76,7 @@ import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 //             setCommune(etudiant.commune ? etudiant.commune : undefined);
 //             setDateEntreeAdmin(etudiant.dateEntreeAdmin ? etudiant.dateEntreeAdmin : "");
 //         } else {
-//             setModalTitle(t('form_save.enregistrer') + t('form_save.etudiant'));
+            // setModalTitle(t('form_save.enregistrer') + t('form_save.etudiant'));
 //             setNom("");
 //             setPrenom("");
 //             setGenre("");
@@ -99,27 +99,27 @@ import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 //         }
 
 
-//         if (isFirstRender) {
-//             setErrorNom("");
-//             setErrorGenre("");
-//             setErrorEmail("");
-//             setErrorSection("");
-//             setErrorCycle("");
-//             setErrorNiveau("");
-//             setIsFirstRender(false);
-//         }
+        // if (isFirstRender) {
+        //     setErrorNom("");
+        //     setErrorGenre("");
+        //     setErrorEmail("");
+        //     setErrorSection("");
+        //     setErrorCycle("");
+        //     setErrorNiveau("");
+        //     setIsFirstRender(false);
+        // }
 //     }, [etudiant, isFirstRender, t]);
 
-//     const closeModal = () => {
-//         setErrorNom("");
-//         setErrorGenre("");
-//         setErrorEmail("");
-//         setErrorSection("");
-//         setErrorCycle("");
-//         setErrorNiveau("");
-//         setIsFirstRender(true);
-//         dispatch(setShowModal());
-//     };
+    // const closeModal = () => {
+    //     setErrorNom("");
+    //     setErrorGenre("");
+    //     setErrorEmail("");
+    //     setErrorSection("");
+    //     setErrorCycle("");
+    //     setErrorNiveau("");
+    //     setIsFirstRender(true);
+    //     dispatch(setShowModal());
+    // };
 
 //     const validateEmail = () => {
 //         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -209,51 +209,51 @@ import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 
 
 
-//     const handleCreateEtudiant = () => {
-//         if (!nom || !genre || !email || !section || !cycle || !niveau) {
-//             if (!nom) {
-//                 setErrorNom(t('error.nom'));
-//             }
-//             if (!genre) {
-//                 setErrorGenre(t('error.genre'));
-//             }
+    // const handleCreateEtudiant = () => {
+    //     if (!nom || !genre || !email || !section || !cycle || !niveau) {
+    //         if (!nom) {
+    //             setErrorNom(t('error.nom'));
+    //         }
+    //         if (!genre) {
+    //             setErrorGenre(t('error.genre'));
+    //         }
 
-//             if (!email) {
-//                 setErrorEmail(t('error.email'));
-//             }
+    //         if (!email) {
+    //             setErrorEmail(t('error.email'));
+    //         }
 
-//             if (!section) {
-//                 setErrorSection(t('error.section'));
-//             }
-//             if (!cycle) {
-//                 setErrorCycle(t('error.cycle'));
-//             }
-//             if (!niveau) {
-//                 setErrorNiveau(t('error.niveau'));
-//             }
-//             return;
-//         }
-//         if (!validateEmail()) {
-//             return;
-//         }
+    //         if (!section) {
+    //             setErrorSection(t('error.section'));
+    //         }
+    //         if (!cycle) {
+    //             setErrorCycle(t('error.cycle'));
+    //         }
+    //         if (!niveau) {
+    //             setErrorNiveau(t('error.niveau'));
+    //         }
+    //         return;
+    //     }
+    //     if (!validateEmail()) {
+    //         return;
+    //     }
 
-//         if (etudiant) {
-//             console.log("student update");
-//         } else {
-//             console.log("student add");
-//         }
-//         closeModal();
-//     }
+    //     if (etudiant) {
+    //         console.log("student update");
+    //     } else {
+    //         console.log("student add");
+    //     }
+    //     closeModal();
+    // }
 
-//     return (
-//         <>
-//             <CustomDialogModal
-//                 title={modalTitle} // Utilisation du titre dynamique
-//                 isModalOpen={isModalOpen}
-//                 isDelete={false}
-//                 closeModal={closeModal}
-//                 handleConfirm={handleCreateEtudiant}
-//             >
+    // return (
+    //     <>
+    //         <CustomDialogModal
+    //             title={modalTitle} // Utilisation du titre dynamique
+    //             isModalOpen={isModalOpen}
+    //             isDelete={false}
+    //             closeModal={closeModal}
+    //             handleConfirm={handleCreateEtudiant}
+    //         >
 //                 <label>{t('label.matricule')}</label>
 //                 <input
 //                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -448,11 +448,12 @@ import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 //                     value={dateEntreeAdmin}
 //                     onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
 //                 />
-//             </CustomDialogModal>
+            // </CustomDialogModal>
 
 //         </>
 //     );
 // }
+
 function ModalCreateEtudiant({ etudiant }: { etudiant: Etudiant | null }) {
     
 }

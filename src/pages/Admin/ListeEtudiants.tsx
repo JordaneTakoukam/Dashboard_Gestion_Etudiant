@@ -1,8 +1,6 @@
 import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
-import ModalCreateEtudiant from "../../components/Modals/ModalEtudiant/DialogCreateEtudiant";
 import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDeleteEtudiant";
-// import ModalUpdateEtudiant from "../../components/Modals/ModalEtudiant/DialogUpdateEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
 import { Niveau } from "./Niveaux";
 import { Abscences, absencesEtudiant } from "../CommonPage/Abscences";
@@ -51,7 +49,7 @@ const ListeDesEtudiants = () => {
             <TableEtudiant data={listTest} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
 
             {/* Boite de dialogue */}
-            {/* <ModalCreateEtudiant etudiant={selectedEtudiant} /> Créer ou modifier un étudiant */}
+            {/* <ModalCreateEtudiant etudiant={selectedEtudiant} />  */}
             <ModalDeleteEtudiant etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
         </>
     );

@@ -14,7 +14,7 @@ const ButtonCrudTable = ({ onClickEdit, onClickDelete, onClickAddHour, onClickRe
 
     
     return (
-        <div className="flex items-center w-full justify-center relative">
+        <div className="flex items-center justify-center text-sm">
             {/* Button Edit */}
             {onClickEdit && (<button className={`${border && 'border  border-gray'}   dark:border-body hover:bg-body hover:dark:bg-gray flex text-sm gap-0 text-body hover:text-white hover:dark:text-body items-center py-4 px-5  dark:text-gray `}
                 onClick={onClickEdit}>

@@ -1,23 +1,26 @@
 interface UserState {
     _id: string;
+
     roles: string[];
     role: string;
     genre: string;
     date_creation: Date | null;
     date_entree: Date | null;
+    date_naiss: Date | null;
 
     nom: string;
     prenom: string | null;
     email: string;
     matricule: string | null;
-    date_naiss: Date | null;
+
     lieu_naiss: string | null;
     contact: string | null;
     status: string;
-    abscences: Absence[];
     historique_connexion: Date[];
     photo_profil: string | null;
 
+    // son tous des objectId
+    abscence: string | null;
     section: string | null;
     cycle: string | null;
     niveau: string | null;
@@ -28,16 +31,15 @@ interface UserState {
     region: string | null;
     departement: string | null;
     communes: string | null;
-
 }
 
-interface Absence {
-    date_abscence: Date | null;
-    heure_debut: string | null;
-    heure_fin: string | null;
-    semestre: string | null;
-    annee: string | null;
-}
+// interface Absence {
+//     date_abscence: Date | null;
+//     heure_debut: string | null;
+//     heure_fin: string | null;
+//     semestre: string | null;
+//     annee: string | null;
+// }
 
 
 interface UserReturnGetType {
@@ -51,5 +53,4 @@ interface PropsUserMinState {
     role: string;
     nom: string;
     prenom: string | null;
-
 }

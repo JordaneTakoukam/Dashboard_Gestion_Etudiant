@@ -8,7 +8,6 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { useQuery } from "react-query";
 import Pagination from "../../Pagination/Pagination";
 
 interface TableAdministrateurProps {

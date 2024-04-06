@@ -1,12 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteRegion } from '../../../api/settings/api_region';
 import createToast from '../../../hooks/toastify';
-import { ReponseApiPros } from '../../../api/interface_reponse';
+import { setShowModalDelete } from '../../../_redux/features/setting';
 
 
 function ModalDelete({ region }: { region: CommonSettingProps | null }) {
@@ -28,7 +27,7 @@ function ModalDelete({ region }: { region: CommonSettingProps | null }) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (region._id) {
-                        dispatch(deleteSettingItem({ tableName: 'region', itemId: region._id }));
+                        dispatch(deleteSettingItem({ tableName: 'regions', itemId: region._id }));
                     }
 
                     closeModal();

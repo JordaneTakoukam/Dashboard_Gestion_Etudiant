@@ -1,7 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
@@ -11,7 +9,6 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import ErrorTable from "../common/ErrorTable";
 import FilterTableSection from "../../ui/FilterTableSection";
 
 
@@ -39,7 +36,7 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
     const [selectRegionId, setSelectIdRegion] = useState<string>('');
 
 
-    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -172,20 +169,11 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable /> :
-                                pageError ?
-                                    <ErrorTable /> :
-                                    filteredDepartement.length === 0 ?
-                                        <NoDataTable /> :
-                                        <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
-                        {
-                            !pageIsLoading && <BodyTable data={filteredDepartement} onEdit={onEdit} />
-                        }
+                        <BodyTable data={filteredDepartement} onEdit={onEdit} />
+
                     </table>
                 </div>
 

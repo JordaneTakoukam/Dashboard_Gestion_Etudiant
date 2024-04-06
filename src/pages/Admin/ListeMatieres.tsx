@@ -14,28 +14,28 @@ import createToast from "../../hooks/toastify";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redux/features/matiere_slice";
 
 export interface Matiere {
-    id? : number;
+    id?: number;
     code: string;
     libelle: string;
     prerequis?: string;
     evaluationDesAcquis?: string;
     niveau: Niveau;
-    enseignant:Enseignant;
-    enseignantSup?:Enseignant
+    enseignant: Enseignant;
+    enseignantSup?: Enseignant
     approchePedagogique?: string;
-    chapitres? : Chapitre[];
+    chapitres?: Chapitre[];
 }
 
 
 
 
 const ListeDesMatieres = () => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [openChapitres, setOpenChapitre]=useState(false);
+    const [openChapitres, setOpenChapitre] = useState(false);
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType | null>(null);
-    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau);
-    const currentNiveauId =niveaux && niveaux.length>0 && niveaux[0]._id;
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
+    const currentNiveauId = niveaux && niveaux.length > 0 && niveaux[0]._id;
     // Utilisez useSelector pour accéder à l'état du reducer
     const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
 
@@ -68,7 +68,7 @@ const ListeDesMatieres = () => {
         setSelectedMatiere(matiere);
     }
 
-    const handleEditMatiere = (matiere : MatiereType) => {
+    const handleEditMatiere = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);
         setOpenChapitre(false);
     }
@@ -86,11 +86,11 @@ const ListeDesMatieres = () => {
     return (
         <>
             {!openChapitres && <Breadcrumb pageName={t('sub_menu.liste_matiere')} />}
-            {!openChapitres && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres}/>}
-            
-            {!openChapitres && <FormCreateUpdate matiere={selectedMatiere}/>}
-            {!openChapitres && <FormDelete matiere={selectedMatiere}/>}
-            {openChapitres && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere}/>}
+            {!openChapitres && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres} />}
+
+            {!openChapitres && <FormCreateUpdate matiere={selectedMatiere} />}
+            {!openChapitres && <FormDelete matiere={selectedMatiere} />}
+            {openChapitres && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} />}
         </>
     );
 };

@@ -119,12 +119,8 @@ function App() {
       const settingsData = await apiGetAllSettings();
       console.log(settingsData);
       dispatch(setDataSetting(settingsData));
-    
-
     } catch (error) {
-      console.error('Error fetching settings data:', error);
       dispatch(setErrorDataSetting('une erreur est survenue'))
-
     } finally {
       dispatch(setLoadingDataSetting(false));
 
@@ -135,7 +131,7 @@ function App() {
 
     const fetchSettingsDataIfAuth = async () => {
       if (isAuth.status) {
-        await fetchSettingsData();
+        // await fetchSettingsData();
       } else {
       }
     };
@@ -157,7 +153,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/choose-account" element={<ChoisirCompte />} />
-    
+
         {/* Menu de gauche pour les differents roles  */}
         <Route element={isAuth.status ? <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/signin'} />}>
 

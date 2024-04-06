@@ -4,7 +4,6 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { apiDeleteNiveau } from '../../../api/settings/api_niveau';
 import createToast from '../../../hooks/toastify';
 
@@ -24,7 +23,7 @@ function ModalDelete({ niveau }: { niveau : NiveauProps|null}) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (niveau._id) {
-                        dispatch(deleteSettingItem({ tableName: 'niveau', itemId: niveau._id }));
+                        dispatch(deleteSettingItem({ tableName: 'niveaux', itemId: niveau._id }));
                     }
 
                     closeModal();

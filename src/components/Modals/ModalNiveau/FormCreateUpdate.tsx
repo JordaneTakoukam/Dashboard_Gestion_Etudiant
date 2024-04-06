@@ -5,14 +5,13 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { apiCreateNiveau, apiUpdateNiveau } from '../../../api/settings/api_niveau';
 import createToast from '../../../hooks/toastify';
 
 
 function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -165,7 +164,7 @@ function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(createSettingItem({
-                            tableName: 'niveau', newItem: {
+                            tableName: 'niveaux', newItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
@@ -199,7 +198,7 @@ function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(updateSettingItem({
-                            tableName: 'niveau',
+                            tableName: 'niveaux',
                             updatedItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,

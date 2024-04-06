@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { Chapitre } from '../../../pages/Admin/Chapitres';
 import { useTranslation } from 'react-i18next';
 
 

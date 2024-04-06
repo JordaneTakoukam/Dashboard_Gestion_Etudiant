@@ -5,7 +5,6 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { deleteMatiere } from '../../../_redux/features/matiere_slice';
 import { apiDeleteMatiere } from '../../../api/api_matiere';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 
 

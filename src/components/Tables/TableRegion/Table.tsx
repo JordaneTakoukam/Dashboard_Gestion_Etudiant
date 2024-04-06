@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { setShowModal } from "../../../_redux/features/setting";
 import { RootState } from "../../../_redux/store";
-import ErrorTable from "../common/ErrorTable";
 
 interface TableRegionProps {
     data: CommonSettingProps[];
@@ -21,8 +18,6 @@ const Table = ({ data, onCreate, onEdit }: TableRegionProps) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     // Filtrer les régions en fonction de la langue
@@ -58,20 +53,11 @@ const Table = ({ data, onCreate, onEdit }: TableRegionProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable /> :
-                                pageError ?
-                                    <ErrorTable /> :
-                                    filteredRegions.length === 0 ?
-                                        <NoDataTable /> :
-                                        <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
-                        {
-                            !pageIsLoading && <BodyTable data={filteredRegions} onEdit={onEdit} />
-                        }
+                        <BodyTable data={filteredRegions} onEdit={onEdit} />
+
                     </table>
                 </div>
             </div>

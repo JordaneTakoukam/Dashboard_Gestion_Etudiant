@@ -19,20 +19,23 @@ import { setEvenementLoading, setEvenements, setErrorPageEvenement } from "../..
 import { getEvenementsByYear } from "../../../api/api_evenement";
 import createToast from "../../../hooks/toastify";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { PageErreur } from "../../_Global/PageErreur";
 
 
 interface TableEvenementProps {
     data: EvenementType[];
     onCreate: () => void;
     onEdit: (evenement: EvenementType) => void;
+    refresh: () => void;
 }
 
-const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
+const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const { t } = useTranslation();
     const pageIsLoading = useSelector((state: RootState) => state.evenementSlice.pageIsLoading);
+    const pageError = useSelector((state: RootState) => state.evenementSlice.pageError);
     const dispatch = useDispatch();
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -46,10 +49,10 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
 
     const handleAnneeSelect = (selected: String | undefined) => {
         // setFiltreAnnee(selected);
-        if(selected){
+        if (selected) {
             setSelectedYear(extractYear(selected.toString()));
         }
-        
+
         console.log(selectedYear)
     };
     const [searchText, setSearchText] = useState<string>('');
@@ -76,34 +79,34 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
 
     // variable pour la pagination
     //
-    
+
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
 
-     // variable pour la pagination
-     const itemsPerPage = useSelector((state: RootState) => state.evenementSlice.data.pageSize);; // nombre delements maximum par page
-     const [currentPage, setCurrentPage] = useState<number>(1);
- 
-     const indexOfLastItem = currentPage * itemsPerPage;
-     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
-     const count =useSelector((state: RootState) => state.evenementSlice.data.totalItems);
-     const handlePageClick = (pageNumber: number) => {
-         setCurrentPage(pageNumber);
-     };
-     // Render page numbers
-     const pageNumbers = [];
-     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
-         pageNumbers.push(i);
-     }
- 
-     const hasPrevious = currentPage > 1;
-     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
- 
-     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-     const endItem = Math.min(count, indexOfLastItem);
+    // variable pour la pagination
+    const itemsPerPage = useSelector((state: RootState) => state.evenementSlice.data.pageSize);; // nombre delements maximum par page
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
-     // Fonction pour récupérer les événements en fonction de l'année et de la page actuelle
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+    const count = useSelector((state: RootState) => state.evenementSlice.data.totalItems);
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+
+    // Fonction pour récupérer les événements en fonction de l'année et de la page actuelle
     const fetchEvenements = async (annee: number, page: number) => {
         dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
         try {
@@ -158,7 +161,7 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={generateYearRange(currentYear,firstYear)}
+                                items={generateYearRange(currentYear, firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
@@ -173,7 +176,7 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={generateYearRange(currentYear,firstYear)}
+                                items={generateYearRange(currentYear, firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
@@ -192,15 +195,18 @@ const Table = ({ data, onCreate, onEdit }: TableEvenementProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                            : filteredData.length === 0 ?
-                                <NoDataTable /> :
-                                <HeaderTable />
+                                : pageError ?
+                                    <PageErreur onRefresh={refresh} />
+
+                                    : filteredData.length === 0 ?
+                                        <NoDataTable /> :
+                                        <HeaderTable />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} /> 
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} />
                         }
 
 

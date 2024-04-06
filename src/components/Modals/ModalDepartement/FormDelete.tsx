@@ -4,7 +4,6 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { apiDeleteDepartement } from '../../../api/settings/api_departement';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import createToast from '../../../hooks/toastify';
 
@@ -26,7 +25,7 @@ function ModalDelete({ departement }: { departement: DepartementProps | null }) 
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (departement._id) {
-                        dispatch(deleteSettingItem({ tableName: 'departement', itemId: departement._id }));
+                        dispatch(deleteSettingItem({ tableName: 'departements', itemId: departement._id }));
                     }
 
                     closeModal();

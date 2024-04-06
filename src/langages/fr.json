@@ -388,6 +388,35 @@
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !"
   },
   "aucun": {
-    "administrateur": "Aucun administrateur"
+    "administrateur": "Aucun administrateur",
+    "etudiant": "Aucun etudiant",
+    "enseignant": "Aucun enseignant",
+    "progression": "Aucune progréssion",
+    "section": "Aucune section",
+    "cycle": "Aucun cycle",
+    "niveau": "Aucun niveau",
+    "service": "Aucun service",
+    "grade": "Aucun grade",
+    "fonction": "Aucune fonction",
+    "categorie": "Aucune catégorie",
+    "region": "Aucune région",
+    "departement": "Aucun département",
+    "commune": "Aucune commune"
+  },
+  "ajouter_votre_premier": {
+    "administrateur": "Ajouter votre premier administrateur",
+    "etudiant": "Ajouter votre premier etudiant",
+    "enseignant": "Ajouter votre premier enseignant",
+    "progression": "Ajouter votre première progréssion",
+    "section":  "Ajouter votre première section",
+    "cycle":  "Ajouter votre premier cycle",
+    "niveau":  "Ajouter votre premier niveau",
+    "service": "Ajouter votre premier service",
+    "grade": "Ajouter votre premier grade",
+    "fonction":  "Ajouter votre première fonction",
+    "categorie":  "Ajouter votre première catégorie",
+    "region":  "Ajouter votre première région",
+    "departement":  "Ajouter votre premier département",
+    "commune":  "Ajouter votre première commune"
   }
 }

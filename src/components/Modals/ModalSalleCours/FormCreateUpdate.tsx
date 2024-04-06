@@ -3,11 +3,8 @@ import { setShowModal} from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { SalleCours } from '../../../pages/Admin/SallesDeCours';
 import { useTranslation } from 'react-i18next';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
-import { ReponseApiPros } from '../../../api/interface_reponse';
-import { apiCreateRegion, apiUpdateRegion } from '../../../api/settings/api_region';
 import createToast from '../../../hooks/toastify';
 import { apiCreateSalleDeCours, apiUpdateSalleDeCours } from '../../../api/settings/api_salle_de_cours';
 

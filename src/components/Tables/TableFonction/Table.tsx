@@ -21,8 +21,7 @@ const Table = ({ data, onCreate, onEdit }: TableFonctionProps) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     // Filtrer les régions en fonction de la langue
@@ -58,20 +57,11 @@ const Table = ({ data, onCreate, onEdit }: TableFonctionProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable /> :
-                                pageError ?
-                                    <ErrorTable /> :
-                                    filteredFonctions.length === 0 ?
-                                        <NoDataTable /> :
-                                        <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
-                        {
-                            !pageIsLoading && <BodyTable data={filteredFonctions} onEdit={onEdit} />
-                        }
+                        <BodyTable data={filteredFonctions} onEdit={onEdit} />
+
                     </table>
                 </div>
             </div>

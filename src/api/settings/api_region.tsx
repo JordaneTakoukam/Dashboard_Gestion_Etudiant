@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../../config.js';
-import { ReponseApiPros } from '../interface_reponse.js';
 
 const api = `${apiUrl}/setting`;
 

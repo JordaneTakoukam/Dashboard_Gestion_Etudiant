@@ -1,10 +1,19 @@
-interface AdminType {
+interface AdminType extends AdminCreateType {
     _id: string;
+    status: string;
+    historique_connexion: Date[];
+    photo_profil: string | null;
+    date_creation: String | null;
+}
 
+interface AdminUpdateType extends AdminCreateType {
+    _id: string;
+}
+
+interface AdminCreateType {
     genre: string;
-    date_creation: Date | null;
-    date_entree: Date | null;
-    date_naiss: Date | null;
+    date_entree: String | null;
+    date_naiss: String | null;
 
     nom: string;
     prenom: string | null;
@@ -13,18 +22,14 @@ interface AdminType {
 
     lieu_naiss: string | null;
     contact: string | null;
-    status: string;
-    historique_connexion: Date[];
-    photo_profil: string | null;
 
-
-    grades: string | null;
-    categories: string | null;
+    grade: string | null;
+    categorie: string | null;
     fonction: string | null;
     service: string | null;
     region: string | null;
     departement: string | null;
-    communes: string | null;
+    commune: string | null;
 }
 
 
@@ -40,10 +45,12 @@ interface AdminInitialData {
 }
 
 
-interface AdminReturnGetType {
+interface AdminListGetType {
     list: AdminType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;
     pageSize: number;
 }
+
+

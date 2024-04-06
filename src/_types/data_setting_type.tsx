@@ -29,8 +29,8 @@ interface CycleProps extends CommonSettingProps {
 }
 
 //interface des propriétés de la salle de cours
-interface SalleDeCoursProps extends CommonSettingProps{
-    nbPlace:number;
+interface SalleDeCoursProps extends CommonSettingProps {
+    nbPlace: number;
 }
 
 
@@ -41,17 +41,17 @@ interface DataSettingProps {
     fonctions: CommonSettingProps[];
     grades: CommonSettingProps[];
     categories: CommonSettingProps[];
-    region: CommonSettingProps[];
-    departement: DepartementProps[];
+    regions: CommonSettingProps[];
+    departements: DepartementProps[];
     communes: CommuneProps[];
-    section: CommonSettingProps[];
-    cycle: CycleProps[];
-    niveau: NiveauProps[];
-    salleDeCours:SalleDeCoursProps[];
-    typeEnseignement:CommonSettingProps[];
-    etatEvenement:CommonSettingProps[];
-    anneeCourante:number,
-    premiereAnnee:number,
+    sections: CommonSettingProps[];
+    cycles: CycleProps[];
+    niveaux: NiveauProps[];
+    salleDeCours: SalleDeCoursProps[];
+    typesEnseignement: CommonSettingProps[];
+    etatEvenements: CommonSettingProps[];
+    anneeCourante: number,
+    premiereAnnee: number,
     // roles:CommonSettingProps[];
     __v: number;
 }

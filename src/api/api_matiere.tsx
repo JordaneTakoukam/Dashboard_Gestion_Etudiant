@@ -1,7 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
-import { ReponseApiPros } from './interface_reponse.js';
-import createToast from '../hooks/toastify.js';
 
 
 const api = `${apiUrl}/matiere`;

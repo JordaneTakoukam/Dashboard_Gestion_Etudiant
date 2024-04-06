@@ -1,12 +1,13 @@
 
 interface LabelProps {
     title: String,
+    required?: boolean
 }
-export function LabelInput({ title }: LabelProps) {
+export function LabelInput({ title, required }: LabelProps) {
     return (
         <div>
             <label className="mb-2 block text-sm text-strokedark font-medium dark:text-white">
-                {title}
+                {title} {required && <span className=" text-danger">*</span>}
             </label>
         </div>
     )

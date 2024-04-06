@@ -2,21 +2,39 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { Administrateur } from '../../../pages/Admin/ListeAdministrateurs';
 import { useTranslation } from 'react-i18next';
+import { apiDeleteAdministrateur } from '../../../api/api_administrateur';
+import createToast from '../../../hooks/toastify';
+import { deleteAdmin } from '../../../_redux/features/admin_slice';
 
 
 
-function ModalDeleteAdministrateur({ administrateur }: { administrateur : Administrateur|null}) {
-    const {t}=useTranslation();
+function ModalDeleteAdministrateur({ administrateur }: { administrateur: AdminType | null }) {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
+    const lang = useSelector((state: RootState) => state.setting.language);
 
 
-    const handleCreateAdministrateur = () => {
-        console.log("delete ok");
+    const handleDeleteAdministrateur = async () => {
+        if (administrateur?._id != null) {
+            await apiDeleteAdministrateur(administrateur._id).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+
+                    if (administrateur._id) {
+                        dispatch(deleteAdmin({ id: administrateur._id }));
+                    }
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            })
+        }
         closeModal();
     }
 
@@ -27,9 +45,9 @@ function ModalDeleteAdministrateur({ administrateur }: { administrateur : Admini
                 isModalOpen={isModalOpen}
                 isDelete={true}
                 closeModal={closeModal}
-                handleConfirm={handleCreateAdministrateur}
+                handleConfirm={handleDeleteAdministrateur}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.administrateur')} : {administrateur?administrateur.nom:""} {administrateur?administrateur.prenom:""}</h1>
+                <h1>{t('form_delete.suppression') + t('form_delete.administrateur')} : {administrateur ? administrateur.nom : ""} {administrateur ? administrateur.prenom : ""}</h1>
             </CustomDialogModal>
         </>
     );

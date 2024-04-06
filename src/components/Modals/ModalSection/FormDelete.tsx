@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteSection } from '../../../api/settings/api_section';
 import createToast from '../../../hooks/toastify';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 
 
 function ModalDelete({ section }: { section: CommonSettingProps | null }) {
@@ -28,7 +27,7 @@ function ModalDelete({ section }: { section: CommonSettingProps | null }) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (section._id) {
-                        dispatch(deleteSettingItem({ tableName: 'section', itemId: section._id }));
+                        dispatch(deleteSettingItem({ tableName: 'sections', itemId: section._id }));
                     }
 
                     closeModal();

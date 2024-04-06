@@ -5,14 +5,13 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { apiCreateCommune, apiUpdateCommune } from '../../../api/settings/api_commune';
 import createToast from '../../../hooks/toastify';
 
 
 function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
-    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
-    const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
+    const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
 
     const { t } = useTranslation();
     const dispatch = useDispatch();

@@ -7,14 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { ErrorMessage, Label } from '../../ui/Label';
 import Input from '../../ui/input';
 import { apiCreateDepartement, apiUpdateDepartement } from '../../../api/settings/api_departement';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 import createToast from '../../../hooks/toastify';
 
 
 function ModalCreateUpdate({ departement }: { departement: DepartementProps | null }) {
-    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
-    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -40,9 +38,9 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
     useEffect(() => {
         if (departement) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.departement'));
-            const regionId =""+departement.region;
+            const regionId = "" + departement.region;
             const currentRegion = regions.find(region => region._id === regionId);
-            
+
             setCode(departement.code);
             setLibelleFr(departement.libelleFr);
             setLibelleEn(departement.libelleEn);
@@ -130,7 +128,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                         if (e.success) {
                             createToast(e.message[lang as keyof typeof e.message], '', 0);
                             dispatch(createSettingItem({
-                                tableName: 'departement', newItem: {
+                                tableName: 'departements', newItem: {
                                     code: e.data.code,
                                     libelleFr: e.data.libelleFr,
                                     libelleEn: e.data.libelleEn,
@@ -188,7 +186,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                         if (e.success) {
                             createToast(e.message[lang as keyof typeof e.message], '', 0);
                             dispatch(updateSettingItem({
-                                tableName: 'departement',
+                                tableName: 'departements',
                                 updatedItem: {
                                     code: e.data.code,
                                     libelleFr: e.data.libelleFr,

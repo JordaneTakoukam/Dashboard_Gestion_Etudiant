@@ -58,20 +58,11 @@ const Table = ({ data, onCreate, onEdit }: TableCategorieProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable /> :
-                                pageError ?
-                                    <ErrorTable /> :
-                                    filteredCategories.length === 0 ?
-                                        <NoDataTable /> :
-                                        <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
-                        {
-                            !pageIsLoading && <BodyTable data={filteredCategories} onEdit={onEdit} />
-                        }
+                        <BodyTable data={filteredCategories} onEdit={onEdit} />
+
                     </table>
                 </div>
             </div>

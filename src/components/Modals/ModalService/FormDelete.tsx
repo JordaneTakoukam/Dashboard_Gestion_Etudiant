@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteService } from '../../../api/settings/api_service';
 import createToast from '../../../hooks/toastify';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 
 
 function ModalDelete({ service }: { service: CommonSettingProps | null }) {

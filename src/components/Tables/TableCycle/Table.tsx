@@ -1,7 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
@@ -15,13 +13,13 @@ import { RootState } from "../../../_redux/store";
 
 interface TableCycleProps {
     data: CycleProps[];
-    onCreate:()=>void;
+    onCreate: () => void;
     onEdit: (cycle: CycleProps) => void;
 }
 
 const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
     const dispatch = useDispatch();
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     // Fonction pour basculer la visibilité des CustomDropDown
@@ -36,10 +34,8 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
 
     // État du texte de recherche
     const [searchText, setSearchText] = useState<string>('');
-    
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     // recuperer l'id de la section suite au click sur l'input select
@@ -50,10 +46,10 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
         }
     };
 
-    
+
     // Filtrer les cycles en fonction de la langue
     const filterCycleByContent = (cycles: CycleProps[]) => {
-        if (searchText === '' && sections && sections.length>0) {
+        if (searchText === '' && sections && sections.length > 0) {
             const result: CycleProps[] = data.filter(cycle => cycle.section === sections[0]?._id);
             return result;
         }
@@ -82,7 +78,7 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
             filterCyleBySection(sectionIdToFilter);
         }
     }, [sections, data]);
-    
+
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     useEffect(() => {
         const result = filterCycleByContent(data);
@@ -107,9 +103,9 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.nouveau_cycle')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.cycle')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.cycle')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -153,19 +149,12 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable />
-                                : filteredCycle.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
-                        }
+                        <HeaderTable />
+
 
                         {/* corp du tableau*/}
+                        <BodyTable data={filteredCycle} onEdit={onEdit} />
 
-                        {
-                            !pageIsLoading && <BodyTable data={filteredCycle} onEdit={onEdit} />
-                        }
 
 
 

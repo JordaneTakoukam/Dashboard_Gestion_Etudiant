@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next"
-import Bouton from "../ui/Bouton";
-import { useDispatch } from "react-redux";
 import EmptyImage from "../ui/EmptyImage";
-// import { ModalCreateUpdateBatiment } from "../Modals/ModalBatiment/ModalCreateUpdateBatiment";
+import BoutonTextMobile from "../ui/BoutonTextMobile";
 
 
 function PageNoDataTable({ title }: { title?: string }) {
@@ -21,7 +19,7 @@ function PageNoDataTable({ title }: { title?: string }) {
 interface PageNoDataProps {
     titrePage: string,
     titreBouton: string,
-    showModalCreate: () => void
+    showModalCreate?: () => void
     refreshFunction?: () => void
 
 }
@@ -40,14 +38,14 @@ function PageNoData({ titrePage, titreBouton, showModalCreate, refreshFunction }
                     </h1>
                     <div className="flex flex-col gap-x-3">
 
-                        <Bouton
+                        <BoutonTextMobile
                             titreBouton={titreBouton}
-                            onClick={showModalCreate}
+                            onClick={showModalCreate ? showModalCreate : () => { }}
                         />
 
                         {/* bouton refresh */}
                         <div className="w-full mt-16">
-                            <Bouton
+                            <BoutonTextMobile
                                 circle={true}
                                 typeRefresh={true}
                                 titreBouton={t('boutton.actualiser')}

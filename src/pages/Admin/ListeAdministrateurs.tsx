@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableAdministrateur/Table";
 import { useTranslation } from "react-i18next";
-import { ModalCreateUpdateUser } from "../../components/Modals/ModalEtudiant/ModalCreateUpdateUser";
+import { ModalCreateUpdateAdmin } from "../../components/Modals/ModalAdministrateur/ModalCreateUpdateAdministrateur";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { SectionRefresh } from "../../components/ui/SectionRefresh";
-import { setAdminsLoading } from "../../_redux/features/admin_slice";
+import { setAdmin, setAdminsLoading, setErrorPageAdmin } from "../../_redux/features/admin_slice";
 import FormDelete from "../../components/Modals/ModalAdministrateur/FormDelete";
 import { PageErreur } from "../../components/_Global/PageErreur";
 import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { PageNoData } from "../../components/_Global/PageNoData";
+import { getAdministrateurs } from "../../api/api_administrateur";
+import { setShowModal } from "../../_redux/features/setting";
 
 
 const ListeDesAdministrateur = () => {
@@ -22,35 +24,53 @@ const ListeDesAdministrateur = () => {
     const pageIsLoading = useSelector((state: RootState) => state.admin.pageIsLoading);
     const pageError = useSelector((state: RootState) => state.admin.pageError);
 
-    const handleEditAdmin = (administrateur: AdminType) => {
+    const handleEdit = (administrateur: AdminType) => {
         setSelectedAdministrateur(administrateur);
     }
 
+    const handleCreate = () => {
+        handleAddOrUpdate();
+        dispatch(setShowModal())
+    }
     // Fonction pour gérer l'ajout d'un nouvel étudiant
-    const handleAddUpdateAdmin = () => {
+    const handleAddOrUpdate = () => {
         setSelectedAdministrateur(null);
     }
 
     const handleRefresh = async () => {
-        dispatch(setAdminsLoading(true));
-        // Wait for 1 second
-        setTimeout(() => {
-            dispatch(setAdminsLoading(false));
-        }, 1000);
+        await fetchListe();
     };
 
+    const fetchListe = async () => {
+        dispatch(setAdminsLoading(true));
+        try {
+            const fetchResult = await getAdministrateurs({ page: 1 });
+            console.log(fetchResult);
+            
+            // if (fetchResult) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+            //     dispatch(setAdmin(fetchResult));
+            //     dispatch(setErrorPageAdmin(null));
+            // } else {
+            //     dispatch(setErrorPageAdmin(t('message.erreur')));
+            // }
+        } catch (error) {
+            dispatch(setErrorPageAdmin(t('message.erreur')));
+        } finally {
+            dispatch(setAdminsLoading(false)); // Définissez le loading à false après le chargement
+        }
+    };
 
-
-
-    // GESTION DES du filtre de l'input
-    const [searchText, setSearchText] = useState<string>('');
+    // recuperer initalement la liste des admin
+    useEffect(() => {
+        if (administrateurs.length === 0) {
+            fetchListe();
+        }
+    }, [dispatch]);
 
 
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.administrateurs')} />
-            <SectionRefresh refreshFunction={handleRefresh} />
-
 
             {
                 pageIsLoading ?
@@ -58,23 +78,26 @@ const ListeDesAdministrateur = () => {
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         administrateurs.length === 0 ?
-
                             <PageNoData
                                 titrePage={t('aucun.administrateur')}
-                                titreBouton={t('label.ajouter') + ' ' + t('recherche.administrateur')}
-                                showModalCreate={() => { }}
+                                titreBouton={t('ajouter_votre_premier.administrateur')}
+                                showModalCreate={handleCreate}
                                 refreshFunction={handleRefresh}
                             />
-                            : <Table
-                                data={administrateurs}
-                                onCreate={handleAddUpdateAdmin}
-                                onEdit={handleEditAdmin}
-                            />
+                            :
+                            <div>
+                                <SectionRefresh refreshFunction={handleRefresh} />
+                                <Table
+                                    data={administrateurs}
+                                    onCreate={handleAddOrUpdate}
+                                    onEdit={handleEdit}
+                                />
+                            </div>
 
             }
 
 
-            <ModalCreateUpdateUser type="administrateur" user={selectedAdministrateur} />
+            <ModalCreateUpdateAdmin admin={selectedAdministrateur} />
             <FormDelete administrateur={selectedAdministrateur} />
 
         </>

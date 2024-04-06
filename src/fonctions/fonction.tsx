@@ -62,7 +62,7 @@ export function validatePassword(password: string) {
   return '';
 }
 
-export function formatDateForInput(dateString : string) {
+export function formatDateForInput(dateString: string) {
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -71,27 +71,27 @@ export function formatDateForInput(dateString : string) {
   return formattedDate;
 }
 
-export function formatYear(year:number) {
+export function formatYear(year: number) {
   return `${year}/${year + 1}`;
 }
 
-export function extractYear(yearRange:string) {
+export function extractYear(yearRange: string) {
   const parts = yearRange.split('/');
   return parseInt(parts[0]);
 }
 
-export function generateYearRange(currentYear:number, startYear:number) {
+export function generateYearRange(currentYear: number, startYear: number) {
   const yearRange = [];
   for (let year = currentYear; year >= startYear; year--) {
-      const nextYear = year + 1;
-      yearRange.push(`${year}/${nextYear}`);
+    const nextYear = year + 1;
+    yearRange.push(`${year}/${nextYear}`);
   }
   return yearRange;
 }
 
-export function premierElement(value : String) {
+export function premierElement(value: String) {
   // Diviser la chaîne en fonction des espaces
-  if(value){
+  if (value) {
     const elements = value.split(" ");
     // Récupérer le premier élément
     const premier = elements[0];
@@ -100,23 +100,30 @@ export function premierElement(value : String) {
   return undefined;
 }
 
- // Vérifie si une période chevauche une autre période dans l'emploi du temps
-    // const verifierChevauchementPeriode = (periode: PeriodeType): boolean => {
-    //     for (const autrePeriode of listPeriode) {
-    //         // Convertir les heures de début et de fin en minutes pour faciliter la comparaison
-    //         const heureDebutPeriode = convertirHeureVersMinutes(periode.heureDebut);
-    //         const heureFinPeriode = convertirHeureVersMinutes(periode.heureFin);
-    //         const heureDebutAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureDebut);
-    //         const heureFinAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureFin);
+// Vérifie si une période chevauche une autre période dans l'emploi du temps
+// const verifierChevauchementPeriode = (periode: PeriodeType): boolean => {
+//     for (const autrePeriode of listPeriode) {
+//         // Convertir les heures de début et de fin en minutes pour faciliter la comparaison
+//         const heureDebutPeriode = convertirHeureVersMinutes(periode.heureDebut);
+//         const heureFinPeriode = convertirHeureVersMinutes(periode.heureFin);
+//         const heureDebutAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureDebut);
+//         const heureFinAutrePeriode = convertirHeureVersMinutes(autrePeriode.heureFin);
 
-    //         // Vérifier si les périodes se chevauchent
-    //         if (
-    //             (heureDebutPeriode >= heureDebutAutrePeriode && heureDebutPeriode < heureFinAutrePeriode) ||
-    //             (heureFinPeriode > heureDebutAutrePeriode && heureFinPeriode <= heureFinAutrePeriode) ||
-    //             (heureDebutPeriode <= heureDebutAutrePeriode && heureFinPeriode >= heureFinAutrePeriode)
-    //         ) {
-    //             return true; // Il y a un chevauchement
-    //         }
-    //     }
-    //     return false; // Aucun chevauchement trouvé
-    // };
+//         // Vérifier si les périodes se chevauchent
+//         if (
+//             (heureDebutPeriode >= heureDebutAutrePeriode && heureDebutPeriode < heureFinAutrePeriode) ||
+//             (heureFinPeriode > heureDebutAutrePeriode && heureFinPeriode <= heureFinAutrePeriode) ||
+//             (heureDebutPeriode <= heureDebutAutrePeriode && heureFinPeriode >= heureFinAutrePeriode)
+//         ) {
+//             return true; // Il y a un chevauchement
+//         }
+//     }
+//     return false; // Aucun chevauchement trouvé
+// };
+
+
+
+
+export function removeLastLowwecase(e: string) {
+  return e;
+}

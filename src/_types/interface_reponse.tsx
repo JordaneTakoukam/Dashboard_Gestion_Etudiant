@@ -1,5 +1,5 @@
 
-export interface ReponseApiPros {
+interface ReponseApiPros {
     success: boolean;
     message: {
         fr: string;

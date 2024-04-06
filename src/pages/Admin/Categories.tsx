@@ -4,32 +4,74 @@ import Table from "../../components/Tables/TableCategorie/Table";
 import FormCreateUpdate from "../../components/Modals/ModalCategorie/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalCategorie/FormDelete";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
+import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from "../../_redux/features/data_setting_slice";
+import { apiGetAllSettings } from "../../api/settings/api_data_setting";
+import { PageNoData } from "../../components/_Global/PageNoData";
+import { PageErreur } from "../../components/_Global/PageErreur";
+import LoadingTable from "../../components/Tables/common/LoadingTable";
+import { setShowModal } from "../../_redux/features/setting";
 
-export interface Categorie{
-    id?:number;
-    code:string;
-    libelle:string;
+export interface Categorie {
+    id?: number;
+    code: string;
+    libelle: string;
 }
 
 const Categories = () => {
+    const dispatch = useDispatch();
+
     const [selectedCategorie, setSelectedCategorie] = useState<CommonSettingProps | null>(null);
     const { t } = useTranslation();
-    const handleEditCategorie = (categorie : CommonSettingProps) => {
+
+
+    const handleCreate = () => {
+        handleAddCategorie();
+        dispatch(setShowModal())
+    }
+    const handleEditCategorie = (categorie: CommonSettingProps) => {
         setSelectedCategorie(categorie);
     }
     const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories);
     const handleAddCategorie = () => {
         setSelectedCategorie(null);
     }
+
+    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
+    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+
+    const handleRefresh = async () => {
+        dispatch(setLoadingDataSetting(true));
+        try {
+            const settingsData = await apiGetAllSettings();
+            dispatch(setDataSetting(settingsData));
+            dispatch(setErrorDataSetting(null))
+
+        } catch (error) { dispatch(setErrorDataSetting('une erreur est survenue')) }
+        finally { dispatch(setLoadingDataSetting(false)); }
+    }
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.categories')} />
-            <Table data={categories} onCreate={handleAddCategorie} onEdit={handleEditCategorie}/>
 
-            <FormCreateUpdate categorie={selectedCategorie}/>
-            <FormDelete categorie={selectedCategorie}/>
+            {
+                pageIsLoading ?
+                    <LoadingTable /> :
+                    pageError ?
+                        <PageErreur onRefresh={handleRefresh} /> :
+                        categories.length === 0 ?
+                        <PageNoData
+                            titrePage={t('aucun.categorie')}
+                            titreBouton={t('ajouter_votre_premier.categorie')}
+                            showModalCreate={handleCreate}
+                            refreshFunction={handleRefresh} />
+                        : <Table data={categories} onCreate={handleAddCategorie} onEdit={handleEditCategorie} />
+
+            }
+
+            <FormCreateUpdate categorie={selectedCategorie} />
+            <FormDelete categorie={selectedCategorie} />
 
         </>
     );

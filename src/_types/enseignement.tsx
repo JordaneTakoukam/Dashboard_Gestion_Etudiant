@@ -1,12 +1,19 @@
 // Définir le type de données pour une compétence
-
 interface Enseignement {
-    id?: number;
+    id?: string;
     typeEnseignement : string;
     enseignantPrincipal?:UserState ;
     enseignantSuppleant?: UserState;
     volumeHoraire?: number;
 }
+
+interface MatiereEnseignement {
+    id?: string;
+    matiere:MatiereType;
+    typesEnseignement:string;
+    nombreSeance:number
+}
+
 
 interface ModeleTypeEnseignementInitialData {
     data: {

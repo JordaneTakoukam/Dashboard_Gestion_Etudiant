@@ -27,18 +27,19 @@ interface TableMatiereProps {
     onCreate:()=>void;
     onEdit: (matiere : MatiereType) => void;
     onAddChap:(matiere : MatiereType)=>void;
+    onAddEnseignement:(matiere:MatiereType)=>void;
 }
 
-const Table = ({ data, onCreate, onEdit, onAddChap }: TableMatiereProps) => {
+const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMatiereProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // Fonction pour basculer la visibilité des CustomDropDown
@@ -129,6 +130,13 @@ const Table = ({ data, onCreate, onEdit, onAddChap }: TableMatiereProps) => {
     const fetchMatieres = async (currentNiveauId: string, page: number) => {
         dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
         try {
+            const emptyMatieres : MatiereReturnGetType={
+                matieres: [],
+                currentPage: 0,
+                totalItems: 0,
+                totalPages: 0,
+                pageSize: 0
+            }
             if (currentNiveauId) {
                 const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: page });
                 if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
@@ -136,8 +144,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap }: TableMatiereProps) => {
                    
                 } else {
                     
-                    // Traitez le cas où fetchedMatieres est faux, vide ou indéfini
-                    // Vous pouvez ignorer cette condition si vous souhaitez simplement ne rien faire dans ce cas
+                    dispatch(setMatieres(emptyMatieres));
                 }
             } // Réinitialisez les erreurs s'il y en a
         } catch (error) {
@@ -314,7 +321,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap }: TableMatiereProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddChap={onAddChap}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddChap={onAddChap} onAddEnseignement={onAddEnseignement}/>
                         }
 
 

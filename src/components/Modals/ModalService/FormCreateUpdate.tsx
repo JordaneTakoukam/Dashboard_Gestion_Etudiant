@@ -7,7 +7,6 @@ import { setShowModal } from '../../../_redux/features/setting';
 import Input from '../../ui/input';
 import { ErrorMessage, Label } from '../../ui/Label';
 import { apiCreateService, apiUpdateService } from '../../../api/settings/api_service';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 

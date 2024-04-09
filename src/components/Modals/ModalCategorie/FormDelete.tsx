@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteCategorie } from '../../../api/settings/api_categorie';
 import createToast from '../../../hooks/toastify';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 
 
 function ModalDelete({ categorie }: { categorie: CommonSettingProps | null }) {

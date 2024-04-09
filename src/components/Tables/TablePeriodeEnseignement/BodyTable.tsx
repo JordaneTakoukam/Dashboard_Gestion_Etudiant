@@ -26,7 +26,7 @@ const BodyTable = ({ data, onEdit, onAddEnseignement }: BodyPeriodeEnseignementP
     const roles = config.roles;
 
     return <tbody>
-        {data.map((item, index) => (
+        {data && data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
                 {/* index */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 pl-4 md:pl-5 lg:pl-6 xl:pl-5 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">

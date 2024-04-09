@@ -6,11 +6,12 @@ interface BreadcrumbProps {
   isDashboard?: boolean;
   isMatiere? : boolean;
   isPeriodeEnseignement?:boolean;
+  isEnseignement?:boolean;
   returnWithMatiere?:()=>void;
   returnWithPeriodeEnseignement?:()=>void;
 }
 
-const Breadcrumb = ({ pageName, isDashboard = false, isMatiere=false, isPeriodeEnseignement=false,  returnWithMatiere, returnWithPeriodeEnseignement}: BreadcrumbProps) => {
+const Breadcrumb = ({ pageName, isDashboard = false, isMatiere=false, isEnseignement=false, isPeriodeEnseignement=false,  returnWithMatiere, returnWithPeriodeEnseignement}: BreadcrumbProps) => {
   const { t } = useTranslation();
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -30,7 +31,13 @@ const Breadcrumb = ({ pageName, isDashboard = false, isMatiere=false, isPeriodeE
             </li>
           )}
 
-          {isMatiere && (
+          {isEnseignement && (
+            <li>
+              <Link to={"/subjects/subject-list"} onClick={() =>returnWithMatiere && returnWithMatiere()}>{t('sub_menu.liste_matiere')} /</Link>
+            </li>
+          )}
+
+          {isPeriodeEnseignement && (
             <li>
               <Link to={"/subjects/periodes-enseignement"} onClick={() =>returnWithPeriodeEnseignement && returnWithPeriodeEnseignement()}>{t('sub_menu.periodes_enseignement')} /</Link>
             </li>

@@ -7,7 +7,6 @@ import { setShowModal } from '../../../_redux/features/setting';
 import Input from '../../ui/input';
 import { ErrorMessage, Label } from '../../ui/Label';
 import { apiCreateSection, apiUpdateSection } from '../../../api/settings/api_section';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 
@@ -84,7 +83,7 @@ function ModalCreateUpdate({ section }: { section: CommonSettingProps | null }) 
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(createSettingItem({
-                            tableName: 'section', newItem: {
+                            tableName: 'sections', newItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
@@ -130,7 +129,7 @@ function ModalCreateUpdate({ section }: { section: CommonSettingProps | null }) 
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(updateSettingItem({
-                            tableName: 'section',
+                            tableName: 'sections',
                             updatedItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,

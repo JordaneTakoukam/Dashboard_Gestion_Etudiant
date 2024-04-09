@@ -3,13 +3,12 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setShowModal } from '../../../_redux/features/setting';
 import Input from '../../ui/input';
 import { ErrorMessage, Label } from '../../ui/Label';
 import { apiCreateFonction, apiUpdateFonction } from '../../../api/settings/api_fonction';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
+import { setShowModal } from '../../../_redux/features/setting';
 
 
 function ModalCreateUpdate({ fonction }: { fonction: CommonSettingProps | null }) {

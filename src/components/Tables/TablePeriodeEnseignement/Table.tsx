@@ -33,9 +33,9 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
@@ -142,15 +142,20 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     const fetchPeriodeEnseignements = async (currentNiveauId: string, page: number) => {
         dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
         try {
+            const emptyPeriodes : PeriodeEnseignementReturnGetType = {
+                periodes: [],
+                currentPage: 0,
+                totalItems: 0,
+                totalPages: 0,
+                pageSize: 0
+            } ;
             if (currentNiveauId) {
                 const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: currentNiveauId, page: page, annee:selectedYear, semestre:selectedSemestre });
                 if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
                     dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
                    
                 } else {
-                    
-                    // Traitez le cas où fetchedPeriodeEnseignements est faux, vide ou indéfini
-                    // Vous pouvez ignorer cette condition si vous souhaitez simplement ne rien faire dans ce cas
+                    dispatch(setPeriodeEnseignements(emptyPeriodes));
                 }
             } // Réinitialisez les erreurs s'il y en a
         } catch (error) {
@@ -167,7 +172,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
  
      const indexOfLastItem = currentPage * itemsPerPage;
      const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+    //  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
      const count =useSelector((state: RootState) => state.periodeEnseignementSlice.data.totalItems);
      const handlePageClick = (pageNumber: number) => {
          setCurrentPage(pageNumber);
@@ -330,10 +335,10 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
                         {/* en tete du tableau */}
                         {
                             pageIsLoading ?
-                                <LoadingTable />
-                                : filteredData.length === 0 ?
+                                <LoadingTable /> 
+                                : filteredData?filteredData.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTable />
+                                    <HeaderTable /> : <NoDataTable />
                         }
 
                         {/* corp du tableau*/}

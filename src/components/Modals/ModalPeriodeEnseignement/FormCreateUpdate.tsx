@@ -8,16 +8,15 @@ import { getUsersWithRole } from '../../../api/api_user';
 import { formatYear } from '../../../fonctions/fonction';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { apiCreatePeriodeEnseignement, apiUpdatePeriodeEnseignement } from '../../../api/api_periode_enseignement';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 import { createPeriodeEnseignement, updatePeriodeEnseignement } from '../../../_redux/features/periode_enseignement_slice';
 
 
 function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: PeriodeEnseignementType | null }) {
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
-    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typeEnseignement) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1
     const { t } = useTranslation();

@@ -5,7 +5,6 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { deleteEvenement } from '../../../_redux/features/evenement_slice';
 import { apiDeleteEvenement } from '../../../api/api_evenement';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 
 

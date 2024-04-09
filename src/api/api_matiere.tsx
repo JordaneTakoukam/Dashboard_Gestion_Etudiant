@@ -1,18 +1,16 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
-import { ReponseApiPros } from './interface_reponse.js';
-import createToast from '../hooks/toastify.js';
 
 
 const api = `${apiUrl}/matiere`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement }: MatiereType): Promise<ReponseApiPros> {
+export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement },
+            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,11 +26,11 @@ export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, pre
     }
 }
 
-export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement }: MatiereType): Promise<ReponseApiPros> {
+export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement },
+            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres },
             {
                 headers: {
                     'Content-Type': 'application/json',

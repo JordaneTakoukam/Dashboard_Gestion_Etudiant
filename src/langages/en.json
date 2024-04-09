@@ -117,15 +117,15 @@
     "periode": "Period",
     "periode_fr": "Period in french",
     "periode_en": "Period in english",
-    "etat":"State",
+    "etat": "State",
     "personnel": "Personnel",
-    "personnel_fr" : "Personnel in french",
-    "personnel_en" : "Personnel in english",
+    "personnel_fr": "Personnel in french",
+    "personnel_en": "Personnel in english",
     "description": "Description/Observations",
     "description_fr": "Description/Observations in french",
     "description_en": "Description/Observations in english",
-    "dateDebut":"Start date",
-    "dateFin":"End date",
+    "dateDebut": "Start date",
+    "dateFin": "End date",
     "heure_debut": "Start Time",
     "heure_fin": "End Time",
     "matiere": "Subject",
@@ -196,7 +196,7 @@
     "cycle": "a cycle",
     "niveau": "a level",
     "evenement": "an event",
-    "administrateur": "an administrator",
+    "administrateur":  "an administrator by ID, last name, or first name",
     "grade": "a grade",
     "service": "a service",
     "categorie": "a category",
@@ -206,6 +206,8 @@
     "commune": "a commune"
   },
   "boutton": {
+    "actualiser": "Refresh",
+    "rafraichir_la_page": "Refresh the page",
     "recevoir_un_nouveau_mdp": "Receive a new password",
     "enregistrer": "Save",
     "sauvegarder": "Save",
@@ -249,7 +251,7 @@
     "section": "a section",
     "cycle": "a cycle",
     "niveau": "a level",
-    "etat":"a state",
+    "etat": "a state",
     "grade": "a grade",
     "categorie": "a category",
     "fonction": "a function",
@@ -378,13 +380,14 @@
     "periode_en": "English period field is required.",
     "dateDebut": "Start date field is required",
     "dateFin": "End date field is required",
-    "etat":"State selection is required",
+    "etat": "State selection is required",
     "jour": "Day field is required.",
     "matiere": "Subject field is required.",
     "type_ens_periode": "Type of teaching field is required.",
     "salle": "Classroom field is required."
   },
   "message": {
-    "erreur": "An error occurred"
+    "erreur": "An error occurred",
+    "erreur_recuperation": "An error occurred while retrieving data!"
   }
 }

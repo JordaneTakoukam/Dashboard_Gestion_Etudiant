@@ -8,6 +8,7 @@ import matiereReducer from "./features/matiere_slice.tsx";
 import periodeEnseignementReducer from "./features/periode_enseignement_slice.tsx";
 import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
+import AdminReducer from "./features/admin_slice.tsx";
 
 const store = configureStore({
   reducer: {
@@ -20,6 +21,9 @@ const store = configureStore({
     periodeEnseignementSlice: periodeEnseignementReducer,
     chapitreSlice:chapitreReducer,
     progressionMatiereSlice:progressionMatiereReducer,
+
+    // 
+    admin: AdminReducer,
 
   },
   preloadedState: {

@@ -5,7 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // Initial state
 const initialState: PeriodeEnseignementInitialData = {
     data: {
-        periodeEnseignements: [],
+        periodes: [],
         currentPage: 0,
         totalItems: 0,
         totalPages: 0,
@@ -31,18 +31,18 @@ const periodeEnseignementSlice = createSlice({
             state.data = action.payload;
         },
         createPeriodeEnseignement(state, action: PayloadAction<CreatePeriodeEnseignementPayload>) {
-            state.data.periodeEnseignements.push(action.payload.periodeEnseignement);
+            state.data.periodes.push(action.payload.periode);
         },
         updatePeriodeEnseignement(state, action: PayloadAction<UpdatePeriodeEnseignementPayload>) {
-            const { id, periodeEnseignementData } = action.payload;
-            const index = state.data.periodeEnseignements.findIndex(e => e._id === id);
+            const { id, periodeData } = action.payload;
+            const index = state.data.periodes.findIndex(e => e._id === id);
             if (index !== -1) {
-                state.data.periodeEnseignements[index] = { ...state.data.periodeEnseignements[index], ...periodeEnseignementData };
+                state.data.periodes[index] = { ...state.data.periodes[index], ...periodeData };
             }
         },
         deletePeriodeEnseignement(state, action: PayloadAction<DeletePeriodeEnseignementPayload>) {
             const { id } = action.payload;
-            state.data.periodeEnseignements = state.data.periodeEnseignements.filter(e => e._id !== id);
+            state.data.periodes = state.data.periodes.filter(e => e._id !== id);
         },
     },
 });

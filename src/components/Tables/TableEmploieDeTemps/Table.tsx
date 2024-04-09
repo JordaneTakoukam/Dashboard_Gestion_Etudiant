@@ -31,11 +31,11 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
-    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typeEnseignement); 
+    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
     const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){

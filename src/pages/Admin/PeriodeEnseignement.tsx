@@ -14,30 +14,38 @@ import EnseignementsPeriode from "./EnseignementsPeriode";
 
 
 
-const ListeDesPeriodeEnseignements = () => {
+const ListeDesPeriodesEnseignement = () => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const [openEnseignementsPeriode, setOpenChapitre]=useState(false);
     const [selectedPeriodeEnseignement, setSelectedPeriodeEnseignement] = useState<PeriodeEnseignementType | null>(null);
-    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau);
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     const currentNiveauId =niveaux && niveaux.length>0 && niveaux[0]._id;
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     // Utilisez useSelector pour accéder à l'état du reducer
-    const { data: { periodeEnseignements } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
+    const { data: { periodes } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
 
     useEffect(() => {
         const fetchPeriodeEnseignements = async () => {
             dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
             try {
+                const emptyPeriodes : PeriodeEnseignementReturnGetType = {
+                    periodes: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                } ;
                 if (currentNiveauId) {
                     const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: currentNiveauId, page: 1, annee:currentYear, semestre:currentSemester });
+                    console.log(fetchedPeriodeEnseignements);
                     if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
                         dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
-                        console.log(periodeEnseignements);
+                        console.log(periodes);
+                        
                     } else {
-                        // Traitez le cas où fetchedPeriodeEnseignements est faux, vide ou indéfini
-                        // Vous pouvez ignorer cette condition si vous souhaitez simplement ne rien faire dans ce cas
+                        dispatch(setPeriodeEnseignements(emptyPeriodes));
                     }
                 } // Réinitialisez les erreurs s'il y en a
             } catch (error) {
@@ -49,7 +57,8 @@ const ListeDesPeriodeEnseignements = () => {
         };
 
         fetchPeriodeEnseignements();
-    }, [currentNiveauId, dispatch]);
+    }, [currentNiveauId, dispatch, t]);
+
 
     const handleEditSection = (periodeEnseignement: PeriodeEnseignementType) => {
         setSelectedPeriodeEnseignement(periodeEnseignement);
@@ -61,7 +70,6 @@ const ListeDesPeriodeEnseignements = () => {
     }
 
     const handleAddPeriodeEnseignement = () => {
-        console.log("is call");
         setSelectedPeriodeEnseignement(null);
         setOpenChapitre(false);
     }
@@ -73,7 +81,7 @@ const ListeDesPeriodeEnseignements = () => {
     return (
         <>
             {!openEnseignementsPeriode && <Breadcrumb pageName={t('sub_menu.liste_periodeEnseignement')} />}
-            {!openEnseignementsPeriode && <Table data={periodeEnseignements} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement} onAddEnseignement={handleOpenEnseignementsPeriode}/>}
+            {!openEnseignementsPeriode && <Table data={periodes} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement} onAddEnseignement={handleOpenEnseignementsPeriode}/>}
             
             {!openEnseignementsPeriode && <FormCreateUpdate periodeEnseignement={selectedPeriodeEnseignement}/>}
             {!openEnseignementsPeriode && <FormDelete periodeEnseignement={selectedPeriodeEnseignement}/>}
@@ -82,6 +90,6 @@ const ListeDesPeriodeEnseignements = () => {
     );
 };
 
-export default ListeDesPeriodeEnseignements;
+export default ListeDesPeriodesEnseignement;
 
 export const enseignants: Enseignant[] = [];

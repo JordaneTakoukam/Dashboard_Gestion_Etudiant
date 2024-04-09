@@ -14,7 +14,7 @@ interface PeriodeEnseignementType {
 
 interface PeriodeEnseignementInitialData {
     data: {
-        periodeEnseignements: PeriodeEnseignementType[];
+        periodes: PeriodeEnseignementType[];
         currentPage: number;
         totalPages: number;
         totalItems: number;
@@ -26,7 +26,7 @@ interface PeriodeEnseignementInitialData {
 
 interface ProgressionPeriodeEnseignementInitialData {
     data: {
-        periodeEnseignements: PeriodeEnseignementType[];
+        periodes: PeriodeEnseignementType[];
         currentPage: number;
         totalPages: number;
         totalItems: number;
@@ -37,12 +37,12 @@ interface ProgressionPeriodeEnseignementInitialData {
 }
 
 interface CreatePeriodeEnseignementPayload {
-    periodeEnseignement: PeriodeEnseignementType; // Données de l'événement à créer
+    periode: PeriodeEnseignementType; // Données de l'événement à créer
 }
 
 interface UpdatePeriodeEnseignementPayload {
     id: string; // ID de l'événement à mettre à jour
-    periodeEnseignementData: Partial<PeriodeEnseignementType>; // Données mises à jour de l'événement
+    periodeData: Partial<PeriodeEnseignementType>; // Données mises à jour de l'événement
 }
 
 interface DeletePeriodeEnseignementPayload {
@@ -50,7 +50,7 @@ interface DeletePeriodeEnseignementPayload {
 }
 
 interface PeriodeEnseignementReturnGetType {
-    periodeEnseignements: PeriodeEnseignementType[];
+    periodes: PeriodeEnseignementType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;
@@ -58,7 +58,7 @@ interface PeriodeEnseignementReturnGetType {
 }
 
 interface ProgressionPeriodeEnseignementReturnGetType {
-    periodeEnseignements: PeriodeEnseignementType[];
+    periodes: PeriodeEnseignementType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;

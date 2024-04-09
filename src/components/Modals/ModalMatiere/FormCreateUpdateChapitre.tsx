@@ -1,9 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalChapitre } from '../../../_redux/features/setting';
+import { setShowModalChapitre } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Matiere } from '../../../pages/Admin/ListeMatieres';
 
 // Interface pour la classe TypeEnseignement
 export interface TypeEnseignement {
@@ -23,10 +22,10 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
-    
+
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelle, setErrorLibelle] = useState("");
-   
+
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openChapitre);
     const [modalTitle, setModalTitle] = useState("");
@@ -37,7 +36,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
 
     useEffect(() => {
         if (matiere) {
-            setModalTitle(matiere.code + " : " + (lang === 'fr' ? matiere.libelleFr : matiere.libelleEn) );
+            setModalTitle(matiere.code + " : " + (lang === 'fr' ? matiere.libelleFr : matiere.libelleEn));
         }
         if (isFirstRender) {
             setErrorCode("");
@@ -107,14 +106,14 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
 
     const handleCreateUpdate = () => {
         // Vérifier si tous les champs requis sont remplis
-        if (!code || !libelle ||  typesEnseignementState.length === 0) {
+        if (!code || !libelle || typesEnseignementState.length === 0) {
             if (!code) {
                 setErrorCode("Le champ code est obligatoire.");
             }
             if (!libelle) {
                 setErrorLibelle("Le champ libellé est obligatoire.");
             }
-            
+
             return;
         }
         closeModal();

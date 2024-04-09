@@ -1,12 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteFonction } from '../../../api/settings/api_fonction';
 import createToast from '../../../hooks/toastify';
-import { ReponseApiPros } from '../../../api/interface_reponse';
+import { setShowModalDelete } from '../../../_redux/features/setting';
 
 
 function ModalDelete({ fonction }: { fonction: CommonSettingProps | null }) {

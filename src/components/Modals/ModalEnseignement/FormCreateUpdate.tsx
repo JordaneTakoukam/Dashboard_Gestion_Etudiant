@@ -8,16 +8,15 @@ import { getMatieresByNiveau } from '../../../api/api_matiere';
 import { setErrorPageMatiere, setMatiereLoading, setMatieres } from '../../../_redux/features/matiere_slice';
 import createToast from '../../../hooks/toastify';
 import { apiUpdatePeriodeEnseignement } from '../../../api/api_periode_enseignement';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { updatePeriodeEnseignement } from '../../../_redux/features/periode_enseignement_slice';
 
 
 
-function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement: MatiereEnseignement | null, periodeEnseignement:PeriodeEnseignementType | undefined}) {
+function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement: MatiereEnseignement | null, periodeEnseignement:PeriodeEnseignementType | null | undefined}) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typeEnseignement) ?? [];
+    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     
     const [matiere, setMatiere] = useState<MatiereType>();
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();

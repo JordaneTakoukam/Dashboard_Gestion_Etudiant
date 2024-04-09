@@ -8,11 +8,10 @@ import { formatDateForInput, formatYear } from '../../../fonctions/fonction';
 import { apiCreateEvenement, apiUpdateEvenement } from '../../../api/api_evenement';
 import createToast from '../../../hooks/toastify';
 import { createEvenement, updateEvenement } from '../../../_redux/features/evenement_slice';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 
 
 function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) {  
-    const etats: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.etatEvenement) ?? []; 
+    const etats: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.etatEvenements) ?? []; 
     const lang = useSelector((state: RootState) => state.setting.language);
     const {t}=useTranslation();
     const dispatch = useDispatch();

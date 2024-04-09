@@ -7,14 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { ErrorMessage, Label } from '../../ui/Label';
 import Input from '../../ui/input';
 import { apiCreateCycle, apiUpdateCycle } from '../../../api/settings/api_cycle';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
 import createToast from '../../../hooks/toastify';
 
 
 function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -130,7 +128,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
                         if (e.success) {
                             createToast(e.message[lang as keyof typeof e.message], '', 0);
                             dispatch(createSettingItem({
-                                tableName: 'cycle', newItem: {
+                                tableName: 'cycles', newItem: {
                                     code: e.data.code,
                                     libelleFr: e.data.libelleFr,
                                     libelleEn: e.data.libelleEn,
@@ -189,7 +187,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
                         if (e.success) {
                             createToast(e.message[lang as keyof typeof e.message], '', 0);
                             dispatch(updateSettingItem({
-                                tableName: 'cycle',
+                                tableName: 'cycles',
                                 updatedItem: {
                                     code: e.data.code,
                                     libelleFr: e.data.libelleFr,

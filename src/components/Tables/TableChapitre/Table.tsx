@@ -7,7 +7,6 @@ import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Chapitre } from "../../../pages/Admin/Chapitres";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 

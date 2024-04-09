@@ -1,29 +1,24 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal} from "../../../_redux/features/setting";
+import { setShowModal } from "../../../_redux/features/setting";
 import { useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Grade } from "../../../pages/Admin/Grades";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 
 interface TableGradeProps {
     data: CommonSettingProps[];
-    onCreate:()=>void;
-    onEdit: (grade : CommonSettingProps | null) => void;
+    onCreate: () => void;
+    onEdit: (grade: CommonSettingProps | null) => void;
 }
 
 
 const Table = ({ data, onCreate, onEdit }: TableGradeProps) => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     // Filtrer les régions en fonction de la langue
@@ -59,34 +54,27 @@ const Table = ({ data, onCreate, onEdit }: TableGradeProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.nouveau_grade')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.grade')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.grade')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-               
+
 
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable />
-                                : filteredGrades.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
 
-                        {
-                            !pageIsLoading && <BodyTable data={filteredGrades} onEdit={onEdit} />
-                        }
+                        <BodyTable data={filteredGrades} onEdit={onEdit} />
+
 
 
 

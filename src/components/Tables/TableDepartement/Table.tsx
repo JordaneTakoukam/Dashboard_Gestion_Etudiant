@@ -1,7 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
@@ -11,7 +9,6 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import ErrorTable from "../common/ErrorTable";
 import FilterTableSection from "../../ui/FilterTableSection";
 
 
@@ -38,13 +35,13 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
     // valeur de la l'id de la region selectionner
     const [selectRegionId, setSelectIdRegion] = useState<string>('');
 
-    // État du texte de recherche
-    const [searchText, setSearchText] = useState<string>('');
 
-    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+
+
 
 
 
@@ -90,14 +87,14 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
         setSelectIdRegion('');
     }
 
+    // État du texte de recherche
+    const [searchText, setSearchText] = useState<string>('');
 
 
 
     // fournir initialement les donnee a la page
     useEffect(() => {
-        console.log('init');
         setFilteredDepartement(data);
-        
     }, [data]);
 
     // modifier les donner de la page lors de la recherche
@@ -116,7 +113,10 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
                     title={t('boutton.nouveau_departement')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.departement')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch
+                    hintText={t('recherche.rechercher') + t('recherche.departement')}
+                    onSubmit={(text) => setSearchText(text)}
+                />
 
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -169,20 +169,11 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable /> :
-                                pageError ?
-                                    <ErrorTable /> :
-                                    filteredDepartement.length === 0 ?
-                                        <NoDataTable /> :
-                                        <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
-                        {
-                            !pageIsLoading && <BodyTable data={filteredDepartement} onEdit={onEdit} />
-                        }
+                        <BodyTable data={filteredDepartement} onEdit={onEdit} />
+
                     </table>
                 </div>
 

@@ -1,10 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
-import { ReponseApiPros } from './interface_reponse.js';
-import createToast from '../hooks/toastify.js';
+import { niveaux } from '../pages/Admin/Niveaux.js';
 
 
-const api = `${apiUrl}/matiere`;
+const api = `${apiUrl}/periode-enseignement`;
 
 const token = localStorage.getItem(wstjqer);
 
@@ -71,7 +70,7 @@ export async function getPeriodesEnseignement({ niveauId, page, annee, semestre 
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getPeriodeEnseignementsByNiveauWithPagination/${niveauId}`,
+            `${api}/getPeriodesEnseignement/${niveauId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,8 +86,7 @@ export async function getPeriodesEnseignement({ niveauId, page, annee, semestre 
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const matieres: PeriodeEnseignementReturnGetType = response.data.data;
-        
+        const matieres: PeriodeEnseignementReturnGetType = response.data.data;        
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);

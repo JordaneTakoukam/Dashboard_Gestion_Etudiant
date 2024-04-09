@@ -5,13 +5,16 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getUsersWithRole } from '../../../api/api_user';
+import { apiCreateMatiere, apiUpdateMatiere } from '../../../api/api_matiere';
+import createToast from '../../../hooks/toastify';
+import { createMatiere, updateMatiere } from '../../../_redux/features/matiere_slice';
 
 
 function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
-    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typeEnseignement) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -20,15 +23,15 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const [libelleEn, setLibelleEn] = useState("");
     const [prerequisFr, setPrerequisFr] = useState("");
     const [prerequisEn, setPrerequisEn] = useState("");
-    const [evaluationDesAcquisFr, setEvaluationDesAcquisFr] = useState("");
-    const [evaluationDesAcquisEn, setEvaluationDesAcquisEn] = useState("");
-    const [approchePedagogiqueFr, setApprochePedagogiqueFr] = useState("");
-    const [approchePedagogiqueEn, setApprochePedagogiqueEn] = useState("");
+    const [evaluationAcquisFr, setEvaluationAcquisFr] = useState("");
+    const [evaluationAcquisEn, setEvaluationAcquisEn] = useState("");
+    const [approchePedFr, setApprochePedFr] = useState("");
+    const [approchePedEn, setApprochePedEn] = useState("");
     const [section, setSection] = useState<CommonSettingProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-
-    const [enseignements, setEnseignements] = useState<Enseignement[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
+    const [enseignements, setEnseignements] = useState<EnseignementType[] | undefined>([]);
+    const [chapitres, setChapitres] = useState<ChapitreType[] | undefined>([]);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
@@ -67,33 +70,33 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
         }
     };
 
-    const handleAddEnseignement = () => {
-        const newEnseignement: Enseignement = {
-            typeEnseignement: '',
-            enseignantPrincipal: undefined,
-            enseignantSuppleant: undefined,
-        };
-        setEnseignements([...enseignements, newEnseignement]);
-    };
+    // const handleAddEnseignement = () => {
+    //     const newEnseignement: EnseignementType = {
+    //         typeEnseignement: '',
+    //         enseignantPrincipal: undefined,
+    //         enseignantSuppleant: undefined,
+    //     };
+    //     setEnseignements([...enseignements, newEnseignement]);
+    // };
 
     // Fonction pour supprimer un champ d'enseignement
-    const handleRemoveEnseignement = (index: number) => {
-        const updatedEnseignements = [...enseignements];
-        updatedEnseignements.splice(index, 1);
-        setEnseignements(updatedEnseignements);
-    };
+    // const handleRemoveEnseignement = (index: number) => {
+    //     const updatedEnseignements = [...enseignements];
+    //     updatedEnseignements.splice(index, 1);
+    //     setEnseignements(updatedEnseignements);
+    // };
 
     // Fonction pour mettre à jour un champ d'enseignement
-    const handleEnseignementChange = (index: number, type: Enseignement) => {
-        setEnseignements(prevState => {
-            const updatedTypes = [...prevState];
-            updatedTypes[index] = type;
-            if(updatedTypes && enseignements[0].enseignantPrincipal){
-                setErrorTypeEns("");
-            }
-            return updatedTypes;
-        });
-    };
+    // const handleEnseignementChange = (index: number, type: EnseignementType) => {
+    //     setEnseignements(prevState => {
+    //         const updatedTypes = [...prevState];
+    //         updatedTypes[index] = type;
+    //         if(updatedTypes && enseignements[0].enseignantPrincipal){
+    //             setErrorTypeEns("");
+    //         }
+    //         return updatedTypes;
+    //     });
+    // };
     const [enseignants, setEnseignants] = useState<UserState[]>([]);
     
 
@@ -127,19 +130,21 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
             currentSection && filterCycleBySection(currentSection._id);
-            currentCycle && filterNiveauByCycle(currentNiveau._id);
+            currentCycle && filterNiveauByCycle(currentCycle._id);
             setCode(matiere.code);
             setLibelleFr(matiere.libelleFr);
             setLibelleEn(matiere.libelleEn);
             setPrerequisFr(matiere.prerequisFr ? matiere.prerequisFr : "");
             setPrerequisEn(matiere.prerequisEn ? matiere.prerequisEn : "");
-            setEvaluationDesAcquisFr(matiere.evaluationAcquisFr ? matiere.evaluationAcquisFr : "");
-            setEvaluationDesAcquisEn(matiere.evaluationAcquisEn ? matiere.evaluationAcquisEn : "");
-            setApprochePedagogiqueFr(matiere.approchePedFr ? matiere.approchePedFr : "");
-            setApprochePedagogiqueEn(matiere.approchePedEn ? matiere.approchePedEn : "");
+            setEvaluationAcquisFr(matiere.evaluationAcquisFr ? matiere.evaluationAcquisFr : "");
+            setEvaluationAcquisEn(matiere.evaluationAcquisEn ? matiere.evaluationAcquisEn : "");
+            setApprochePedFr(matiere.approchePedFr ? matiere.approchePedFr : "");
+            setApprochePedEn(matiere.approchePedEn ? matiere.approchePedEn : "");
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
+            setChapitres(matiere.chapitres);
+            setEnseignements(matiere.typesEnseignement);
 
         } else {
             setModalTitle(t('form_save.enregistrer') + t('form_save.matiere'));
@@ -148,13 +153,16 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             setLibelleEn("");
             setPrerequisFr("");
             setPrerequisEn("");
-            setEvaluationDesAcquisFr("");
-            setEvaluationDesAcquisEn("");
-            setApprochePedagogiqueFr("");
-            setApprochePedagogiqueEn("");
+            setEvaluationAcquisFr("");
+            setEvaluationAcquisEn("");
+            setApprochePedFr("");
+            setApprochePedEn("");
             setSection(undefined);
             setCycle(undefined);
             setNiveau(undefined);
+            setChapitres([]);
+            setEnseignements([]);
+
         }
 
 
@@ -250,7 +258,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             // Assurez-vous de retourner le résultat du test d'inclusion
             return enseignant.nom.toLowerCase().includes(saisieUtilisateur.toLowerCase());
         });
-        if(enseignantsFiltres.length>0 && enseignements[0].typeEnseignement){
+        if(enseignantsFiltres.length>0 && enseignements && enseignements[0].typeEnseignement){
             setErrorTypeEns("");
         }
         // Mettre à jour les enseignants suggérés avec les résultats filtrés
@@ -258,8 +266,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     };
 
 
-    const handleCreateUpdate = () => {
-        console.log(enseignements);
+    const handleCreateUpdate = async () => {
         if (!code || !libelleFr || !libelleEn || !section || !cycle || !niveau) {
             if (!code) {
                 setErrorCode(t('error.code'));
@@ -279,18 +286,111 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             if (!niveau) {
                 setErrorNiveau(t('error.niveau'));
             }
-
-            if(enseignements.length>0){
-                if(!enseignements[0].typeEnseignement || !enseignements[0].enseignantPrincipal){
-                    setErrorTypeEns(t('error.enseignement'))
-                }
-            }
-
-
             return;
         }
+        if (!matiere) {
+            if (niveau && niveau._id) {
+                await apiCreateMatiere(
+                    {
+                        code,
+                        libelleFr,
+                        libelleEn,
+                        niveau:niveau._id, 
+                        prerequisFr, 
+                        prerequisEn, 
+                        approchePedFr, 
+                        approchePedEn, 
+                        evaluationAcquisFr, 
+                        evaluationAcquisEn,
+                        typesEnseignement:enseignements,
+                        chapitres
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(createMatiere({
+                            
+                            matiere: {
+                                _id: e.data._id,
+                                code:e.data.code,
+                                libelleFr:e.data.libelleFr,
+                                libelleEn:e.data.libelleEn,
+                                niveau:e.data.niveau, 
+                                prerequisFr:e.data.prerequisFr, 
+                                prerequisEn:e.data.prerequisEn, 
+                                approchePedFr:e.data.approchePedFr, 
+                                approchePedEn:e.data.approchePedEn, 
+                                evaluationAcquisFr:e.data.evaluationAcquisFr, 
+                                evaluationAcquisEn:e.data.evaluationAcquisEn,
+                                typesEnseignement:e.data.typesEnseignement,
+                                chapitres:e.data.chapitres,
+                                
+                            }
+                            
+                        }));
 
-        closeModal();
+                        closeModal();
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }else{
+            if (niveau && niveau._id) {
+                await apiUpdateMatiere(
+                    {
+                        code,
+                        libelleFr,
+                        libelleEn,
+                        niveau:niveau._id, 
+                        prerequisFr, 
+                        prerequisEn, 
+                        approchePedFr, 
+                        approchePedEn, 
+                        evaluationAcquisFr, 
+                        evaluationAcquisEn,
+                        typesEnseignement:enseignements,
+                        chapitres,
+                        _id:matiere._id,
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(
+                            updateMatiere({
+                                id: e.data._id,
+                                matiereData: {
+                                    _id: e.data._id,
+                                    code:e.data.code,
+                                    libelleFr:e.data.libelleFr,
+                                    libelleEn:e.data.libelleEn,
+                                    niveau:e.data.niveau, 
+                                    prerequisFr:e.data.prerequisFr, 
+                                    prerequisEn:e.data.prerequisEn, 
+                                    approchePedFr:e.data.approchePedFr, 
+                                    approchePedEn:e.data.approchePedEn, 
+                                    evaluationAcquisFr:e.data.evaluationAcquisFr, 
+                                    evaluationAcquisEn:e.data.evaluationAcquisEn,
+                                    typesEnseignement:e.data.typesEnseignement,
+                                    chapitres:e.data.chapitres,
+
+                                }
+                            }));
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
+
     }
 
     return (
@@ -345,29 +445,29 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={approchePedagogiqueFr}
-                    onChange={(e) => { setApprochePedagogiqueFr(e.target.value); }}
+                    value={approchePedFr}
+                    onChange={(e) => { setApprochePedFr(e.target.value); }}
                 />
                 <label>{t('label.approche_ped_en')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={approchePedagogiqueEn}
-                    onChange={(e) => { setApprochePedagogiqueEn(e.target.value); }}
+                    value={approchePedEn}
+                    onChange={(e) => { setApprochePedEn(e.target.value); }}
                 />
                 <label>{t('label.evaluation_acquis_fr')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={evaluationDesAcquisFr}
-                    onChange={(e) => { setEvaluationDesAcquisFr(e.target.value); }}
+                    value={evaluationAcquisFr}
+                    onChange={(e) => { setEvaluationAcquisFr(e.target.value); }}
                 />
                 <label>{t('label.evaluation_acquis_en')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
-                    value={evaluationDesAcquisEn}
-                    onChange={(e) => { setEvaluationDesAcquisEn(e.target.value); }}
+                    value={evaluationAcquisEn}
+                    onChange={(e) => { setEvaluationAcquisEn(e.target.value); }}
                 />
                 <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
@@ -405,72 +505,6 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                     ))}
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
-                <div>
-                    <h3>{t('label.types_ens')}</h3>
-                    {enseignements.map((type, index) => (
-                        <div key={index} className="enseignement-container">
-                            <select
-                                value={type.typeEnseignement ? (lang === 'fr' ? type.typeEnseignement : type.typeEnseignement) : 'Sélectionnez un type d\'enseignement'}
-                                onChange={(e) => {
-                                    const selectedType = typesEnseignement.find(t => t.code === e.target.value);
-
-                                    if (selectedType && selectedType._id) {
-                                        handleEnseignementChange(index, {...type, typeEnseignement: selectedType._id});
-                                    }
-                                }}
-                                className="select-field w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                            >
-                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                                {typesEnseignement.map((t, i) => (
-                                    <option key={i} value={t.code}>{t.code}</option>
-                                ))}
-                            </select>
-                            <div className="enseignant-input">
-                                <input
-                                    type="text"
-                                    id={`enseignant-${index}`}
-                                    placeholder={t('label.enseignant')}
-                                    list={`enseignants-list-${index}`}
-                                    className="input-field w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    onChange={handleInputChange}
-                                />
-                                <datalist id={`enseignants-list-${index}`}>
-                                    {enseignantsSuggeres.map((enseignant, index) => (
-                                        <option key={index} value={`${enseignant.nom} ${enseignant.prenom}`} />
-                                    ))}
-                                </datalist>
-                            </div>
-                            <div className="enseignant-sup-input">
-                                <input
-                                    type="text"
-                                    id={`enseignant-sup-${index}`}
-                                    list={`enseignants-sup-list-${index}`}
-                                    placeholder={t('label.enseignant_sup')}
-                                    className="input-field w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    onChange={handleInputChange}
-                                />
-                                <datalist id={`enseignants-sup-list-${index}`}>
-                                    {enseignantsSuggeres.map((enseignant, index) => (
-                                        <option key={index} value={`${enseignant.nom} ${enseignant.prenom}`} />
-                                    ))}
-                                </datalist>
-                            </div>
-                            {index !== 0 && (
-                                <button type="button" onClick={() => handleRemoveEnseignement(index)}>
-                                    {t('boutton.supprimer')}
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                    {errorTypeEns && <p className="text-red-500">{errorTypeEns}</p>}
-
-                    {enseignements.length < typesEnseignement.length && ( // Afficher le bouton d'ajout si tous les types n'ont pas été ajoutés
-                        <button type="button" onClick={handleAddEnseignement}>
-                            {t('boutton.ajouter_type')}
-                        </button>
-                    )}
-                </div>
-
             </CustomDialogModal>
 
         </>

@@ -27,7 +27,7 @@ const initialState: UserState = {
     contact: '',
     photo_profil: '',
     status: '',
-    abscences: [],
+    abscence: null,
     historique_connexion: [],
 };
 
@@ -36,17 +36,13 @@ export const userSlice = createSlice({
     name: "userSlice",
     initialState,
     reducers: {
-        
         // Définir l'utilisateur complet
         setUser: (state, action: PayloadAction<UserState>) => {
             return { ...state, ...action.payload };
         },
         // Définir l'utilisateur avec des propriétés minimales
         setMinimumUser: (state, action: PayloadAction<PropsUserMinState>) => {
-            state._id = action.payload._id;
-            state.role = action.payload.role;
-            state.nom = action.payload.nom;
-            state.prenom = action.payload.prenom;
+            return { ...state, ...action.payload };
         },
         // Mettre à jour l'utilisateur avec de nouvelles propriétés
         updateUser: (state, action: PayloadAction<Partial<UserState>>) => {

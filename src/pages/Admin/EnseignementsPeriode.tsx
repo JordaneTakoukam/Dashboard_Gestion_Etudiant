@@ -29,7 +29,7 @@ const EnseignementsPeriode = ({ periodeSelectionnee, returnWithPeriodeEnseigneme
             <Breadcrumb pageName={t('sub_menu.enseignement_periode')} isPeriodeEnseignement={true} returnWithPeriodeEnseignement={returnWithPeriodeEnseignement}/>
             <Table data={periodeSelectionnee?.enseignements}  onCreate={handleAddEnseignement} onEdit={handleEditEnseignement} periodeEnseignement={periodeSelectionnee}/>
 
-            <FormCreateUpdate enseignement={selectedEnseignement} niveau={periodeSelectionnee?.niveau}/>
+            <FormCreateUpdate enseignement={selectedEnseignement} periodeEnseignement={periodeSelectionnee}/>
             <FormDelete enseignement={selectedEnseignement}/>
 
         </>

@@ -1,17 +1,16 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
-import { ReponseApiPros } from './interface_reponse.js';
 
 
 const api = `${apiUrl}/matiere/chapitre`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateChapitre({ code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs, competences }: ChapitreType): Promise<ReponseApiPros> {
+export async function apiCreateChapitre({ code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs }: ChapitreType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs, competences },
+            { code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,11 +26,11 @@ export async function apiCreateChapitre({ code, libelleFr, libelleEn, typesEnsei
     }
 }
 
-export async function apiUpdateChapitre({ _id, code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs, competences }: ChapitreType): Promise<ReponseApiPros> {
+export async function apiUpdateChapitre({ _id, code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs }: ChapitreType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs, competences },
+            { code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs },
             {
                 headers: {
                     'Content-Type': 'application/json',

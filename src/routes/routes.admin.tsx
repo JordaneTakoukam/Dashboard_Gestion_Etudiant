@@ -24,6 +24,7 @@ import Questions from '../pages/Admin/Questions';
 import ListeDesSondages from '../pages/Admin/Sondages';
 import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
 import { Departements } from '../pages/Admin/Departements';
+import ListeDesPeriodesEnseignement from '../pages/Admin/PeriodeEnseignement';
 
 
 
@@ -65,6 +66,11 @@ const coreRoutes = [
     component: ProgressionMatiere,
   },
 
+  {
+    path: '/subjects/periodes_enseignement',
+    title: 'Periodes d\'enseignement',
+    component: ListeDesPeriodesEnseignement,
+  },
   // salles de cours
   {
     path: '/classrooms',

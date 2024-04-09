@@ -1,7 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
@@ -24,8 +22,8 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     const { t } = useTranslation();
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
-    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
+    const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
 
     const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
@@ -34,20 +32,20 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[]>([]);
     // État du texte de recherche
     const [searchText, setSearchText] = useState<string>('');
-    
+
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-   
+
     // valeur de la l'id de la region selectionner
     const [selectRegionId, setSelectIdRegion] = useState<string | undefined>('');
 
     // recuperer l'id de la region suite au click sur l'input select
     const handleRegionSelect = (selected: CommonSettingProps | undefined) => {
         setFilteredDepartement([]);
-        console.log("filterd == "+filteredDepartement);
+        console.log("filterd == " + filteredDepartement);
         if (selected?._id) {
             setSelectIdRegion(selected._id);
             filterDepartementByRegion(selected._id);
@@ -64,11 +62,11 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
             filterCommuneByDepartement(selected._id);
             // setSelectIdDepartement('');
         }
-        
+
     };
     // Filtrer les communes en fonction de la langue
     const filterCommunesByContenet = (communes: CommuneProps[]) => {
-        if (searchText === '' && filteredDepartement && filteredDepartement.length>0) {
+        if (searchText === '' && filteredDepartement && filteredDepartement.length > 0) {
             const result: CommuneProps[] = data.filter(commune => commune.departement === filteredDepartement[0]?._id);
             return result;
         }
@@ -92,7 +90,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                 setSelectIdDepartement(result[0]._id);
             }
             setFilteredDepartement(result);
-          
+
         }
     };
 
@@ -123,21 +121,21 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
         if (regions && regions.length > 0) {
             filterDepartementByRegion(regions[0]?._id);
         }
-           
+
     }, [regions]);
 
     useEffect(() => {
         if (filteredDepartement && filteredDepartement.length > 0) {
-            if(!selectDepartementId){
+            if (!selectDepartementId) {
                 filterCommuneByDepartement(filteredDepartement[0]?._id);
-            }else{
+            } else {
                 filterCommuneByDepartement(selectDepartementId);
             }
-                
-        }        
+
+        }
     }, [filteredDepartement, data]);
 
-    
+
 
     // modifier les donner de la page lors de la recherche
     useEffect(() => {
@@ -215,19 +213,11 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable />
-                                : filteredCommune.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
-                        }
+                        <HeaderTable />
 
                         {/* corp du tableau*/}
+                        <BodyTable data={filteredCommune} onEdit={onEdit} />
 
-                        {
-                            !pageIsLoading && <BodyTable data={filteredCommune} onEdit={onEdit} />
-                        }
 
 
 

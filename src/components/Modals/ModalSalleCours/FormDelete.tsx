@@ -4,8 +4,6 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
-import { ReponseApiPros } from '../../../api/interface_reponse';
-import { apiDeleteRegion } from '../../../api/settings/api_region';
 import createToast from '../../../hooks/toastify';
 import { apiDeleteSalleDeCours } from '../../../api/settings/api_salle_de_cours';
 

@@ -1,7 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
@@ -24,30 +22,28 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
     const { t } = useTranslation();
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
 
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     // fournira les donnees a la page
     const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[]>([]);
     // État du texte de recherche
     const [searchText, setSearchText] = useState<string>('');
-    
+
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-   
+
     // valeur de la l'id de la section selectionner
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
 
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
         setFilteredCycle([]);
-        console.log("filterd == "+filteredCycle);
+        console.log("filterd == " + filteredCycle);
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
@@ -64,11 +60,11 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
             filterNiveauByCycle(selected._id);
             // setSelectIdCycle('');
         }
-        
+
     };
     // Filtrer les niveaux en fonction de la langue
     const filterNiveauxByContenet = (niveaux: NiveauProps[]) => {
-        if (searchText === '' && filteredCycle && filteredCycle.length>0) {
+        if (searchText === '' && filteredCycle && filteredCycle.length > 0) {
             const result: NiveauProps[] = data.filter(niveau => niveau.cycle === filteredCycle[0]?._id);
             return result;
         }
@@ -92,7 +88,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                 setSelectIdCycle(result[0]._id);
             }
             setFilteredCycle(result);
-          
+
         }
     };
 
@@ -123,21 +119,21 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
         if (sections && sections.length > 0) {
             filterCycleBySection(sections[0]?._id);
         }
-           
+
     }, [sections]);
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
-            if(!selectCycleId){
+            if (!selectCycleId) {
                 filterNiveauByCycle(filteredCycle[0]?._id);
-            }else{
+            } else {
                 filterNiveauByCycle(selectCycleId);
             }
-                
-        }        
+
+        }
     }, [filteredCycle, data]);
 
-    
+
 
     // modifier les donner de la page lors de la recherche
     useEffect(() => {
@@ -215,19 +211,12 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable />
-                                : filteredNiveau.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
-                        }
+                        <HeaderTable />
+
 
                         {/* corp du tableau*/}
+                        <BodyTable data={filteredNiveau} onEdit={onEdit} />
 
-                        {
-                            !pageIsLoading && <BodyTable data={filteredNiveau} onEdit={onEdit} />
-                        }
 
 
 

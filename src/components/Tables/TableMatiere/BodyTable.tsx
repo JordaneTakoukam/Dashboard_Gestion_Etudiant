@@ -6,14 +6,16 @@ import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
+import { SelectButton } from "./composants/SelectButton"
 
 interface BodyMatiereProps {
     data: MatiereType[];
-    onEdit: (matiere : MatiereType) => void;
-    onAddChap:(matiere : MatiereType)=>void;
+    onEdit: (matiere: MatiereType) => void;
+    onAddChap: (matiere: MatiereType) => void;
+    onAddEnseignement:(matiere : MatiereType)=>void;
 }
 
-const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
+const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatiereProps) => {
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -24,15 +26,15 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
     const onMoreActionsClick = (actionName: string) => {
         switch (actionName) {
             case 'Ajouter un chapitre':
-                if(selectedMatiere){
+                if (selectedMatiere) {
                     onAddChap(selectedMatiere);
                 }
                 dispatch(setShowModalChapitre())
                 break;
             case 'Ajouter un objectif':
                 // Logic to add an objective                    
-                
-                
+
+
                 break;
             case 'Ajouter une compétence':
                 // Logic to add a competency
@@ -45,7 +47,7 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
-    function nombreDeChapitres(matiere:MatiereType) {
+    function nombreDeChapitres(matiere: MatiereType) {
         // Vérifier si la matière existe et si elle a une liste de chapitres
         if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
             // Retourner la longueur de la liste des chapitres
@@ -56,9 +58,9 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
         }
     }
 
-    function volumeHoraireGlobal(matiere:MatiereType) {
+    function volumeHoraireGlobal(matiere: MatiereType) {
         let volumeTotal = 0;
-    
+
         // Vérifier si la matière existe et si elle a une liste de chapitres
         if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
             // Parcourir tous les chapitres de la matière
@@ -74,11 +76,11 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
                 }
             });
         }
-    
+
         return volumeTotal;
     }
-    
-    
+
+
 
     return <tbody>
         {data.map((item, index) => (
@@ -109,20 +111,34 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                    <SelectButton
+                        listPage={[
+                            {
+                                "name": "Chapitres",
+                                "handleClick": () => { onAddChap(item) }
+                            },
+                            {
+                                "name": "Autres ...",
+                                "handleClick": () => {onAddEnseignement(item) }
+                            }
+                        ]}
+                    />
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);
                             dispatch(setShowModal())
                         }}
-                        onClickDelete={roles.admin === userRole ?() => {
+                        onClickDelete={(roles.admin === userRole || roles.superAdmin === userRole) ? () => {
                             onEdit(item);
                             dispatch(setShowModalDelete())
-                        }:undefined}
-                        
-                        onClickOpenChapitres={() => onAddChap(item)} 
+                        } : undefined}
+
+                    // onClickOpenChapitres={() => onAddChap(item)}
                     />
-                    
+
+
+
                 </td>
             </tr>
         ))}

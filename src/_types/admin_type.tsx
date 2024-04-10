@@ -1,14 +1,11 @@
 interface AdminType extends AdminCreateType {
     _id: string;
-    status: string;
-    historique_connexion: Date[];
-    photo_profil: string | null;
-    date_creation: String | null;
+    status?: string;
+    historique_connexion?: Date[];
+    photo_profil?: string | null;
+    date_creation?: String | null;
 }
 
-interface AdminUpdateType extends AdminCreateType {
-    _id: string;
-}
 
 interface AdminCreateType {
     genre: string;

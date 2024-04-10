@@ -45,8 +45,7 @@ const ListeDesAdministrateur = () => {
         dispatch(setAdminsLoading(true));
         try {
             const fetchResult = await getAdministrateurs({ page: 1 });
-            console.log(fetchResult);
-            
+
             if (fetchResult) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                 dispatch(setAdmin(fetchResult));
                 dispatch(setErrorPageAdmin(null));
@@ -66,6 +65,7 @@ const ListeDesAdministrateur = () => {
             fetchListe();
         }
     }, [dispatch]);
+
 
 
     return (

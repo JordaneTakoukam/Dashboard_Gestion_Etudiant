@@ -126,6 +126,7 @@ export function ModalCreateUpdateAdmin({ admin }: ModalCreateUpdateAdmin) {
 
 
     const handleSubmit = async () => {
+
         if (!nom || !genre || !email) {
             if (!nom) {
                 setErrorNom(t('error.nom'));
@@ -133,50 +134,64 @@ export function ModalCreateUpdateAdmin({ admin }: ModalCreateUpdateAdmin) {
             if (!genre) {
                 setErrorGenre(t('error.genre'));
             }
-
             if (!email) {
                 setErrorEmail(t('error.email'));
             }
+
+            return;
+        }
+        if (email) {
             const notValidEmail = validateEmail(email);
             if (notValidEmail) {
                 setErrorEmail(t(notValidEmail));
+                return;
             }
-
-            return;
-
         }
 
         //
-        if (!admin) {
-            // create admin
-            await apiCreateAdministrateur({
-                genre,
-                date_entree: dateEntreeAdmin,
-                date_naiss: dateNaiss,
-                nom: nom,
-                prenom,
-                email,
-                matricule,
-                lieu_naiss: lieuNaiss,
-                contact,
-                grade: grade?._id ? grade._id : null,
-                categorie: categorie?._id ? categorie._id : null,
-                fonction: fonction?._id ? fonction._id : null,
-                service: service?._id ? service._id : null,
-                region: region?._id ? region._id : null,
-                departement: departement?._id ? departement._id : null,
-                commune: commune?._id ? commune._id : null,
-            }).then((e: ReponseApiPros) => {
-                if (e.success) {
-                    try { createToast(e.message[lang as keyof typeof e.message], '', 0); }
-                    catch (e) { throw e; }
+        const dataForm: AdminCreateType = {
+            genre,
+            date_entree: dateEntreeAdmin,
+            date_naiss: dateNaiss,
+            nom: nom,
+            prenom: prenom,
+            email: email,
+            matricule: matricule,
+            lieu_naiss: lieuNaiss,
+            contact,
+            grade: grade?._id ? grade._id : null,
+            categorie: categorie?._id ? categorie._id : null,
+            fonction: fonction?._id ? fonction._id : null,
+            service: service?._id ? service._id : null,
+            region: region?._id ? region._id : null,
+            departement: departement?._id ? departement._id : null,
+            commune: commune?._id ? commune._id : null,
+        }
 
-                    dispatch(createAdmin({ ...e.data }));
+
+
+        if (!admin) {
+            //  create admin
+            await apiCreateAdministrateur({
+                ...dataForm
+            }).then((reponse: ReponseApiPros) => {
+
+                if (reponse.success) {
+                    try {
+                        dispatch(createAdmin({ ...reponse.data }));
+                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
+                    }
+                    catch (e) {
+                        try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
+                        catch (e) { throw e; }
+                    }
+
                     closeModal();
 
                 } else {
-                    try { createToast(e.message[lang as keyof typeof e.message], '', 2); }
+                    try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
                     catch (e) { throw e; }
+
                 }
             }).catch((e) => {
                 try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
@@ -184,51 +199,41 @@ export function ModalCreateUpdateAdmin({ admin }: ModalCreateUpdateAdmin) {
             })
 
         } else {
+
             //
             //
             //
             // update admin
-            await apiUpdateAdministrateur({
-                _id: admin._id,
-                genre,
-                date_entree: dateEntreeAdmin,
-                date_naiss: dateNaiss,
-                nom: nom,
-                prenom,
-                email,
-                matricule,
-                lieu_naiss: lieuNaiss,
-                contact,
-                grade: grade?._id ? grade._id : null,
-                categorie: categorie?._id ? categorie._id : null,
-                fonction: fonction?._id ? fonction._id : null,
-                service: service?._id ? service._id : null,
-                region: region?._id ? region._id : null,
-                departement: departement?._id ? departement._id : null,
-                commune: commune?._id ? commune._id : null,
-            }).then((e: ReponseApiPros) => {
-                if (e.success) {
+            await apiUpdateAdministrateur(
+                { _id: admin!._id.toString(), ...dataForm },
+            ).then((reponse: ReponseApiPros) => {
+                if (reponse.success) {
+                    try {
+                        dispatch(updateAdmin({ newAdmin: { ...reponse.data } }));
+                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
+                    }
+                    catch (e) {
 
-                    try { createToast(e.message[lang as keyof typeof e.message], '', 0); }
-                    catch (e) { throw e; }
 
-                    dispatch(updateAdmin({ ...e.data }));
+                        try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
+                        catch (e) { throw e; }
+                    }
                     closeModal();
 
                 } else {
-                    try { createToast(e.message[lang as keyof typeof e.message], '', 2); }
+
+                    try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
                     catch (e) { throw e; }
                 }
             }).catch((e) => {
+
                 try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
                 catch (e) { throw e; }
             })
         }
 
-        // 
-        //
-        //
-        // closeModal();
+
+
     }
 
     useEffect(() => {

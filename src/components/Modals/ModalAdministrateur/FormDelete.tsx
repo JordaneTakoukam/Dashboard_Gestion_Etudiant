@@ -20,20 +20,24 @@ function ModalDeleteAdministrateur({ administrateur }: { administrateur: AdminTy
 
     const handleDeleteAdministrateur = async () => {
         if (administrateur?._id != null) {
-            await apiDeleteAdministrateur(administrateur._id).then((e: ReponseApiPros) => {
-                if (e.success) {
-                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+            await apiDeleteAdministrateur(administrateur._id)
+                .then((reponse: ReponseApiPros) => {
+                    if (reponse.success) {
+                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
 
-                    if (administrateur._id) {
-                        dispatch(deleteAdmin({ id: administrateur._id }));
+                        if (administrateur._id) {
+                            dispatch(deleteAdmin({ id: administrateur._id }));
+                        }
+                        closeModal();
+                    } else {
+                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 2);
                     }
-                    closeModal();
-                } else {
-                    createToast(e.message[lang as keyof typeof e.message], '', 2);
-                }
-            }).catch((e) => {
-                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-            })
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+        } else {
+            createToast('Incorrect id', '', 2);
+
         }
         closeModal();
     }

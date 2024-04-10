@@ -19,9 +19,11 @@ interface TableAdministrateurProps {
 
 
 const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
+
     const adminState = useSelector((state: RootState) => state.admin.data);
     const { t } = useTranslation();
     const dispatch = useDispatch();
+
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
@@ -52,7 +54,10 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
     useEffect(() => {
         const result = filtrerSearchAdmin(data);
         setListFilterAdmin(result);
-    }, [searchText]);
+        console.log("refresh de la liste");
+
+
+    }, [searchText, data]);
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -76,6 +81,8 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
     //     console.log(pageNumber);
 
     // };
+
+
 
     return (
         <div>
@@ -102,7 +109,6 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
 
                         {/* body */}
                         <BodyTable data={listFilterAdmin} onEdit={onEdit} />
-
 
                     </table>
                 </div>

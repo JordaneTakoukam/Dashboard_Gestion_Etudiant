@@ -18,6 +18,7 @@ const initialState: DataSettingSlice = {
         etatEvenements: [],
         anneeCourante: 2024,
         premiereAnnee: 2024,
+        semestreCourant : 0,
         // roles:[],
         __v: 0,
     },

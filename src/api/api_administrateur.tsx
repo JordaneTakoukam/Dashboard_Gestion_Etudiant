@@ -41,7 +41,7 @@ export async function getAdministrateurs({ page }: { page: number }): Promise<Ad
 export async function apiCreateAdministrateur({ ...newAdmin }: AdminCreateType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
-            `${api}/create`,
+            `${api}/create/create-admin`,
             { ...newAdmin },
             {
                 headers: {
@@ -61,7 +61,7 @@ export async function apiCreateAdministrateur({ ...newAdmin }: AdminCreateType):
 //
 //
 // update 
-export async function apiUpdateAdministrateur({ ...adminUpdate }: AdminUpdateType): Promise<ReponseApiPros> {
+export async function apiUpdateAdministrateur(adminUpdate: AdminType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${adminUpdate._id}`,
@@ -75,6 +75,7 @@ export async function apiUpdateAdministrateur({ ...adminUpdate }: AdminUpdateTyp
         );
 
         return response.data;
+
     } catch (error) {
         console.error('Error updating section:', error);
         throw error;

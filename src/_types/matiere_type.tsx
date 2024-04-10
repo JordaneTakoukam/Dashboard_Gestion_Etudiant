@@ -12,7 +12,7 @@ interface MatiereType {
     approchePedEn: string;
     evaluationAcquisFr: string;
     evaluationAcquisEn: string;
-    typesEnseignement: Enseignement[],
+    typesEnseignement?: EnseignementType[],
     chapitres?: ChapitreType[],
 }
 

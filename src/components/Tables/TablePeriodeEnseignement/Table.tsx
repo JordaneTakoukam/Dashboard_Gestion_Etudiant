@@ -4,33 +4,29 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Matiere } from "../../../pages/Admin/ListeMatieres";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
-import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
-import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../../_redux/features/matiere_slice";
-import { getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
+import { setPeriodeEnseignementLoading, setPeriodeEnseignements, setErrorPagePeriodeEnseignement } from "../../../_redux/features/periode_enseignement_slice";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
 
-interface TableMatiereProps {
-    data: MatiereType[];
+interface TablePeriodeEnseignementProps {
+    data: PeriodeEnseignementType[];
     onCreate:()=>void;
-    onEdit: (matiere : MatiereType) => void;
-    onAddChap:(matiere : MatiereType)=>void;
-    onAddEnseignement:(matiere:MatiereType)=>void;
+    onEdit: (periodeEnseignement : PeriodeEnseignementType) => void;
+    onAddEnseignement:(periodeEnseignement : PeriodeEnseignementType)=>void;
 }
 
-const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMatiereProps) => {
+const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseignementProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -40,7 +36,10 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
+    const pageIsLoading = useSelector((state: RootState) => state.periodeEnseignementSlice.pageIsLoading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -49,6 +48,8 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
 
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
@@ -89,6 +90,17 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
         // methode pour download
     };
     
+    const handleAnneeSelect = (selected: String | undefined) => {
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
+    };
+
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
+        }
+    };
 
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
@@ -110,59 +122,58 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
-            fetchMatieres(selected._id, 1);    
+            fetchPeriodeEnseignements(selected._id, 1);    
         }
     };
 
-    // Filtrer les matières en fonction de la langue
-    const filterMatiereByContent = (matieres: MatiereType[]) => {
+    // Filtrer les périodes d'enseignement en fonction de la langue
+    const filterPeriodeEnseignementByContent = (periodeEnseignements: PeriodeEnseignementType[]) => {
         if (searchText === '') {
-            const result: MatiereType[] = matieres;
+            const result: PeriodeEnseignementType[] = periodeEnseignements;
             return result;
         }
-        return matieres.filter(matiere => {
-            const libelle = lang === 'fr' ? matiere.libelleFr : matiere.libelleEn;
+        return periodeEnseignements.filter(periodeEnseignement => {
+            const libelle = lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn;
             // Vérifie si le code ou le libellé contient le texte de recherche
-            return matiere.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+            return periodeEnseignement.dateDebut.toLowerCase().includes(searchText.toLowerCase()) || periodeEnseignement.dateFin.toLowerCase().includes(searchText.toLowerCase())  || libelle.toLowerCase().includes(searchText.toLowerCase());
         });
     };
 
-    const fetchMatieres = async (currentNiveauId: string, page: number) => {
-        dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
+    const fetchPeriodeEnseignements = async (currentNiveauId: string, page: number) => {
+        dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
         try {
-            const emptyMatieres : MatiereReturnGetType={
-                matieres: [],
+            const emptyPeriodes : PeriodeEnseignementReturnGetType = {
+                periodes: [],
                 currentPage: 0,
                 totalItems: 0,
                 totalPages: 0,
                 pageSize: 0
-            }
+            } ;
             if (currentNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: page });
-                if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                    dispatch(setMatieres(fetchedMatieres));
+                const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: currentNiveauId, page: page, annee:selectedYear, semestre:selectedSemestre });
+                if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
+                    dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
                    
                 } else {
-                    
-                    dispatch(setMatieres(emptyMatieres));
+                    dispatch(setPeriodeEnseignements(emptyPeriodes));
                 }
             } // Réinitialisez les erreurs s'il y en a
         } catch (error) {
-            dispatch(setErrorPageMatiere(t('message.erreur')));
+            dispatch(setErrorPagePeriodeEnseignement(t('message.erreur')));
             createToast(t('message.erreur'), "", 2)
         } finally {
-            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+            dispatch(setPeriodeEnseignementLoading(false)); // Définissez le loading à false après le chargement
         }
     }
 
      // variable pour la pagination
-     const itemsPerPage = useSelector((state: RootState) => state.matiereSlice.data.pageSize); // nombre delements maximum par page
+     const itemsPerPage = useSelector((state: RootState) => state.periodeEnseignementSlice.data.pageSize); // nombre delements maximum par page
      const [currentPage, setCurrentPage] = useState<number>(1);
  
      const indexOfLastItem = currentPage * itemsPerPage;
      const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
-     const count =useSelector((state: RootState) => state.matiereSlice.data.totalItems);
+    //  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+     const count =useSelector((state: RootState) => state.periodeEnseignementSlice.data.totalItems);
      const handlePageClick = (pageNumber: number) => {
          setCurrentPage(pageNumber);
      };
@@ -200,16 +211,16 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     useEffect(() => {
         
         if(selectNiveauId){
-            fetchMatieres(selectNiveauId, currentPage);    
+            fetchPeriodeEnseignements(selectNiveauId, currentPage);    
         }
         
-    }, [currentPage]); // Déclencher l'effet lorsque currentPage change
+    }, [currentPage, selectedYear, selectedSemestre]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
-    const [filteredData, setFilteredData] = useState<MatiereType[]>(data);
+    const [filteredData, setFilteredData] = useState<PeriodeEnseignementType[]>(data);
 
     useEffect(() => {
-        const result = filterMatiereByContent(data);
+        const result = filterPeriodeEnseignementByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
     
@@ -219,29 +230,35 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === userRole || roles.superAdmin === userRole && (<ButtonCreate
-                    title={t('boutton.nouvelle_matiere')}
+                    title={t('boutton.nouvelle_periodeEnseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.matiere')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.periodeEnseignement')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.matiere')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.periodeEnseignement')} </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
+
                                 onSelect={handleAnneeSelect}
-                            /> */}
+                            />
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -271,13 +288,19 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
+
                                 onSelect={handleAnneeSelect}
-                            /> */}
+                            />
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -312,20 +335,17 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                         {/* en tete du tableau */}
                         {
                             pageIsLoading ?
-                                <LoadingTable />
-                                : filteredData.length === 0 ?
+                                <LoadingTable /> 
+                                : filteredData?filteredData.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTable />
+                                    <HeaderTable /> : <NoDataTable />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddChap={onAddChap} onAddEnseignement={onAddEnseignement}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddEnseignement={onAddEnseignement}/>
                         }
-
-
-
 
                     </table>
                 </div>

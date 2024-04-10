@@ -4,10 +4,9 @@ interface ChapitreType {
     code: string;
     libelleFr: string;
     libelleEn: string;
-    typesEnseignement: Enseignement[],
+    typesEnseignement: EnseignementType[],
     matiere:string,
     objectifs:ObjectifType[],
-    competences:CompetenceType[],
 }
 
 interface ChapitreInitialData {

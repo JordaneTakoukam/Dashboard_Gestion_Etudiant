@@ -1,16 +1,17 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
+import { niveaux } from '../pages/Admin/Niveaux.js';
 
 
-const api = `${apiUrl}/matiere`;
+const api = `${apiUrl}/periode-enseignement`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
+export async function apiCreatePeriodeEnseignement({ annee, semestre, periodeFr, periodeEn, dateDebut, dateFin, niveau, enseignements }: PeriodeEnseignementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres },
+            { annee, semestre, periodeFr, periodeEn, dateDebut, dateFin, niveau, enseignements },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,11 +27,11 @@ export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, pre
     }
 }
 
-export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
+export async function apiUpdatePeriodeEnseignement({ _id, annee, semestre, periodeFr, periodeEn, dateDebut, dateFin, niveau, enseignements }: PeriodeEnseignementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres },
+            { annee, semestre, periodeFr, periodeEn, dateDebut, dateFin, niveau, enseignements },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau
     }
 }
 
-export async function apiDeleteMatiere(matiereId: string): Promise<ReponseApiPros> {
+export async function apiDeletePeriodeEnseignement(matiereId: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
             `${api}/delete/${matiereId}`,
@@ -65,11 +66,11 @@ export async function apiDeleteMatiere(matiereId: string): Promise<ReponseApiPro
     }
 }
 
-export async function getMatieresByNiveauWithPagination({ niveauId, page }: { niveauId: string, page: number }): Promise<MatiereReturnGetType> {
+export async function getPeriodesEnseignement({ niveauId, page, annee, semestre }: { niveauId: string, page: number, annee:number, semestre:number }): Promise<PeriodeEnseignementReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getMatieresByNiveauWithPagination/${niveauId}`,
+            `${api}/getPeriodesEnseignement/${niveauId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,35 +79,14 @@ export async function getMatieresByNiveauWithPagination({ niveauId, page }: { ni
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    annee: annee,
+                    semestre:semestre
                 },
             },
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const matieres: MatiereReturnGetType = response.data.data;
-        
-        return matieres;
-    } catch (error) {
-        console.error('Error getting all settings:', error);
-        throw error;
-    }
-}
-
-export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Promise<ProgressionMatiereReturnGetType> {
-    try {
-        const response: AxiosResponse<any> = await axios.get(
-            `${api}/getMatieresByNiveau/${niveauId}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-            },
-        );
-
-        // Extraction de tous les objets de paramètres de la réponse
-        const matieres: ProgressionMatiereReturnGetType = response.data.data;
-
+        const matieres: PeriodeEnseignementReturnGetType = response.data.data;        
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);

@@ -30,11 +30,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const dispatch = useDispatch();
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
-    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typeEnseignement); 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
+    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
     const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
@@ -146,7 +147,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
-    const [selectedSemestre, setSelectedSemestre] = useState<number>(1);
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
 
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
@@ -259,7 +260,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                     pageSize: 0
                 };
                 if (selectNiveauId) {
-                    const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: selectNiveauId, annee: currentYear, semestre: selectedSemestre });
+                    const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: selectNiveauId, annee: selectedYear, semestre: selectedSemestre });
                     dispatch(setPeriodes(fetchedPeriodes));
                 }else{
                     dispatch(setPeriodes(periodes)); 
@@ -274,7 +275,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         };
 
         fetchPeriodes();
-    }, [dispatch, currentYear, selectedSemestre, selectNiveauId, t]);
+    }, [dispatch, selectedYear, selectedSemestre, selectNiveauId, t]);
     
 
     return (
@@ -301,6 +302,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -322,12 +329,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                items={[1, 2]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             
                         </div>
                     )}
@@ -344,6 +346,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
                             
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
@@ -366,12 +374,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                items={[1, 2]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                         </div>
                     </div>
                 </div>

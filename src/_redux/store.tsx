@@ -5,6 +5,7 @@ import dataSettingReducer from "./features/data_setting_slice.tsx";
 import evenementReducer from "./features/evenement_slice.tsx";
 import periodeReducer from "./features/periode_slice.tsx";
 import matiereReducer from "./features/matiere_slice.tsx";
+import periodeEnseignementReducer from "./features/periode_enseignement_slice.tsx";
 import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
 import AdminReducer from "./features/admin_slice.tsx";
@@ -17,8 +18,9 @@ const store = configureStore({
     evenementSlice: evenementReducer,
     periodeSlice: periodeReducer,
     matiereSlice: matiereReducer,
-    chapitreSlice: chapitreReducer,
-    progressionMatiereSlice: progressionMatiereReducer,
+    periodeEnseignementSlice: periodeEnseignementReducer,
+    chapitreSlice:chapitreReducer,
+    progressionMatiereSlice:progressionMatiereReducer,
 
     // 
     admin: AdminReducer,

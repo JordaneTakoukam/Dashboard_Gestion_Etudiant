@@ -1,16 +1,23 @@
 // Définir le type de données pour une compétence
-
-interface Enseignement {
-    id?: number;
+interface EnseignementType {
+    id?: string;
     typeEnseignement : string;
     enseignantPrincipal?:UserState ;
     enseignantSuppleant?: UserState;
     volumeHoraire?: number;
 }
 
+interface MatiereEnseignement {
+    id?: string;
+    matiere:MatiereType;
+    typeEnseignement:string;
+    nombreSeance:number
+}
+
+
 interface ModeleTypeEnseignementInitialData {
     data: {
-        modeletypeenseignements: Enseignement[];
+        enseignements: EnseignementType[];
         currentPage: number;
         totalPages: number;
         totalItems: number;
@@ -21,12 +28,12 @@ interface ModeleTypeEnseignementInitialData {
 }
 
 interface CreateModeleTypeEnseignementPayload {
-    modeletypeenseignement: Enseignement; // Données de l'événement à créer
+    modeletypeenseignement: EnseignementType; // Données de l'événement à créer
 }
 
 interface UpdateModeleTypeEnseignementPayload {
     id: string; // ID de l'événement à mettre à jour
-    modeletypeenseignementData: Partial<Enseignement>; // Données mises à jour de l'événement
+    modeletypeenseignementData: Partial<EnseignementType>; // Données mises à jour de l'événement
 }
 
 interface DeleteModeleTypeEnseignementPayload {
@@ -34,7 +41,7 @@ interface DeleteModeleTypeEnseignementPayload {
 }
 
 interface ModeleTypeEnseignementReturnGetType {
-    modeletypeenseignements: Enseignement[];
+    modeletypeenseignements: EnseignementType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;

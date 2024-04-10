@@ -2,68 +2,78 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModal } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import { useEffect, useState } from 'react';
-import { Chapitre, Competence, Objectif, TypeEnseignement, cm, typesEnseignement } from '../../../pages/Admin/Chapitres';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
+import { apiCreateChapitre, apiUpdateChapitre } from '../../../api/api_chapitre';
+import createToast from '../../../hooks/toastify';
+import { createChapitre, updateChapitre } from '../../../_redux/features/chapitre_slice';
+import { updateMatiere } from '../../../_redux/features/matiere_slice';
 
 
 
-function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
+function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | null, matiere : MatiereType |undefined|null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
-    const [typesEnseignementState, setTypesEnseignementState] = useState<TypeEnseignement[]>([cm]); // État local pour les types d'enseignement
+    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
+    const [typesEnseignementState, setTypesEnseignementState] = useState<CommonSettingProps[]>([]); // État local pour les types d'enseignement
     const [objectifs, setObjectifs] = useState<ObjectifType[]>([]); // État local pour les objectifs
     const [competences, setCompetences] = useState<CompetenceType[]>([]); // État local pour les compétences
+    const [enseignementState, setEnseignementState] = useState<EnseignementType[]>([]); // État local pour les types d'enseignement
+    const [selectedType, setSelectedType]=useState("");
+    const [selectedVolume, setSelectedVolume]=useState(0);
     
+    const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
     const [errorTypesEnseignement, setErrorTypesEnseignement] = useState("");
     const [errorObjectif, setErrorObjectif] = useState("");
-    const [errorObjectifFr, setErrorObjectifFr] = useState("");
-    const [errorObjectifEn, setErrorObjectifEn] = useState("");
     const [errorCompetence, setErrorCompetence] = useState("");
-    const [errorCompetenceFr, setErrorCompetenceFr] = useState("");
-    const [errorCompetenceEn, setErrorCompetenceEn] = useState("");
    
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
-    const objectif:ObjectifType={
-        code:"",
-        libelleFr: "",
-        libelleEn: "",
-        etat: 0
-    };
-    const competence:CompetenceType={
-        code:"",
-        libelleFr: "",
-        libelleEn: "",
-    };
 
     useEffect(() => {
+        const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
+                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
+                .map(objectId => typesEnseignement.find(type => type._id === objectId))
+                .filter(type => type !== undefined) as CommonSettingProps[];
+        listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+    }, [matiere]);
+
+   
+    useEffect(() => {
+        const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
+                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
+                .map(objectId => typesEnseignement.find(type => type._id === objectId))
+                .filter(type => type !== undefined) as CommonSettingProps[];
+        listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+
+
         if (chapitre) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.chapitre'));
             setCode(chapitre.code);
             setLibelleFr(chapitre.libelleFr);
             setLibelleEn(chapitre.libelleEn);
-            //setTypesEnseignementState(chapitre.typesEnseignement || [cm]);
-            setObjectifs(chapitre.objectifs || [objectif]);
-            setCompetences(chapitre.competences || [competence]);
-        
+            // setTypesEnseignementState(chapitre.typesEnseignement);
+            setEnseignementState(chapitre.typesEnseignement);
+            setObjectifs(chapitre.objectifs);
+            
         }else{
             setModalTitle(t('form_save.enregistrer')+t('form_save.chapitre'));
             setCode("");
             setLibelleFr("");
             setLibelleEn("");
-            setTypesEnseignementState([cm]);
-            setObjectifs([objectif]);
-            setCompetences([competence]);
-
+            setTypesEnseignementState([]);
+            
+            setEnseignementState([]);
+            handleAddTypeEnseignement();
+            setObjectifs([]);
         }
         if (isFirstRender) {
             setErrorCode("");
@@ -71,15 +81,11 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
             setErrorLibelleEn("");
             setErrorTypesEnseignement("");
             setErrorObjectif("");
-            setErrorObjectifFr("");
-            setErrorObjectifEn("");
             setErrorCompetence("");
-            setErrorCompetenceFr("");
-            setErrorCompetenceEn("");
             setIsFirstRender(false);
-            setTypesEnseignementState([cm]);
-            setObjectifs([objectif]);
-            setCompetences([competence]);
+            setTypesEnseignementState([]);
+            setObjectifs([]);
+            setEnseignementState([]);
         }
     }, [chapitre,  isFirstRender, t]);
 
@@ -88,12 +94,6 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
         setErrorLibelleFr("");
         setErrorLibelleEn("");
         setErrorTypesEnseignement("");
-        setErrorObjectif("");
-        setErrorObjectifFr("");
-        setErrorObjectifEn("");
-        setErrorCompetence("");
-        setErrorCompetenceFr("");
-        setErrorCompetenceEn("");
         setIsFirstRender(true);
         dispatch(setShowModal());
     };
@@ -102,15 +102,26 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
         // Vérifier s'il existe un type d'enseignement à ajouter
         if (typesEnseignement.length > 0) {
             // Ajouter le premier type d'enseignement à la liste
+            
             setTypesEnseignementState(prevState => [...prevState, typesEnseignement[0]]);
+            var id="";
+            if(typesEnseignement[0]._id){
+                id = typesEnseignement[0]._id;
+            }
+            
+            const enseignements : EnseignementType[]=[{
+                typeEnseignement: id,
+            }]
+            setEnseignementState(prevState => [...prevState, enseignements[0]]);
         }
     };
 
     const handleRemoveTypeEnseignement = (index: number) => {
         setTypesEnseignementState(prevState => prevState.filter((_, i) => i !== index));
+        setEnseignementState(prevState => prevState.filter((_, i) => i !== index));
     };
 
-    const handleTypeEnseignementChange = (index: number, type: TypeEnseignement) => {
+    const handleTypeEnseignementChange = (index: number, type: CommonSettingProps) => {
         setTypesEnseignementState(prevState => {
             const updatedTypes = [...prevState];
             updatedTypes[index] = type;
@@ -118,44 +129,22 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
         });
     };
 
-    const handleAddObjectif = () => {
-        setObjectifs(prevObjectifs => [...prevObjectifs, objectif]);
-    };
-
-    const handleRemoveObjectif = (index: number) => {
-        setObjectifs(prevObjectifs => prevObjectifs.filter((_, i) => i !== index));
-    };
-
-    const handleObjectifChange = (index: number, objectif: ObjectifType) => {
-        setObjectifs(prevObjectifs => {
-            const updatedObjectifs = [...prevObjectifs];
-            updatedObjectifs[index] = objectif;
-            return updatedObjectifs;
+    const handleEnseignementChange = (index: number, type: EnseignementType) => {
+        setEnseignementState(prevState => {
+            const updatedTypes = [...prevState];
+            updatedTypes[index] = type;
+            return updatedTypes;
         });
     };
 
-    const handleAddCompetence = () => {
-        setCompetences(prevCompetences => [...prevCompetences, competence]);
-    };
-
-    const handleRemoveCompetence = (index: number) => {
-        setCompetences(prevCompetences => prevCompetences.filter((_, i) => i !== index));
-    };
-
-    const handleCompetenceChange = (index: number, competence: CompetenceType) => {
-        setCompetences(prevCompetences => {
-            const updatedCompetences = [...prevCompetences];
-            updatedCompetences[index] = competence;
-            return updatedCompetences;
-        });
-    };
-
+    // const handleAddObjectif = () => {
+    //     setObjectifs(prevObjectifs => [...prevObjectifs, objectif]);
+    // };
     
 
-    const handleCreateUpdate = () => {
+    const handleCreateUpdate = async () => {
         // Vérifier si tous les champs requis sont remplis
-        if (!code || !libelleFr || !libelleEn ||  !typesEnseignementState[0].volumeHoraire 
-        || !objectifs[0].libelleFr || !objectifs[0].libelleEn || !competences[0].libelleFr || !competences[0].libelleEn) {
+        if (!code || !libelleFr || !libelleEn || !enseignementState[0].volumeHoraire) {
             if (!code) {
                 setErrorCode(t('error.code'));
             }
@@ -165,28 +154,168 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
             if (!libelleEn) {
                 setErrorLibelleEn(t('error.libelle_en'));
             }
-            if(!typesEnseignementState[0].volumeHoraire){
+            if(!enseignementState[0].volumeHoraire){
                 setErrorTypesEnseignement(t('error.type_ens'));
             }
             
-            if(!objectifs[0].libelleFr){
-                setErrorObjectif(t('error.objectif'));
-            }
-
-            if(!objectifs[0].libelleEn){
-                setErrorObjectif(t('error.objectif'));
-            }
-
-            if(!competences[0].libelleFr){
-                setErrorCompetence(t('error.competence'));
-            }
-            if(!competences[0].libelleEn){
-                setErrorCompetence(t('error.competence'));
-            }
-
             return;
         }
-        closeModal();
+        
+        if (!chapitre) {
+            if (matiere && matiere._id) {
+                await apiCreateChapitre(
+                    {
+                        code, 
+                        libelleFr, 
+                        libelleEn, 
+                        typesEnseignement:enseignementState, 
+                        matiere:matiere._id, 
+                        objectifs:[],
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                       
+                        dispatch(createChapitre({
+                            chapitre: {
+                                _id: e.data._id,
+                                code: e.data.code, 
+                                libelleFr: e.data.libelleFr, 
+                                libelleEn: e.data.libelleEn, 
+                                typesEnseignement:e.data.typesEnseignement, 
+                                matiere:e.data.matiere, 
+                                objectifs:e.data.objectifs,
+                            }
+                        }));
+
+                        const chapitre= {
+                            _id: e.data._id,
+                            code: e.data.code, 
+                            libelleFr: e.data.libelleFr, 
+                            libelleEn: e.data.libelleEn, 
+                            typesEnseignement:e.data.typesEnseignement, 
+                            matiere:e.data.matiere, 
+                            objectifs:e.data.objectifs,
+                        }
+                        
+                        if(matiere && matiere._id){
+                            var newChapitres:ChapitreType[] = [];
+                            for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
+                                const chapitre = matiere.chapitres[i];
+                                newChapitres.push(chapitre)
+                            }
+                            newChapitres.push(chapitre);
+
+                            dispatch(
+                                updateMatiere({
+                                    id: matiere._id,
+                                    matiereData: {
+                                        _id: matiere._id,
+                                        code:matiere.code,
+                                        libelleFr:matiere.libelleFr,
+                                        libelleEn:matiere.libelleEn,
+                                        niveau:matiere.niveau, 
+                                        prerequisFr:matiere.prerequisFr, 
+                                        prerequisEn:matiere.prerequisEn, 
+                                        approchePedFr:matiere.approchePedFr, 
+                                        approchePedEn:matiere.approchePedEn, 
+                                        evaluationAcquisFr:matiere.evaluationAcquisFr, 
+                                        evaluationAcquisEn:matiere.evaluationAcquisEn,
+                                        typesEnseignement:matiere.typesEnseignement,
+                                        chapitres:newChapitres,
+    
+                                    }
+                                }));
+                        }
+                        
+                        
+                        closeModal();
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }else{
+            if (matiere && matiere._id) {
+                await apiUpdateChapitre(
+                    {
+                        code, 
+                        libelleFr, 
+                        libelleEn, 
+                        typesEnseignement:chapitre.typesEnseignement, 
+                        matiere:matiere._id, 
+                        objectifs:chapitre.objectifs,
+                        _id:chapitre._id
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(
+                            updateChapitre({
+                                id: e.data._id,
+                                chapitreData: {
+                                    _id: e.data._id,
+                                    code: e.data.code, 
+                                    libelleFr: e.data.libelleFr, 
+                                    libelleEn: e.data.libelleEn, 
+                                    typesEnseignement:e.data.typesEnseignement, 
+                                    matiere:e.data.matiere, 
+                                    objectifs:e.data.objectifs,
+                                }
+                            }));
+                            const chapitre= {
+                                _id: e.data._id,
+                                code: e.data.code, 
+                                libelleFr: e.data.libelleFr, 
+                                libelleEn: e.data.libelleEn, 
+                                typesEnseignement:e.data.typesEnseignement, 
+                                matiere:e.data.matiere, 
+                                objectifs:e.data.objectifs,
+                            }
+                            
+                            if(matiere && matiere._id){
+                                var newChapitres:ChapitreType[] = [];
+                                for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
+                                    const chapitre = matiere.chapitres[i];
+                                    newChapitres.push(chapitre)
+                                }
+                                newChapitres.push(chapitre);
+    
+                                dispatch(
+                                    updateMatiere({
+                                        id: matiere._id,
+                                        matiereData: {
+                                            _id: matiere._id,
+                                            code:matiere.code,
+                                            libelleFr:matiere.libelleFr,
+                                            libelleEn:matiere.libelleEn,
+                                            niveau:matiere.niveau, 
+                                            prerequisFr:matiere.prerequisFr, 
+                                            prerequisEn:matiere.prerequisEn, 
+                                            approchePedFr:matiere.approchePedFr, 
+                                            approchePedEn:matiere.approchePedEn, 
+                                            evaluationAcquisFr:matiere.evaluationAcquisFr, 
+                                            evaluationAcquisEn:matiere.evaluationAcquisEn,
+                                            typesEnseignement:matiere.typesEnseignement,
+                                            chapitres:newChapitres,
+        
+                                        }
+                                    }));
+                            }
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
     };
 
     return (
@@ -207,7 +336,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
                     onChange={(e) => { setCode(e.target.value); setErrorCode("") }}
                 />
                 {errorCode && <p className="text-red-500">{errorCode}</p>}
-                <label>{t('label.libelle')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle_fr')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -215,7 +344,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
                     onChange={(e) => { setLibelleFr(e.target.value); setErrorLibelleFr("") }}
                 />
                 {errorLibelleFr && <p className="text-red-500">{errorLibelleFr}</p>}
-                <label>{t('label.libelle_fr')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.libelle_en')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -225,18 +354,23 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
                 {errorLibelleEn && <p className="text-red-500">{errorLibelleEn}</p>}
                 <div>
                     <h3>{t('label.type_ens')}<label className="text-red-500"> *</label></h3>
-                    {typesEnseignementState.map((type, index) => (
+                    {enseignementState.map((type, index) => (
                         <div key={index} className="flex items-center flex-item">
                             <select
-                                value={type.code}
+                                value={typesEnseignement.find(t => t._id === type.typeEnseignement)?.code}
                                 onChange={(e) => {
                                     const selectedType = typesEnseignement.find(t => t.code === e.target.value);
-                                    if (selectedType) {
-                                        handleTypeEnseignementChange(index, selectedType);
+                                    
+                                    if (selectedType && selectedType?._id) {
+                                        const selected : EnseignementType ={
+                                            typeEnseignement: selectedType?._id,
+                                            volumeHoraire:type.volumeHoraire,
+                                        }
+                                        handleEnseignementChange(index, selected);
                                     }
                                 }}
                             >
-                                {typesEnseignement.map((t, i) => (
+                                {typesEnseignementMat.map((t, i) => (
                                     <option key={i} value={t.code}>{t.code}</option>
                                 ))}
                             </select>
@@ -244,8 +378,15 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
                                 className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 type="number"
                                 placeholder={t('label.volume_horaire')}
-                                value={type.volumeHoraire}
-                                onChange={(e) => {handleTypeEnseignementChange(index, { ...type, volumeHoraire: +e.target.value }); setErrorTypesEnseignement("")}}
+                                value={type.volumeHoraire || ''}
+                                onChange={(e) => {
+                                    // setSelectedVolume(parseInt(e.target.value));
+                                    handleEnseignementChange(index, {
+                                        ...type, volumeHoraire: +e.target.value,
+                                        typeEnseignement: type.typeEnseignement
+                                    });
+                                    setErrorTypesEnseignement("")
+                                }}
                             />
                             
                             {index !== 0 && ( // Ne pas afficher le bouton de suppression pour le premier type
@@ -256,13 +397,13 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
                         </div>
                     ))}
                     {errorTypesEnseignement && <p className="text-red-500">{errorTypesEnseignement}</p>}
-                    {typesEnseignementState.length < typesEnseignement.length && ( // Afficher le bouton d'ajout si tous les types n'ont pas été ajoutés
+                    {enseignementState.length < typesEnseignementMat.length && ( // Afficher le bouton d'ajout si tous les types n'ont pas été ajoutés
                         <button type="button" onClick={handleAddTypeEnseignement}>
                             {t('boutton.ajouter_type')}
                         </button>
                     )}
                 </div>
-
+{/* 
                 <div>
                     <h3>{t('label.objectifs')} <label className="text-red-500"> *</label></h3>
                     {objectifs.map((objectif, index) => (
@@ -293,39 +434,7 @@ function ModalCreateUpdate({ chapitre }: { chapitre: ChapitreType | null }) {
                     <button type="button" onClick={handleAddObjectif}>
                         {t('boutton.ajouter_obj')}
                     </button>
-                </div>
-
-                <div>
-                    <h3>{t('label.competences')} <label className="text-red-500"> *</label></h3>
-                    {competences.map((competence, index) => (
-                        <div key={index} className="flex items-center flex-item">
-                            <input
-                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                type="text"
-                                placeholder={`${t('label.competence')} ${index + 1}`}
-                                value={competence.libelleFr}
-                                onChange={(e) => {handleCompetenceChange(index, {...competence, libelleFr : e.target.value}); setErrorCompetence("")}}
-                            />
-                            <input
-                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                type="text"
-                                placeholder={`${t('label.competence')} ${index + 1}`}
-                                value={competence.libelleEn}
-                                onChange={(e) => {handleCompetenceChange(index, {...competence, libelleEn : e.target.value}); setErrorCompetence("")}}
-                            />
-                            
-                            {index !== 0 && (
-                                <button type="button" onClick={() => handleRemoveCompetence(index)}>
-                                    {t('boutton.supprimer')}
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                    {errorCompetence && <p className="text-red-500">{errorCompetence}</p>}
-                    <button type="button" onClick={handleAddCompetence}>
-                        {t('boutton.ajouter_comp')}
-                    </button>
-                </div>
+                </div> */}
             </CustomDialogModal>
         </>
     );

@@ -9,16 +9,17 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
+import { matieres } from "../../../pages/Admin/ListeMatieres";
 
-interface TableChapitreProps {
-    data?: ChapitreType[];
+interface TableEnseignementProps {
+    data?: MatiereEnseignement[];
     onCreate:()=>void;
-    onEdit: (chapitre:ChapitreType) => void;
-    matiere?: MatiereType | null;
+    onEdit: (enseignement:MatiereEnseignement) => void;
+    periodeEnseignement?: PeriodeEnseignementType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
+const Table = ({ data, onCreate, onEdit, periodeEnseignement }: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -34,25 +35,26 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
         setCurrentPage(pageNumber);
     };
     const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<ChapitreType[] | undefined>(data);
+    const [filteredData, setFilteredData] = useState<MatiereEnseignement[] | undefined>(data);
     // Filtrer les matières en fonction de la langue
-    const filterChapitreByContent = (chapitres: ChapitreType[] | undefined) => {
-        if(chapitres){
+    const filterEnseignementByContent = (enseignements: MatiereEnseignement[] | undefined) => {
+        if(enseignements){
+            
             if (searchText === '') {
-                const result: ChapitreType[] = chapitres;
+                const result: MatiereEnseignement[] = enseignements;
                 return result;
             }
-            return chapitres.filter(chapitre => {
-                const libelle = lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn;
+            return enseignements.filter(enseignement => {
+                const libelle = lang === 'fr' ? enseignement.matiere.libelleFr : enseignement.matiere.libelleEn;
                 // Vérifie si le code ou le libellé contient le texte de recherche
-                return chapitre.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+                return enseignement.matiere.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
             });
         }
        return [];
     };
 
     useEffect(() => {
-        const result = filterChapitreByContent(data);
+        const result = filterEnseignementByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
 
@@ -61,10 +63,10 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title={t('boutton.nouveau_chapitre')}
+                    title={t('boutton.nouveau_enseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.chapitre'))} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.enseignement'))} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -72,8 +74,8 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
-                {matiere && (<div>
-                    {matiere.code}:{lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}
+                {periodeEnseignement && (<div>
+                    {lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn}
                 </div>)}
 
                 {/* DEBUT DU TABLE */}

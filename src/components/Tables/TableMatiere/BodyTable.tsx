@@ -12,9 +12,10 @@ interface BodyMatiereProps {
     data: MatiereType[];
     onEdit: (matiere: MatiereType) => void;
     onAddChap: (matiere: MatiereType) => void;
+    onAddEnseignement:(matiere : MatiereType)=>void;
 }
 
-const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
+const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatiereProps) => {
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -119,7 +120,7 @@ const BodyTable = ({ data, onEdit, onAddChap }: BodyMatiereProps) => {
                             },
                             {
                                 "name": "Autres ...",
-                                "handleClick": () => {alert('click sur Autres ...') }
+                                "handleClick": () => {onAddEnseignement(item) }
                             }
                         ]}
                     />

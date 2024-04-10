@@ -53,9 +53,9 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     // let matiere:Matiere=listMatieres[0];
 
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveau) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycle) ?? [];
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.section) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
     const [filteredMatiere, setFilteredMatiere] = useState<MatiereType | undefined>(data);
     const [formatToDownload, setFormatToDownload] = useState("");

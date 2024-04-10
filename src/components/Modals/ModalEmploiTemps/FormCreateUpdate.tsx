@@ -7,11 +7,11 @@ import { Jour, jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { FaTrash } from 'react-icons/fa6';
 import { useTranslation } from 'react-i18next';
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from '../../../_redux/features/matiere_slice';
-import { getMatieresByNiveauWithPagination } from '../../../api/api_matiere';
+import { getMatieresByNiveau } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
 import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
 import { formatYear } from '../../../fonctions/fonction';
-import { apiDeletePeriode } from '../../../api/api_periode';
+import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../api/api_periode';
 
 
 
@@ -21,7 +21,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const sallesCours: SalleDeCoursProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours) ?? [];
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -32,7 +33,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [matiere, setMatiere] = useState<MatiereType>();
-    const [semestre, setSemestre] = useState(0);
+    const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
     const [salleCours, setSalleCours] = useState<SalleDeCoursProps>();
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
@@ -155,8 +156,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     setNiveau(currentNiveau);
                 }
                 if (niveau && niveau._id) {
-
-                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: niveau._id, page: 1 });
+                    
+                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id});
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
                     } else {
@@ -201,7 +202,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
             const salleCours = sallesCours.find(salle => salle._id === periodeCours.salleCours);
             setSalleCours(salleCours);
-            const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement
+            const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
                 .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
@@ -220,7 +221,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setMatiere(undefined);
             setSalleCours(undefined);
             setTypeEnseignement(undefined);
-            setSemestre(0);
+            setSemestre(currentSemester);
             setFilteredCycle(undefined);
             setFilteredNiveau(undefined);
             setTypesEnseignementMat([]);
@@ -246,7 +247,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     }, [periodeCours, isFirstRender, matieres, t]);
     // Troisième useEffect pour gérer le changement de matière sélectionnée
     useEffect(() => {
-        if (matiere) {
+        if (matiere && matiere.typesEnseignement) {
             const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
                 .map(type => type.typeEnseignement)
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
@@ -304,7 +305,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const handleMatiereChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedMatiereLibelle = e.target.value;
         const selectedMatiere = matieres.find((matiere) => lang === 'fr' ? matiere.libelleFr === selectedMatiereLibelle : matiere.libelleEn === selectedMatiereLibelle);
-        if (selectedMatiere) {
+        if (selectedMatiere && selectedMatiere.typesEnseignement) {
             setMatiere(selectedMatiere);
             setErrorMatiere("");
             const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement
@@ -375,8 +376,147 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
     };
 
-    function handleCreatePeriodeCours(): void {
-        throw new Error('Function not implemented.');
+    const handleCreatePeriodeCours = async () => {
+        if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau || !matiere || !semestre 
+            || !typeEnseignement || !salleCours) {
+            if (!jour) {
+                setErrorJour(t('error.jour'));
+            }
+            if (!heureDebut) {
+                setErrorHeureDebut(t('error.heure_debut'));
+            }
+            if (!heureFin) {
+                setErrorHeureFin(t('error.heure_fin'));
+            }
+                
+            if (!section) {
+                setErrorSection(t('error.section'));
+            }
+            if (!cycle) {
+                setErrorCycle(t('error.cycle'));
+            }
+            if (!niveau) {
+                setErrorNiveau(t('error.niveau'));
+            }
+
+            if (!matiere) {
+                setErrorMatiere(t('error.matiere'));
+            }
+
+            if (!semestre) {
+                setErrorSemestre(t('error.semestre'));
+            }
+
+            if (!typeEnseignement) {
+                setErrorTypeEnseignement(t('error.type_ens_periode'));
+            }
+
+            if (!salleCours) {
+                setErrorSalle(t('error.salle'));
+            }
+
+            return;
+        }
+
+        if(verifierHeureFinApresDebut(heureDebut, heureFin)){
+            setErrorHeureFin(t('error.debut_sup_fin_periode'));
+            return;
+        }
+        
+        if (!periodeCours) {
+            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
+                await apiCreatePeriode(
+                    {
+                        jour : jour.ordre,
+                        semestre,
+                        annee,
+                        niveau:niveau._id,
+                        matiere : matiere,
+                        typeEnseignement : typeEnseignement._id,
+                        heureDebut,
+                        heureFin,
+                        salleCours:salleCours._id
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(createPeriode({
+                            
+                            periode: {
+                                _id: e.data._id,
+                                jour: e.data.jour,
+                                annee: e.data.annee,
+                                semestre: e.data.semestre,
+                                niveau: e.data.niveau,
+                                matiere: e.data.matiere,
+                                salleCours: e.data.salleCours,
+                                heureDebut: e.data.heureDebut,
+                                heureFin: e.data.heureFin,
+                                typeEnseignement: e.data.typeEnseignement,
+                                enseignantPrincipal:e.data.enseignantPrincipal,
+                                enseignantSuppleant:e.data.enseignantSuppleant,
+                                
+                            }
+                            
+                        }));
+
+                        closeModal();
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }else{
+            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
+                await apiUpdatePeriode(
+                    {
+                        jour : jour.ordre,
+                        semestre,
+                        annee,
+                        niveau:niveau._id,
+                        matiere : matiere,
+                        typeEnseignement : typeEnseignement._id,
+                        heureDebut,
+                        heureFin,
+                        salleCours:salleCours._id,
+                        _id:periodeCours._id
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(
+                            updatePeriode({
+                                id: e.data._id,
+                                periodeData: {
+                                    _id: e.data._id,
+                                    jour: e.data.jour,
+                                    annee: e.data.annee,
+                                    semestre: e.data.semestre,
+                                    niveau: e.data.niveau,
+                                    matiere: e.data.matiere,
+                                    salleCours: e.data.salleCours,
+                                    heureDebut: e.data.heureDebut,
+                                    heureFin: e.data.heureFin,
+                                    typeEnseignement: e.data.typeEnseignement,
+                                    enseignantPrincipal:e.data.enseignantPrincipal,
+                                    enseignantSuppleant:e.data.enseignantSuppleant,
+                                }
+                            }));
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
+        
     }
 
     return (

@@ -10,15 +10,15 @@ import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 
-interface TableChapitreProps {
-    data?: ChapitreType[];
+interface TableEnseignementProps {
+    data?: EnseignementType[];
     onCreate:()=>void;
-    onEdit: (chapitre:ChapitreType) => void;
+    onEdit: (enseignement:EnseignementType) => void;
     matiere?: MatiereType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
+const Table = ({ data, onCreate, onEdit, matiere }: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -34,37 +34,37 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableChapitreProps) => {
         setCurrentPage(pageNumber);
     };
     const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<ChapitreType[] | undefined>(data);
+    const [filteredData, setFilteredData] = useState<EnseignementType[] | undefined>(data);
     // Filtrer les matières en fonction de la langue
-    const filterChapitreByContent = (chapitres: ChapitreType[] | undefined) => {
-        if(chapitres){
-            if (searchText === '') {
-                const result: ChapitreType[] = chapitres;
-                return result;
-            }
-            return chapitres.filter(chapitre => {
-                const libelle = lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn;
-                // Vérifie si le code ou le libellé contient le texte de recherche
-                return chapitre.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
-            });
-        }
-       return [];
-    };
+    // const filterEnseignementByContent = (enseignements: EnseignementType[] | undefined) => {
+    //     if(enseignements){
+    //         if (searchText === '') {
+    //             const result: EnseignementType[] = enseignements;
+    //             return result;
+    //         }
+    //         return enseignements.filter(enseignement => {
+    //             const libelle = lang === 'fr' ? enseignement. : enseignement.libelleEn;
+    //             // Vérifie si le code ou le libellé contient le texte de recherche
+    //             return enseignement.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+    //         });
+    //     }
+    //    return [];
+    // };
 
-    useEffect(() => {
-        const result = filterChapitreByContent(data);
-        setFilteredData(result);
-    }, [searchText, data]);
+    // useEffect(() => {
+    //     const result = filterEnseignementByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
 
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title={t('boutton.nouveau_chapitre')}
+                    title={t('boutton.nouvelle_enseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.chapitre'))} onSubmit={(text) => setSearchText(text)} />
+                {/* <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.enseignement'))} onSubmit={(text) => setSearchText(text)} /> */}
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

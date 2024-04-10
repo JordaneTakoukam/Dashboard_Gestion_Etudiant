@@ -117,7 +117,6 @@ function App() {
     dispatch(setLoadingDataSetting(true));
     try {
       const settingsData = await apiGetAllSettings();
-      console.log(settingsData);
       dispatch(setDataSetting(settingsData));
       dispatch(setErrorDataSetting(null))
     } catch (error) {

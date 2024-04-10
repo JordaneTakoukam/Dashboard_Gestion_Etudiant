@@ -50,8 +50,9 @@ interface DataSettingProps {
     salleDeCours: SalleDeCoursProps[];
     typesEnseignement: CommonSettingProps[];
     etatEvenements: CommonSettingProps[];
-    anneeCourante: number,
-    premiereAnnee: number,
+    anneeCourante: number;
+    premiereAnnee: number;
+    semestreCourant:number;
     // roles:CommonSettingProps[];
     __v: number;
 }

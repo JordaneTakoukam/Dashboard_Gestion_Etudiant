@@ -119,6 +119,7 @@ function App() {
       const settingsData = await apiGetAllSettings();
       console.log(settingsData);
       dispatch(setDataSetting(settingsData));
+      dispatch(setErrorDataSetting(null))
     } catch (error) {
       dispatch(setErrorDataSetting('une erreur est survenue'))
     } finally {
@@ -131,7 +132,7 @@ function App() {
 
     const fetchSettingsDataIfAuth = async () => {
       if (isAuth.status) {
-        // await fetchSettingsData();
+        await fetchSettingsData();
       } else {
       }
     };

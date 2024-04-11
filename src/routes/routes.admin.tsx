@@ -25,6 +25,7 @@ import ListeDesSondages from '../pages/Admin/Sondages';
 import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
 import { Departements } from '../pages/Admin/Departements';
 import ListeDesPeriodesEnseignement from '../pages/Admin/PeriodeEnseignement';
+import Chapitres from '../pages/Admin/Chapitres';
 
 
 
@@ -58,6 +59,12 @@ const coreRoutes = [
     path: '/subjects/subject-list',
     title: 'Liste des matières',
     component: ListeDesMatieres,
+  },
+
+  {
+    path: '/subjects/chapitres',
+    title: 'Liste des chapitres',
+    component: Chapitres,
   },
   
   {

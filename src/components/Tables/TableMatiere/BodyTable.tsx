@@ -6,7 +6,8 @@ import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
-import { SelectButton } from "./composants/SelectButton"
+import { SelectButton } from "../common/composants/SelectButton"
+import { useTranslation } from "react-i18next"
 
 interface BodyMatiereProps {
     data: MatiereType[];
@@ -23,6 +24,7 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
         onAddChap(matiere); // Appeler la fonction onAddChap avec la matière sélectionnée
         navigate("save/chapitres"); // Rediriger vers l'interface d'ajout de chapitres
     };
+    const {t}=useTranslation();
     const onMoreActionsClick = (actionName: string) => {
         switch (actionName) {
             case 'Ajouter un chapitre':
@@ -115,11 +117,11 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
                     <SelectButton
                         listPage={[
                             {
-                                "name": "Chapitres",
+                                "name": t('label.chapitres'),
                                 "handleClick": () => { onAddChap(item) }
                             },
                             {
-                                "name": "Autres ...",
+                                "name": t('label.enseignements'),
                                 "handleClick": () => {onAddEnseignement(item) }
                             }
                         ]}

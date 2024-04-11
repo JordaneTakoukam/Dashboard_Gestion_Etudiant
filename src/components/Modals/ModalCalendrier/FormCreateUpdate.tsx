@@ -11,7 +11,7 @@ import { createEvenement, updateEvenement } from '../../../_redux/features/evene
 
 
 function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) {  
-    const etats: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.etatEvenements) ?? []; 
+    const etats: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? []; 
     const lang = useSelector((state: RootState) => state.setting.language);
     const {t}=useTranslation();
     const dispatch = useDispatch();
@@ -146,10 +146,10 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                 setErrorPeriodeEn(t('error.periode_en'));
             }
             if (!dateDebut) {
-                setErrorDateDebut(t('error.dateDebut'));
+                setErrorDateDebut(t('error.date_debut'));
             }
             if (!dateFin) {
-                setErrorDateFin(t('error.dateFin'));
+                setErrorDateFin(t('error.date_fin'));
             }
             if (!etat) {
                 setErrorEtat(t('error.etat'));
@@ -320,7 +320,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                     onChange={(e) =>{setPeriodeEn(e.target.value); setErrorPeriodeEn("");} }
                 />
                 {errorPeriodeEn && <p className="text-red-500">{errorPeriodeEn}</p>}
-                <label>{t('label.dateDebut')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.date_debut')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
@@ -328,7 +328,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                     onChange={(e) =>{setDateDebut(e.target.value); setErrorDateDebut("");} }
                 />
                 {errorDateDebut && <p className="text-red-500">{errorDateDebut}</p>}
-                <label>{t('label.dateFin')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.date_fin')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"

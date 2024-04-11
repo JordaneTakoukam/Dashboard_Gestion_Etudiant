@@ -17,7 +17,7 @@ import EnseignementsPeriode from "./EnseignementsPeriode";
 const ListeDesPeriodesEnseignement = () => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const [openEnseignementsPeriode, setOpenChapitre]=useState(false);
+    const [openEnseignementsPeriode, setOpenEnseignement]=useState(false);
     const [selectedPeriodeEnseignement, setSelectedPeriodeEnseignement] = useState<PeriodeEnseignementType | null>(null);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     const currentNiveauId =niveaux && niveaux.length>0 && niveaux[0]._id;
@@ -66,21 +66,21 @@ const ListeDesPeriodesEnseignement = () => {
 
     const handleEditPeriodeEnseignement = (periodeEnseignement : PeriodeEnseignementType) => {
         setSelectedPeriodeEnseignement(periodeEnseignement);
-        setOpenChapitre(false);
+        setOpenEnseignement(false);
     }
 
     const handleAddPeriodeEnseignement = () => {
         setSelectedPeriodeEnseignement(null);
-        setOpenChapitre(false);
+        setOpenEnseignement(false);
     }
 
     const handleOpenEnseignementsPeriode = (periodeEnseignement: PeriodeEnseignementType) => {
         setSelectedPeriodeEnseignement(periodeEnseignement);
-        setOpenChapitre(true);
+        setOpenEnseignement(true);
     };
     return (
         <>
-            {!openEnseignementsPeriode && <Breadcrumb pageName={t('sub_menu.liste_periodeEnseignement')} />}
+            {!openEnseignementsPeriode && <Breadcrumb pageName={t('sub_menu.periodes_enseignement')}/>}
             {!openEnseignementsPeriode && <Table data={periodes} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement} onAddEnseignement={handleOpenEnseignementsPeriode}/>}
             
             {!openEnseignementsPeriode && <FormCreateUpdate periodeEnseignement={selectedPeriodeEnseignement}/>}

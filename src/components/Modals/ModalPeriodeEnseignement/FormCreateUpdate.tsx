@@ -32,7 +32,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
 
-    const [enseignements, setEnseignements] = useState<Enseignement[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
+    const [enseignements, setEnseignements] = useState<EnseignementType[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorPeriodeFr, setErrorPeriodeFr] = useState("");
@@ -77,7 +77,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
     useEffect(() => {
         
         if (periodeEnseignement) {
-            setModalTitle(t('form_update.enregistrer') + t('form_update.periodeEnseignement'));
+            setModalTitle(t('form_update.enregistrer') + t('form_update.periode_enseignement'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeEnseignement.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
@@ -94,7 +94,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
             setNiveau(currentNiveau);
 
         } else {
-            setModalTitle(t('form_save.enregistrer') + t('form_save.periodeEnseignement'));
+            setModalTitle(t('form_save.enregistrer') + t('form_save.periode_enseignement'));
             setPeriodeFr("");
             setPeriodeEn("");
             setDateDebut("");
@@ -252,7 +252,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(createPeriodeEnseignement({
                             
-                            periodeEnseignement: {
+                            periode: {
                                 _id: e.data._id,
                                 annee: e.data.annee,
                                 semestre: e.data.semestre,
@@ -297,7 +297,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                         dispatch(
                             updatePeriodeEnseignement({
                                 id: e.data._id,
-                                periodeEnseignementData: {
+                                periodeData: {
                                     _id: e.data._id,
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,

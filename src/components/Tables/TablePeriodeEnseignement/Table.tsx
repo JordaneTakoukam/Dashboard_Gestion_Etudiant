@@ -214,7 +214,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
             fetchPeriodeEnseignements(selectNiveauId, currentPage);    
         }
         
-    }, [currentPage, selectedYear, selectedSemestre]); // Déclencher l'effet lorsque currentPage change
+    }, [currentPage, selectedYear, selectedSemestre, selectNiveauId]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<PeriodeEnseignementType[]>(data);
@@ -233,14 +233,14 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
                     title={t('boutton.nouvelle_periodeEnseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.periodeEnseignement')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.periodes_enseignement')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.periodeEnseignement')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.periodes_enseignement')} </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>

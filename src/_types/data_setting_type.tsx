@@ -49,7 +49,7 @@ interface DataSettingProps {
     niveaux: NiveauProps[];
     salleDeCours: SalleDeCoursProps[];
     typesEnseignement: CommonSettingProps[];
-    etatEvenements: CommonSettingProps[];
+    etatsEvenement: CommonSettingProps[];
     anneeCourante: number;
     premiereAnnee: number;
     semestreCourant:number;

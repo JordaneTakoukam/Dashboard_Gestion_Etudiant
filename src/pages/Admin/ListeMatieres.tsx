@@ -92,6 +92,7 @@ const ListeDesMatieres = () => {
         setSelectedMatiere(matiere);
         setOpenChapitre(true);
         setOpenEnseignements(false);
+        
     };
 
     const handleOpenEnseignement = (matiere: MatiereType) => {

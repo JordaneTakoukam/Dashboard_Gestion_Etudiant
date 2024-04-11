@@ -34,7 +34,7 @@ const BodyTable = ({ data, onEdit, onAddEnseignement }: BodyPeriodeEnseignementP
                 </td>
 
                 {/* periode */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
                     <h5> {lang === 'fr' ? item.periodeFr : item.periodeEn}</h5>
                 </td>
 

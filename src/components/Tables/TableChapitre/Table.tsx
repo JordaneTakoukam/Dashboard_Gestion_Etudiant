@@ -86,7 +86,7 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
                                 <LoadingTable />
                                 : filteredData?.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTable />
+                                    <HeaderTable matiere={matiere}/>
                         }
 
                         {/* corp du tableau*/}

@@ -100,27 +100,27 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const [enseignants, setEnseignants] = useState<UserState[]>([]);
     
 
-    useEffect(() => {
-        const fetchEnseignants = async () => {
-            // dispatch(setUserLoading(true)); // Définissez le loading à true avant le chargement
-            try {
+    // useEffect(() => {
+    //     const fetchEnseignants = async () => {
+    //         // dispatch(setUserLoading(true)); // Définissez le loading à true avant le chargement
+    //         try {
                 
-                const fetchedEnseignants = await getUsersWithRole({ role: "enseignant" });
-                console.log(fetchedEnseignants.users);
-                if (fetchedEnseignants) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                    setEnseignants(fetchedEnseignants.users);
-                } else {
-                    setEnseignants([]);
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
+    //             const fetchedEnseignants = await getUsersWithRole({ role: "enseignant" });
+    //             console.log(fetchedEnseignants.users);
+    //             if (fetchedEnseignants) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+    //                 setEnseignants(fetchedEnseignants.users);
+    //             } else {
+    //                 setEnseignants([]);
+    //             }
+    //         } catch (error) {
+    //             console.log(error);
+    //         } finally {
                 
-            }
-        };
+    //         }
+    //     };
 
-        fetchEnseignants();
-    }, []);
+    //     fetchEnseignants();
+    // }, []);
 
     useEffect(() => {
         

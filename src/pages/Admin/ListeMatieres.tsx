@@ -82,7 +82,6 @@ const ListeDesMatieres = () => {
     }
 
     const handleAddMatiere = () => {
-        console.log("is call");
         setSelectedMatiere(null);
         setOpenChapitre(false);
         setOpenEnseignements(false);

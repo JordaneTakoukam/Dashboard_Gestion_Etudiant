@@ -1,6 +1,6 @@
 // Définir le type de données pour une compétence
 interface EnseignementType {
-    id?: string;
+    _id?: string;
     typeEnseignement : string;
     enseignantPrincipal?:UserState ;
     enseignantSuppleant?: UserState;
@@ -8,7 +8,7 @@ interface EnseignementType {
 }
 
 interface MatiereEnseignement {
-    id?: string;
+    _id?: string;
     matiere:MatiereType;
     typeEnseignement:string;
     nombreSeance:number

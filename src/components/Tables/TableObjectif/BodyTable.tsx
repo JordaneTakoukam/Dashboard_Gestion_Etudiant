@@ -25,7 +25,7 @@ const BodyTable = ({ data, onEdit }: { data?: ObjectifType[], onEdit: (objectif:
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.etat == 1?t('label.atteind'):t('label.non_atteind')}</h5>
                 </td>
 

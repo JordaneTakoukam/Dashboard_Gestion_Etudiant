@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import createToast from "../../hooks/toastify";
 import { setPeriodeEnseignementLoading, setPeriodeEnseignements, setErrorPagePeriodeEnseignement } from "../../_redux/features/periode_enseignement_slice";
-import { getPeriodesEnseignement } from "../../api/api_periode_enseignement";
+import {getPeriodesEnseignementWithPagination } from "../../api/api_periode_enseignement";
 import Table from "../../components/Tables/TablePeriodeEnseignement/Table";
 import FormCreateUpdate from "../../components/Modals/ModalPeriodeEnseignement/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalPeriodeEnseignement/FormDelete";
@@ -38,7 +38,7 @@ const ListeDesPeriodesEnseignement = () => {
                     pageSize: 0
                 } ;
                 if (currentNiveauId) {
-                    const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: currentNiveauId, page: 1, annee:currentYear, semestre:currentSemester });
+                    const fetchedPeriodeEnseignements = await getPeriodesEnseignementWithPagination({ niveauId: currentNiveauId, page: 1, annee:currentYear, semestre:currentSemester });
                     console.log(fetchedPeriodeEnseignements);
                     if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
                         dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));

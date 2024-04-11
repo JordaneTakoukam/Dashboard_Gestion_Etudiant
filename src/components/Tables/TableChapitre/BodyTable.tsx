@@ -36,10 +36,10 @@ const BodyTable = ({ data, onEdit, onAddObj }: BodyChapitreProps) => {
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>0 && item.typesEnseignement[0].volumeHoraire}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>1 && item.typesEnseignement[1].volumeHoraire}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>2 && item.typesEnseignement[2].volumeHoraire}</h5>
                 </td>
 

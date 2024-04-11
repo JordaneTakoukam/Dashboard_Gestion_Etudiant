@@ -59,16 +59,16 @@ const Communes = () => {
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         communes.length === 0 ?
-                        <PageNoData
-                            titrePage={t('aucun.commune')}
-                            titreBouton={t('ajouter_votre_premier.commune')}
-                            showModalCreate={handleCreate}
-                            refreshFunction={handleRefresh} />
+                            <PageNoData
+                                titrePage={t('aucun.commune')}
+                                titreBouton={t('ajouter_votre_premier.commune')}
+                                showModalCreate={handleCreate}
+                                refreshFunction={handleRefresh} />
 
-                        : <Table
-                            data={communes}
-                            onCreate={handleAddCommune}
-                            onEdit={handleEditCommune} />
+                            : <Table
+                                data={communes}
+                                onCreate={handleAddCommune}
+                                onEdit={handleEditCommune} />
 
             }
             <FormCreateUpdate commune={selectedCommune} />

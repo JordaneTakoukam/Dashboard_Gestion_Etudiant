@@ -118,6 +118,7 @@ function App() {
     try {
       const settingsData = await apiGetAllSettings();
       dispatch(setDataSetting(settingsData));
+      dispatch(setErrorDataSetting(null))
     } catch (error) {
       dispatch(setErrorDataSetting('une erreur est survenue'))
     } finally {

@@ -47,12 +47,12 @@ const ListeDesAdministrateur = () => {
             const fetchResult = await getAdministrateurs({ page: 1 });
             console.log(fetchResult);
             
-            // if (fetchResult) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-            //     dispatch(setAdmin(fetchResult));
-            //     dispatch(setErrorPageAdmin(null));
-            // } else {
-            //     dispatch(setErrorPageAdmin(t('message.erreur')));
-            // }
+            if (fetchResult) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                dispatch(setAdmin(fetchResult));
+                dispatch(setErrorPageAdmin(null));
+            } else {
+                dispatch(setErrorPageAdmin(t('message.erreur')));
+            }
         } catch (error) {
             dispatch(setErrorPageAdmin(t('message.erreur')));
         } finally {

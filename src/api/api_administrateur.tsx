@@ -26,7 +26,7 @@ export async function getAdministrateurs({ page }: { page: number }): Promise<Ad
                 },
             },
         );
-        const list: AdminListGetType = response.data.data;
+        const list: AdminListGetType = response.data;
 
         return list;
     } catch (error) {

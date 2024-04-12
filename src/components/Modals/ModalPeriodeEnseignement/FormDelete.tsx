@@ -3,7 +3,6 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import { ReponseApiPros } from '../../../api/interface_reponse';
 import createToast from '../../../hooks/toastify';
 import { deletePeriodeEnseignement } from '../../../_redux/features/periode_enseignement_slice';
 import { apiDeletePeriodeEnseignement } from '../../../api/api_periode_enseignement';
@@ -48,7 +47,7 @@ function ModalDelete({ periodeEnseignement }: { periodeEnseignement : PeriodeEns
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.periodeEnseignement')} : {periodeEnseignement ? (lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn) : ""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.periode_enseignement')} : {periodeEnseignement ? (lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn) : ""}</h1>
             </CustomDialogModal>
         </>
     );

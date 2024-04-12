@@ -2,21 +2,70 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { Chapitre } from '../../../pages/Admin/Chapitres';
 import { useTranslation } from 'react-i18next';
+import { updatePeriodeEnseignement } from '../../../_redux/features/periode_enseignement_slice';
+import { apiUpdatePeriodeEnseignement } from '../../../api/api_periode_enseignement';
+import createToast from '../../../hooks/toastify';
 
 
 
-function ModalDelete({ enseignement }: { enseignement : MatiereEnseignement|null}) {
+function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : MatiereEnseignement|null, periodeEnseignement:PeriodeEnseignementType | null | undefined}) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
-
-    const handleDelete = () => {
-        console.log("delete ok");
-        closeModal();
+    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
+    const handleDelete = async () => {
+        if (periodeEnseignement) {
+            
+            var newEnseignements: MatiereEnseignement[] = [];
+            for (let i = 0;periodeEnseignement.enseignements &&  i < ( periodeEnseignement.enseignements ? periodeEnseignement.enseignements.length : 0); i++) {
+                const ens = periodeEnseignement.enseignements[i];
+                if(ens._id !== enseignement?._id){
+                    newEnseignements.push(ens);
+                }
+                
+            }
+        
+            await apiUpdatePeriodeEnseignement(
+                {
+                    semestre : periodeEnseignement.semestre,
+                    annee : periodeEnseignement.annee,
+                    periodeFr : periodeEnseignement.periodeFr,
+                    periodeEn : periodeEnseignement.periodeEn,
+                    dateDebut : periodeEnseignement.dateDebut,
+                    dateFin : periodeEnseignement.dateFin,
+                    niveau:periodeEnseignement.niveau,
+                    enseignements:newEnseignements,
+                    _id:periodeEnseignement._id
+                }
+            ).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(
+                        updatePeriodeEnseignement({
+                            id: e.data._id,
+                            periodeData: {
+                                _id: e.data._id,
+                                annee: e.data.annee,
+                                semestre: e.data.semestre,
+                                niveau: e.data.niveau,
+                                periodeFr: e.data.periodeFr,
+                                periodeEn: e.data.periodeEn,
+                                dateDebut: e.data.dateDebut,
+                                dateFin: e.data.dateFin,
+                                enseignements: e.data.enseignements
+                            }
+                        }));
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            })
+        }
     }
 
     return (
@@ -28,7 +77,7 @@ function ModalDelete({ enseignement }: { enseignement : MatiereEnseignement|null
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.enseignement')} : {enseignement?enseignement.typesEnseignement+" "+enseignement.matiere.code:""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.enseignement')} : {enseignement?(typesEnseignement.find(type=>type._id===enseignement.typeEnseignement)?.code)+" "+enseignement.matiere.code:""}</h1>
             </CustomDialogModal>
         </>
     );

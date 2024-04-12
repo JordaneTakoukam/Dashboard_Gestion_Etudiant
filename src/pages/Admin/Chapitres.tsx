@@ -5,6 +5,7 @@ import FormDelete from "../../components/Modals/ModalChapitre/FormDelete";
 import Table from "../../components/Tables/TableChapitre/Table";
 import { Matiere } from "./ListeMatieres";
 import { useTranslation } from "react-i18next";
+import Objectifs from "./Objectifs";
 
 
 
@@ -17,24 +18,31 @@ interface ChapitresProps {
 const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) => {
     const [selectedChapitre, setSelectedChapitre] = useState<ChapitreType | null>(null);
     const [matiereChapitres, setMatiereChapitres] = useState<ChapitreType[]>([]); // État pour les chapitres de la matière
-    const handleEditCycle = (chapitre: ChapitreType) => {
+    const [openObjectifs, setOpenObjectifs] = useState(false);
+    const handleEditChapitre = (chapitre: ChapitreType) => {
         setSelectedChapitre(chapitre);
+        setOpenObjectifs(false);
     }
     const {t}=useTranslation();
     const handleAddChapitre = () => {
         setSelectedChapitre(null);
+        setOpenObjectifs(false);
     }
 
-   
+    const handleOpenObjectifs = (chapitre: ChapitreType) => {
+        setSelectedChapitre(chapitre);
+        setOpenObjectifs(true);
+    };
     
     
     return (
         <>
-            <Breadcrumb pageName={t('sub_menu.chapitres')} isMatiere={true} returnWithMatiere={returnWithMatiere}/>
-            <Table data={matiereSelectionnee?.chapitres}  onCreate={handleAddChapitre} onEdit={handleEditCycle} matiere={matiereSelectionnee}/>
+            {!openObjectifs && <Breadcrumb pageName={t('sub_menu.chapitres')} isChapitre={true} isObjectif={false} returnWithMatiere={returnWithMatiere}/>}
+            {!openObjectifs && <Table data={matiereSelectionnee?.chapitres}  onCreate={handleAddChapitre} onEdit={handleEditChapitre} onAddObj={handleOpenObjectifs} matiere={matiereSelectionnee}/>}
 
-            <FormCreateUpdate chapitre={selectedChapitre} matiere={matiereSelectionnee}/>
-            <FormDelete chapitre={selectedChapitre}  matiere={matiereSelectionnee}/>
+            {!openObjectifs && <FormCreateUpdate chapitre={selectedChapitre} matiere={matiereSelectionnee}/>}
+            {!openObjectifs && <FormDelete chapitre={selectedChapitre}  matiere={matiereSelectionnee}/>}
+            {openObjectifs && <Objectifs chapitreSelectionnee={selectedChapitre} returnWithChapitre={handleAddChapitre} />}
 
         </>
     );

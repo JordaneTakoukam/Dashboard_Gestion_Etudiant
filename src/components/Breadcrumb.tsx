@@ -4,15 +4,32 @@ import { useTranslation } from 'react-i18next';
 interface BreadcrumbProps {
   pageName: string;
   isDashboard?: boolean;
-  isMatiere? : boolean;
+  isChapitre? : boolean;
+  isObjectif?:boolean;
   isPeriodeEnseignement?:boolean;
   isEnseignement?:boolean;
   returnWithMatiere?:()=>void;
+  returnWithChapitre?:()=>void;
   returnWithPeriodeEnseignement?:()=>void;
 }
 
-const Breadcrumb = ({ pageName, isDashboard = false, isMatiere=false, isEnseignement=false, isPeriodeEnseignement=false,  returnWithMatiere, returnWithPeriodeEnseignement}: BreadcrumbProps) => {
+
+
+const Breadcrumb = ({ pageName, isDashboard = false, isChapitre=false, isObjectif=false, isEnseignement=false, isPeriodeEnseignement=false,  returnWithMatiere, returnWithChapitre, returnWithPeriodeEnseignement}: BreadcrumbProps) => {
   const { t } = useTranslation();
+  const handleChapitreClick = () => {
+    returnWithChapitre && returnWithChapitre();
+  };
+
+  const handleMatiereClick = () => {
+    returnWithMatiere && returnWithMatiere();
+  };
+
+  const handlePeriodeClick = () => {
+    returnWithPeriodeEnseignement && returnWithPeriodeEnseignement();
+  };
+
+
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h2 className="text-[18px] md:text-[20px] font-semibold text-black dark:text-white">
@@ -25,21 +42,27 @@ const Breadcrumb = ({ pageName, isDashboard = false, isMatiere=false, isEnseigne
             <Link to="/">{t('tableau_de_bord.title')} /</Link>
           </li>
 
-          {isMatiere && (
+          {isChapitre && (
             <li>
-              <Link to={"/subjects/subject-list"} onClick={() =>returnWithMatiere && returnWithMatiere()}>{t('sub_menu.liste_matiere')} /</Link>
+              <Link to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} /</Link>
+            </li>
+          )}
+
+          {isObjectif && (
+            <li>
+              <Link to="#" onClick={handleChapitreClick}>{t('sub_menu.chapitres')} / </Link>
             </li>
           )}
 
           {isEnseignement && (
             <li>
-              <Link to={"/subjects/subject-list"} onClick={() =>returnWithMatiere && returnWithMatiere()}>{t('sub_menu.liste_matiere')} /</Link>
+              <Link to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} /</Link>
             </li>
           )}
 
           {isPeriodeEnseignement && (
             <li>
-              <Link to={"/subjects/periodes-enseignement"} onClick={() =>returnWithPeriodeEnseignement && returnWithPeriodeEnseignement()}>{t('sub_menu.periodes_enseignement')} /</Link>
+              <Link to={"/subjects/periodes_enseignement"} onClick={handlePeriodeClick}>{t('sub_menu.periodes_enseignement')} /</Link>
             </li>
           )}
 

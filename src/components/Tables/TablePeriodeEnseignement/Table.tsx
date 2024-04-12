@@ -17,7 +17,7 @@ import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import { setPeriodeEnseignementLoading, setPeriodeEnseignements, setErrorPagePeriodeEnseignement } from "../../../_redux/features/periode_enseignement_slice";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import { getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
+import { getPeriodesEnseignementWithPagination } from "../../../api/api_periode_enseignement";
 
 interface TablePeriodeEnseignementProps {
     data: PeriodeEnseignementType[];
@@ -38,7 +38,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
-    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.periodeEnseignementSlice.pageIsLoading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // Fonction pour basculer la visibilité des CustomDropDown
@@ -77,6 +77,8 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
                 
+            }else{
+                setSelectIdNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
@@ -121,8 +123,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     // valeur de la l'id du niveau selectionner    
     const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
         if (selected && selected?._id) {
-            setSelectIdNiveau(selected._id);
-            fetchPeriodeEnseignements(selected._id, 1);    
+            setSelectIdNiveau(selected._id);    
         }
     };
 
@@ -139,32 +140,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
         });
     };
 
-    const fetchPeriodeEnseignements = async (currentNiveauId: string, page: number) => {
-        dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
-        try {
-            const emptyPeriodes : PeriodeEnseignementReturnGetType = {
-                periodes: [],
-                currentPage: 0,
-                totalItems: 0,
-                totalPages: 0,
-                pageSize: 0
-            } ;
-            if (currentNiveauId) {
-                const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: currentNiveauId, page: page, annee:selectedYear, semestre:selectedSemestre });
-                if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
-                    dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
-                   
-                } else {
-                    dispatch(setPeriodeEnseignements(emptyPeriodes));
-                }
-            } // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPagePeriodeEnseignement(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setPeriodeEnseignementLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
+    
 
      // variable pour la pagination
      const itemsPerPage = useSelector((state: RootState) => state.periodeEnseignementSlice.data.pageSize); // nombre delements maximum par page
@@ -190,12 +166,22 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
      const endItem = Math.min(count, indexOfLastItem);
 
     //fournir initialement les données à la page
+    // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
-        if (sections && sections.length > 0) {
-            filterCycleBySection(sections[0]?._id);
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
         }
-           
-    }, [sections]);
+        
+        
+    }, [sections, selectSectionId]);
+
+   
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
@@ -206,15 +192,40 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
             }
                 
         }        
-    }, [filteredCycle, data]);
+    }, [filteredCycle]);
     // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
     useEffect(() => {
-        
-        if(selectNiveauId){
-            fetchPeriodeEnseignements(selectNiveauId, currentPage);    
+        const fetchPeriodeEnseignements = async () => {
+            dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyPeriodes : PeriodeEnseignementReturnGetType = {
+                    periodes: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                } ;
+                if (selectNiveauId) {
+                    const fetchedPeriodeEnseignements = await getPeriodesEnseignementWithPagination({ niveauId: selectNiveauId, page: currentPage, annee:selectedYear, semestre:selectedSemestre });
+                    if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
+                        dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
+                       
+                    } else {
+                        dispatch(setPeriodeEnseignements(emptyPeriodes));
+                    }
+                }else{
+                    dispatch(setPeriodeEnseignements(emptyPeriodes));
+                } // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPagePeriodeEnseignement(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setPeriodeEnseignementLoading(false)); // Définissez le loading à false après le chargement
+            }
         }
-        
-    }, [currentPage, selectedYear, selectedSemestre]); // Déclencher l'effet lorsque currentPage change
+    
+        fetchPeriodeEnseignements();
+    }, [dispatch, selectedYear, selectedSemestre, selectNiveauId, t]);
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<PeriodeEnseignementType[]>(data);
@@ -233,14 +244,14 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
                     title={t('boutton.nouvelle_periodeEnseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.periodeEnseignement')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.periodes_enseignement')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.periodeEnseignement')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.periodes_enseignement')} </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>

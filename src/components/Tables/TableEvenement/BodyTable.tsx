@@ -10,7 +10,7 @@ const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     const lang = useSelector((state: RootState) => state.setting.language);
-    const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatEvenement);
+    const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? [];
 
     // State pour stocker la valeur de l'état sélectionné pour chaque événement
     const [selectedEtatMap, setSelectedEtatMap] = useState<{ [key: string]: CommonSettingProps | undefined }>({});

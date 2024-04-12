@@ -1,162 +1,65 @@
 import { useDispatch, useSelector } from "react-redux";
+import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
+import InputSearch from "../common/SearchTable";
+import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
-import { jours } from "../../../pages/CommonPage/EmploiDeTemp";
-import { RootState } from "../../../_redux/store";
-import { config } from "../../../config";
-import { setShowModal } from "../../../_redux/features/setting";
-import ButtonCreate from "../common/ButtonCreate";
+import BodyTable from "./BodyTable";
+import { RootState } from "../../../_redux/store"
+import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
-import { extractYear, formatYear, generateYearRange, premierElement } from "../../../fonctions/fonction";
-import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../../_redux/features/periode_slice";
-import { getPeriodesByNiveau } from "../../../api/api_periode";
 import createToast from "../../../hooks/toastify";
+import Pagination from "../../Pagination/Pagination";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
+import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../../_redux/features/progession_periode_slice";
+import React from "react";
 
-
-interface TablePeriodeProps {
-    data: PeriodeType[];
-    onCreate:()=>void;
-    onEdit: (periode : PeriodeType) => void;
+interface TablePeriodeEnseignementProps {
+    data: PeriodeEnseignementType;
+    periodes:PeriodeEnseignementType[];
 }
 
-const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
+const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const {t}=useTranslation();
-    const pageIsLoading = useSelector((state: RootState) => state.periodeSlice.pageIsLoading);
     const dispatch = useDispatch();
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
-    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
-    const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
-        if(periode){
-            onEdit(periode);
-        }else{
-            onCreate();
-        }
-        dispatch(setShowModal());
-        console.log("Ouverture du formulaire pour la période :", periode);
-    };
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
-
-    
-    
-    useEffect(() => {
-        
-        
-        const table = document.getElementById('myTable') as HTMLTableElement;
-        
-        //Trie des évènement par date de début la plus récente
-        const sortedPeriodes = [...data].sort((a, b) => {
-            const heureDebutA = convertirHeureVersMinutes(a.heureDebut);
-            const heureDebutB = convertirHeureVersMinutes(b.heureDebut);
-            return heureDebutA - heureDebutB;
-        });
-        if (table) {
-            table.innerHTML = '';
-            const groupedPeriodes: { [key: string]: PeriodeType[] } = {};
-            //Les évènements de la même période de cours sont groupés entre eux
-            sortedPeriodes.forEach((periode) => {
-                const horaire = `${periode.heureDebut} - ${periode.heureFin}`;
-                if (!groupedPeriodes[horaire]) {
-                    groupedPeriodes[horaire] = [];
-                }
-                groupedPeriodes[horaire].push(periode);
-            });
-            Object.entries(groupedPeriodes).forEach(([horaire, periodes], index) => {
-                const row = table.insertRow();
-                
-                const classNames = index % 2 === 0 ?
-                        "border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black" :
-                        "border-b border-[#eee] py-0 px-0 dark:border-strokedark";
-                    row.className = classNames;
-                const horaireCell = row.insertCell();
-                horaireCell.textContent = horaire;
-                jours.forEach((jour) => {
-                    const jourCell = row.insertCell();
-                    const coursJour = periodes.find((cours) => cours.jour == jour.ordre); // Modifier cette ligne
-                    jourCell.style.textAlign='center';
-                    if (roles.admin === userRole  || roles.superAdmin === userRole) {
-                        jourCell.onmouseover = () => {
-                            jourCell.style.backgroundColor = '#afeeee';
-                        };
-                        
-                        jourCell.onmouseout = () => {
-                            jourCell.style.backgroundColor = '';
-                        };
-                    }
-                    
-                    if (coursJour) {
-                        
-                        
-                        const codeTypeEns = typesEnseignement && typesEnseignement.find(type => type._id === coursJour.typeEnseignement);
-                        const codeSalleCours = sallesCours && sallesCours.find(salle => salle._id === coursJour.salleCours);
-                        const enseignantPrincipal = coursJour.enseignantPrincipal;
-                        const enseignantSuppleant = coursJour.enseignantSuppleant;
-                        jourCell.textContent = `${coursJour.matiere.code} (${codeTypeEns?codeTypeEns.code:""}) - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
-                        if (roles.admin === userRole || roles.superAdmin === userRole) {
-                            jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
-                            jourCell.style.cursor = 'pointer';
-                        }
-                    }else{
-                        if (roles.admin === userRole || roles.superAdmin === userRole) {
-                            jourCell.onclick = () => ouvrirFormulairePeriode();
-                            jourCell.style.cursor = 'pointer';
-                        }
-                    }
-                });
-            });
-        }
-    }, [data]);
-
-    
-    function convertirHeureVersMinutes(heure: string): number {
-        const [heures, minutes] = heure.split(':').map(Number);
-        return heures * 60 + minutes;
-    }
-
-    const [showAddRowButton, setShowAddRowButton] = useState(false);
-
-    const handleCellMouseEnter = () => {
-        setShowAddRowButton(true);
-    };
-
-    const handleCellMouseLeave = () => {
-        setShowAddRowButton(false);
-    };
-
-    const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const pageIsLoading = useSelector((state: RootState) => state.progressionPeriodeEnseignementSlice.pageIsLoading);
+    const pageError = useSelector((state: RootState) => state.dataSetting.error);
+    const [filteredPeriode, setFilteredPeriode] = useState<PeriodeEnseignementType | undefined>(data);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
-
-    const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
 
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
 
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
-            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
+            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
             }
@@ -173,16 +76,31 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
+                
             }else{
                 setSelectIdNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
     };
+    const [formatToDownload, setFormatToDownload] = useState("");
 
+    
+    const handleDownloadSelect = (selected: string) => {
+        setFormatToDownload(selected);
+        console.log(selected);
+        // methode pour download
+    };
+    
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
             setSelectedYear(extractYear(selected.toString()));
+        }
+    };
+
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
         }
     };
 
@@ -205,23 +123,55 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     // valeur de la l'id du niveau selectionner    
     const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
         if (selected && selected?._id) {
-            setSelectIdNiveau(selected._id);
+            setSelectIdNiveau(selected._id);    
         }
     };
-    const handleSemestreSelect = (selected: number | undefined) => {
-        if(selected){
-            setSelectedSemestre(selected);
+
+    const handlePeriodeSelect = (selected: PeriodeEnseignementType | undefined) => {
+        setFilteredPeriode(selected);
+        console.log(selected)
+    };
+
+    // Filtrer les périodes d'enseignement en fonction de la langue
+    const filterPeriodeEnseignementByContent = (periodeEnseignements: PeriodeEnseignementType[]) => {
+        if (searchText === '') {
+            const result: PeriodeEnseignementType[] = periodeEnseignements;
+            return result;
         }
-    };
-    const [formatToDownload, setFormatToDownload] = useState("");
-    const handleDownloadSelect = (selected: string) => {
-        setFormatToDownload(selected);
-        console.log(selected);
-        // methode pour download
+        return periodeEnseignements.filter(periodeEnseignement => {
+            const libelle = lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn;
+            // Vérifie si le code ou le libellé contient le texte de recherche
+            return periodeEnseignement.dateDebut.toLowerCase().includes(searchText.toLowerCase()) || periodeEnseignement.dateFin.toLowerCase().includes(searchText.toLowerCase())  || libelle.toLowerCase().includes(searchText.toLowerCase());
+        });
     };
 
+    
 
-   // Effet pour filtrer les options des CustomDropDown
+     // variable pour la pagination
+     const itemsPerPage = useSelector((state: RootState) => state.periodeEnseignementSlice.data.pageSize); // nombre delements maximum par page
+     const [currentPage, setCurrentPage] = useState<number>(1);
+ 
+     const indexOfLastItem = currentPage * itemsPerPage;
+     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+    //  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+     const count =useSelector((state: RootState) => state.periodeEnseignementSlice.data.totalItems);
+     const handlePageClick = (pageNumber: number) => {
+         setCurrentPage(pageNumber);
+     };
+     // Render page numbers
+     const pageNumbers = [];
+     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+         pageNumbers.push(i);
+     }
+ 
+     const hasPrevious = currentPage > 1;
+     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+ 
+     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+     const endItem = Math.min(count, indexOfLastItem);
+
+    //fournir initialement les données à la page
+    // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
         if(!selectSectionId){
             console.log("if");
@@ -248,51 +198,63 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 
         }        
     }, [filteredCycle]);
+    // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
     useEffect(() => {
-        const fetchPeriodes = async () => {
-            dispatch(setPeriodeLoading(true));
+        const fetchPeriodeEnseignements = async () => {
+            dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
             try {
-                const periodes:PeriodeReturnGetType={
+                const emptyPeriodes : ProgressionPeriodeEnseignementReturnGetType = {
                     periodes: [],
                     currentPage: 0,
                     totalItems: 0,
                     totalPages: 0,
                     pageSize: 0
-                };
+                } ;
                 if (selectNiveauId) {
-                    const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: selectNiveauId, annee: selectedYear, semestre: selectedSemestre });
-                    dispatch(setPeriodes(fetchedPeriodes));
+                    const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
+                    if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
+                        dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
+                       
+                    } else {
+                        dispatch(setPeriodeEnseignements(emptyPeriodes));
+                    }
                 }else{
-                    dispatch(setPeriodes(periodes)); 
-                }
-                dispatch(setErrorPagePeriode(null));
+                    dispatch(setPeriodeEnseignements(emptyPeriodes));
+                } // Réinitialisez les erreurs s'il y en a
             } catch (error) {
-                dispatch(setErrorPagePeriode(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2);
+                dispatch(setErrorPagePeriodeEnseignement(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
             } finally {
-                dispatch(setPeriodeLoading(false));
+                dispatch(setPeriodeEnseignementLoading(false)); // Définissez le loading à false après le chargement
             }
-        };
-
-        fetchPeriodes();
-    }, [dispatch, selectedYear, selectedSemestre, selectNiveauId, t]);
+        }
     
+        fetchPeriodeEnseignements();
+    }, [dispatch, selectedYear, selectedSemestre, selectNiveauId, t]);
+    useEffect(() => {
+        if (periodes && periodes.length > 0) {
+            console.log('if');
+            // Sélectionner la première matière et mettre à jour les états nécessaires
+            setFilteredPeriode(periodes[0]);
+            // setProgress(calculateProgress(matieres[0]));
+        }else{
+            setFilteredPeriode(undefined);
+            // setProgress(0);
+        }
+    }, [periodes]);
+
+    // modifier les données de la page lors de la recherche ou de la sélection de la section
+    // const [filteredData, setFilteredData] = useState<PeriodeEnseignementType[]>(data); 
 
     return (
         <div>
-            {roles.admin === userRole || roles.superAdmin === userRole && <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <ButtonCreate
-                    title={t('boutton.periode_cours')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
-                />
-            </div>}
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.emploie_temps')}</h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.periodes_enseignement')} </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
-                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
+                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
@@ -305,7 +267,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 items={[1, 2]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<CommonSettingProps>
@@ -329,8 +291,13 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            
-                            
+                            <CustomDropDown2<PeriodeEnseignementType>
+                                title={t('label.periode')}
+                                items={periodes}
+                                defaultValue={periodes[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(periode: PeriodeEnseignementType) => `${lang === 'fr' ? periode.periodeFr : periode.periodeEn}`}
+                                onSelect={handlePeriodeSelect}
+                            />
                         </div>
                     )}
                 </div>
@@ -352,7 +319,6 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 defaultValue={currentSemester} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
-                            
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -374,7 +340,13 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            
+                            <CustomDropDown2<PeriodeEnseignementType>
+                                title={t('label.periode')}
+                                items={periodes}
+                                defaultValue={periodes[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(periode: PeriodeEnseignementType) => `${lang === 'fr' ? periode.periodeFr : periode.periodeEn}`}
+                                onSelect={handlePeriodeSelect}
+                            />
                         </div>
                     </div>
                 </div>
@@ -385,26 +357,35 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
-                        {/* en tete du tableau */}
                         {
                             pageIsLoading ?
-                                <LoadingTable />
-                                : data.length === 0 ?
-                                    <NoDataTable /> :
+                                <LoadingTable />:
+                                // : !data.chapitres?
+                                //     <NoDataTable/> :
                                     <HeaderTable />
                         }
-
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <tbody id="myTable"></tbody>
+                            !pageIsLoading && <BodyTable data={filteredPeriode} />
                         }
-
-
-
-
                     </table>
                 </div>
+
+                {/* Pagination */}
+
+                <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
+
+                />
 
             </div>
 

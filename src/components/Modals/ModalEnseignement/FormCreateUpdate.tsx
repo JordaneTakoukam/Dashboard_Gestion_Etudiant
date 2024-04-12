@@ -31,14 +31,12 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
     const [modalTitle, setModalTitle] = useState("");
     
     const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
-    const [matieresLoaded, setMatieresLoaded] = useState(false);
-
     useEffect(() => {
-        
+
         const fetchMatieres = async () => {
             dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
             try {
-                const matieresV:MatiereReturnGetType={
+                const matieresV: MatiereReturnGetType = {
                     matieres: [],
                     currentPage: 0,
                     totalItems: 0,
@@ -46,19 +44,19 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                     pageSize: 0
                 }
                 
-                if (periodeEnseignement) {
+                if (periodeEnseignement && periodeEnseignement.niveau) {
                     
                     const fetchedMatieres = await getMatieresByNiveau({ niveauId: periodeEnseignement.niveau});
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
                     } else {
-                        
+
                         dispatch(setMatieres(matieresV));
                     }
-                }else{
-                   
+                } else {
+
                     dispatch(setMatieres(matieresV));
-                    
+
                 } // Réinitialisez les erreurs s'il y en a
             } catch (error) {
                 dispatch(setErrorPageMatiere(t('message.erreur')));
@@ -69,18 +67,18 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
         };
 
         fetchMatieres();
-    }, [periodeEnseignement, dispatch]);
+    }, [enseignement,isFirstRender, periodeEnseignement && periodeEnseignement.niveau, dispatch]);
 
     useEffect(() => {
         if (enseignement) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.enseignement'));
             setMatiere(enseignement.matiere);
-            const listeTypesEnseignementDeMatiere = matiere &&  matiere.typesEnseignement
+            const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement &&  matiere.typesEnseignement
             .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
             .map(objectId => typesEnseignement.find(type => type._id === objectId))
             .filter(type => type !== undefined) as CommonSettingProps[];
             listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
-            const typeEnseignement = typesEnseignementMat.find(typeEnseignement=>typeEnseignement._id===enseignement.typesEnseignement);
+            const typeEnseignement = typesEnseignementMat.find(typeEnseignement=>typeEnseignement._id===enseignement.typeEnseignement);
             setTypeEnseignement(typeEnseignement);
             setNombreSeance(enseignement.nombreSeance);    
         }else{
@@ -96,6 +94,25 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
             setIsFirstRender(false);
         }
     }, [enseignement,  isFirstRender, t]);
+
+    useEffect(() => {
+        if (matiere && matiere.typesEnseignement) {
+            const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
+                .map(type => type.typeEnseignement)
+                .map(objectId => typesEnseignement.find(type => type._id === objectId))
+                .filter(type => type !== undefined) as CommonSettingProps[];
+            setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+
+            // Vérifier si le type d'enseignement de la période correspond à l'un des types d'enseignement de la matière
+            if (enseignement) {
+                const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === enseignement.typeEnseignement);
+                if (typeEnseignementPeriode) {
+                    setTypeEnseignement(typeEnseignementPeriode);
+                }
+            }
+
+        }
+    }, [matiere, typesEnseignement, enseignement]);
 
     const closeModal = () => {
         setErrorMatiere("");
@@ -121,7 +138,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
         if (selectedMatiere) {
             setMatiere(selectedMatiere);
             setErrorMatiere("");
-            const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement
+            const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement && selectedMatiere.typesEnseignement
                 .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
@@ -159,13 +176,26 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
 
         if (periodeEnseignement) {
             
-            if(typeEnseignement._id){
-                const enseignement : MatiereEnseignement ={
-                    matiere: matiere,
-                    typesEnseignement: typeEnseignement._id,
-                    nombreSeance: nombreSeance
-                }
-                periodeEnseignement.enseignements?.push(enseignement);
+            
+
+            const updatedEnseignement: MatiereEnseignement = {
+                _id:enseignement?._id ,
+                typeEnseignement: typeEnseignement?._id || '',
+                matiere,
+                nombreSeance
+            };
+            
+           
+            var newEnseignements: MatiereEnseignement[] = [];
+            for (let i = 0;periodeEnseignement.enseignements &&  i < ( periodeEnseignement.enseignements ? periodeEnseignement.enseignements.length : 0); i++) {
+                const ens = periodeEnseignement.enseignements[i];
+                newEnseignements.push(ens);
+            }
+            const index = newEnseignements.findIndex((obj) => obj._id === enseignement?._id);
+            if (index !== -1) {
+                newEnseignements[index] = updatedEnseignement;
+            }else{
+                newEnseignements.push(updatedEnseignement)
             }
             
             await apiUpdatePeriodeEnseignement(
@@ -177,7 +207,8 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                     dateDebut : periodeEnseignement.dateDebut,
                     dateFin : periodeEnseignement.dateFin,
                     niveau:periodeEnseignement.niveau,
-                    enseignements:periodeEnseignement.enseignements
+                    enseignements:newEnseignements,
+                    _id:periodeEnseignement._id
                 }
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
@@ -185,7 +216,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                     dispatch(
                         updatePeriodeEnseignement({
                             id: e.data._id,
-                            periodeEnseignementData: {
+                            periodeData: {
                                 _id: e.data._id,
                                 annee: e.data.annee,
                                 semestre: e.data.semestre,
@@ -245,11 +276,10 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="number"
-                    value={""}
-                    readOnly  
-                    onChange={(e) => {setNombreSeance(parseInt(e.target.value)); }}
+                    value={nombreSeance}
+                    onChange={(e) => {setNombreSeance(parseInt(e.target.value)); setErrorNbSeance("") }}
                 />
-                
+                {errornbSeance && <p className="text-red-500">{errornbSeance}</p>}
             </CustomDialogModal>
         </>
     );

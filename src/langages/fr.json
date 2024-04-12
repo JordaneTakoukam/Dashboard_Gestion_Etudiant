@@ -46,7 +46,8 @@
     "discipline": "Discipline",
     "liste_matiere": "Liste des matières",
     "chapitres": "Chapitres",
-    "progression": "Progression",
+    "progression": "Progression par matière",
+    "progression_periode": "Progression par période",
     "sections": "Sections",
     "cycles": "Cycles",
     "niveaux": "Niveaux",
@@ -58,7 +59,11 @@
     "categories": "Catégories",
     "regions": "Régions",
     "departements": "Départements",
-    "communes": "Communes"
+    "communes": "Communes",
+    "objectifs":"Objectifs",
+    "enseignements":"Enseignements",
+    "periodes_enseignement":"Périodes d'enseignement",
+    "enseignement_periode":"Enseignements de la période"
   },
   "tableau_de_bord": {
     "title": "Tableau de bord",
@@ -122,8 +127,8 @@
     "description": "Description/Observations",
     "description_fr": "Description/Observations en francais",
     "description_en": "Description/Observations en anglais",
-    "dateDebut": "Date de début",
-    "dateFin": "Date de fin",
+    "date_debut": "Date de début",
+    "date_fin": "Date de fin",
     "heure_debut": "Heure de début",
     "heure_fin": "Heure de fin",
     "matiere": "Matière",
@@ -180,7 +185,17 @@
     "se_connecter": "Se connecter",
     "entree_email": "Entrer votre e-mail",
     "entree_pass": "Entrer votre mot de passe",
-    "content": "Content de vous revoir !"
+    "content": "Content de vous revoir !",
+    "chapitres": "Chapitres",
+    "atteind":"Atteind",
+    "non_atteind":"Non atteind",
+    "enseignements":"Enseignements",
+    "nb_seance":"Nombre de séance",
+    "title_progression":"Progression des enseignements de la période",
+    "nb_seance_periode":"Nombre de séance de la période",
+    "nb_seance_pratique":"Nombre de séance pratiqué",
+    "gap":"Gap",
+    "taux_presence":"Taux de présence relatif"
   },
   "recherche": {
     "rechercher": "Rechercher ",
@@ -200,7 +215,10 @@
     "fonction": "une fonction",
     "region": "une région",
     "departement": "un département",
-    "commune": "une commune"
+    "commune": "une commune",
+    "objectif":"un objectif",
+    "periodes_enseignement":"une période d'enseignement",
+    "enseignement":"un enseignement"
   },
   "boutton": {
     "daccord": "D'accord",
@@ -277,7 +295,8 @@
     "evenement": "Afficher la liste des évènements suivant :",
     "departement": "Filtrer la liste des départements suivant :",
     "commune": "Filtrer la liste des communes suivant :",
-    "absence": "Filtrer mes absences suivant : "
+    "absence": "Filtrer mes absences suivant : ",
+    "periodes_enseignement":"Filtrer les périodes d'enseignement"
   },
   "form_save": {
     "enregistrer": "Enregistrer ",
@@ -298,7 +317,10 @@
     "departement": "un nouveau département",
     "commune": "une nouvelle commune",
     "periode": "une nouvelle période",
-    "evenement": "un nouvel évènement"
+    "evenement": "un nouvel évènement",
+    "objectif":"un objectif",
+    "enseignement":"un enseignement",
+    "periode_enseignement":"une période d'enseignement"
   },
   "form_update": {
     "absence": "Ajouter une absence : ",
@@ -321,7 +343,10 @@
     "departement": "du département",
     "commune": "de la commune",
     "periode": "de la période",
-    "evenement": "de l'évènement"
+    "evenement": "de l'évènement",
+    "objectif":"de l'objectif",
+    "enseignement":"de l'enseignement",
+    "periode_enseignement":"de la période d'enseignement"
   },
   "form_delete": {
     "supprimer": "Supprimer",
@@ -344,7 +369,10 @@
     "departement": "du département",
     "commune": "de la commune",
     "periode": "de la période",
-    "evenement": "de l'évènement"
+    "evenement": "de l'évènement",
+    "objectif":"de l'objectif",
+    "enseignement":"de l'enseignement",
+    "periode_enseignement":"de la période d'enseignement"
   },
   "error": {
     "code": "Le champ code est obligatoire.",
@@ -376,8 +404,8 @@
     "periode": "Le champ période est obligatoire.",
     "periode_fr": "Le champ période en français est obligatoire.",
     "periode_en": "Le champ période en anglais est obligatoire.",
-    "dateDebut": "Le champ date de début est obligatoire",
-    "dateFin": "Le champ date de fin est obligatoire",
+    "date_debut": "Le champ date de début est obligatoire",
+    "date_fin": "Le champ date de fin est obligatoire",
     "etat": "La sélection de l'état est obligatoire",
     "jour": "Le champ Jour est obligatoire.",
     "matiere": "Le champ matiere est obligatoire.",

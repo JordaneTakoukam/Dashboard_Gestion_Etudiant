@@ -9,7 +9,6 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { matieres } from "../../../pages/Admin/ListeMatieres";
 
 interface TableEnseignementProps {
     data?: MatiereEnseignement[];

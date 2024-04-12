@@ -48,7 +48,8 @@
     "discipline": "Discipline",
     "liste_matiere": "Subject List",
     "chapitres": "Chapters",
-    "progression": "Progression",
+    "progression": "Progression by subject",
+    "progression_periode": "Progression by period",
     "sections": "Sections",
     "cycles": "Cycles",
     "niveaux": "Levels",
@@ -60,7 +61,11 @@
     "categories": "Categories",
     "regions": "Regions",
     "departements": "Departments",
-    "communes": "Communes"
+    "communes": "Communes",
+    "objectifs":"Objectives",
+    "enseignements":"Teachings",
+    "periodes_enseignement":"Teaching periods",
+    "enseignement_periode":"Teachings of the period"
   },
   "tableau_de_bord": {
     "title": "Dashboard",
@@ -124,8 +129,8 @@
     "description": "Description/Observations",
     "description_fr": "Description/Observations in french",
     "description_en": "Description/Observations in english",
-    "dateDebut": "Start date",
-    "dateFin": "End date",
+    "date_debut": "Start date",
+    "date_fin": "End date",
     "heure_debut": "Start Time",
     "heure_fin": "End Time",
     "matiere": "Subject",
@@ -183,7 +188,17 @@
     "se_connecter": "Sign in",
     "entree_email": "Enter your e-mail address",
     "entree_pass": "Enter your password",
-    "content": "Welcome back !"
+    "content": "Welcome back !",
+    "chapitres": "Chapters",
+    "atteind":"Achieved",
+    "non_atteind":"Not achieved",
+    "enseignements":"Teachings",
+    "nb_seance":"Number of sessions",
+    "title_progression":"Progression of the lessons of the period",
+    "nb_seance_periode":"Number of sessions in the period",
+    "nb_seance_pratique":"Number of sessions practiced",
+    "gap":"Gap",
+    "taux_presence":"Relative presence rate"
   },
   "recherche": {
     "rechercher": "Search ",
@@ -203,7 +218,10 @@
     "fonction": "a function",
     "region": "a region",
     "departement": "a department",
-    "commune": "a commune"
+    "commune": "a commune",
+    "objectif":"an objective",
+    "periodes_enseignement":"a teaching period",
+    "enseignement":"a teaching"
   },
   "boutton": {
     "daccord": "Okay",
@@ -280,7 +298,8 @@
     "evenement": "Display the list of events by:",
     "departement": "Filter the list of departments by:",
     "commune": "Filter the list of communes by:",
-    "absence": "Filter my absences by : "
+    "absence": "Filter my absences by : ",
+    "periodes_enseignement":"Filter teaching periods"
   },
   "form_save": {
     "enregistrer": "Save ",
@@ -301,7 +320,10 @@
     "departement": "a new department",
     "commune": "a new commune",
     "periode": "a new period",
-    "evenement": "a new event"
+    "evenement": "a new event",
+    "objectif":"an objective",
+    "enseignement":"a teaching",
+    "periode_enseignement":"a teaching period"
   },
   "form_update": {
     "absence": "Add an absence : ",
@@ -324,7 +346,10 @@
     "departement": "of the department",
     "commune": "of the commune",
     "periode": "of the period",
-    "evenement": "of the event"
+    "evenement": "of the event",
+    "objectif":"of the objective",
+    "enseignement":"of the teaching",
+    "periode_enseignement":"of the teaching period"
   },
   "form_delete": {
     "supprimer": "Delete",
@@ -347,7 +372,10 @@
     "departement": "of the department",
     "commune": "of the commune",
     "periode": "of the period",
-    "evenement": "of the event"
+    "evenement": "of the event",
+    "objectif":"of the objective",
+    "enseignement":"of the teaching",
+    "periode_enseignement":"of the teaching period"
   },
   "error": {
     "code": "Code field is required.",
@@ -379,8 +407,8 @@
     "periode": "Period field is required.",
     "periode_fr": "French period field is required.",
     "periode_en": "English period field is required.",
-    "dateDebut": "Start date field is required",
-    "dateFin": "End date field is required",
+    "date_debut": "Start date field is required",
+    "date_fin": "End date field is required",
     "etat": "State selection is required",
     "jour": "Day field is required.",
     "matiere": "Subject field is required.",

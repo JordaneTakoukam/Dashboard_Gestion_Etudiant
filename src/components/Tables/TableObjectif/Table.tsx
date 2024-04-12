@@ -10,16 +10,15 @@ import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 
-interface TableChapitreProps {
-    data?: ChapitreType[];
+interface TableObjectifProps {
+    data?: ObjectifType[];
     onCreate:()=>void;
-    onEdit: (chapitre:ChapitreType) => void;
-    onAddObj:(chapitre : ChapitreType)=>void;
-    matiere?: MatiereType | null;
+    onEdit: (objectif:ObjectifType) => void;
+    chapitre?: ChapitreType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps) => {
+const Table = ({ data, onCreate, onEdit, chapitre }: TableObjectifProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -35,25 +34,25 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
         setCurrentPage(pageNumber);
     };
     const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<ChapitreType[] | undefined>(data);
+    const [filteredData, setFilteredData] = useState<ObjectifType[] | undefined>(data);
     // Filtrer les matières en fonction de la langue
-    const filterChapitreByContent = (chapitres: ChapitreType[] | undefined) => {
-        if(chapitres){
+    const filterObjectifByContent = (objectifs: ObjectifType[] | undefined) => {
+        if(objectifs){
             if (searchText === '') {
-                const result: ChapitreType[] = chapitres;
+                const result: ObjectifType[] = objectifs;
                 return result;
             }
-            return chapitres.filter(chapitre => {
-                const libelle = lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn;
+            return objectifs.filter(objectif => {
+                const libelle = lang === 'fr' ? objectif.libelleFr : objectif.libelleEn;
                 // Vérifie si le code ou le libellé contient le texte de recherche
-                return chapitre.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+                return objectif.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
             });
         }
        return [];
     };
 
     useEffect(() => {
-        const result = filterChapitreByContent(data);
+        const result = filterObjectifByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
 
@@ -62,10 +61,10 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title={t('boutton.nouveau_chapitre')}
+                    title={t('boutton.nouvel_objectif')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.chapitre'))} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.objectif'))} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -73,8 +72,8 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
-                {matiere && (<div>
-                    {matiere.code}:{lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}
+                {chapitre && (<div>
+                    {lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn}
                 </div>)}
 
                 {/* DEBUT DU TABLE */}
@@ -86,13 +85,13 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
                                 <LoadingTable />
                                 : filteredData?.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTable matiere={matiere}/>
+                                    <HeaderTable />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddObj={onAddObj}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit}/>
                         }
 
 

@@ -32,7 +32,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
 
-    const [enseignements, setEnseignements] = useState<Enseignement[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
+    const [enseignements, setEnseignements] = useState<EnseignementType[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorPeriodeFr, setErrorPeriodeFr] = useState("");
@@ -77,12 +77,12 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
     useEffect(() => {
         
         if (periodeEnseignement) {
-            setModalTitle(t('form_update.enregistrer') + t('form_update.periodeEnseignement'));
+            setModalTitle(t('form_update.enregistrer') + t('form_update.periode_enseignement'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeEnseignement.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
             currentSection && filterCycleBySection(currentSection._id);
-            currentCycle && filterNiveauByCycle(currentNiveau._id);
+            currentCycle && filterNiveauByCycle(currentCycle._id);
             setAnnee(periodeEnseignement.annee);
             setSemestre(periodeEnseignement.semestre);
             setPeriodeFr(periodeEnseignement.periodeFr);
@@ -94,7 +94,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
             setNiveau(currentNiveau);
 
         } else {
-            setModalTitle(t('form_save.enregistrer') + t('form_save.periodeEnseignement'));
+            setModalTitle(t('form_save.enregistrer') + t('form_save.periode_enseignement'));
             setPeriodeFr("");
             setPeriodeEn("");
             setDateDebut("");
@@ -215,10 +215,10 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                 setErrorPeriodeEn(t('error.periode_en'));
             }
             if (!dateDebut) {
-                setErrorPeriodeEn(t('error.date_debut'));
+                setErrorDateDebut(t('error.date_debut'));
             }
             if (!dateFin) {
-                setErrorPeriodeEn(t('error.date_fin'));
+                setErrorDateFin(t('error.date_fin'));
             }
             if (!section) {
                 setErrorSection(t('error.section'));
@@ -252,7 +252,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(createPeriodeEnseignement({
                             
-                            periodeEnseignement: {
+                            periode: {
                                 _id: e.data._id,
                                 annee: e.data.annee,
                                 semestre: e.data.semestre,
@@ -289,7 +289,8 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                         dateDebut,
                         dateFin,
                         niveau:niveau._id,
-                        enseignements:periodeEnseignement.enseignements
+                        enseignements:periodeEnseignement.enseignements,
+                        _id:periodeEnseignement._id
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -297,7 +298,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                         dispatch(
                             updatePeriodeEnseignement({
                                 id: e.data._id,
-                                periodeEnseignementData: {
+                                periodeData: {
                                     _id: e.data._id,
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,
@@ -380,9 +381,45 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
                     value={dateFin}
-                    onChange={(e) => { setDateDebut(e.target.value); setErrorDateFin("") }}
+                    onChange={(e) => { setDateFin(e.target.value); setErrorDateFin("") }}
                 />
                 {errorDateFin && <p className="text-red-500">{errorDateFin}</p>}
+                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={section ? (lang === 'fr' ? section.libelleFr : section.libelleEn) : 'Sélectionnez une section'}
+                    onChange={handleSectionChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.section')}</option>
+                    {sections.map(section => (
+                        <option key={section._id} value={lang === 'fr' ? section.libelleFr : section.libelleEn}>{lang === 'fr' ? section.libelleFr : section.libelleEn}</option>
+                    ))}
+                </select>
+                {errorSection && <p className="text-red-500">{errorSection}</p>}
+                <label>{t('label.cycle')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={cycle ? (lang === 'fr' ? cycle.libelleFr : cycle.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.cycle')}
+                    onChange={handleCycleChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.cycle')}</option>
+                    {filteredCycle && filteredCycle.map(cycle => (
+                        <option key={cycle._id} value={lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}>{lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}</option>
+                    ))}
+                </select>
+                {errorCycle && <p className="text-red-500">{errorCycle}</p>}
+                <label>{t('label.niveau')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={niveau ? (lang === 'fr' ? niveau.libelleFr : niveau.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.niveau')}
+                    onChange={handleNiveauChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.niveau')}</option>
+                    {filteredNiveau && filteredNiveau.map(niveau => (
+                        <option key={niveau._id} value={lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}>{lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}</option>
+                    ))}
+                </select>
+                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
                 
 
             </CustomDialogModal>

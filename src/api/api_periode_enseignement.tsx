@@ -66,7 +66,7 @@ export async function apiDeletePeriodeEnseignement(matiereId: string): Promise<R
     }
 }
 
-export async function getPeriodesEnseignement({ niveauId, page, annee, semestre }: { niveauId: string, page: number, annee:number, semestre:number }): Promise<PeriodeEnseignementReturnGetType> {
+export async function getPeriodesEnseignementWithPagination({ niveauId, page, annee, semestre }: { niveauId: string, page: number, annee:number, semestre:number }): Promise<PeriodeEnseignementReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -87,6 +87,32 @@ export async function getPeriodesEnseignement({ niveauId, page, annee, semestre 
 
         // Extraction de tous les objets de paramètres de la réponse
         const matieres: PeriodeEnseignementReturnGetType = response.data.data;        
+        return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<ProgressionPeriodeEnseignementReturnGetType> {
+    const pageSize: number = 10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getPeriodesEnseignement/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee: annee,
+                    semestre:semestre
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const matieres: ProgressionPeriodeEnseignementReturnGetType = response.data.data;        
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);

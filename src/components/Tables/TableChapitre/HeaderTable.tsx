@@ -1,7 +1,25 @@
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../_redux/store";
+import { useEffect, useState } from "react";
+interface HeaderChapitreProps {
+    matiere:MatiereType | undefined | null
+    
+}
 
-const HeaderTable = () => {
+const HeaderTable = ({ matiere }: HeaderChapitreProps) => {
     const {t}=useTranslation();
+    const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
+    const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
+    useEffect(() => {
+        if (matiere && matiere.typesEnseignement) {
+            const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
+                .map(type => type.typeEnseignement)
+                .map(objectId => typesEnseignement.find(type => type._id === objectId))
+                .filter(type => type !== undefined) as CommonSettingProps[];
+            setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+        }
+    }, [matiere, typesEnseignement]);
     return (
 
         <thead className=''>
@@ -20,13 +38,14 @@ const HeaderTable = () => {
                 <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
                     {t('label.libelle')}
                 </th>
+                
                 <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black ">
                     CM
                 </th>
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
+                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
                     TD
                 </th>
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
+                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
                     TP
                 </th>
                 {/* <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">

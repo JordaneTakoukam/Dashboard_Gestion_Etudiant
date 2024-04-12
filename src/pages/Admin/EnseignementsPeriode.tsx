@@ -30,7 +30,7 @@ const EnseignementsPeriode = ({ periodeSelectionnee, returnWithPeriodeEnseigneme
             <Table data={periodeSelectionnee?.enseignements}  onCreate={handleAddEnseignement} onEdit={handleEditEnseignement} periodeEnseignement={periodeSelectionnee}/>
 
             <FormCreateUpdate enseignement={selectedEnseignement} periodeEnseignement={periodeSelectionnee}/>
-            <FormDelete enseignement={selectedEnseignement}/>
+            <FormDelete enseignement={selectedEnseignement} periodeEnseignement={periodeSelectionnee}/>
 
         </>
     );

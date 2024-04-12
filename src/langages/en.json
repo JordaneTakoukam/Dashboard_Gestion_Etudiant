@@ -48,7 +48,8 @@
     "discipline": "Discipline",
     "liste_matiere": "Subject List",
     "chapitres": "Chapters",
-    "progression": "Progression",
+    "progression": "Progression by subject",
+    "progression_periode": "Progression by period",
     "sections": "Sections",
     "cycles": "Cycles",
     "niveaux": "Levels",
@@ -192,7 +193,12 @@
     "atteind":"Achieved",
     "non_atteind":"Not achieved",
     "enseignements":"Teachings",
-    "nb_seance":"Number of sessions"
+    "nb_seance":"Number of sessions",
+    "title_progression":"Progression of the lessons of the period",
+    "nb_seance_periode":"Number of sessions in the period",
+    "nb_seance_pratique":"Number of sessions practiced",
+    "gap":"Gap",
+    "taux_presence":"Relative presence rate"
   },
   "recherche": {
     "rechercher": "Search ",

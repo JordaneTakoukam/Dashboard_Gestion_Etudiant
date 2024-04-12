@@ -327,7 +327,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     </li>
                                                     <li>
                                                         <NavLink
-                                                            to="/subjects/progressions"
+                                                            to="/subjects/progressions-par-matiere"
                                                             className={({ isActive }) =>
                                                                 'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && 'text-secondary')
@@ -345,6 +345,17 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             }
                                                         >
                                                             {t('sub_menu.periodes_enseignement')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-par-periode"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression_periode')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>

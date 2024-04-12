@@ -46,7 +46,8 @@
     "discipline": "Discipline",
     "liste_matiere": "Liste des matières",
     "chapitres": "Chapitres",
-    "progression": "Progression",
+    "progression": "Progression par matière",
+    "progression_periode": "Progression par période",
     "sections": "Sections",
     "cycles": "Cycles",
     "niveaux": "Niveaux",
@@ -189,7 +190,12 @@
     "atteind":"Atteind",
     "non_atteind":"Non atteind",
     "enseignements":"Enseignements",
-    "nb_seance":"Nombre de séance"
+    "nb_seance":"Nombre de séance",
+    "title_progression":"Progression des enseignements de la période",
+    "nb_seance_periode":"Nombre de séance de la période",
+    "nb_seance_pratique":"Nombre de séance pratiqué",
+    "gap":"Gap",
+    "taux_presence":"Taux de présence relatif"
   },
   "recherche": {
     "rechercher": "Rechercher ",

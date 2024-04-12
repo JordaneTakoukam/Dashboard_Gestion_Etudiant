@@ -26,6 +26,7 @@ import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
 import { Departements } from '../pages/Admin/Departements';
 import ListeDesPeriodesEnseignement from '../pages/Admin/PeriodeEnseignement';
 import Chapitres from '../pages/Admin/Chapitres';
+import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
 
 
 
@@ -68,9 +69,15 @@ const coreRoutes = [
   },
   
   {
-    path: '/subjects/progressions',
-    title: 'Progréssion',
+    path: '/subjects/progressions-par-matiere',
+    title: 'Progréssion par matiere',
     component: ProgressionMatiere,
+  },
+
+  {
+    path: '/subjects/progressions-par-periode',
+    title: 'Progréssion par période',
+    component: ProgressionPeriode,
   },
 
   {

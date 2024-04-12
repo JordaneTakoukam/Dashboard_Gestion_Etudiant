@@ -94,7 +94,7 @@ export async function getPeriodesEnseignementWithPagination({ niveauId, page, an
     }
 }
 
-export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<PeriodeEnseignementReturnGetType> {
+export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<ProgressionPeriodeEnseignementReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -104,11 +104,15 @@ export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { n
                     'Content-Type': 'application/json',
                     'token': token,
                 },
+                params: {
+                    annee: annee,
+                    semestre:semestre
+                },
             },
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const matieres: PeriodeEnseignementReturnGetType = response.data.data;        
+        const matieres: ProgressionPeriodeEnseignementReturnGetType = response.data.data;        
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);

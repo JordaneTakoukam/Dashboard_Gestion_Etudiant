@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { apiUrl, wstjqer } from '../config.js';
+import { apiUrl, wstjqer } from '../../config.js';
 
 
 const api = `${apiUrl}/user/`;
@@ -10,11 +10,11 @@ const token = localStorage.getItem(wstjqer);
 // 
 //
 // get
-export async function getAdministrateurs({ page }: { page: number }): Promise<AdminListGetType> {
+export async function apiGetEtudiants({ page }: { page: number }): Promise<EtudiantListGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getAdministrateurs`,
+            `${api}/getEtudiants`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,11 +26,11 @@ export async function getAdministrateurs({ page }: { page: number }): Promise<Ad
                 },
             },
         );
-        const list: AdminListGetType = response.data;
+        const list: EtudiantListGetType = response.data;
 
         return list;
     } catch (error) {
-        console.error('Error getting all settings:', error);
+        // console.error('Error getting all settings:', error);
         throw error;
     }
 }
@@ -38,11 +38,11 @@ export async function getAdministrateurs({ page }: { page: number }): Promise<Ad
 // 
 //
 // create
-export async function apiCreateAdministrateur({ ...newAdmin }: AdminCreateType): Promise<ReponseApiPros> {
+export async function apiCreateEtudiant({ ...newEtudiant }: EtudiantCreateType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
-            `${api}/create/create-admin`,
-            { ...newAdmin },
+            `${api}/create/create-etudiant`,
+            { ...newEtudiant },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export async function apiCreateAdministrateur({ ...newAdmin }: AdminCreateType):
 
         return response.data;
     } catch (error) {
-        console.error('Error creating section : ', error);
+        // console.error('Error creating section : ', error);
         throw error;
     }
 }
@@ -61,11 +61,11 @@ export async function apiCreateAdministrateur({ ...newAdmin }: AdminCreateType):
 //
 //
 // update 
-export async function apiUpdateAdministrateur(adminUpdate: AdminType): Promise<ReponseApiPros> {
+export async function apiUpdateEtudiant(etudiantUpdate: EtudiantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
-            `${api}/update/${adminUpdate._id}`,
-            { ...adminUpdate },
+            `${api}/update/${etudiantUpdate._id}`,
+            { ...etudiantUpdate },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,9 +75,8 @@ export async function apiUpdateAdministrateur(adminUpdate: AdminType): Promise<R
         );
 
         return response.data;
-
     } catch (error) {
-        console.error('Error updating section:', error);
+        // console.error('Error updating section:', error);
         throw error;
     }
 }
@@ -85,10 +84,10 @@ export async function apiUpdateAdministrateur(adminUpdate: AdminType): Promise<R
 //
 //
 // delete
-export async function apiDeleteAdministrateur(administrateurId: string): Promise<ReponseApiPros> {
+export async function apiDeleteEtudiant(id: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
-            `${api}/delete/${administrateurId}`,
+            `${api}/delete/${id}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,7 +98,7 @@ export async function apiDeleteAdministrateur(administrateurId: string): Promise
 
         return response.data;
     } catch (error) {
-        console.error('Error deleting section:', error);
+        // console.error('Error deleting section:', error);
         throw error;
     }
 }

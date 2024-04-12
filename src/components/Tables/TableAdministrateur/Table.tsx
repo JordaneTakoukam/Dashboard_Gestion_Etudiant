@@ -25,9 +25,6 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
     const dispatch = useDispatch();
 
     // Fonction pour basculer la visibilité des CustomDropDown
-    const toggleDropdownVisibility = () => {
-        setIsDropdownVisible(!isDropdownVisible);
-    };
 
     const [formatToDownload, setFormatToDownload] = useState("");
 
@@ -39,6 +36,9 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
     };
 
 
+    // 
+    //
+    // filtrage
     const [searchText, setSearchText] = useState<string>('');
     const [listFilterAdmin, setListFilterAdmin] = useState<AdminType[]>([]);
 
@@ -50,16 +50,15 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
         });
     };
 
+
+    // initialisation des donnees de la liste
     // Modifier les données de la page lors de la recherche
     useEffect(() => {
         const result = filtrerSearchAdmin(data);
         setListFilterAdmin(result);
-        console.log("refresh de la liste");
-
 
     }, [searchText, data]);
 
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     // gestion de la pagination
     // const [currentPage, setCurrentPage] = useState<number>(1);
@@ -102,7 +101,7 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
 
                 {/* DEBUT DU TABLE */}
-                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
+                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8 mb-4">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
                         <HeaderTable />

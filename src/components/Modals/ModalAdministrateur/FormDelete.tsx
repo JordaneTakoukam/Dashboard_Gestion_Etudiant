@@ -3,7 +3,7 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import { apiDeleteAdministrateur } from '../../../api/api_administrateur';
+import { apiDeleteAdministrateur } from '../../../api/other_users/api_administrateur';
 import createToast from '../../../hooks/toastify';
 import { deleteAdmin } from '../../../_redux/features/admin_slice';
 

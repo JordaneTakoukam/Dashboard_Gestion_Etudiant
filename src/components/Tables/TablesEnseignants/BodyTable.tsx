@@ -1,13 +1,12 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete} from "../../../_redux/features/setting"
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants"
+import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 
-const BodyTable = ({ data, onEdit }: { data: Enseignant[], onEdit:(enseigant:Enseignant)=>void }) => {
+const BodyTable = ({ data, onEdit }: { data: EnseignantType[], onEdit: (enseigant: EnseignantType) => void }) => {
 
     const dispatch = useDispatch();
 
-    return <tbody>
+    return <tbody >
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
                 {/* index */}
@@ -17,7 +16,7 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[], onEdit:(enseigant:Ens
 
                 {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.matricule?item.matricule:""}</h5>
+                    <h5>{item.matricule ? item.matricule : ""}</h5>
                 </td>
 
                 {/* nom */}
@@ -27,7 +26,7 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[], onEdit:(enseigant:Ens
 
                 {/* prenom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.prenom?item.prenom:""}</h5>
+                    <h5>{item.prenom ? item.prenom : ""}</h5>
                 </td>
 
                 {/* classes
@@ -41,10 +40,10 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[], onEdit:(enseigant:Ens
                 </td>
 
                 {/* contact */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">                    
-                    <h5>{item.contact?item.contact:""}</h5>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                    <h5>{item.contact ? item.contact : ""}</h5>
                 </td>
-                
+
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">

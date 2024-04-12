@@ -10,6 +10,8 @@ import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import progressionPeriodeEnseignementReducer from "./features/progession_periode_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
 import AdminReducer from "./features/admin_slice.tsx";
+import EnseignantReducer from "./features/enseignant_slice.tsx";
+import EtudiantReducer from "./features/etudiant_slice.tsx";
 
 const store = configureStore({
   reducer: {
@@ -20,12 +22,14 @@ const store = configureStore({
     periodeSlice: periodeReducer,
     matiereSlice: matiereReducer,
     periodeEnseignementSlice: periodeEnseignementReducer,
-    chapitreSlice:chapitreReducer,
-    progressionMatiereSlice:progressionMatiereReducer,
-    progressionPeriodeEnseignementSlice:progressionPeriodeEnseignementReducer,
+    chapitreSlice: chapitreReducer,
+    progressionMatiereSlice: progressionMatiereReducer,
+    progressionPeriodeEnseignementSlice: progressionPeriodeEnseignementReducer,
 
     // 
     admin: AdminReducer,
+    enseignant: EnseignantReducer,
+    etudiant: EtudiantReducer,
 
   },
   preloadedState: {

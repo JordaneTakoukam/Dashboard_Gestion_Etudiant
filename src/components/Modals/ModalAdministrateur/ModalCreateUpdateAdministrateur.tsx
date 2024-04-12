@@ -8,7 +8,7 @@ import Input from "../../ui/input";
 import { ErrorInput, LabelInput } from "../../../pages/Authentication/componants/Label";
 import Select from "../../ui/Select";
 import { validateEmail } from "../../../fonctions/fonction";
-import { apiCreateAdministrateur, apiUpdateAdministrateur } from "../../../api/api_administrateur";
+import { apiCreateAdministrateur, apiUpdateAdministrateur } from "../../../api/other_users/api_administrateur";
 import createToast from "../../../hooks/toastify";
 import { createAdmin, updateAdmin } from "../../../_redux/features/admin_slice";
 

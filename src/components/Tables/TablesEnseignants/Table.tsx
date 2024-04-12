@@ -1,31 +1,31 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal} from "../../../_redux/features/setting";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
-import { useState } from "react";
+import { setShowModal } from "../../../_redux/features/setting";
+import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 
 interface TableEnseignantProps {
-    data: Enseignant[];
-    onCreate:()=>void;
-    onEdit: (enseignant: Enseignant) => void;
+    data: EnseignantType[];
+    onCreate: () => void;
+    onEdit: (enseignant: EnseignantType) => void;
 }
 
 
 
-const Table = ({ data, onCreate, onEdit }:TableEnseignantProps) => {
-    const {t}=useTranslation();
+const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
+    const { t } = useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -36,49 +36,69 @@ const Table = ({ data, onCreate, onEdit }:TableEnseignantProps) => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-    const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreSection, setFiltreSection] = useState("");
-    const [filtreCycle, setFiltreCycle] = useState("");
-    const [filtreNiveau, setFiltreNiveau] = useState("");
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+
     const [formatToDownload, setFormatToDownload] = useState("");
-
-    const handleAnneeSelect = (selected: String | undefined) => {
-        // setFiltreAnnee(selected);
-        console.log(selected)
-    };
-    
-    // const handleSectionSelect = (selected: Section | undefined) => {
-    //     // setFiltreSection(selected);
-    //     console.log(selected);
-    // };
-
-    const handleCycleSelect = (selected: Cycle | undefined) => {
-        // setFiltreCycle(selected);
-        console.log(selected);
-    };
-    
-    const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
-        // Logique à exécuter lorsque le niveau est sélectionné
-        // console.log("Niveau sélectionné :", selectedNiveau);
-    };
-    
+    // 
+    // download
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
         // methode pour download
     };
 
-
-    // variable pour la pagination
     //
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    // recherche
+    const [searchText, setSearchText] = useState<string>('');
+    const [listFilterEnseignant, setListFilterEnseignant] = useState<EnseignantType[]>([]);
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+    const filtrerSearchEnseignant = (enseignants: EnseignantType[]) => {
+        return enseignants.filter(enseignant => {
+            const libelle = enseignant.nom.toLowerCase() + ' ' + (enseignant.prenom || '').toLowerCase() + ' ' + (enseignant.matricule || '').toLowerCase();
+            // Vérifie si le nom ou le prénom contient le texte de recherche
+            return libelle.includes(searchText.toLowerCase());
+        });
+    };
+
+
+    // initialisation des donnees de la liste
+    // Modifier les données de la page lors de la recherche
+    useEffect(() => {
+        const result = filtrerSearchEnseignant(data);
+        setListFilterEnseignant(result);
+
+    }, [searchText, data]);
+
+
+
+
+    // 
+    //  tri 
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const services = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
+    const fonctions = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
+    const lang = useSelector((state: RootState) => state.setting.language);
+
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
+    const [filterFonction, setFilterFonction] = useState<CommonSettingProps[]>([]);
+    const [filterService, setFilterService] = useState<CommonSettingProps[]>([]);
+
+    const handleAnneeSelect = (selected: String | undefined) => {
+        if (selected) { setSelectedYear(extractYear(selected.toString())); }
+    };
+    const handleFonctionSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            // setSelectIdCycle(selected._id);
+            // filterNiveauxByCycle(selected._id);
+        }
+    };
+    const handleServiceSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            // setSelectIdCycle(selected._id);
+            // filterNiveauxByCycle(selected._id);
+        }
     };
 
     return (
@@ -87,9 +107,12 @@ const Table = ({ data, onCreate, onEdit }:TableEnseignantProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.nouvel_enseignant')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.enseignant')} onSubmit={() => { }} />
+                <InputSearch
+                    hintText={t('recherche.rechercher') + t('recherche.enseignant')}
+                    onSubmit={(text) => setSearchText(text)}
+                />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -104,36 +127,12 @@ const Table = ({ data, onCreate, onEdit }:TableEnseignantProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                items={generateYearRange(currentYear, firstYear)}
+                                defaultValue={formatYear(currentYear)}
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
-                                title={t('label.section')}
-                                items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
-                                onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
-                                title={t('label.cycle')}
-                                items={cycles}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
-                                onSelect={handleCycleSelect}
-                            />
-                            <CustomDropDown2<Niveau>
-                                title={t('label.niveau')}
-                                items={niveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
-                                onSelect={handleNiveauSelect}
-                            />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
+
+
                         </div>
                     )}
                 </div>
@@ -144,36 +143,26 @@ const Table = ({ data, onCreate, onEdit }:TableEnseignantProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                items={generateYearRange(currentYear, firstYear)}
+                                defaultValue={formatYear(currentYear)}
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
-                                title={t('label.section')}
-                                items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
-                                onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
-                                title={t('label.cycle')}
-                                items={cycles}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
-                                onSelect={handleCycleSelect}
+                            <CustomDropDown2<CommonSettingProps>
+                                title={t('label.fonction')}
+                                items={filterFonction}
+                                defaultValue={fonctions[0]}
+                                onSelect={handleFonctionSelect}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+
                             />
-                            <CustomDropDown2<Niveau>
-                                title={t('label.niveau')}
-                                items={niveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
-                                onSelect={handleNiveauSelect}
+                            <CustomDropDown2<CommonSettingProps>
+                                title={t('label.service')}
+                                items={filterService}
+                                defaultValue={services[0]}
+                                onSelect={handleServiceSelect}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} /> */}
                         </div>
                     </div>
                 </div>
@@ -182,32 +171,29 @@ const Table = ({ data, onCreate, onEdit }:TableEnseignantProps) => {
 
 
                 {/* DEBUT DU TABLE */}
-                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
+                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8 mb-4">
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable />
-                                : data.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
-                        }
-
-                        {/* corp du tableau*/}
-
-                        {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
-                        }
-
-
-
-
+                        <HeaderTable />
+                        {/* body */}
+                        <BodyTable data={listFilterEnseignant} onEdit={onEdit} />
                     </table>
                 </div>
 
-                {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+
+                {/* Pagination */}
+                {/* <Pagination
+                    count={adminState.totalItems}
+                    itemsPerPage={adminState.pageSize}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
+                /> */}
 
             </div>
 

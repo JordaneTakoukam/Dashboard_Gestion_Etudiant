@@ -11,7 +11,7 @@ import FormDelete from "../../components/Modals/ModalAdministrateur/FormDelete";
 import { PageErreur } from "../../components/_Global/PageErreur";
 import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { PageNoData } from "../../components/_Global/PageNoData";
-import { getAdministrateurs } from "../../api/api_administrateur";
+import { apiGetAdministrateurs } from "../../api/other_users/api_administrateur";
 import { setShowModal } from "../../_redux/features/setting";
 import { r_sup_ad } from "../../config";
 import { ModalNonAutoriser } from "../../components/Modals/_NonAutoriser/ModalNonAutoriser";
@@ -42,13 +42,13 @@ const ListeDesAdministrateur = () => {
     }
 
     const handleRefresh = async () => {
-        await fetchListe();
+        await fetchList();
     };
 
-    const fetchListe = async () => {
+    const fetchList = async () => {
         dispatch(setAdminsLoading(true));
         try {
-            const fetchResult = await getAdministrateurs({ page: 1 });
+            const fetchResult = await apiGetAdministrateurs({ page: 1 });
 
             if (fetchResult) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                 dispatch(setAdmin(fetchResult));
@@ -66,7 +66,7 @@ const ListeDesAdministrateur = () => {
     // recuperer initalement la liste des admin
     useEffect(() => {
         if (administrateurs.length === 0) {
-            fetchListe();
+            handleRefresh();
         }
     }, [dispatch]);
 

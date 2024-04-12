@@ -1,414 +1,541 @@
-// import { useDispatch, useSelector } from 'react-redux';
-// import { setShowModal } from '../../../_redux/features/setting';
-// import { RootState } from '../../../_redux/store';
-// import CustomDialogModal from '../CustomDialogModal';
-// import { useEffect, useState } from 'react';
-import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
-// import { Commune } from '../../../pages/Admin/Communes';
-// import { Service, services } from '../../../pages/Admin/Services';
-// import { Fonction, fonctions } from '../../../pages/Admin/Fonctions';
-// import { Grade, grades } from '../../../pages/Admin/Grades';
-// import { Categorie, categories } from '../../../pages/Admin/Categories';
-// import { useTranslation } from 'react-i18next';
-// import { CommonSettingProps, DepartementProps } from '../../../_types/data_setting_type';
+import { useEffect, useState } from "react";
+import CustomDialogModal from "../CustomDialogModal";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../_redux/store";
+import { setShowModal } from "../../../_redux/features/setting";
+import { useTranslation } from "react-i18next";
+import Input from "../../ui/input";
+import { ErrorInput, LabelInput } from "../../../pages/Authentication/componants/Label";
+import Select from "../../ui/Select";
+import { validateEmail } from "../../../fonctions/fonction";
+import { apiCreateAdministrateur, apiUpdateAdministrateur } from "../../../api/other_users/api_administrateur";
+import createToast from "../../../hooks/toastify";
+import { createAdmin, updateAdmin } from "../../../_redux/features/admin_slice";
 
-
-// function ModalCreateUpdate({ enseignant }: { enseignant: Enseignant | null }) {
-
-//     const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departement) ?? [];
-
-//     const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.region) ?? [];
-
-//     const { t } = useTranslation();
-
-//     const dispatch = useDispatch();
-//     const [nom, setNom] = useState("");
-//     const [prenom, setPrenom] = useState("");
-//     const [genre, setGenre] = useState("");
-//     const [dateNaiss, setDateNaiss] = useState("");
-//     const [lieuNaiss, setLieuNaiss] = useState("");
-//     const [email, setEmail] = useState("");
-//     const [contact, setContact] = useState("");
-//     const [matricule, setMatricule] = useState("");
-//     // const [section, setSection] = useState<Section>();
-//     // const [cycle, setCycle] = useState<Cycle>();
-//     // const [niveau, setNiveau] = useState<Niveau>();
-//     const [grade, setGrade] = useState<Grade>();
-//     const [categorie, setCategorie] = useState<Categorie>();
-//     const [fonction, setFonction] = useState<Fonction>();
-//     const [service, setService] = useState<Service>();
-//     const [region, setRegion] = useState<CommonSettingProps>();
-//     const [departement, setDepartement] = useState<DepartementProps>();
-//     const [commune, setCommune] = useState<Commune>();
-//     const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
-
-//     const [errorNom, setErrorNom] = useState("");
-//     const [errorGenre, setErrorGenre] = useState("");
-//     const [errorEmail, setErrorEmail] = useState("");
-//     // const [errorSection, setErrorSection] = useState("");
-//     // const [errorCycle, setErrorCycle] = useState("");
-//     // const [errorNiveau, setErrorNiveau] = useState("");
-//     const [isFirstRender, setIsFirstRender] = useState(true);
-
-//     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
-//     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
-
-//     useEffect(() => {
-//         if (enseignant) {
-//             setModalTitle(t('form_update.enregistrer') + t('form_update.enseignant'));
-//             setNom(enseignant.nom);
-//             setPrenom(enseignant.prenom ? enseignant.prenom : ""); setGenre(enseignant.genre);
-//             setDateNaiss(enseignant.dateNaiss ? enseignant.dateNaiss : "");
-//             setLieuNaiss(enseignant.lieuNaiss ? enseignant.lieuNaiss : "");
-//             setEmail(enseignant.email);
-//             setContact(enseignant.contact ? enseignant.contact : "");
-//             setMatricule(enseignant.matricule ? enseignant.matricule : "");
-//             // setSection(enseignant.niveau.cycle.section);
-//             // setCycle(enseignant.niveau.cycle);
-//             // setNiveau(enseignant.niveau);
-//             setGrade(enseignant.grade ? enseignant.grade : undefined);
-//             setCategorie(enseignant.categorie ? enseignant.categorie : undefined);
-//             setFonction(enseignant.fonction ? enseignant.fonction : undefined);
-//             setService(enseignant.service ? enseignant.service : undefined);
-//             setRegion(enseignant.region ? enseignant.region : undefined);
-//             setDepartement(enseignant.departement ? enseignant.departement : undefined);
-//             setCommune(enseignant.commune ? enseignant.commune : undefined);
-//             setDateEntreeAdmin(enseignant.dateEntreeAdmin ? enseignant.dateEntreeAdmin : "");
-//         } else {
-//             setModalTitle(t('form_save.enregistrer') + t('form_save.enseignant'));
-//             setNom("");
-//             setPrenom("");
-//             setGenre("");
-//             setDateNaiss("");
-//             setLieuNaiss("");
-//             setEmail("");
-//             setContact("");
-//             setMatricule("");
-//             // setSection(undefined);
-//             // setCycle(undefined);
-//             // setNiveau(undefined);
-//             setGrade(undefined);
-//             setCategorie(undefined);
-//             setFonction(undefined);
-//             setService(undefined);
-//             setRegion(undefined);
-//             setDepartement(undefined);
-//             setCommune(undefined);
-//             setDateEntreeAdmin("");
-//         }
-
-
-//         if (isFirstRender) {
-//             setErrorNom("");
-//             setErrorGenre("");
-//             setErrorEmail("");
-//             // setErrorSection("");
-//             // setErrorCycle("");
-//             // setErrorNiveau("");
-//             setIsFirstRender(false);
-//         }
-//     }, [enseignant, isFirstRender, t]);
-
-//     const closeModal = () => {
-//         setErrorNom("");
-//         setErrorGenre("");
-//         setErrorEmail("");
-//         // setErrorSection("");
-//         // setErrorCycle("");
-//         // setErrorNiveau("");
-//         setIsFirstRender(true);
-//         dispatch(setShowModal());
-//     };
-
-//     const validateEmail = () => {
-//         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//         if (!emailPattern.test(email)) {
-//             setErrorEmail(t('error.incorrect_email'));
-//             return false;
-//         }
-//         setErrorEmail("");
-//         return true;
-//     };
-
-//     // const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     //     const selectedSectionLibelle = e.target.value;
-//     //     const selectedSection = sections.find(section => section.libelle === selectedSectionLibelle);
-//     //     if (selectedSection) {
-//     //         setSection(selectedSection);
-//     //         setErrorSection("");
-//     //     }
-//     // };
-//     // const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     //     const selectedCycleLibelle = e.target.value;
-//     //     const selectedCycle = cycles.find(cycle => cycle.libelle === selectedCycleLibelle);
-//     //     if (selectedCycle) {
-//     //         setCycle(selectedCycle);
-//     //         setErrorCycle("");
-//     //     }
-//     // };
-//     // const handleNiveauChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     //     const selectedNiveauLibelle = e.target.value;
-//     //     const selectedNiveau = niveaux.find(niveau => niveau.libelle === selectedNiveauLibelle);
-//     //     if (selectedNiveau) {
-//     //         setNiveau(selectedNiveau);
-//     //         setErrorNiveau("");
-//     //     }
-//     // };
-//     const handleFonctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedFonctionLibelle = e.target.value;
-//         const selectedFonction = fonctions.find(fonction => fonction.libelle === selectedFonctionLibelle);
-//         if (selectedFonction) {
-//             setFonction(selectedFonction);
-//         }
-//     };
-//     const handleGradeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedGradeLibelle = e.target.value;
-//         const selectedGrade = grades.find(grade => grade.libelle === selectedGradeLibelle);
-//         if (selectedGrade) {
-//             setGrade(selectedGrade);
-//         }
-//     };
-
-//     const handleCategorieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedCategorieLibelle = e.target.value;
-//         const selectedCategorie = categories.find(categorie => categorie.libelle === selectedCategorieLibelle);
-//         if (selectedCategorie) {
-//             setCategorie(selectedCategorie);
-//         }
-//     };
-
-//     const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedServiceLibelle = e.target.value;
-//         const selectedService = services.find(service => service.libelle === selectedServiceLibelle);
-//         if (selectedService) {
-//             setService(selectedService);
-//         }
-//     };
-//     const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedRegionLibelle = e.target.value;
-//         const selectedRegion = regions.find(region => region.libelle === selectedRegionLibelle);
-//         if (selectedRegion) {
-//             setRegion(selectedRegion);
-//         }
-//     };
-//     const handleDepartementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedDepartementLibelle = e.target.value;
-//         const selectedDepartement = departements.find(departement => departement.libelle === selectedDepartementLibelle);
-//         if (selectedDepartement) {
-//             setDepartement(selectedDepartement);
-//         }
-//     };
-//     const handleCommuneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//         const selectedCommuneLibelle = e.target.value;
-//         const selectedCommune = communes.find(commune => commune.libelle === selectedCommuneLibelle);
-//         if (selectedCommune) {
-//             setCommune(selectedCommune);
-//         }
-//     };
-
-
-
-//     const handleCreateEnseignant = () => {
-//         if (!nom || !genre || !email) {
-//             if (!nom) {
-//                 setErrorNom(t('error.nom'));
-//             }
-//             if (!genre) {
-//                 setErrorGenre(t('error.genre'));
-//             }
-
-//             if (!email) {
-//                 setErrorEmail(t('error.email'));
-//             }
-
-//             return;
-//         }
-//         if (!validateEmail()) {
-//             return;
-//         }
-
-//         if (enseignant) {
-//             console.log("student update");
-//         } else {
-//             console.log("student add");
-//         }
-//         closeModal();
-//     }
-
-//     return (
-//         <>
-//             <CustomDialogModal
-//                 title={modalTitle} // Utilisation du titre dynamique
-//                 isModalOpen={isModalOpen}
-//                 isDelete={false}
-//                 closeModal={closeModal}
-//                 handleConfirm={handleCreateEnseignant}
-//             >
-//                 <label>{t('label.matricule')}</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={matricule}
-//                     onChange={(e) => setMatricule(e.target.value)}
-//                 />
-//                 <label>{t('label.nom')}</label><label className="text-red-500"> *</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={nom}
-//                     onChange={(e) => { setNom(e.target.value); setErrorNom("") }}
-//                 />
-//                 {errorNom && <p className="text-red-500" >{errorNom}</p>}
-//                 <label>{t('label.prenom')}</label><input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={prenom}
-//                     onChange={(e) => setPrenom(e.target.value)}
-//                 />
-//                 <label>{t('label.date_naiss')}</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="date"
-//                     value={dateNaiss}
-//                     onChange={(e) => setDateNaiss(e.target.value)}
-//                 />
-//                 <label>{t('label.lieu_naiss')}</label><input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={lieuNaiss}
-//                     onChange={(e) => { setLieuNaiss(e.target.value) }}
-//                 />
-//                 <label>{t('label.genre')}</label><label className="text-red-500"> *</label>
-//                 <div>
-//                     <input
-//                         className='radio-label-space'
-//                         type="radio"
-//                         id={t('label.homme')}
-//                         name="genre"
-//                         value={t('label.homee')}
-//                         checked={genre === "H"}
-//                         onChange={() => { setGenre("H"); setErrorGenre("") }}
-//                     />
-//                     <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
-
-//                     <input
-//                         className='radio-label-space'
-//                         type="radio"
-//                         id={t('label.femme')}
-//                         name="genre"
-//                         value={t('label.femme')}
-//                         checked={genre === "F"}
-//                         onChange={() => { setGenre("F"); setErrorGenre("") }}
-//                     />
-//                     <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
-//                 </div>
-//                 {errorGenre && <p className="text-red-500">{errorGenre}</p>}
-//                 <label>{t('label.email')}</label><label className="text-red-500"> *</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="e-mail"
-//                     value={email}
-//                     onChange={(e) => { setEmail(e.target.value); setErrorEmail(""); }}
-//                 />
-//                 {errorEmail && <p className="text-red-500">{errorEmail}</p>}
-//                 <label>{t('label.contact')}</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="text"
-//                     value={contact}
-//                     onChange={(e) => { setContact(e.target.value) }}
-//                 />
-
-//                 <label>{t('label.grade')}</label>
-//                 <select
-//                     value={grade ? grade.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
-//                     onChange={handleGradeChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
-//                     {grades.map(grade => (
-//                         <option key={grade.id} value={grade.libelle}>{grade.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.categorie')}</label>
-//                 <select
-//                     value={categorie ? categorie.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
-//                     onChange={handleCategorieChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
-//                     {categories.map(categorie => (
-//                         <option key={categorie.id} value={categorie.libelle}>{categorie.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.fonction')}</label>
-//                 <select
-//                     value={fonction ? fonction.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
-//                     onChange={handleFonctionChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
-//                     {fonctions.map(fonction => (
-//                         <option key={fonction.id} value={fonction.libelle}>{fonction.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.service')}</label>
-//                 <select
-//                     value={service ? service.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
-//                     onChange={handleServiceChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
-//                     {services.map(service => (
-//                         <option key={service.id} value={service.libelle}>{service.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.region')}</label>
-//                 <select
-//                     value={region ? region.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
-//                     onChange={handleRegionChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
-//                     {regions.map(region => (
-//                         <option key={region._id} value={region.libelle}>{region.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.departement')}</label>
-//                 <select
-//                     value={departement ? departement.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
-//                     onChange={handleDepartementChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
-//                     {departements.map(departement => (
-//                         <option key={departement.id} value={departement.libelle}>{departement.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.commune')}</label>
-//                 <select
-//                     value={commune ? commune.libelle : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
-//                     onChange={handleCommuneChange}
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                 >
-//                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
-//                     {communes.map(commune => (
-//                         <option key={commune.id} value={commune.libelle}>{commune.libelle}</option>
-//                     ))}
-//                 </select>
-//                 <label>{t('label.date_entree_admin')}</label>
-//                 <input
-//                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-//                     type="date"
-//                     value={dateEntreeAdmin}
-//                     onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
-//                 />
-//             </CustomDialogModal>
-
-//         </>
-//     );
-// }
-function ModalCreateUpdate({ enseignant }: { enseignant: Enseignant | null }) {
+interface ModalCreateUpdateAdmin {
+    enseignant: EnseignantType | null,
 }
 
-export default ModalCreateUpdate;
+
+export function ModalCreateUpdateEnseignant({ enseignant }: ModalCreateUpdateAdmin) {
+
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+
+    const lang = useSelector((state: RootState) => state.setting.language);
+    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
+    const [modalTitle, setModalTitle] = useState("");
+    const [isFirstRender, setIsFirstRender] = useState(true);
+
+    // select value
+    const grades: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.grades);
+    const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories);
+    const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions);
+    const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services);
+    const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions);
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements);
+    const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes);
+
+    // VALEUR DU FORMULAIRE
+    const [matricule, setMatricule] = useState("");
+    const [nom, setNom] = useState("");
+    const [prenom, setPrenom] = useState<string | null>("");
+    const [genre, setGenre] = useState("");
+    const [dateNaiss, setDateNaiss] = useState<string | null>("");
+    const [lieuNaiss, setLieuNaiss] = useState<string | null>("");
+    const [email, setEmail] = useState("");
+    const [contact, setContact] = useState<string | null>("");
+    const [dateEntreeAdmin, setDateEntreeAdmin] = useState<string | null>("");
+    //
+    const [grade, setGrade] = useState<CommonSettingProps>();
+    const [categorie, setCategorie] = useState<CommonSettingProps>();
+    const [fonction, setFonction] = useState<CommonSettingProps>();
+    const [service, setService] = useState<CommonSettingProps>();
+    const [region, setRegion] = useState<CommonSettingProps>();
+    const [departement, setDepartement] = useState<DepartementProps>();
+    const [commune, setCommune] = useState<CommuneProps>();
+
+
+    // ERREUR DE VALIDATION
+    const [errorNom, setErrorNom] = useState("");
+    const [errorGenre, setErrorGenre] = useState("");
+    const [errorEmail, setErrorEmail] = useState("");
+
+
+    const handleFonctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedFonctionLibelle = e.target.value;
+        const selectedFonction = fonctions.find(fonction => fonction?.libelleFr === selectedFonctionLibelle || fonction.libelleEn === selectedFonctionLibelle);
+        if (selectedFonction) {
+            setFonction(selectedFonction);
+        }
+    };
+    // handleChange
+    const handleGradeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedGradeLibelle = e.target.value;
+        const selectedGrade = grades.find(grade => (grade.libelleFr === selectedGradeLibelle || grade.libelleEn === selectedGradeLibelle));
+        if (selectedGrade) {
+            setGrade(selectedGrade);
+        }
+    };
+    const handleCategorieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCategorieLibelle = e.target.value;
+        const selectedCategorie = categories.find(categorie => (categorie.libelleFr === selectedCategorieLibelle || categorie.libelleEn === selectedCategorieLibelle));
+        if (selectedCategorie) {
+            setCategorie(selectedCategorie);
+        }
+    };
+
+    const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedServiceLibelle = e.target.value;
+        const selectedService = services.find(service => (service.libelleFr === selectedServiceLibelle || service.libelleEn === selectedServiceLibelle));
+        if (selectedService) {
+            setService(selectedService);
+        }
+    };
+    const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionLibelle = e.target.value;
+        const selectedRegion = regions.find(region => (region.libelleFr === selectedRegionLibelle || region.libelleEn === selectedRegionLibelle));
+        if (selectedRegion) {
+            setRegion(selectedRegion);
+        }
+    };
+    const handleDepartementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedDepartementLibelle = e.target.value;
+        const selectedDepartement = departements.find(departement => (departement.libelleFr === selectedDepartementLibelle || departement.libelleEn === selectedDepartementLibelle));
+        if (selectedDepartement) {
+            setDepartement(selectedDepartement);
+        }
+    };
+    const handleCommuneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCommuneLibelle = e.target.value;
+        const selectedCommune = communes.find(commune => (commune.libelleFr === selectedCommuneLibelle || commune.libelleEn === selectedCommuneLibelle));
+        if (selectedCommune) {
+            setCommune(selectedCommune);
+        }
+    };
+
+
+    const closeModal = () => {
+        setErrorNom("");
+        setErrorGenre("");
+        setErrorEmail("");
+        setIsFirstRender(true);
+        dispatch(setShowModal());
+    };
+
+
+    const handleSubmit = async () => {
+
+        if (!nom || !genre || !email) {
+            if (!nom) {
+                setErrorNom(t('error.nom'));
+            }
+            if (!genre) {
+                setErrorGenre(t('error.genre'));
+            }
+            if (!email) {
+                setErrorEmail(t('error.email'));
+            }
+
+            return;
+        }
+        if (email) {
+            const notValidEmail = validateEmail(email);
+            if (notValidEmail) {
+                setErrorEmail(t(notValidEmail));
+                return;
+            }
+        }
+
+        //
+        const dataForm: AdminCreateType = {
+            genre,
+            date_entree: dateEntreeAdmin,
+            date_naiss: dateNaiss,
+            nom: nom,
+            prenom: prenom,
+            email: email,
+            matricule: matricule,
+            lieu_naiss: lieuNaiss,
+            contact,
+            grade: grade?._id ? grade._id : null,
+            categorie: categorie?._id ? categorie._id : null,
+            fonction: fonction?._id ? fonction._id : null,
+            service: service?._id ? service._id : null,
+            region: region?._id ? region._id : null,
+            departement: departement?._id ? departement._id : null,
+            commune: commune?._id ? commune._id : null,
+        }
+
+
+
+        if (!enseignant) {
+            //  create admin
+            await apiCreateAdministrateur({
+                ...dataForm
+            }).then((reponse: ReponseApiPros) => {
+
+                if (reponse.success) {
+                    try {
+                        dispatch(createAdmin({ ...reponse.data }));
+                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
+                    }
+                    catch (e) {
+                        try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
+                        catch (e) { throw e; }
+                    }
+
+                    closeModal();
+
+                } else {
+                    try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
+                    catch (e) { throw e; }
+
+                }
+            }).catch((e) => {
+                try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
+                catch (e) { throw e; }
+            })
+
+        } else {
+
+            //
+            //
+            //
+            // update admin
+            await apiUpdateAdministrateur(
+                { _id: enseignant!._id.toString(), ...dataForm },
+            ).then((reponse: ReponseApiPros) => {
+                if (reponse.success) {
+                    try {
+                        dispatch(updateAdmin({ newAdmin: { ...reponse.data } }));
+                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
+                    }
+                    catch (e) {
+
+
+                        try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
+                        catch (e) { throw e; }
+                    }
+                    closeModal();
+
+                } else {
+
+                    try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
+                    catch (e) { throw e; }
+                }
+            }).catch((e) => {
+
+                try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
+                catch (e) { throw e; }
+            })
+        }
+
+
+
+    }
+
+    useEffect(() => {
+        setErrorNom('')
+    }, [nom])
+    useEffect(() => {
+        setErrorGenre('')
+    }, [genre])
+    useEffect(() => {
+        setErrorEmail('')
+    }, [email])
+
+
+    useEffect(() => {
+        // UPDATE
+        if (enseignant) {
+            setModalTitle(t('form_update.enregistrer') + t('form_update.administrateur'));
+            setMatricule(enseignant.matricule ? enseignant.matricule.toString() : "");
+            setNom(enseignant.nom);
+            setPrenom(enseignant.prenom);
+            setGenre(enseignant.genre);
+            setDateNaiss(enseignant.date_naiss ? enseignant.date_naiss.toString() : "");
+            setLieuNaiss(enseignant.lieu_naiss);
+            setEmail(enseignant.email);
+            setContact(enseignant.contact);
+
+            const currentGrade = services.find(grade => (grade._id === enseignant.grade));
+            setGrade(currentGrade);
+
+            const currentCategorie = services.find(categorie => (categorie._id === enseignant.categorie));
+            setCategorie(currentCategorie);
+
+            const currentFonction = services.find(fonction => (fonction._id === enseignant.fonction));
+            setFonction(currentFonction);
+
+            const currentSerivce = services.find(service => (service._id === enseignant.service));
+            setService(currentSerivce);
+
+            const currentRegion = regions.find(region => (region._id === enseignant.region));
+            setRegion(currentRegion);
+
+            const currentDepartement = departements.find(departement => (departement._id === enseignant.departement));
+            setDepartement(currentDepartement);
+
+            const currentCommune = communes.find(commune => (commune._id === enseignant.commune));
+            setCommune(currentCommune);
+            setDateEntreeAdmin(enseignant.date_entree ? enseignant.date_entree.toString() : "");
+
+        }
+        // CREATE
+        else {
+            setModalTitle(t('form_save.enregistrer') + t('form_save.administrateur'));
+            setNom("");
+            setPrenom("");
+            setGenre("");
+            setDateNaiss("");
+            setLieuNaiss("");
+            setEmail("");
+            setContact("");
+            setMatricule("");
+            setGrade(undefined);
+            setCategorie(undefined);
+            setFonction(undefined);
+            setService(undefined);
+            setRegion(undefined);
+            setDepartement(undefined);
+            setCommune(undefined);
+            setDateEntreeAdmin("");
+        }
+
+        if (isFirstRender) {
+            setErrorNom("");
+            setErrorGenre("");
+            setErrorEmail("");
+            setIsFirstRender(false);
+        }
+    }, [enseignant, isFirstRender, t]);
+
+
+    return (
+        <>
+            <CustomDialogModal
+                title={modalTitle} // Utilisation du titre dynamique
+                isModalOpen={isModalOpen}
+                isDelete={false}
+                closeModal={closeModal}
+                handleConfirm={handleSubmit}
+            >
+
+
+                {/* MATRICULE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.matricule')} />
+                    <Input
+                        type="text"
+                        placeholder={t('label.matricule')}
+                        value={matricule}
+                        setValue={setMatricule}
+                    />
+                </div>
+
+
+                {/* NOM */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.nom')} required={true} />
+                    <Input
+                        type="text"
+                        placeholder={t('label.nom')}
+                        value={nom}
+                        setValue={setNom}
+                    />
+                    {errorNom && <ErrorInput title={errorNom} />}
+                </div>
+
+
+                {/* PRENOM */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.prenom')} />
+                    <Input
+                        type="text"
+                        placeholder={t('label.prenom')}
+                        value={prenom}
+                        setValue={setPrenom}
+                    />
+                </div>
+
+
+                {/* GENRE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.genre')} required={true} />
+                    <div>
+                        <input
+                            className='radio-label-space'
+                            type="radio"
+                            id={t('label.homme')}
+                            name="genre"
+                            value={t('label.homme')}
+                            checked={genre === "m"}
+                            onChange={() => { setGenre("m"); setErrorGenre("") }}
+                        />
+                        <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
+
+                        <input
+                            className='radio-label-space'
+                            type="radio"
+                            id={t('label.femme')}
+                            name="genre"
+                            value={t('label.femme')}
+                            checked={genre === "f"}
+                            onChange={() => { setGenre("f"); setErrorGenre("") }}
+                        />
+                        <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
+                    </div>
+                    {errorGenre && <ErrorInput title={errorGenre} />}
+                </div>
+
+
+                {/* EMAIL */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.email')} required={true} />
+                    <Input
+                        type="email"
+                        placeholder={t('label.email')}
+                        value={email}
+                        setValue={setEmail}
+                    />
+                    {errorEmail && <ErrorInput title={errorEmail} />}
+                </div>
+
+
+                {/* CONTACT */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.contact')} />
+                    <Input
+                        type="text"
+                        placeholder={t('label.contact')}
+                        value={contact}
+                        setValue={setContact}
+                    />
+                </div>
+
+
+                {/* DATE DE NAISSANCE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.date_naiss')} />
+                    <Input
+                        type="date"
+                        placeholder={t('label.email')}
+                        value={dateNaiss}
+                        setValue={setDateNaiss}
+                    />
+                </div>
+
+
+                {/* LIEU DE NAISSANCE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.lieu_naiss')} />
+                    <Input
+                        type="text"
+                        placeholder={t('label.lieu_naiss')}
+                        value={lieuNaiss}
+                        setValue={setLieuNaiss}
+                    />
+                </div>
+
+
+                {/* FONCTION */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.fonction')} />
+                    <Select
+                        value={fonction ? (lang === 'fr' ? fonction.libelleFr : fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
+                        list={fonctions}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
+                        handleGradeChange={handleFonctionChange}
+                    />
+                </div>
+
+
+                {/* GRADE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.grade')} />
+                    <Select
+                        value={grade ? (lang === 'fr' ? grade.libelleFr : grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
+                        list={grades}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
+                        handleGradeChange={handleGradeChange}
+                    />
+                </div>
+
+
+                {/* CATEGORIE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.categorie')} />
+                    <Select
+                        value={categorie ? (lang === 'fr' ? categorie.libelleFr : categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
+                        list={categories}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
+                        handleGradeChange={handleCategorieChange}
+                    />
+                </div>
+
+
+                {/* SERVICE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.service')} />
+                    <Select
+                        value={service ? (lang === 'fr' ? service.libelleFr : service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
+                        list={services}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
+                        handleGradeChange={handleServiceChange}
+                    />
+                </div>
+
+
+                {/* REGION */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.region')} />
+                    <Select
+                        value={region ? (lang === 'fr' ? region.libelleFr : region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
+                        list={regions}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
+                        handleGradeChange={handleRegionChange}
+                    />
+                </div>
+
+
+                {/* DEPARTEMENT */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.departement')} />
+                    <Select
+                        value={departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
+                        list={departements}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
+                        handleGradeChange={handleDepartementChange}
+                    />
+                </div>
+
+
+                {/* COMMUNE */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.commune')} />
+                    <Select
+                        value={commune ? (lang === 'fr' ? commune.libelleFr : commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
+                        list={communes}
+                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
+                        handleGradeChange={handleCommuneChange}
+                    />
+                </div>
+
+
+                {/* DATE ENTREE DANS L'ADMINISTRATION */}
+                <div className="mb-4 w-full ">
+                    <LabelInput title={t('label.date_entree_admin')} />
+                    <Input
+                        type="date"
+                        placeholder={t('label.date_entree_admin')}
+                        value={dateEntreeAdmin}
+                        setValue={setDateEntreeAdmin}
+                    />
+                </div>
+            </CustomDialogModal>
+        </>
+    );
+
+}

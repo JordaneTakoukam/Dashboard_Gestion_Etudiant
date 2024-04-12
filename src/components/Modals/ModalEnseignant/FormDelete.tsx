@@ -2,13 +2,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
 import { useTranslation } from 'react-i18next';
 
 
 
-function ModalDeleteEnseignant({ enseignant }: { enseignant : Enseignant|null}) {
-    const {t}=useTranslation();
+function ModalDeleteEnseignant({ enseignant }: { enseignant: EnseignantType | null }) {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -29,7 +28,7 @@ function ModalDeleteEnseignant({ enseignant }: { enseignant : Enseignant|null}) 
                 closeModal={closeModal}
                 handleConfirm={handleCreateEnseignant}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.enseignant')} : {enseignant?enseignant.nom:""} {enseignant?enseignant.prenom:""}</h1>
+                <h1>{t('form_delete.suppression') + t('form_delete.enseignant')} : {enseignant ? enseignant.nom : ""} {enseignant ? enseignant.prenom : ""}</h1>
             </CustomDialogModal>
         </>
     );

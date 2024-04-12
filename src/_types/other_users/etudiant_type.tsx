@@ -1,4 +1,4 @@
-interface EnseignantType extends EnseignantCreateType {
+interface EtudiantType extends EtudiantCreateType {
     _id: string;
     status?: string;
     historique_connexion?: Date[];
@@ -7,7 +7,7 @@ interface EnseignantType extends EnseignantCreateType {
 }
 
 
-interface EnseignantCreateType {
+interface EtudiantCreateType {
     genre: string;
     date_entree: String | null;
     date_naiss: String | null;
@@ -20,30 +20,39 @@ interface EnseignantCreateType {
     lieu_naiss: string | null;
     contact: string | null;
 
+    // fonction: string | null;
+    // service: string | null;
+
+    abscence: string | null;
+
     grade: string | null;
     categorie: string | null;
-    fonction: string | null;
-    service: string | null;
+
     region: string | null;
     departement: string | null;
     commune: string | null;
+
+    section: string | null;
+    cycle: string | null;
+    niveau: string | null;
 }
 
 
-interface EnseignantInitialData {
+interface EtudiantInitialData {
     data: {
-        list: EnseignantType[];
+        list: EtudiantType[];
         currentPage: number;
         totalPages: number;
         totalItems: number;
         pageSize: number;
-    }; pageIsLoading: boolean;
+    };
+    pageIsLoading: boolean;
     pageError: string | null;
 }
 
 
-interface EnseignantListGetType {
-    list: EnseignantType[];
+interface EtudiantListGetType {
+    list: EtudiantType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;

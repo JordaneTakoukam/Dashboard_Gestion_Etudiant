@@ -70,10 +70,19 @@ export const settingSlice = createSlice({
             state.isMobile = action.payload;
         },
 
+        setShowModalDeleteCustom: (state, action: PayloadAction<boolean>) => {
+            state.showModal.delete = action.payload;
+        },
+
+        setShowModalCustom: (state, action: PayloadAction<boolean>) => {
+            state.showModal.open = action.payload;
+        },
     },
 });
 
 export const {
+    setShowModalDeleteCustom,
+    setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
     , setSaveDeviceType,
     setCurrentIndexUserRole,

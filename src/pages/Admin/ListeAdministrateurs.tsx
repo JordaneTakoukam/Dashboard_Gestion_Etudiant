@@ -13,9 +13,13 @@ import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { PageNoData } from "../../components/_Global/PageNoData";
 import { getAdministrateurs } from "../../api/api_administrateur";
 import { setShowModal } from "../../_redux/features/setting";
+import { r_sup_ad } from "../../config";
+import { ModalNonAutoriser } from "../../components/Modals/_NonAutoriser/ModalNonAutoriser";
 
 
 const ListeDesAdministrateur = () => {
+    const userRole = useSelector((state: RootState) => state.user.role);
+
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [selectedAdministrateur, setSelectedAdministrateur] = useState<AdminType | null>(null);
@@ -97,8 +101,15 @@ const ListeDesAdministrateur = () => {
             }
 
 
-            <ModalCreateUpdateAdmin admin={selectedAdministrateur} />
-            <FormDelete administrateur={selectedAdministrateur} />
+            {
+                userRole === r_sup_ad ?
+                    <div>
+                        <ModalCreateUpdateAdmin admin={selectedAdministrateur} />
+                        <FormDelete administrateur={selectedAdministrateur} />
+                    </div>
+                    : <ModalNonAutoriser />
+            }
+
 
         </>
     );

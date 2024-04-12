@@ -196,7 +196,7 @@
     "cycle": "a cycle",
     "niveau": "a level",
     "evenement": "an event",
-    "administrateur":  "an administrator by ID, last name, or first name",
+    "administrateur": "an administrator by ID, last name, or first name",
     "grade": "a grade",
     "service": "a service",
     "categorie": "a category",
@@ -206,6 +206,7 @@
     "commune": "a commune"
   },
   "boutton": {
+    "daccord": "Okay",
     "actualiser": "Refresh",
     "rafraichir_la_page": "Refresh the page",
     "recevoir_un_nouveau_mdp": "Receive a new password",
@@ -387,6 +388,8 @@
     "salle": "Classroom field is required."
   },
   "message": {
+    "non_autoriser": "Unauthorized",
+    "vous_etes_pas_autoriser_a_mener_cette_action": "You are not authorized to perform this action",
     "erreur": "An error occurred",
     "erreur_recuperation": "An error occurred while retrieving data!"
   }

@@ -203,6 +203,7 @@
     "commune": "une commune"
   },
   "boutton": {
+    "daccord": "D'accord",
     "actualiser": "Actualiser",
     "rafraichir_la_page": "Rafraichir la page",
     "recevoir_un_nouveau_mdp": "Recevoir un nouveau mot de passe",
@@ -384,6 +385,8 @@
     "salle": "Le champ salle de cours est obligatoire."
   },
   "message": {
+    "non_autoriser": "Non autorisé",
+    "vous_etes_pas_autoriser_a_mener_cette_action": "Vous n'êtes pas autorisé à mener cette action",
     "erreur": "Une erreur est survenue",
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !"
   },
@@ -408,15 +411,15 @@
     "etudiant": "Ajouter votre premier etudiant",
     "enseignant": "Ajouter votre premier enseignant",
     "progression": "Ajouter votre première progréssion",
-    "section":  "Ajouter votre première section",
-    "cycle":  "Ajouter votre premier cycle",
-    "niveau":  "Ajouter votre premier niveau",
+    "section": "Ajouter votre première section",
+    "cycle": "Ajouter votre premier cycle",
+    "niveau": "Ajouter votre premier niveau",
     "service": "Ajouter votre premier service",
     "grade": "Ajouter votre premier grade",
-    "fonction":  "Ajouter votre première fonction",
-    "categorie":  "Ajouter votre première catégorie",
-    "region":  "Ajouter votre première région",
-    "departement":  "Ajouter votre premier département",
-    "commune":  "Ajouter votre première commune"
+    "fonction": "Ajouter votre première fonction",
+    "categorie": "Ajouter votre première catégorie",
+    "region": "Ajouter votre première région",
+    "departement": "Ajouter votre premier département",
+    "commune": "Ajouter votre première commune"
   }
 }

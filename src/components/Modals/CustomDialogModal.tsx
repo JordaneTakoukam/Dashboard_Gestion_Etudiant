@@ -7,19 +7,20 @@ interface CustomDialogModalProps {
     title: string;
     handleConfirm: () => void;
     isModalOpen: boolean;
-    isDelete:boolean;
+    isDelete: boolean;
     closeModal: () => void;
     children: React.ReactNode;
+    unique?: boolean;
 }
 
 // model generale pour les boites de dialogue
 
-function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeModal, children }: CustomDialogModalProps) {
-    const {t}=useTranslation();
+function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeModal, children, unique }: CustomDialogModalProps) {
+    const { t } = useTranslation();
     return (
         <div>
             <Transition show={isModalOpen} as={Fragment}>
-                <Dialog open={isModalOpen} as="div" className="relative z-999999 " onClose={()=>{}}>
+                <Dialog open={isModalOpen} as="div" className="relative z-999999 " onClose={() => { }}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -61,21 +62,34 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
                                     {/* BODY DE LA BOITE DE DIALOGUE */}
                                     <div className='mt-5 md:mt-10'>{children}</div>
 
-                                    <div className="flex justify-end gap-4.5 mt-8">
-                                        <button
-                                            className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-8  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm"
-                                            type="submit"
-                                            onClick={closeModal}
-                                        >
-                                            {!isDelete?t('boutton.annuler'):t('boutton.non')}
-                                        </button>
-                                        <button
-                                            className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm"
-                                            onClick={handleConfirm}
-                                        >
-                                            {!isDelete?t('boutton.enregistrer'):t('boutton.oui')}
-                                        </button>
-                                    </div>
+                                    {
+                                        unique ?
+                                            <div className="flex justify-end gap-4.5 mt-8">
+                                                <button
+                                                    className="flex justify-center rounded bg-meta-1 py-2 px-8 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm"
+                                                    onClick={handleConfirm}
+                                                >
+                                                    {t('boutton.daccord')}
+                                                </button>
+                                            </div>
+                                            :
+
+                                            <div className="flex justify-end gap-4.5 mt-8">
+                                                <button
+                                                    className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-8  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm"
+                                                    type="submit"
+                                                    onClick={closeModal}
+                                                >
+                                                    {!isDelete ? t('boutton.annuler') : t('boutton.non')}
+                                                </button>
+                                                <button
+                                                    className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm"
+                                                    onClick={handleConfirm}
+                                                >
+                                                    {!isDelete ? t('boutton.enregistrer') : t('boutton.oui')}
+                                                </button>
+                                            </div>
+                                    }
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>

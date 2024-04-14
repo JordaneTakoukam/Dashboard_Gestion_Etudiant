@@ -359,6 +359,8 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
         }
     };
 
+    
+
     // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
     useEffect(() => {
         const annee = selectedYear; // Remplacez par l'année souhaitée

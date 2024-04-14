@@ -18,6 +18,7 @@ import Pagination from "../../Pagination/Pagination";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../../_redux/features/progession_periode_slice";
+import * as XLSX from 'xlsx';
 import React from "react";
 
 interface TablePeriodeEnseignementProps {
@@ -94,12 +95,60 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     };
     const [formatToDownload, setFormatToDownload] = useState("");
 
-    
-    const handleDownloadSelect = (selected: string) => {
+    const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        console.log(selected);
-        // methode pour download
+        // const mats = await fetchAllPeriodes().then((periodes)=>{
+            let title = "progression_par_periode";
+            if(lang !== 'fr'){
+                title = "period_progression";
+            }
+            if(selected === 'PDF'){
+
+            }else if (selected === 'CSV'){
+
+            }else{
+                exportToExcel(title+".xlsx", filteredPeriode)
+            }
+        // })
+        
     };
+
+    const exportToExcel = ( filename: string,periode: PeriodeEnseignementType | undefined) => {
+        if(periodes){
+            const wb = XLSX.utils.book_new();
+
+            // Créer une feuille de calcul
+            const ws = XLSX.utils.aoa_to_sheet([
+                // Première ligne avec le libellé de la période
+                [(lang==='fr'?periode?.periodeFr:periode?.periodeEn)],
+            
+                // Entête des colonnes
+
+                
+                ...(periode?.enseignements || []).flatMap(enseignement => [
+                    [enseignement.matiere.code+":"+(lang==='fr'?enseignement.matiere.libelleFr:enseignement.matiere.libelleEn)],
+                    [t('label.nb_seance_periode'), t('label.nb_seance_pratique'), t('label.gap'), t('label.taux_presence')],
+                    [enseignement.nombreSeance, 0, enseignement.nombreSeance - 0, `${((0 / enseignement.nombreSeance) * 100).toFixed(2)}%`]
+                ])
+            ]);
+          
+            // Ajouter la feuille de calcul au classeur
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            // Générer un fichier Excel binaire
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            // Convertir le tableau binaire en un objet Blob
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Créer un lien pour télécharger le fichier Excel
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            // Cliquez sur le lien pour télécharger le fichier Excel
+            link.click();
+        }else{
+            
+        }
+        
+    }
     
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
@@ -417,7 +466,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
+                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
 
             </div>
 

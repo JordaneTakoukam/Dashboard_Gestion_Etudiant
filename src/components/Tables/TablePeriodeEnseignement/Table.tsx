@@ -17,7 +17,8 @@ import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import { setPeriodeEnseignementLoading, setPeriodeEnseignements, setErrorPagePeriodeEnseignement } from "../../../_redux/features/periode_enseignement_slice";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import { getPeriodesEnseignementWithPagination } from "../../../api/api_periode_enseignement";
+import { getPeriodesEnseignement, getPeriodesEnseignementWithPagination } from "../../../api/api_periode_enseignement";
+import * as XLSX from 'xlsx';
 
 interface TablePeriodeEnseignementProps {
     data: PeriodeEnseignementType[];
@@ -36,6 +37,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const typesEnseignement = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
@@ -94,11 +96,82 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     const [formatToDownload, setFormatToDownload] = useState("");
 
     
-    const handleDownloadSelect = (selected: string) => {
+    const fetchAllPeriodes = async () => {
+        try {
+            
+            if (selectNiveauId) {
+                const fetchedPeriodes = await getPeriodesEnseignement({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
+                return fetchedPeriodes.periodes;
+            }
+                // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+        }
+    }
+    const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        console.log(selected);
-        // methode pour download
+        const mats = await fetchAllPeriodes().then((periodes)=>{
+            let title = "liste_des_periodes";
+            if(lang !== 'fr'){
+                title = "subjects_list";
+            }
+            if(selected === 'PDF'){
+
+            }else if (selected === 'CSV'){
+
+            }else{
+                exportToExcel(title+".xlsx", periodes)
+            }
+        })
+        
     };
+
+    const exportToExcel = ( filename: string,periodes: PeriodeEnseignementType[] | undefined) => {
+        if(periodes){
+            const wb = XLSX.utils.book_new();
+            
+            // Créer une feuille de calcul
+            const ws = XLSX.utils.aoa_to_sheet([
+               
+                ...periodes.flatMap(periode => {
+                    const rows = [];
+                    rows.push([(lang==='fr'?periode.periodeFr:periode.periodeEn)]);
+                    rows.push([t('label.matieres'), t('label.type_ens'), t('label.nb_seance_periode')]);
+                    // Vérifier si matiere.periodes est défini
+                    if (periode.enseignements) {        
+                        // Parcourir les periodes
+                        periode.enseignements.forEach(enseignement => {
+                            rows.push([
+                                lang==='fr'?enseignement.matiere.libelleFr:enseignement.matiere.libelleEn,
+                                typesEnseignement.find(type=>type._id==enseignement.typeEnseignement)?.code,
+                                enseignement.nombreSeance
+                            ]);
+                        });
+                    }
+        
+                    return rows;
+                })
+            ]);
+
+          
+            // Ajouter la feuille de calcul au classeur
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            // Générer un fichier Excel binaire
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            // Convertir le tableau binaire en un objet Blob
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Créer un lien pour télécharger le fichier Excel
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            // Cliquez sur le lien pour télécharger le fichier Excel
+            link.click();
+        }else{
+            
+        }
+        
+    }
     
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
@@ -401,7 +474,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
+                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
 
             </div>
 

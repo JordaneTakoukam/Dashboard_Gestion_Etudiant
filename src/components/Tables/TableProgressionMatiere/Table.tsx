@@ -12,8 +12,7 @@ import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_r
 import { getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
-
+import * as XLSX from 'xlsx';
 
 const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }) => {
     const {t}=useTranslation();
@@ -152,11 +151,71 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
         console.log(selected)
     };
 
-    const handleDownloadSelect = (selected: string) => {
+    const fetchAllMatieres = async () => {
+        try {
+            
+            if (selectNiveauId) {
+                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId});
+                return fetchedMatieres.matieres;
+            }
+                // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            dispatch(setErrorPageMatiere(t('message.erreur')));
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+        }
+    }
+    const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        console.log(selected);
-        // methode pour download
+        const mats = await fetchAllMatieres().then((matieres)=>{
+            let title = "progression_par_matiere";
+            if(lang !== 'fr'){
+                title = "subjects_progression";
+            }
+            if(selected === 'PDF'){
+
+            }else if (selected === 'CSV'){
+
+            }else{
+                exportToExcel(title+".xlsx", matieres)
+            }
+        })
+        
     };
+
+    const exportToExcel = ( filename: string,matieres: MatiereType[] | undefined) => {
+        if(matieres){
+            const wb = XLSX.utils.book_new();
+            
+            // Créer une feuille de calcul
+            const ws = XLSX.utils.aoa_to_sheet([
+                [t('label.matieres'), t('label.progression')],
+                ...matieres.flatMap(matiere => {
+                    const rows = [];
+                    rows.push([`${matiere.code} : ${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,calculateProgress(matiere)+" %"]);
+                    return rows;
+                })
+            ]);
+
+          
+            // Ajouter la feuille de calcul au classeur
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            // Générer un fichier Excel binaire
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            // Convertir le tableau binaire en un objet Blob
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Créer un lien pour télécharger le fichier Excel
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            // Cliquez sur le lien pour télécharger le fichier Excel
+            link.click();
+        }else{
+            
+        }
+        
+    }
 
     //fournir initialement les données à la page
     useEffect(() => {
@@ -405,7 +464,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
+                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
 
             </div>
 

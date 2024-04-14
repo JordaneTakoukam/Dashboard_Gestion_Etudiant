@@ -3,24 +3,21 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
+import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Matiere } from "../../../pages/Admin/ListeMatieres";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
-import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../../_redux/features/matiere_slice";
-import { getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
+import { getMatieresByNiveau, getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
+import * as XLSX from 'xlsx';
 
 interface TableMatiereProps {
     data: MatiereType[];
@@ -92,12 +89,118 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     };
     const [formatToDownload, setFormatToDownload] = useState("");
 
-    
-    const handleDownloadSelect = (selected: string) => {
+    const fetchAllMatieres = async () => {
+        try {
+            
+            if (selectNiveauId) {
+                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId});
+                return fetchedMatieres.matieres;
+            }
+                // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            dispatch(setErrorPageMatiere(t('message.erreur')));
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+        }
+    }
+    const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        console.log(selected);
-        // methode pour download
+        const mats = await fetchAllMatieres().then((matieres)=>{
+            let title = "liste_des_matieres";
+            if(lang !== 'fr'){
+                title = "subjects_list";
+            }
+            if(selected === 'PDF'){
+
+            }else if (selected === 'CSV'){
+
+            }else{
+                exportToExcel(title+".xlsx", matieres)
+            }
+        })
+        
     };
+
+    const exportToExcel = ( filename: string,matieres: MatiereType[] | undefined) => {
+        if(matieres){
+            const wb = XLSX.utils.book_new();
+            
+            // Créer une feuille de calcul
+            const ws = XLSX.utils.aoa_to_sheet([
+                [t('label.matieres'), "CM", "TD", "TP"],
+                ...matieres.flatMap(matiere => {
+                    const rows = [];
+        
+                    // Vérifier si matiere.chapitres est défini
+                    if (matiere.chapitres) {
+                        rows.push([`${matiere.code} : ${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`]);
+        
+                        // Parcourir les chapitres
+                        matiere.chapitres.forEach(chapitre => {
+                            rows.push([
+                                lang==='fr'?chapitre.libelleFr:chapitre.libelleEn,
+                                chapitre.typesEnseignement.length>0 && chapitre.typesEnseignement[0].volumeHoraire || "", // Volume horaire pour le premier type d'enseignement
+                                chapitre.typesEnseignement.length>1 && chapitre.typesEnseignement[1].volumeHoraire || "", // Volume horaire pour le deuxième type d'enseignement
+                                chapitre.typesEnseignement.length>2 && chapitre.typesEnseignement[2].volumeHoraire || ""  // Volume horaire pour le troisième type d'enseignement
+                            ]);
+                        });
+                    }
+        
+                    rows.push([
+                        (t('label.approche_ped'))+":"+(lang==='fr'?matiere.approchePedFr:matiere.approchePedEn), 
+                    ]);
+                    rows.push([
+                        (t('label.prerequis'))+":"+(lang==='fr'?matiere.prerequisFr:matiere.prerequisEn),
+                    ]);
+                    rows.push([
+                        (t('label.evaluation_acquis'))+":"+(lang==='fr'?matiere.evaluationAcquisFr:matiere.evaluationAcquisEn),
+                    ]);
+                    let objectifs="";
+                    if(matiere.chapitres){
+                        matiere.chapitres.forEach(chapitre => {
+                            if(chapitre.objectifs){
+                               
+                                chapitre.objectifs.forEach(objectif => {
+                                    if(objectifs.length>0){
+                                        objectifs=objectifs+","+(lang==='fr'?objectif.libelleFr:objectif.libelleEn)
+                                    }else{
+                                        objectifs=(lang==='fr'?objectif.libelleFr:objectif.libelleEn)
+                                    }
+                                    
+                                })
+                            }
+                        });
+                    }
+                    rows.push([
+                        (t('label.competences_acquis'))+":"+objectifs,
+                    ]);
+                    rows.push(Array(4).fill("")); // Espacement entre les matières
+        
+                    return rows;
+                })
+            ]);
+
+          
+            // Ajouter la feuille de calcul au classeur
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            // Générer un fichier Excel binaire
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            // Convertir le tableau binaire en un objet Blob
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Créer un lien pour télécharger le fichier Excel
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            // Cliquez sur le lien pour télécharger le fichier Excel
+            link.click();
+        }else{
+            
+        }
+        
+    }
+    
+    
     
 
      // recuperer l'id de la section suite au click sur l'input select
@@ -374,7 +477,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
+                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
 
             </div>
 

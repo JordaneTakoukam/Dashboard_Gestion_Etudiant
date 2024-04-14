@@ -41,6 +41,9 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
+    const [niveau, setNiveau] = useState<NiveauProps>();
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -58,9 +61,13 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
-            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
+            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
+                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+            }else{
+                setSelectIdCycle(undefined);
+                setCycle(undefined);
             }
             setFilteredCycle(result);
           
@@ -75,7 +82,10 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
-                
+                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
+            }else{
+                setSelectIdNiveau(undefined);
+                setNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
@@ -90,27 +100,29 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     };
     
 
-    // recuperer l'id de la section suite au click sur l'input select
-    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+     // recuperer l'id de la section suite au click sur l'input select
+     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
+            setSection(selected);
         }
     };
 
     // valeur de la l'id du cycle selectionner    
-    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+    const handleCycleSelect = (selected: CycleProps | undefined) => {
         if (selected?._id) {
             setSelectIdCycle(selected._id);
             filterNiveauxByCycle(selected._id);
+            setCycle(selected);
         }
     };
 
     // valeur de la l'id du niveau selectionner    
-    const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
+    const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
-            fetchMatieres(selected._id, 1);    
+            setNiveau(selected)
         }
     };
 
@@ -127,33 +139,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
         });
     };
 
-    const fetchMatieres = async (currentNiveauId: string, page: number) => {
-        dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
-        try {
-            const emptyMatieres : MatiereReturnGetType={
-                matieres: [],
-                currentPage: 0,
-                totalItems: 0,
-                totalPages: 0,
-                pageSize: 0
-            }
-            if (currentNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: page });
-                if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                    dispatch(setMatieres(fetchedMatieres));
-                   
-                } else {
-                    
-                    dispatch(setMatieres(emptyMatieres));
-                }
-            } // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageMatiere(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
+    
 
      // variable pour la pagination
      const itemsPerPage = useSelector((state: RootState) => state.matiereSlice.data.pageSize); // nombre delements maximum par page
@@ -179,12 +165,20 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
      const endItem = Math.min(count, indexOfLastItem);
 
     //fournir initialement les données à la page
+    // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
-        if (sections && sections.length > 0) {
-            filterCycleBySection(sections[0]?._id);
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
         }
-           
-    }, [sections]);
+        
+        
+    }, [sections, selectSectionId]);
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
@@ -195,15 +189,40 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
             }
                 
         }        
-    }, [filteredCycle, data]);
-    // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
+    }, [filteredCycle]);
     useEffect(() => {
-        
-        if(selectNiveauId){
-            fetchMatieres(selectNiveauId, currentPage);    
+        const fetchMatieres = async () => {
+            dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyMatieres : MatiereReturnGetType={
+                    matieres: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                if (selectNiveauId) {
+                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage });
+                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                        dispatch(setMatieres(fetchedMatieres));
+                       
+                    } else {
+                        
+                        dispatch(setMatieres(emptyMatieres));
+                    }
+                } else{
+                    dispatch(setMatieres(emptyMatieres));
+                }
+                    // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageMatiere(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+            }
         }
-        
-    }, [currentPage]); // Déclencher l'effet lorsque currentPage change
+        fetchMatieres();
+    }, [dispatch, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<MatiereType[]>(data);
@@ -244,23 +263,26 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                             /> */}
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
+                                selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
+                                selectedItem={cycle}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+                                displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
+                                selectedItem={niveau}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
+                                displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
                         </div>
@@ -280,23 +302,26 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                             /> */}
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
+                                selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
+                                selectedItem={cycle}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+                                displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
+                                selectedItem={niveau}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
+                                displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
                         </div>

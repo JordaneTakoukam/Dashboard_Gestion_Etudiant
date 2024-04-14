@@ -4,13 +4,14 @@ interface CustomDropDownProps<T> {
     title: string;
     items: T[];
     defaultValue?: T | null;
+    selectedItem?:T;
     onSelect: (selected: T | undefined) => void;
     displayProperty?: (item: T) => string;
 }
 
-function CustomDropDown2<T>({ title, items, defaultValue, onSelect, displayProperty = (item: T) => String(item) }: CustomDropDownProps<T>): JSX.Element {
+function CustomDropDown2<T>({ title, items, defaultValue, selectedItem, onSelect, displayProperty = (item: T) => String(item) }: CustomDropDownProps<T>): JSX.Element {
     // const [selectedItem, setSelectedItem] = useState<T | null>(defaultValue || null);
-    const [selectedItem, setSelectedItem] = useState<T>();
+    
     
     
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -20,7 +21,7 @@ function CustomDropDown2<T>({ title, items, defaultValue, onSelect, displayPrope
         const selected = items.find(item => displayProperty(item) === selectedValue);
         // console.log(items.find(item => displayProperty(item) === selectedValue));
 
-        setSelectedItem(selected);
+        // setSelectedItem(selected);
         onSelect(selected);
     };
 

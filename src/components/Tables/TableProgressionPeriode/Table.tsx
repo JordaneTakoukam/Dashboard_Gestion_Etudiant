@@ -40,6 +40,10 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.progressionPeriodeEnseignementSlice.pageIsLoading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
+    const [niveau, setNiveau] = useState<NiveauProps>();
+    const [periode, setPeriode] = useState<PeriodeEnseignementType>();
     const [filteredPeriode, setFilteredPeriode] = useState<PeriodeEnseignementType | undefined>(data);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -59,9 +63,13 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
-            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
+            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
+                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+            }else{
+                setSelectIdCycle(undefined);
+                setCycle(undefined);
             }
             setFilteredCycle(result);
           
@@ -76,9 +84,10 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
-                
+                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
             }else{
                 setSelectIdNiveau(undefined);
+                setNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
@@ -109,26 +118,30 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
+            setSection(selected);
         }
     };
 
     // valeur de la l'id du cycle selectionner    
-    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+    const handleCycleSelect = (selected: CycleProps | undefined) => {
         if (selected?._id) {
             setSelectIdCycle(selected._id);
             filterNiveauxByCycle(selected._id);
+            setCycle(selected);
         }
     };
 
     // valeur de la l'id du niveau selectionner    
-    const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
+    const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
-            setSelectIdNiveau(selected._id);    
+            setSelectIdNiveau(selected._id);
+            setNiveau(selected)
         }
     };
 
     const handlePeriodeSelect = (selected: PeriodeEnseignementType | undefined) => {
         setFilteredPeriode(selected);
+        setPeriode(selected)
         console.log(selected)
     };
 
@@ -236,6 +249,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
             console.log('if');
             // Sélectionner la première matière et mettre à jour les états nécessaires
             setFilteredPeriode(periodes[0]);
+            setPeriode(periodes[0]);
             // setProgress(calculateProgress(matieres[0]));
         }else{
             setFilteredPeriode(undefined);
@@ -259,6 +273,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
@@ -266,33 +281,38 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                             />
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
                                 items={[1, 2]}
-                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                selectedItem={section}
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                selectedItem={cycle}
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
                             <CustomDropDown2<PeriodeEnseignementType>
                                 title={t('label.periode')}
+                                selectedItem={periode}
                                 items={periodes}
                                 defaultValue={periodes[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(periode: PeriodeEnseignementType) => `${lang === 'fr' ? periode.periodeFr : periode.periodeEn}`}
@@ -306,8 +326,9 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<String>
+                        <CustomDropDown2<String>
                                 title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
@@ -315,33 +336,38 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                             />
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
                                 items={[1, 2]}
-                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                selectedItem={section}
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                selectedItem={cycle}
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
                             <CustomDropDown2<PeriodeEnseignementType>
                                 title={t('label.periode')}
+                                selectedItem={periode}
                                 items={periodes}
                                 defaultValue={periodes[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(periode: PeriodeEnseignementType) => `${lang === 'fr' ? periode.periodeFr : periode.periodeEn}`}

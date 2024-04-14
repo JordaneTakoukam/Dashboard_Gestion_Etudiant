@@ -16,6 +16,7 @@ import { extractYear, formatYear, generateYearRange, premierElement } from "../.
 import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../../_redux/features/periode_slice";
 import { getPeriodesByNiveau } from "../../../api/api_periode";
 import createToast from "../../../hooks/toastify";
+import * as XLSX from 'xlsx';
 
 
 interface TablePeriodeProps {
@@ -36,6 +37,9 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
+    const [niveau, setNiveau] = useState<NiveauProps>();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
@@ -159,6 +163,10 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
+                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+            }else{
+                setSelectIdCycle(undefined);
+                setCycle(undefined);
             }
             setFilteredCycle(result);
           
@@ -173,8 +181,10 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
+                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
             }else{
                 setSelectIdNiveau(undefined);
+                setNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
@@ -191,21 +201,24 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
+            setSection(selected);
         }
     };
 
     // valeur de la l'id du cycle selectionner    
-    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+    const handleCycleSelect = (selected: CycleProps | undefined) => {
         if (selected?._id) {
             setSelectIdCycle(selected._id);
             filterNiveauxByCycle(selected._id);
+            setCycle(selected);
         }
     };
 
     // valeur de la l'id du niveau selectionner    
-    const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
+    const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
+            setNiveau(selected)
         }
     };
     const handleSemestreSelect = (selected: number | undefined) => {
@@ -217,8 +230,50 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
-        // methode pour download
+        let title = "emploie_de_temps"+formatYear(selectedYear)+"_semestre_"+selectedSemestre;
+        if(lang !== 'fr'){
+            title = "timetable"+formatYear(selectedYear)+"_semester_"+selectedSemestre;;
+        }
+        if(selected === 'PDF'){
+
+        }else if (selected === 'CSV'){
+            // downloadCSV();
+        }else{
+            exportToExcel(title+".xlsx")
+        }
     };
+
+    const exportToExcel = (title:string) => {
+        // Créer une nouvelle feuille de calcul
+        const wb = XLSX.utils.book_new();
+        // Convertir les données du tableau en un tableau 2D
+        const data = [['Horaire', ...jours.map(jour => lang === 'fr'?jour.libelleFr:jour.libelleEn)], ...extractTableData()];
+        // Créer une nouvelle feuille de calcul à partir des données
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        // Ajouter la feuille de calcul au classeur
+        XLSX.utils.book_append_sheet(wb, ws, 'Emploi du temps');
+        // Sauvegarder le classeur au format Excel
+        XLSX.writeFile(wb, title);
+    };
+
+    const extractTableData = () => {
+        const tableData = [];
+        const tableBody = document.getElementById('myTable');
+        if (tableBody) {
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const rowData = [];
+                const cells = rows[i].getElementsByTagName('td');
+                for (let j = 0; j < cells.length; j++) {
+                    rowData.push(cells[j].textContent ?? '');
+                }
+                tableData.push(rowData);
+            }
+        }
+        return tableData;
+    };
+    
+    
 
 
    // Effet pour filtrer les options des CustomDropDown
@@ -297,6 +352,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
@@ -304,6 +360,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                             />
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
                                 items={[1, 2]}
                                 defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
@@ -312,20 +369,23 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                selectedItem={section}
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                selectedItem={cycle}
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -341,6 +401,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
@@ -348,6 +409,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                             />
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
                                 items={[1, 2]}
                                 defaultValue={currentSemester} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
@@ -357,20 +419,23 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                selectedItem={section}
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                selectedItem={cycle}
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -410,7 +475,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
+                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
 
             </div>
 

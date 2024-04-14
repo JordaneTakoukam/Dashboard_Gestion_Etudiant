@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Etudiant } from "../../../pages/Admin/ListeEtudiants";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
@@ -8,7 +8,7 @@ import BodyTableEtudiant from "./BodyTableEtudiant";
 import HeaderTableEtudiant from "./HeaderTableEtudiant";
 import { setShowModal } from "../../../_redux/features/setting";
 import { CustomDropDown } from "../../DropDown/CustomDropDown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
@@ -16,6 +16,8 @@ import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import Pagination from "../../Pagination/Pagination";
 import { useTranslation } from "react-i18next";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { RootState } from "../../../_redux/store";
 
 interface TableEtudiantProps {
     data: Etudiant[];
@@ -27,6 +29,17 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
+    const [niveau, setNiveau] = useState<NiveauProps>();
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -41,24 +54,78 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
     const [filtreNiveau, setFiltreNiveau] = useState("");
     const [formatToDownload, setFormatToDownload] = useState("");
 
+    const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
+    const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
+    const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
+
+    const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
+    const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCycleBySection = (sectionId: string | undefined) => {
+        if (sectionId && sectionId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
+            if (result.length > 0) {
+                setSelectIdCycle(result[0]._id);
+                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+            }else{
+                setSelectIdCycle(undefined);
+                setCycle(undefined);
+            }
+            setFilteredCycle(result);
+          
+        }
+    };
+
+    // filtrer les donnee a partir de l'id du cycle selectionner
+    const filterNiveauxByCycle = (cycleId: string | undefined) => {
+        
+        if (cycleId && cycleId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
+            if (result.length > 0) {
+                setSelectIdNiveau(result[0]._id);
+                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
+            }else{
+                setSelectIdNiveau(undefined);
+                setNiveau(undefined);
+            }
+            setFilteredNiveaux(result);
+        }
+    };
+
     const handleAnneeSelect = (selected: String | undefined) => {
-        // setFiltreAnnee(selected);
-        console.log(selected)
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
     };
 
-    // const handleSectionSelect = (selected: Section | undefined) => {
-    //     // setFiltreSection(selected);
-    //     console.log(selected);
-    // };
-
-    const handleCycleSelect = (selected: Cycle | undefined) => {
-        // setFiltreCycle(selected);
-        console.log(selected);
+    // recuperer l'id de la section suite au click sur l'input select
+    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdSection(selected._id);
+            filterCycleBySection(selected._id);
+            setSection(selected);
+        }
     };
 
-    const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
-        // Logique à exécuter lorsque le niveau est sélectionné
-        // console.log("Niveau sélectionné :", selectedNiveau);
+    // valeur de la l'id du cycle selectionner    
+    const handleCycleSelect = (selected: CycleProps | undefined) => {
+        if (selected?._id) {
+            setSelectIdCycle(selected._id);
+            filterNiveauxByCycle(selected._id);
+            setCycle(selected);
+        }
+    };
+
+    // valeur de la l'id du niveau selectionner    
+    const handleNiveauSelect = (selected: NiveauProps | undefined) => {
+        if (selected && selected?._id) {
+            setSelectIdNiveau(selected._id);
+            setNiveau(selected)
+        }
     };
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
@@ -90,7 +157,32 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
     const endItem = Math.min(count, indexOfLastItem);
 
+    useEffect(() => {
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
+        }
+        
+        
+    }, [sections, selectSectionId]);
 
+   
+
+    useEffect(() => {
+        if (filteredCycle && filteredCycle.length > 0) {
+            if(!selectCycleId){
+                filterNiveauxByCycle(filteredCycle[0]?._id);
+            }else{
+                filterNiveauxByCycle(selectCycleId);
+            }
+                
+        }        
+    }, [filteredCycle]);
 
     return (
         <div>
@@ -115,32 +207,37 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                selectedItem={section}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
-                                items={cycles}
+                                items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                selectedItem={cycle}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<Niveau>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
-                                items={niveaux}
+                                items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                selectedItem={niveau}
+                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
+
 
                         </div>
                     )}
@@ -152,30 +249,34 @@ const TableEtudiant = ({ data, onCreate, onEdit }: TableEtudiantProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
+                            <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
+                                selectedItem={section}
+                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
+                            />
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
-                                items={cycles}
+                                items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
+                                selectedItem={cycle}
+                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<Niveau>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
-                                items={niveaux}
+                                items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
+                                selectedItem={niveau}
+                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
 

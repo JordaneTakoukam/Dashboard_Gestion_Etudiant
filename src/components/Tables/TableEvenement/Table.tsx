@@ -83,13 +83,17 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
         const event = await fetchAllEvenements(selectedYear).then((evenements)=>{
 
             if(evenements){
+                let title = "calendrier_académique_"+formatYear(selectedYear);
+                if(lang !== 'fr'){
+                    title = "academic_calendar_"+formatYear(selectedYear);
+                }
                 if(selected === 'PDF'){
                     generatePDF();
                 }else if (selected === 'CSV'){
-                    exportToCsv("test.csv", evenements)
+                    exportToCsv(title+".csv", evenements)
                     // downloadCSV();
                 }else{
-                    exportToExcel('testt.xlsx', evenements)
+                    exportToExcel(title+".xlsx", evenements)
                 }
             }
         });
@@ -395,6 +399,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear, firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
@@ -410,6 +415,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear, firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 

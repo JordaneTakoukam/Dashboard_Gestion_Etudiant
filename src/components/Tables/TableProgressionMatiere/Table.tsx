@@ -57,6 +57,10 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
+    const [niveau, setNiveau] = useState<NiveauProps>();
+    const [matiere, setMatiere] = useState<MatiereType>();
     const [filteredMatiere, setFilteredMatiere] = useState<MatiereType | undefined>(data);
     const [formatToDownload, setFormatToDownload] = useState("");
     const [progress, setProgress] = useState(calculateProgress(data));
@@ -76,15 +80,18 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
-            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
+            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
+                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+            }else{
+                setSelectIdCycle(undefined);
+                setCycle(undefined);
             }
             setFilteredCycle(result);
           
         }
     };
-
 
     // filtrer les donnee a partir de l'id du cycle selectionner
     const filterNiveauxByCycle = (cycleId: string | undefined) => {
@@ -94,14 +101,16 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
+                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
             }else{
                 setSelectIdNiveau(undefined);
+                setNiveau(undefined);
             }
             setFilteredNiveaux(result);
         }
     };
 
-    // filtrer les donnee a partir de l'id du cycle selectionner
+    // filtrer les donnee a partir de l'id du niveau selectionner
     const filterMatiereByNiveau = (niveauId: string | undefined) => {
         
         if (niveauId && niveauId !== '') {
@@ -115,27 +124,30 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
+            setSection(selected);
         }
     };
 
     // valeur de la l'id du cycle selectionner    
-    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+    const handleCycleSelect = (selected: CycleProps | undefined) => {
         if (selected?._id) {
             setSelectIdCycle(selected._id);
             filterNiveauxByCycle(selected._id);
+            setCycle(selected);
         }
     };
 
     // valeur de la l'id du niveau selectionner    
-    const handleNiveauSelect = (selected: CommonSettingProps | undefined) => {
+    const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
-            
+            setNiveau(selected)
         }
     };
 
     const handleMatiereSelect = (selected: MatiereType | undefined) => {
         setFilteredMatiere(selected);
+        setMatiere(selected)
         setProgress(calculateProgress(selected));
         console.log(selected)
     };
@@ -148,11 +160,20 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
     //fournir initialement les données à la page
     useEffect(() => {
-        if (sections && sections.length > 0) {
-            filterCycleBySection(sections[0]?._id);
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
         }
-           
-    }, [sections]);
+        
+        
+    }, [sections, selectSectionId]);
+
+   
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
@@ -174,7 +195,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
             }
                 
         }        
-    }, [filteredNiveaux, data]);
+    }, [filteredNiveaux]);
     useEffect(() => {
         const fetchMatieres = async () => {
             const matieres : ProgressionMatiereReturnGetType = {
@@ -219,6 +240,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
             console.log('if');
             // Sélectionner la première matière et mettre à jour les états nécessaires
             setFilteredMatiere(matieres[0]);
+            setMatiere(matieres[0])
             setProgress(calculateProgress(matieres[0]));
         }else{
             setFilteredMatiere(undefined);
@@ -249,23 +271,26 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                selectedItem={section}
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                selectedItem={cycle}
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
-                            />                          
+                            />                         
                             {/* <CustomDropDown2<String>
                                 title={t('label.semestre')}
                                 items={["1", "2"]}
@@ -274,6 +299,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                             /> */}
                             <CustomDropDown2<MatiereType>
                                 title={t('label.matiere')}
+                                selectedItem={matiere}
                                 items={matieres}
                                 defaultValue={matieres[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(matiere: MatiereType) => `${lang === 'fr'?matiere.libelleFr:matiere.libelleEn}`}
@@ -298,23 +324,26 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                selectedItem={section}
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                selectedItem={cycle}
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
-                            /> 
+                            />
                             {/* <CustomDropDown2<String>
                                 title={t('label.semestre')}
                                 items={["1", "2"]}
@@ -323,6 +352,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                             /> */}
                             <CustomDropDown2<MatiereType>
                                 title={t('label.matiere')}
+                                selectedItem={matiere}
                                 items={matieres}
                                 defaultValue={matieres[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(matiere: MatiereType) => `${lang === 'fr'?matiere.libelleFr:matiere.libelleEn}`}

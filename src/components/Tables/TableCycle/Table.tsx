@@ -37,12 +37,14 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
 
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
 
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
-            filterCyleBySection(selected._id);
+            setSection(selected);
         }
     };
 
@@ -61,7 +63,7 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
     };
 
     // filtrer les donnee a partir de l'id de la region selectionner
-    const filterCyleBySection = (sectionId: string | undefined) => {
+    const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
             const result: CycleProps[] = data.filter(cycle => cycle.section === sectionId);
@@ -69,15 +71,22 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
             setFilteredCycle(result)
         }
     };
+   
 
     // fournir initialement les donnee a la page
     useEffect(() => {
-        if (sections && sections.length > 0) {
-            // Si l'ID de section sélectionné est vide, utiliser la première section par défaut
-            const sectionIdToFilter = selectSectionId || sections[0]?._id;
-            filterCyleBySection(sectionIdToFilter);
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
         }
-    }, [sections, data]);
+        
+        
+    }, [sections, selectSectionId, data]);
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     useEffect(() => {
@@ -119,6 +128,7 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
+                                selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
@@ -133,6 +143,7 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
+                                selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
@@ -164,7 +175,7 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <h1>Pagination ici</h1> */}
 
             </div>
 

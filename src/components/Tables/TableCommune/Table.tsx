@@ -24,9 +24,9 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
 
     const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
     const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
+    const [region, setRegion] = useState<CommonSettingProps>();
+    const [departement, setDepartement] = useState<DepartementProps>();
 
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     // fournira les donnees a la page
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[]>([]);
@@ -43,35 +43,35 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     const [selectRegionId, setSelectIdRegion] = useState<string | undefined>('');
 
     // recuperer l'id de la region suite au click sur l'input select
+
     const handleRegionSelect = (selected: CommonSettingProps | undefined) => {
-        setFilteredDepartement([]);
-        console.log("filterd == " + filteredDepartement);
         if (selected?._id) {
             setSelectIdRegion(selected._id);
             filterDepartementByRegion(selected._id);
+            setRegion(selected);
         }
-    };
+    };    
 
 
-
-    // valeur de la l'id du département selectionner
+    // valeur de la l'id du departement selectionner
     const [selectDepartementId, setSelectIdDepartement] = useState<string | undefined>('');
-    const handleDepartementSelect = (selected: CommonSettingProps | undefined) => {
+    const handleDepartementSelect = (selected: DepartementProps | undefined) => {
         if (selected?._id) {
             setSelectIdDepartement(selected._id);
-            filterCommuneByDepartement(selected._id);
-            // setSelectIdDepartement('');
+            filterCommunexByDepartement(selected._id);
+            setDepartement(selected);
         }
-
     };
-    // Filtrer les communes en fonction de la langue
-    const filterCommunesByContenet = (communes: CommuneProps[]) => {
+
+    
+    // Filtrer les communex en fonction de la langue
+    const filterCommunexByContenet = (communex: CommuneProps[]) => {
         if (searchText === '' && filteredDepartement && filteredDepartement.length > 0) {
             const result: CommuneProps[] = data.filter(commune => commune.departement === filteredDepartement[0]?._id);
             return result;
         }
 
-        return communes.filter(commune => {
+        return communex.filter(commune => {
             const libelle = lang === 'fr' ? commune.libelleFr : commune.libelleEn;
             // Vérifie si le code ou le libellé contient le texte de recherche
             return commune.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
@@ -85,22 +85,27 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     const filterDepartementByRegion = (regionId: string | undefined) => {
         if (regionId && regionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
-            const result: DepartementProps[] = departements.filter(depart => depart.region === regionId);
+            const result: DepartementProps[] = departements.filter(departement => departement.region === regionId);
             if (result.length > 0) {
                 setSelectIdDepartement(result[0]._id);
+                setDepartement(departements.find(departement=>departement._id ===result[0]._id))
+            }else{
+                setSelectIdDepartement(undefined);
+                setDepartement(undefined);
             }
             setFilteredDepartement(result);
-
+          
         }
     };
 
     // filtrer les donnee a partir de l'id du departement selectionner
-    const filterCommuneByDepartement = (departementId: string | undefined) => {
-        if (departementId && departementId !== '') {
-            // Filtrer les commune en fonction de l'ID du département
-            const result: CommuneProps[] = data.filter(commune => commune.departement === departementId);
 
-            setFilteredCommune(result)
+    const filterCommunexByDepartement = (departementId: string | undefined) => {
+        
+        if (departementId && departementId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: CommuneProps[] = data.filter(commune => commune.departement === departementId);
+            setFilteredCommune(result);
         }
     };
 
@@ -118,28 +123,35 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
 
     //fournir initialement les données à la page
     useEffect(() => {
-        if (regions && regions.length > 0) {
-            filterDepartementByRegion(regions[0]?._id);
+        if(!selectRegionId){
+            console.log("if");
+            if (regions && regions.length > 0) {
+                filterDepartementByRegion(regions[0]._id);
+            }
+        }else{
+            setFilteredDepartement([]);
+            filterDepartementByRegion(selectRegionId);
         }
-
-    }, [regions]);
+        
+        
+    }, [regions, selectRegionId]);
 
     useEffect(() => {
         if (filteredDepartement && filteredDepartement.length > 0) {
-            if (!selectDepartementId) {
-                filterCommuneByDepartement(filteredDepartement[0]?._id);
-            } else {
-                filterCommuneByDepartement(selectDepartementId);
+            if(!selectDepartementId){
+                filterCommunexByDepartement(filteredDepartement[0]?._id);
+            }else{
+                filterCommunexByDepartement(selectDepartementId);
             }
-
-        }
+                
+        }        
     }, [filteredDepartement, data]);
 
 
 
     // modifier les donner de la page lors de la recherche
     useEffect(() => {
-        const result = filterCommunesByContenet(data);
+        const result = filterCommunexByContenet(data);
         setFilteredCommune(result);
     }, [searchText]);
     return (
@@ -164,13 +176,15 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.region')}
+                                selectedItem={region}
                                 items={regions}
                                 defaultValue={regions[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(region: CommonSettingProps) => `${lang === 'fr' ? region.libelleFr : region.libelleEn}`}
                                 onSelect={handleRegionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<DepartementProps>
                                 title={t('label.departement')}
+                                selectedItem={departement}
                                 items={filteredDepartement}
                                 defaultValue={filteredDepartement[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(departement: CommonSettingProps) => `${lang === 'fr' ? departement.libelleFr : departement.libelleEn}`}
@@ -178,7 +192,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                             />
                             {/* <CustomDropDown title="Région" items={regions} defaultValue={regions[0]} displayProperty={(region: Region) => `${region.libelle}`} onSelect={handleRegionSelect} />
                             <CustomDropDown title="Département" items={departements} defaultValue={departements[0]} displayProperty={(departement: Departement) => `${departement.libelle}`} onSelect={handleDepartementSelect} /> */}
-                            {/* <CustomDropDown title="Commune" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleCommuneSelect} /> */}
+                            {/* <CustomDropDown title="Commune" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleCommunexelect} /> */}
                         </div>
                     )}
                 </div>
@@ -188,13 +202,15 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.region')}
+                                selectedItem={region}
                                 items={regions}
                                 defaultValue={regions[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(region: CommonSettingProps) => `${lang === 'fr' ? region.libelleFr : region.libelleEn}`}
                                 onSelect={handleRegionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<DepartementProps>
                                 title={t('label.departement')}
+                                selectedItem={departement}
                                 items={filteredDepartement}
                                 defaultValue={filteredDepartement[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(departement: CommonSettingProps) => `${lang === 'fr' ? departement.libelleFr : departement.libelleEn}`}
@@ -215,6 +231,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                         {/* en tete du tableau */}
                         <HeaderTable />
 
+
                         {/* corp du tableau*/}
                         <BodyTable data={filteredCommune} onEdit={onEdit} />
 
@@ -227,7 +244,7 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <h1>Pagination ici</h1> */}
 
             </div>
 

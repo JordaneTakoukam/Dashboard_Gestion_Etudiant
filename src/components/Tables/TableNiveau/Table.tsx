@@ -24,6 +24,8 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
 
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     // fournira les donnees a la page
@@ -41,27 +43,27 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
 
     // recuperer l'id de la section suite au click sur l'input select
+
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
-        setFilteredCycle([]);
-        console.log("filterd == " + filteredCycle);
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
+            setSection(selected);
         }
-    };
-
+    };    
 
 
     // valeur de la l'id du cycle selectionner
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
-    const handleCycleSelect = (selected: CommonSettingProps | undefined) => {
+    const handleCycleSelect = (selected: CycleProps | undefined) => {
         if (selected?._id) {
             setSelectIdCycle(selected._id);
-            filterNiveauByCycle(selected._id);
-            // setSelectIdCycle('');
+            filterNiveauxByCycle(selected._id);
+            setCycle(selected);
         }
-
     };
+
+    
     // Filtrer les niveaux en fonction de la langue
     const filterNiveauxByContenet = (niveaux: NiveauProps[]) => {
         if (searchText === '' && filteredCycle && filteredCycle.length > 0) {
@@ -83,22 +85,27 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
-            const result: CycleProps[] = cycles.filter(depart => depart.section === sectionId);
+            const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
+                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+            }else{
+                setSelectIdCycle(undefined);
+                setCycle(undefined);
             }
             setFilteredCycle(result);
-
+          
         }
     };
 
     // filtrer les donnee a partir de l'id du cycle selectionner
-    const filterNiveauByCycle = (cycleId: string | undefined) => {
-        if (cycleId && cycleId !== '') {
-            // Filtrer les niveau en fonction de l'ID du département
-            const result: NiveauProps[] = data.filter(niveau => niveau.cycle === cycleId);
 
-            setFilteredNiveau(result)
+    const filterNiveauxByCycle = (cycleId: string | undefined) => {
+        
+        if (cycleId && cycleId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: NiveauProps[] = data.filter(niveau => niveau.cycle === cycleId);
+            setFilteredNiveau(result);
         }
     };
 
@@ -116,21 +123,28 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
     //fournir initialement les données à la page
     useEffect(() => {
-        if (sections && sections.length > 0) {
-            filterCycleBySection(sections[0]?._id);
+        if(!selectSectionId){
+            console.log("if");
+            if (sections && sections.length > 0) {
+                filterCycleBySection(sections[0]._id);
+            }
+        }else{
+            setFilteredCycle([]);
+            filterCycleBySection(selectSectionId);
         }
-
-    }, [sections]);
+        
+        
+    }, [sections, selectSectionId]);
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
-            if (!selectCycleId) {
-                filterNiveauByCycle(filteredCycle[0]?._id);
-            } else {
-                filterNiveauByCycle(selectCycleId);
+            if(!selectCycleId){
+                filterNiveauxByCycle(filteredCycle[0]?._id);
+            }else{
+                filterNiveauxByCycle(selectCycleId);
             }
-
-        }
+                
+        }        
     }, [filteredCycle, data]);
 
 
@@ -162,13 +176,15 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
+                                selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
+                                selectedItem={cycle}
                                 items={filteredCycle}
                                 defaultValue={filteredCycle[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
@@ -186,13 +202,15 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<CommonSettingProps>
                                 title={t('label.section')}
+                                selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CycleProps>
                                 title={t('label.cycle')}
+                                selectedItem={cycle}
                                 items={filteredCycle}
                                 defaultValue={filteredCycle[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
@@ -226,7 +244,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <h1>Pagination ici</h1> */}
 
             </div>
 

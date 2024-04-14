@@ -84,7 +84,7 @@ const Table = ({ data, onCreate, onEdit }: TableGradeProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <h1>Pagination ici</h1> */}
 
             </div>
 

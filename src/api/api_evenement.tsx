@@ -91,3 +91,25 @@ export async function getEvenementsByYear({ annee, page }: { annee: number, page
         throw error;
     }
 }
+
+export async function getAllEvenementsByYear({ annee}: { annee: number}): Promise<EvenementReturnGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAllEvenementsByYear/${annee}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const evenements: EvenementReturnGetType = response.data.data;
+
+        return evenements;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}

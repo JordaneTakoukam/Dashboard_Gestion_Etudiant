@@ -4,7 +4,6 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
@@ -16,10 +15,13 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import Pagination from "../../Pagination/Pagination";
 import { setEvenementLoading, setEvenements, setErrorPageEvenement } from "../../../_redux/features/evenement_slice";
-import { getEvenementsByYear } from "../../../api/api_evenement";
+import { getAllEvenementsByYear, getEvenementsByYear } from "../../../api/api_evenement";
 import createToast from "../../../hooks/toastify";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { PageErreur } from "../../_Global/PageErreur";
+import cheerio from 'cheerio';
+import { jsPDF } from "jspdf";
+import * as XLSX from 'xlsx';
 
 
 interface TableEvenementProps {
@@ -29,6 +31,8 @@ interface TableEvenementProps {
     refresh: () => void;
 }
 
+
+
 const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const { t } = useTranslation();
     const pageIsLoading = useSelector((state: RootState) => state.evenementSlice.pageIsLoading);
@@ -36,8 +40,11 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const dispatch = useDispatch();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? [];
+    
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    
 
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -69,12 +76,219 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
             return evenement.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
         });
     };
-
-    const handleDownloadSelect = (selected: string) => {
+    
+    const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
+        const event = await fetchAllEvenements(selectedYear).then((evenements)=>{
+
+            if(evenements){
+                if(selected === 'PDF'){
+                    generatePDF();
+                }else if (selected === 'CSV'){
+                    exportToCsv("test.csv", evenements)
+                    // downloadCSV();
+                }else{
+                    exportToExcel('testt.xlsx', evenements)
+                }
+            }
+        });
+        
+        
         // methode pour download
     };
+
+    const generatePDF = async () => {
+        try {
+            const htmlString = await fillTemplate(); // Générer le HTML
+            console.log(htmlString);
+            const pdf = new jsPDF({
+                format: 'a4',
+                unit: 'px',
+                
+            });
+
+            pdf.html(htmlString, {
+                margin: [20, 20, 20, 20], // Marges du format A4
+                callback: () => {
+                    
+                    pdf.save('output.pdf');
+                    console.log('PDF généré avec succès');
+                }
+            });
+        } catch (error) {
+            console.error('Erreur lors de la génération du PDF :', error);
+        }
+    };
+    const fillTemplate = async () => {
+        try {
+            const templateHTML = await fetch('./calendrier.html');
+            const htmlString = await templateHTML.text();
+            const $ = cheerio.load(htmlString); // Charger le template HTML avec cheerio
+            const userTable = $('table');
+            const rowTemplate = $('.row_template');
+
+            for (const event of filteredData) {
+                const clonedRow = rowTemplate.clone();
+                clonedRow.find('#libelle').text(event.libelleFr);
+                clonedRow.find('#periode').text(event.periodeFr);
+                clonedRow.find('#personnel').text(event.personnelFr);
+                clonedRow.find('#description_observation').text(event.descriptionObservationFr);
+                userTable.append(clonedRow);
+            }
+
+            return $.html(); // Récupérer le HTML mis à jour
+        } catch (error) {
+            console.error('Erreur lors du remplissage du template :', error);
+            return '';
+        }
+    };
+
+    const exportToExcel = (filename: string, evenements:EvenementType[]) => {
+        try {
+            // Filtrer les entêtes se terminant par "Fr" et ceux qui ne se terminent ni par "Fr" ni par "En"
+            var headers = Object.keys(evenements[0]).filter(
+                header => !['_id', '__v', 'date_creation', 'code'].includes(header) 
+                && (header.endsWith("Fr") || (!header.endsWith("Fr") && !header.endsWith("En")))
+            );
+            if(lang !=='fr'){
+                headers = Object.keys(evenements[0]).filter(
+                    header => !['_id', '__v', 'date_creation', 'code'].includes(header) 
+                    && (header.endsWith("En") || (!header.endsWith("En") && !header.endsWith("Fr")))
+                );
+            }
+            
+            // Filtrer les données pour ne récupérer que les propriétés correspondantes aux entêtes sélectionnés
+            const filteredDataForExport = evenements.map(item => {
+                const filteredItem: Record<string, any> = {};
+                
+                headers.forEach(header => {
+                    if (item && Object.prototype.hasOwnProperty.call(item, header)) {
+                        if (header === 'etat') {
+                            // Rechercher l'état correspondant dans la liste des états
+                            const etat = etats.find(etat => etat._id === item[header]);
+                            // Si l'état est trouvé, utiliser son libellé, sinon utiliser l'identifiant ObjectId
+                            filteredItem[header] = etat ? etat.libelleFr : item[header];
+                        } else if (header === 'dateDebut' || header === 'dateFin') {
+                            // Séparer la date de l'heure et ne garder que la partie date
+                            const datePart = item[header].split('T')[0];
+                            filteredItem[header] = datePart;
+                        } else {
+                            filteredItem[header] = item[header as keyof typeof item]?.toString();
+                        }
+                    }
+                });
+                
+                return filteredItem;
+            });
+            
+            // Renommer les entêtes du tableau d'objets
+            const renamedDataForExport = filteredDataForExport.map(item => {
+                const renamedItem: Record<string, any> = {};
+                
+                Object.keys(item).forEach(key => {
+                    switch (key) {
+                        case 'libelleFr':
+                        case 'libelleEn':
+                            renamedItem[t('label.libelle')] = item[key];
+                            break;
+                        case 'dateDebut':
+                            renamedItem[t('label.date_debut')] = item[key];
+                            break;
+                        case 'dateFin':
+                            renamedItem[t('label.date_fin')] = item[key];
+                            break;
+                        case 'periodeFr':
+                        case 'periodeEn':
+                            renamedItem[t('label.periode')] = item[key];
+                            break;
+                        case 'personnelFr':
+                        case 'personnelEn':
+                            renamedItem[t('label.personnel')] = item[key];
+                            break;
+                        case 'descriptionObservationFr':
+                        case 'descriptionObservationEn':
+                            renamedItem[t('label.description')] = item[key];
+                            break;
+                        case 'etat':
+                            renamedItem[t('label.etat')] = item[key];
+                            break;
+                        case 'annee':
+                            renamedItem[t('label.annee')] = item[key];
+                            break;
+                        default:
+                            renamedItem[key] = item[key];
+                            break;
+                    }
+                });
+                
+                return renamedItem;
+            });
+        
+            // Convertir les données JSON filtrées en un tableau de feuilles de calcul
+            const ws = XLSX.utils.json_to_sheet(renamedDataForExport);
+            // Créer un nouveau classeur Excel
+            const wb = XLSX.utils.book_new();
+            // Ajouter la feuille de calcul au classeur
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            // Générer un fichier Excel binaire
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            // Convertir le tableau binaire en un objet Blob
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Créer un lien pour télécharger le fichier Excel
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            // Cliquez sur le lien pour télécharger le fichier Excel
+            link.click();
+        } catch (error) {
+            console.error('Erreur lors de l\'exportation vers Excel :', error);
+        }
+    };
+    
+    const convertArrayOfObjectsToCSV = (evenements: EvenementType[]) => {
+        let csv = '';
+        // Obtenir les entêtes CSV à partir des clés du premier objet
+        const headers = Object.keys(evenements[0]).filter(header => header !== '_id' && header !== '__v');
+        // Ajouter les entêtes CSV à la chaîne CSV
+        csv += headers.join(';') + '\n';
+        // Parcourir chaque objet dans les données et ajouter ses valeurs à la chaîne CSV
+        evenements.forEach((item) => {
+            headers.forEach((header, index) => {
+                // Vérifier si la clé existe dans l'objet
+                if (item && Object.prototype.hasOwnProperty.call(item, header)) {
+                    // Échapper aux guillemets dans les valeurs
+                    const escapedValue = item[header as keyof typeof item]?.toString().replace(/"/g, '""') ?? '';
+                    // Encadrer les valeurs entre guillemets pour respecter le format CSV
+                    csv += (index ? ';' : '') + `"${escapedValue}"`;
+                }
+            });
+            // Aller à la ligne pour le prochain objet
+            csv += '\n';
+        });
+    
+        // Convertir la chaîne CSV en Blob avec l'encodage UTF-8
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    
+        return blob;
+    };
+    
+    
+      
+    const exportToCsv = (filename: string, evenements:EvenementType[]) => {
+    try {
+        const csv = convertArrayOfObjectsToCSV(evenements);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    } catch (error) {
+        console.error('Erreur lors de la conversion en CSV :', error);
+    }
+    };
+      
+      
 
 
     // variable pour la pagination
@@ -124,6 +338,23 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
         }
     };
 
+    const fetchAllEvenements = async (annee: number) => {
+        dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
+        try {
+            const fetchedEvenements = await getAllEvenementsByYear({ annee: annee});
+            // Mettez à jour l'état Redux avec les données récupérées
+           return fetchedEvenements.evenements;
+            // console.log(fetchedEvenements.evenements[0].etat);
+
+            dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            dispatch(setErrorPageEvenement(t('message.erreur')));
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
+        }
+    };
+
     // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
     useEffect(() => {
         const annee = selectedYear; // Remplacez par l'année souhaitée
@@ -132,12 +363,15 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<EvenementType[]>(data);
+    const [originalData, setOriginalData] = useState<EvenementType[]>(data); // Ajout d'une copie des données originales
+
 
     useEffect(() => {
         const result = filterEventByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
 
+   
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -244,3 +478,4 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
 
 export default Table;
+

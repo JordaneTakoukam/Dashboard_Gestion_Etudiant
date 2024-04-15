@@ -23,24 +23,25 @@ interface EtudiantCreateType {
     // fonction: string | null;
     // service: string | null;
 
-    abscence: string | null;
+    abscences: string[];
 
     grade: string | null;
     categorie: string | null;
 
-    region: string | null;
-    departement: string | null;
     commune: string | null;
 
-    section: string | null;
-    cycle: string | null;
-    niveau: string | null;
+    niveaux: [
+        {
+            niveau:string,
+            annee:number
+        }
+    ]
 }
 
 
 interface EtudiantInitialData {
     data: {
-        list: EtudiantType[];
+        etudiants: EtudiantType[];
         currentPage: number;
         totalPages: number;
         totalItems: number;
@@ -52,7 +53,7 @@ interface EtudiantInitialData {
 
 
 interface EtudiantListGetType {
-    list: EtudiantType[];
+    etudiants: EtudiantType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;

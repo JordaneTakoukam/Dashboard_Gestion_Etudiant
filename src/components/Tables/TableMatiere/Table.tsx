@@ -200,9 +200,6 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
         
     }
     
-    
-    
-
      // recuperer l'id de la section suite au click sur l'input select
      const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {

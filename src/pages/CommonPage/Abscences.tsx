@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 import Breadcrumb from "../../components/Breadcrumb";
 import { RootState } from "../../_redux/store";
 import { config } from "../../config";
-import { Etudiant, etudiant, listTest } from "../Admin/ListeEtudiants";
 import { Enseignant, enseignant, enseignants } from "../Admin/ListeEnseignants";
 import Table from "../../components/Tables/TableAbsences/Table";
 import { useState } from "react";
@@ -20,20 +19,20 @@ export interface Abscences{
 
 const Abscences = () => {
     const {t}=useTranslation();
-    const [selectedUser, setSelectedUser] = useState<Etudiant | Enseignant | null>(null);
-    const handleEditHourUser = (user: Etudiant | Enseignant | null) => {
-        setSelectedUser(user);
-    }
+    // const [selectedUser, setSelectedUser] = useState<Etudiant | Enseignant | null>(null);
+    // const handleEditHourUser = (user: Etudiant | Enseignant | null) => {
+        // setSelectedUser(user);
+    // }
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     return (
         <>
             {/* <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} /> */}
             <Breadcrumb pageName={t('menu.absences')} />
-            {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={etudiant} onEdit={handleEditHourUser}/>}
-            {userRole===roles.enseignant && <Table data={enseignant} onEdit={handleEditHourUser}/>}
+            {/* {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={etudiant} onEdit={handleEditHourUser}/>} */}
+            {/* {userRole===roles.enseignant && <Table data={enseignant} onEdit={handleEditHourUser}/>} */}
 
-            <FormCreateUpdate user={selectedUser} isSignaled={true} isHourRemove={false} /> 
+            {/* <FormCreateUpdate user={selectedUser} isSignaled={true} isHourRemove={false} />  */}
         </>
     );
 };

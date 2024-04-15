@@ -29,7 +29,7 @@ const store = configureStore({
     // 
     admin: AdminReducer,
     enseignant: EnseignantReducer,
-    etudiant: EtudiantReducer,
+    etudiantSlice: EtudiantReducer,
 
   },
   preloadedState: {

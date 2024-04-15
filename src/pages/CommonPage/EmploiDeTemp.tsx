@@ -55,7 +55,7 @@ const EmploiDeTemp = () => {
         };
 
         fetchPeriodes();
-    }, [dispatch]);
+    }, [dispatch, t]);
 
     const handleEditPeriode = (periode: PeriodeType) => {
         setSelectedPeriode(periode);

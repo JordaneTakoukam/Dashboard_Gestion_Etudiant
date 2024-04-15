@@ -1,41 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDeleteEtudiant";
 import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
-import { Niveau } from "./Niveaux";
-import { Abscences, absencesEtudiant } from "../CommonPage/Abscences";
-import { Grade } from "./Grades";
-import { Categorie } from "./Categories";
-import { Commune } from "./Communes";
 import { useTranslation } from "react-i18next";
-
-export interface Etudiant {
-    id?:number
-    nom: string;
-    prenom?: string;
-    genre : string;
-    dateNaiss?:string,
-    lieuNaiss?:string;
-    email: string;
-    contact?: string;
-    matricule?: string;
-    niveau: Niveau;
-    grade?:Grade;
-    categorie?:Categorie;
-    region?:CommonSettingProps;
-    commune?:Commune;
-    dateEntreeAdmin?:string;
-    abscences:Abscences[];
-}
-
+import { setErrorPageEtudiant, setEtudiant, setEtudiantsLoading } from "../../_redux/features/etudiant_slice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
+import createToast from "../../hooks/toastify";
+import { apiGetEtudiantsWithPagination } from "../../api/other_users/api_etudiant";
 
 
 
 const ListeDesEtudiants = () => {
     const {t}=useTranslation();
-    const [selectedEtudiant, setSelectedEtudiant] = useState<Etudiant | null>(null);
-        // Fonction pour gérer l'édition d'un étudiant
-    const handleEditEtudiant = (etudiant: Etudiant) => {
+    const dispatch = useDispatch();
+    const [selectedEtudiant, setSelectedEtudiant] = useState<EtudiantType | null>(null);
+    
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante);
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    // Utilisez useSelector pour accéder à l'état du reducer
+    const { data: { etudiants } } = useSelector((state: RootState) => state.etudiantSlice);
+
+    useEffect(() => {
+        const fetchEtudiants = async () => {
+            dispatch(setEtudiantsLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                // Initialisation de currentCycleId et currentNiveauId
+                const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
+                const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
+                const emptyEtudiants : EtudiantListGetType={
+                    etudiants: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                if (currentNiveauId) {
+                    const fetchedEtudiants = await apiGetEtudiantsWithPagination({ niveauId: currentNiveauId, page: 1, annee:currentYear });
+                    if (fetchedEtudiants) { // Vérifiez si fetchedEtudiants n'est pas faux, vide ou indéfini
+                        dispatch(setEtudiant(fetchedEtudiants));
+                        console.log(etudiants);
+                    } else {
+                        dispatch(setEtudiant(emptyEtudiants));
+                    }
+                } // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageEtudiant(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setEtudiantsLoading(false)); // Définissez le loading à false après le chargement
+            }
+        };
+
+        fetchEtudiants();
+    }, [dispatch, t]);
+    const handleEditEtudiant = (etudiant: EtudiantType) => {
         setSelectedEtudiant(etudiant);
     }
 
@@ -46,7 +67,7 @@ const ListeDesEtudiants = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.liste_etudiant')} />
-            <TableEtudiant data={listTest} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
+            <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
 
             {/* Boite de dialogue */}
             {/* <ModalCreateEtudiant etudiant={selectedEtudiant} />  */}
@@ -56,31 +77,5 @@ const ListeDesEtudiants = () => {
 };
 
 export default ListeDesEtudiants;
-
-export const etudiant:Etudiant={
-    id : 1,
-    nom: "Jane",
-    prenom: "Smith",
-    email: "test@123",
-    contact: "655484959",
-    matricule: "CD5678",
-    dateNaiss : "2000-02-17",
-    genre:"H",
-    niveau: {
-        id:1,
-        code:"N1",
-        libelle:"1ère année",
-        cycle:{
-            id:1,
-            code:"CA",
-            libelle:"Cycle A",
-            
-        },
-    },
-    
-    abscences:absencesEtudiant,
-}
-
-export const listTest: Etudiant[] = [];
 
 

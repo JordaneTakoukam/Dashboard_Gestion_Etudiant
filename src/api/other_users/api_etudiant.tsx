@@ -10,11 +10,11 @@ const token = localStorage.getItem(wstjqer);
 // 
 //
 // get
-export async function apiGetEtudiants({ page }: { page: number }): Promise<EtudiantListGetType> {
+export async function apiGetEtudiantsWithPagination({ page, annee, niveauId }: { page: number, annee:number, niveauId:string }): Promise<EtudiantListGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getEtudiants`,
+            `${api}/getEtudiantsByLevelAndYear/${niveauId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,12 +23,36 @@ export async function apiGetEtudiants({ page }: { page: number }): Promise<Etudi
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    annee:annee
                 },
             },
         );
-        const list: EtudiantListGetType = response.data;
+        const etudiants: EtudiantListGetType = response.data.data;
 
-        return list;
+        return etudiants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauId:string }): Promise<EtudiantListGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAllEtudiantsByLevelAndYear/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee:annee
+                },
+            },
+        );
+        const etudiants: EtudiantListGetType = response.data.data;
+
+        return etudiants;
     } catch (error) {
         // console.error('Error getting all settings:', error);
         throw error;

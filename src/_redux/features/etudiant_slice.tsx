@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // Initial state
 const initialState: EtudiantInitialData = {
     data: {
-        list: [],
+        etudiants: [],
         currentPage: 0,
         totalItems: 0,
         totalPages: 0,
@@ -29,24 +29,24 @@ const etudiantSlice = createSlice({
             state.data = action.payload;
         },
         createEtudiant(state, action: PayloadAction<EtudiantType>) {
-            state.data.list.push(action.payload);
+            state.data.etudiants.push(action.payload);
         },
 
 
         updateEtudiant(state, action: PayloadAction<{ newEtudiant: EtudiantType }>) {
             const { newEtudiant } = action.payload;
 
-            const index = state.data.list.findIndex(etudiant => etudiant._id === newEtudiant._id);
+            const index = state.data.etudiants.findIndex(etudiant => etudiant._id === newEtudiant._id);
 
             if (index !== -1) {
-                state.data.list[index] = { ...state.data.list[index], ...newEtudiant };
+                state.data.etudiants[index] = { ...state.data.etudiants[index], ...newEtudiant };
             }
         },
 
 
         deleteEtudiant(state, action: PayloadAction<{ id: string }>) {
             const { id } = action.payload;
-            state.data.list = state.data.list.filter(e => e._id !== id);
+            state.data.etudiants = state.data.etudiants.filter(e => e._id !== id);
         },
     },
 });

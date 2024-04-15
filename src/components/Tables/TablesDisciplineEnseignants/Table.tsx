@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
@@ -11,6 +11,8 @@ import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 
 interface TableDisciplineProps {
     data: EnseignantType[];
@@ -20,8 +22,10 @@ interface TableDisciplineProps {
 
 const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const { t } = useTranslation();
-    const pageIsLoading = false;
     const dispatch = useDispatch();
+
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -30,32 +34,17 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-    const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreSection, setFiltreSection] = useState("");
-    const [filtreCycle, setFiltreCycle] = useState("");
-    const [filtreNiveau, setFiltreNiveau] = useState("");
-    const [filtreSemestre, setFiltreSemestre] = useState("");
     const [formatToDownload, setFormatToDownload] = useState("");
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+
 
     const handleAnneeSelect = (selected: String | undefined) => {
-        // setFiltreAnnee(selected);
-        console.log(selected)
+        if (selected) {
+            setSelectedYear(extractYear(selected.toString()));
+        }
     };
 
-    // const handleSectionSelect = (selected: Section | undefined) => {
-    //     // setFiltreSection(selected);
-    //     console.log(selected);
-    // };
-
-    const handleCycleSelect = (selected: Cycle | undefined) => {
-        // setFiltreCycle(selected);
-        console.log(selected);
-    };
-
-    const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
-        // Logique à exécuter lorsque le niveau est sélectionné
-        // console.log("Niveau sélectionné :", selectedNiveau);
-    };
+ 
     const handleSemestreSelect = (selected: String | undefined) => {
         // setFiltreSemestre(selected);
         console.log(selected);
@@ -64,7 +53,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
         console.log(selected);
-        // methode pour download
     };
 
 
@@ -99,43 +87,18 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear, firstYear)}
+                                defaultValue={formatYear(currentYear)}
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
-                                title={t('label.section')}
-                                items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
-                                onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
-                                title={t('label.cycle')}
-                                items={cycles}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
-                                onSelect={handleCycleSelect}
-                            />
-                            <CustomDropDown2<Niveau>
-                                title={t('label.niveau')}
-                                items={niveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
-                                onSelect={handleNiveauSelect}
-                            />
+
                             <CustomDropDown2<String>
                                 title={t('label.semestre')}
                                 items={["1", "2"]}
-                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                defaultValue={"1"}
                                 onSelect={handleSemestreSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
                         </div>
                     )}
                 </div>
@@ -146,43 +109,18 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear, firstYear)}
+                                defaultValue={formatYear(currentYear)}
                                 onSelect={handleAnneeSelect}
                             />
-                            {/* <CustomDropDown2<Section>
-                                title={t('label.section')}
-                                items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: Section) => `${section.libelle}`}
-                                onSelect={handleSectionSelect}
-                            /> */}
-                            <CustomDropDown2<Cycle>
-                                title={t('label.cycle')}
-                                items={cycles}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(cycle: Cycle) => `${cycle.libelle}`}
-                                onSelect={handleCycleSelect}
-                            />
-                            <CustomDropDown2<Niveau>
-                                title={t('label.niveau')}
-                                items={niveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(niveau: Niveau) => `${niveau.libelle}`}
-                                onSelect={handleNiveauSelect}
-                            />
+
                             <CustomDropDown2<String>
                                 title={t('label.semestre')}
                                 items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
-                            <CustomDropDown title="Section" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleSectionSelect} />
-                            <CustomDropDown title="Cycle" items={['Cycle A', 'Cycle B']} defaultValue="Cycle A" onSelect={handleCycleSelect} />
-                            <CustomDropDown title="Niveau" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleNiveauSelect} />
-                            <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
                         </div>
                     </div>
                 </div>

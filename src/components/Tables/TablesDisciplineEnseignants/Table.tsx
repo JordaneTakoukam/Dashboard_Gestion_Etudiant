@@ -7,20 +7,19 @@ import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
 import { Cycle, cycles } from "../../../pages/Admin/Cycles";
 import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 
 interface TableDisciplineProps {
-    data: Enseignant[];
-    onEdit: (enseignant: Enseignant, isHourRemove:boolean) => void;
+    data: EnseignantType[];
+    onEdit: (enseignant: EnseignantType, isHourRemove: boolean) => void;
 }
 
 
 const Table = ({ data, onEdit }: TableDisciplineProps) => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
 
@@ -42,7 +41,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         // setFiltreAnnee(selected);
         console.log(selected)
     };
-    
+
     // const handleSectionSelect = (selected: Section | undefined) => {
     //     // setFiltreSection(selected);
     //     console.log(selected);
@@ -52,7 +51,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         // setFiltreCycle(selected);
         console.log(selected);
     };
-    
+
     const handleNiveauSelect = (selectedNiveau: Niveau | undefined) => {
         // Logique à exécuter lorsque le niveau est sélectionné
         // console.log("Niveau sélectionné :", selectedNiveau);
@@ -85,7 +84,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.enseignant')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={() => { }} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -102,7 +101,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             {/* <CustomDropDown2<Section>
@@ -149,7 +148,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             {/* <CustomDropDown2<Section>
@@ -194,20 +193,10 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
-                        {/* en tete du tableau */}
-                        {
-                            pageIsLoading ?
-                                <LoadingTable />
-                                : data.length === 0 ?
-                                    <NoDataTable /> :
-                                    <HeaderTable />
-                        }
+                        <HeaderTable />
 
-                        {/* corp du tableau*/}
+                        <BodyTable data={data} onEdit={onEdit} />
 
-                        {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
-                        }
 
 
 

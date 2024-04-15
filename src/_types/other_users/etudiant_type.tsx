@@ -32,12 +32,12 @@ interface EtudiantCreateType {
 
     commune: string | null;
 
-    niveaux: [
-        {
-            niveau:string,
-            annee:number
-        }
-    ]
+    niveaux: InscriptionType[];
+}
+
+interface InscriptionType{
+    niveau:string,
+    annee:number
 }
 
 

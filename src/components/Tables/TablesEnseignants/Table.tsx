@@ -21,6 +21,7 @@ import { apiGetEnseignants, apiGetEnseignantsWithPagination } from "../../../api
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import BoutonTextMobile from "../../ui/BoutonTextMobile";
 import { SectionRefresh } from "../../ui/SectionRefresh";
+import Bouton from "../../ui/Bouton";
 
 interface TableEnseignantProps {
     data: EnseignantType[];
@@ -35,9 +36,6 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignantProps) => {
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
-    
 
     const grades = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
     const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
@@ -278,7 +276,12 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignantProps) => {
         const result = filterEnseignantByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
-    
+    const handleRefreshFilters = () => {
+        setGrade(undefined);
+        setCatgeorie(undefined);
+        setService(undefined);
+        setFonction(undefined);
+    };
 
     return (
         <div>
@@ -295,7 +298,13 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignantProps) => {
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.enseignant')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.enseignant')} <Bouton
+                                iconeSmall={true}
+                                circle={true}
+                                typeRefresh={true}
+                                // titreBouton={t('boutton.actualiser')}
+                                onClick={handleRefreshFilters}
+                            /></h1>
                 
                 {/* version mobile */}
                 <div className="block lg:hidden">
@@ -334,7 +343,7 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignantProps) => {
                                 displayProperty={(fonction: CommonSettingProps) => `${lang === 'fr' ? fonction.libelleFr : fonction.libelleEn}`}
                                 onSelect={handleFonctionSelect}
                             />
-                            <SectionRefresh refreshFunction={onCreate} />
+                            
                         </div>
                     )}
                 </div>
@@ -375,6 +384,7 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignantProps) => {
                                 displayProperty={(fonction: CommonSettingProps) => `${lang === 'fr' ? fonction.libelleFr : fonction.libelleEn}`}
                                 onSelect={handleFonctionSelect}
                             />
+                            
                         </div>
                     </div>
                 </div>

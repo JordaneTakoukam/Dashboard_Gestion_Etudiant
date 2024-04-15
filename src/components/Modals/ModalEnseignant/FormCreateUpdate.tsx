@@ -12,9 +12,9 @@ import createToast from '../../../hooks/toastify';
 function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    // const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    // const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    // const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
     const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
     const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes) ?? [];
@@ -61,11 +61,11 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     useEffect(() => {
         if (enseignant) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.enseignant'));
-            const currentNiveau = niveaux.find(niveau => niveau._id === "" + enseignant.niveaux[0].niveau);
-            const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
-            const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
-            currentSection && filterCycleBySection(currentSection._id);
-            currentCycle && filterNiveauByCycle(currentCycle._id);
+            // const currentNiveau = niveaux.find(niveau => niveau._id === "" + enseignant.niveaux[0].niveau);
+            // const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
+            // const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
+            // currentSection && filterCycleBySection(currentSection._id);
+            // currentCycle && filterNiveauByCycle(currentCycle._id);
             const currentCommune = communes.find(commune => commune._id === "" + enseignant.commune);
             const currentDepartement = currentCommune && departements.find(departement => departement._id === "" + currentCommune.departement);
             const currentRegion = currentDepartement && regions.find(region => region._id === "" + currentDepartement.region);
@@ -78,9 +78,9 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             setEmail(enseignant.email);
             setContact(enseignant.contact ? enseignant.contact : "");
             setMatricule(enseignant.matricule ? enseignant.matricule : "");
-            setSection(currentSection);
-            setCycle(currentCycle);
-            setNiveau(currentNiveau);
+            // setSection(currentSection);
+            // setCycle(currentCycle);
+            // setNiveau(currentNiveau);
             setGrade(enseignant.grade ? grades.find(grade=>grade._id===enseignant.grade) : undefined);
             setCategorie(enseignant.categorie ? categories.find(categorie=>categorie._id===enseignant.categorie) : undefined);
             setFonction(enseignant.fonction ? fonctions.find(fonction=>fonction._id===enseignant.fonction) : undefined);
@@ -151,83 +151,83 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[] | undefined>([]);
 
     // filtrer les donnee a partir de l'id de la section selectionner
-    const filterCycleBySection = (sectionId: string | undefined) => {
-        if (sectionId && sectionId !== '') {
-            // Filtrer les cycles en fonction de l'ID de la section
-            const result: CycleProps[] = cycles.filter(cycle => "" + cycle.section === sectionId);
+    // const filterCycleBySection = (sectionId: string | undefined) => {
+    //     if (sectionId && sectionId !== '') {
+    //         // Filtrer les cycles en fonction de l'ID de la section
+    //         const result: CycleProps[] = cycles.filter(cycle => "" + cycle.section === sectionId);
 
-            setFilteredCycle(result);
+    //         setFilteredCycle(result);
 
-        }
-    };
+    //     }
+    // };
 
-    // filtrer les donnee a partir de l'id du cycle selectionner
-    const filterNiveauByCycle = (cycleId: string | undefined) => {
-        if (cycleId && cycleId !== '') {
-            // Filtrer les cycles en fonction de l'ID de la cycle
-            const result: NiveauProps[] = niveaux.filter(niveau => "" + niveau.cycle === cycleId);
+    // // filtrer les donnee a partir de l'id du cycle selectionner
+    // const filterNiveauByCycle = (cycleId: string | undefined) => {
+    //     if (cycleId && cycleId !== '') {
+    //         // Filtrer les cycles en fonction de l'ID de la cycle
+    //         const result: NiveauProps[] = niveaux.filter(niveau => "" + niveau.cycle === cycleId);
 
-            setFilteredNiveau(result);
-        }
-    };
+    //         setFilteredNiveau(result);
+    //     }
+    // };
 
-    const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedSectionLibelle = e.target.value;
-        var selectedSection = null;
+    // const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedSectionLibelle = e.target.value;
+    //     var selectedSection = null;
 
-        if (lang === 'fr') {
-            selectedSection = sections.find(section => section.libelleFr === selectedSectionLibelle);
+    //     if (lang === 'fr') {
+    //         selectedSection = sections.find(section => section.libelleFr === selectedSectionLibelle);
 
-        }
-        else {
-            selectedSection = sections.find(section => section.libelleEn === selectedSectionLibelle);
+    //     }
+    //     else {
+    //         selectedSection = sections.find(section => section.libelleEn === selectedSectionLibelle);
 
-        }
-
-
-        if (selectedSection) {
-            setSection(selectedSection);
-            filterCycleBySection(selectedSection._id);
-            setErrorSection("");
-        }
-    };
-    const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCycleLibelle = e.target.value;
-        var selectedCycle = null;
-
-        if (lang === 'fr') {
-            selectedCycle = cycles.find(cycle => cycle.libelleFr === selectedCycleLibelle);
-
-        }
-        else {
-            selectedCycle = cycles.find(cycle => cycle.libelleEn === selectedCycleLibelle);
-        }
-
-        if (selectedCycle) {
-            setCycle(selectedCycle);
-            filterNiveauByCycle(selectedCycle._id);
-            setErrorCycle("");
-        }
-    };
-    const handleNiveauChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedNiveauLibelle = e.target.value;
-        var selectedNiveau = null;
-
-        if (lang === 'fr') {
-            selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleFr === selectedNiveauLibelle);
-
-        }
-        else {
-            selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleEn === selectedNiveauLibelle);
-
-        }
+    //     }
 
 
-        if (selectedNiveau) {
-            setNiveau(selectedNiveau);
-            setErrorNiveau("");
-        }
-    };
+    //     if (selectedSection) {
+    //         setSection(selectedSection);
+    //         filterCycleBySection(selectedSection._id);
+    //         setErrorSection("");
+    //     }
+    // };
+    // const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedCycleLibelle = e.target.value;
+    //     var selectedCycle = null;
+
+    //     if (lang === 'fr') {
+    //         selectedCycle = cycles.find(cycle => cycle.libelleFr === selectedCycleLibelle);
+
+    //     }
+    //     else {
+    //         selectedCycle = cycles.find(cycle => cycle.libelleEn === selectedCycleLibelle);
+    //     }
+
+    //     if (selectedCycle) {
+    //         setCycle(selectedCycle);
+    //         filterNiveauByCycle(selectedCycle._id);
+    //         setErrorCycle("");
+    //     }
+    // };
+    // const handleNiveauChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedNiveauLibelle = e.target.value;
+    //     var selectedNiveau = null;
+
+    //     if (lang === 'fr') {
+    //         selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleFr === selectedNiveauLibelle);
+
+    //     }
+    //     else {
+    //         selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleEn === selectedNiveauLibelle);
+
+    //     }
+
+
+    //     if (selectedNiveau) {
+    //         setNiveau(selectedNiveau);
+    //         setErrorNiveau("");
+    //     }
+    // };
 
     const handleFonctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedFonctionLibelle = e.target.value;
@@ -383,7 +383,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
 
 
     const handleCreateEnseignant = async () => {
-        if (!nom || !genre || !email || !section || !cycle || !niveau) {
+        if (!nom || !genre || !email) {
             if (!nom) {
                 setErrorNom(t('error.nom'));
             }
@@ -395,15 +395,6 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                 setErrorEmail(t('error.email'));
             }
 
-            if (!section) {
-                setErrorSection(t('error.section'));
-            }
-            if (!cycle) {
-                setErrorCycle(t('error.cycle'));
-            }
-            if (!niveau) {
-                setErrorNiveau(t('error.niveau'));
-            }
             return;
         }
         if (!validateEmail()) {
@@ -411,128 +402,124 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
         }
 
         if (!enseignant) {
-            if (niveau._id) {
-                await apiCreateEnseignant(
-                    {
-                        nom,
-                        genre,
-                        email,
-                        photo_profil:"",
-                        contact,
-                        matricule,
-                        prenom,
-                        date_naiss:dateNaiss,
-                        lieu_naiss:lieuNaiss,
-                        date_entree:dateEntreeAdmin,
-                        absences:[],
-                        niveaux:[{niveau:niveau._id, annee:currentYear}],
-                        grade:grade?._id||null,
-                        categorie:categorie?._id||null,
-                        fonction:fonction?._id||null,
-                        service:service?._id||null,
-                        commune:commune?._id||null
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(createEnseignant({
-                            
-                            enseignant: {
-                                _id: e.data._id,
-                                nom:e.data.nom,
-                                genre:e.data.genre,
-                                email:e.data.email,
-                                photo_profil:e.data.photo_profil,
-                                contact:e.data.contact,
-                                matricule:e.data.matricule,
-                                prenom:e.data.matricule,
-                                date_naiss:e.data.date_naiss,
-                                lieu_naiss:e.data.lieu_naiss,
-                                date_entree:e.data.date_entree,
-                                absences:e.data.absences,
-                                niveaux:e.data.niveaux,
-                                grade:e.data.grade,
-                                categorie:e.data.categorie,
-                                fonction:e.data.fonction,
-                                service:e.data.service,
-                                commune:e.data.commune
-                            }
-                            
-                        }));
+            await apiCreateEnseignant(
+                {
+                    nom,
+                    genre,
+                    email,
+                    photo_profil:"",
+                    contact,
+                    matricule,
+                    prenom,
+                    date_naiss:dateNaiss,
+                    lieu_naiss:lieuNaiss,
+                    date_entree:dateEntreeAdmin,
+                    absences:[],
+                    niveaux:[],
+                    grade:grade?._id||null,
+                    categorie:categorie?._id||null,
+                    fonction:fonction?._id||null,
+                    service:service?._id||null,
+                    commune:commune?._id||null
+                }
+            ).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(createEnseignant({
+                        
+                        enseignant: {
+                            _id: e.data._id,
+                            nom:e.data.nom,
+                            genre:e.data.genre,
+                            email:e.data.email,
+                            photo_profil:e.data.photo_profil,
+                            contact:e.data.contact,
+                            matricule:e.data.matricule,
+                            prenom:e.data.matricule,
+                            date_naiss:e.data.date_naiss,
+                            lieu_naiss:e.data.lieu_naiss,
+                            date_entree:e.data.date_entree,
+                            absences:e.data.absences,
+                            niveaux:e.data.niveaux,
+                            grade:e.data.grade,
+                            categorie:e.data.categorie,
+                            fonction:e.data.fonction,
+                            service:e.data.service,
+                            commune:e.data.commune
+                        }
+                        
+                    }));
 
-                        closeModal();
+                    closeModal();
 
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
 
-                    }
-                }).catch((e) => {
-                    console.log(e);
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
-            }
+                }
+            }).catch((e) => {
+                console.log(e);
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            })
+            
         } else {
-            if (niveau._id) {
-                await apiUpdateEnseignant(
-                    {
-                        _id:enseignant._id,
-                        nom,
-                        genre,
-                        email,
-                        photo_profil:"",
-                        contact,
-                        matricule,
-                        prenom,
-                        date_naiss:dateNaiss,
-                        lieu_naiss:lieuNaiss,
-                        date_entree:dateEntreeAdmin,
-                        absences:[],
-                        niveaux:[{niveau:niveau._id, annee:currentYear}],
-                        grade:grade?._id||null,
-                        categorie:categorie?._id||null,
-                        fonction:fonction?._id||null,
-                        service:service?._id||null,
-                        commune:commune?._id||null
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(updateEnseignant({
-                            id:e.data._id,
-                            enseignantData: {
-                                _id: e.data._id,
-                                nom:e.data.nom,
-                                genre:e.data.genre,
-                                email:e.data.email,
-                                photo_profil:e.data.photo_profil,
-                                contact:e.data.contact,
-                                matricule:e.data.matricule,
-                                prenom:e.data.matricule,
-                                date_naiss:e.data.date_naiss,
-                                lieu_naiss:e.data.lieu_naiss,
-                                date_entree:e.data.date_entree,
-                                absences:e.data.absences,
-                                niveaux:e.data.niveaux,
-                                grade:e.data.grade,
-                                categorie:e.data.categorie,
-                                fonction:e.data.fonction,
-                                service:e.data.service,
-                                commune:e.data.commune
-                            }
-                            
-                        }));
+            await apiUpdateEnseignant(
+                {
+                    _id:enseignant._id,
+                    nom,
+                    genre,
+                    email,
+                    photo_profil:"",
+                    contact,
+                    matricule,
+                    prenom,
+                    date_naiss:dateNaiss,
+                    lieu_naiss:lieuNaiss,
+                    date_entree:dateEntreeAdmin,
+                    absences:[],
+                    niveaux:[],
+                    grade:grade?._id||null,
+                    categorie:categorie?._id||null,
+                    fonction:fonction?._id||null,
+                    service:service?._id||null,
+                    commune:commune?._id||null
+            }).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(updateEnseignant({
+                        id:e.data._id,
+                        enseignantData: {
+                            _id: e.data._id,
+                            nom:e.data.nom,
+                            genre:e.data.genre,
+                            email:e.data.email,
+                            photo_profil:e.data.photo_profil,
+                            contact:e.data.contact,
+                            matricule:e.data.matricule,
+                            prenom:e.data.prenom,
+                            date_naiss:e.data.date_naiss,
+                            lieu_naiss:e.data.lieu_naiss,
+                            date_entree:e.data.date_entree,
+                            absences:e.data.absences,
+                            niveaux:e.data.niveaux,
+                            grade:e.data.grade,
+                            categorie:e.data.categorie,
+                            fonction:e.data.fonction,
+                            service:e.data.service,
+                            commune:e.data.commune
+                        }
+                        
+                    }));
 
-                        closeModal();
+                    closeModal();
 
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
 
-                    }
-                }).catch((e) => {
-                    console.log(e);
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
-            }
+                }
+            }).catch((e) => {
+                console.log(e);
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            })
         }
     }
 
@@ -619,7 +606,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     value={contact}
                     onChange={(e) => { setContact(e.target.value) }}
                 />
-                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
+                {/* <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
                     value={section ? (lang==='fr'?section.libelleFr:section.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.section')}
                     onChange={handleSectionChange}
@@ -654,7 +641,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                         <option key={niveau._id} value={lang==='fr'?niveau.libelleFr:niveau.libelleEn}>{lang==='fr'?niveau.libelleFr:niveau.libelleEn}</option>
                     ))}
                 </select>
-                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
+                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>} */}
                 <label>{t('label.grade')}</label>
                 <select
                     value={grade ? (lang==='fr'?grade.libelleFr:grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}

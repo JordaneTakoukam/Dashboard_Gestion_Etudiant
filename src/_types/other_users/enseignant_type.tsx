@@ -1,16 +1,16 @@
 interface EnseignantType extends EnseignantCreateType {
-    _id: string;
+    _id?: string;
     status?: string;
     historique_connexion?: Date[];
     photo_profil?: string | null;
-    date_creation?: String | null;
+    date_creation?: string | null;
 }
 
 
 interface EnseignantCreateType {
     genre: string;
-    date_entree: String | null;
-    date_naiss: String | null;
+    date_entree: string | null;
+    date_naiss: string | null;
 
     nom: string;
     prenom: string | null;
@@ -20,31 +20,53 @@ interface EnseignantCreateType {
     lieu_naiss: string | null;
     contact: string | null;
 
-    absce: string | null;
+    // fonction: string | null;
+    // service: string | null;
+
+    absences: string[];
+
     grade: string | null;
     categorie: string | null;
     fonction: string | null;
     service: string | null;
-    region: string | null;
-    departement: string | null;
+
     commune: string | null;
+
+    niveaux: [
+        {
+            niveau:string,
+            annee:number
+        }
+    ]
 }
 
 
 interface EnseignantInitialData {
     data: {
-        list: EnseignantType[];
+        enseignants: EnseignantType[];
         currentPage: number;
         totalPages: number;
         totalItems: number;
         pageSize: number;
-    }; pageIsLoading: boolean;
+    };
+    pageIsLoading: boolean;
     pageError: string | null;
 }
 
+interface CreateEnseignantPayload {
+    enseignant: EnseignantType; // Données de l'événement à créer
+}
 
+interface UpdateEnseignantPayload {
+    id: string; // ID de l'événement à mettre à jour
+    enseignantData: Partial<EnseignantType>; // Données mises à jour de l'événement
+}
+
+interface DeleteEnseignantPayload {
+    id: string; // ID de l'événement à supprimer
+}
 interface EnseignantListGetType {
-    list: EnseignantType[];
+    enseignants: EnseignantType[];
     currentPage: number;
     totalItems: number;
     totalPages: number;

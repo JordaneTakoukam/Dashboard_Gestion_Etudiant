@@ -28,7 +28,7 @@ const store = configureStore({
 
     // 
     admin: AdminReducer,
-    enseignant: EnseignantReducer,
+    enseignantSlice: EnseignantReducer,
     etudiantSlice: EtudiantReducer,
 
   },

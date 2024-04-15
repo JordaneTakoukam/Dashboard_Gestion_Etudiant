@@ -10,11 +10,11 @@ const token = localStorage.getItem(wstjqer);
 // 
 //
 // get
-export async function apiGetEnseignants({ page }: { page: number }): Promise<EnseignantListGetType> {
+export async function apiGetEnseignantsWithPagination({ page, grade, categorie, service, fonction }: { page: number, grade?:string, categorie?:string, service?:string, fonction?:string }): Promise<EnseignantListGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getEnseignants`,
+            `${api}/getEnseignantsByFilter`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,12 +23,41 @@ export async function apiGetEnseignants({ page }: { page: number }): Promise<Ens
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    grade:grade,
+                    categorie:categorie,
+                    service:service,
+                    fonction:fonction
                 },
             },
         );
-        const list: EnseignantListGetType = response.data;
+        const enseignants: EnseignantListGetType = response.data.data;
+        return enseignants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 
-        return list;
+export async function apiGetEnseignants({grade, categorie, service, fonction }: {grade?:string, categorie?:string, service?:string, fonction?:string }): Promise<EnseignantListGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAllEnseignantsByFilter`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    grade:grade,
+                    categorie:categorie,
+                    service:service,
+                    fonction:fonction
+                },
+            },
+        );
+        const enseignants: EnseignantListGetType = response.data.data;
+
+        return enseignants;
     } catch (error) {
         // console.error('Error getting all settings:', error);
         throw error;
@@ -38,11 +67,11 @@ export async function apiGetEnseignants({ page }: { page: number }): Promise<Ens
 // 
 //
 // create
-export async function apiCreateEnseignant({ ...newEnseignant }: EnseignantCreateType): Promise<ReponseApiPros> {
+export async function apiCreateEnseignant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create/create-enseignant`,
-            { ...newEnseignant },
+            { nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,11 +90,11 @@ export async function apiCreateEnseignant({ ...newEnseignant }: EnseignantCreate
 //
 //
 // update 
-export async function apiUpdateEnseignant(enseignantUpdate: EnseignantType): Promise<ReponseApiPros> {
+export async function apiUpdateEnseignant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
-            `${api}/update/${enseignantUpdate._id}`,
-            { ...enseignantUpdate },
+            `${api}/update/${_id}`,
+            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,7 +104,6 @@ export async function apiUpdateEnseignant(enseignantUpdate: EnseignantType): Pro
         );
 
         return response.data;
-
     } catch (error) {
         // console.error('Error updating section:', error);
         throw error;

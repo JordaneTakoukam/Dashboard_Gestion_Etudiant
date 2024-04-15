@@ -37,7 +37,7 @@ function CustomDropDown2<T>({ title, items, defaultValue, selectedItem, onSelect
                 mt-1 rounded border border-stroke bg-gray py-1 lg:py-3 pl-4 pr-4.5 text-black
                  focus:border-primary focus-visible:outline-none dark:border-strokedark 
                  dark:bg-meta-4 dark:text-white dark:focus:border-primary">
-                {defaultValue === null && <option value=""></option>}
+                {defaultValue === undefined && <option value=""></option>}
                 {items.map((item, index) => (
                     <option className="" key={index} value={displayProperty(item)}>{displayProperty(item)}</option>
                 ))}

@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // Initial state
 const initialState: EnseignantInitialData = {
     data: {
-        list: [],
+        enseignants: [],
         currentPage: 0,
         totalItems: 0,
         totalPages: 0,
@@ -28,25 +28,21 @@ const enseignantSlice = createSlice({
         setEnseignant(state, action: PayloadAction<EnseignantListGetType>) {
             state.data = action.payload;
         },
-        createEnseignant(state, action: PayloadAction<EnseignantType>) {
-            state.data.list.push(action.payload);
+        createEnseignant(state, action: PayloadAction<CreateEnseignantPayload>) {
+            state.data.enseignants.push(action.payload.enseignant);
         },
 
 
-        updateEnseignant(state, action: PayloadAction<{ newEnseignant: EnseignantType }>) {
-            const { newEnseignant } = action.payload;
-
-            const index = state.data.list.findIndex(enseignant => enseignant._id === newEnseignant._id);
-
+        updateEnseignant(state, action: PayloadAction<UpdateEnseignantPayload>) {
+            const { id, enseignantData } = action.payload;
+            const index = state.data.enseignants.findIndex(e => e._id === id);
             if (index !== -1) {
-                state.data.list[index] = { ...state.data.list[index], ...newEnseignant };
+                state.data.enseignants[index] = { ...state.data.enseignants[index], ...enseignantData };
             }
         },
-
-
-        deleteEnseignant(state, action: PayloadAction<{ id: string }>) {
+        deleteEnseignant(state, action: PayloadAction<DeleteEnseignantPayload>) {
             const { id } = action.payload;
-            state.data.list = state.data.list.filter(e => e._id !== id);
+            state.data.enseignants = state.data.enseignants.filter(e => e._id !== id);
         },
     },
 });

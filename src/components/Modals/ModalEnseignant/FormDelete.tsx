@@ -3,20 +3,39 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
+import { apiDeleteEnseignant } from '../../../api/other_users/api_enseignant';
+import createToast from '../../../hooks/toastify';
+import { deleteEnseignant } from '../../../_redux/features/enseignant_slice';
 
 
 
-function ModalDeleteEnseignant({ enseignant }: { enseignant: EnseignantType | null }) {
-    const { t } = useTranslation();
+function ModalDeleteEnseignant({ enseignant }: { enseignant : EnseignantType|null}) {
+    const {t}=useTranslation();
     const dispatch = useDispatch();
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
+    const lang = useSelector((state: RootState) => state.setting.language);
 
+    const handleDelete = async () => {
+        if (enseignant?._id != undefined) {
+            await apiDeleteEnseignant(enseignant._id).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
 
-    const handleCreateEnseignant = () => {
-        console.log("delete ok");
-        closeModal();
+                    if (enseignant._id) {
+                        dispatch(deleteEnseignant({ id: enseignant._id }));
+                    }
+
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+
+            })
+        }
     }
 
     return (
@@ -26,9 +45,9 @@ function ModalDeleteEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                 isModalOpen={isModalOpen}
                 isDelete={true}
                 closeModal={closeModal}
-                handleConfirm={handleCreateEnseignant}
+                handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression') + t('form_delete.enseignant')} : {enseignant ? enseignant.nom : ""} {enseignant ? enseignant.prenom : ""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.enseignant')} : {enseignant?enseignant.nom:""} {enseignant?enseignant.prenom:""}</h1>
             </CustomDialogModal>
         </>
     );

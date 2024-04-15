@@ -1,53 +1,43 @@
-import { useEffect, useState } from "react";
-import CustomDialogModal from "../CustomDialogModal";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../_redux/store";
-import { setShowModal } from "../../../_redux/features/setting";
-import { useTranslation } from "react-i18next";
-import Input from "../../ui/input";
-import { ErrorInput, LabelInput } from "../../../pages/Authentication/componants/Label";
-import Select from "../../ui/Select";
-import { validateEmail } from "../../../fonctions/fonction";
-import { apiCreateAdministrateur, apiUpdateAdministrateur } from "../../../api/other_users/api_administrateur";
-import createToast from "../../../hooks/toastify";
-import { createAdmin, updateAdmin } from "../../../_redux/features/admin_slice";
-
-interface ModalCreateUpdateAdmin {
-    enseignant: EnseignantType | null,
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { setShowModal } from '../../../_redux/features/setting';
+import { RootState } from '../../../_redux/store';
+import CustomDialogModal from '../CustomDialogModal';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { apiCreateEnseignant, apiUpdateEnseignant } from '../../../api/other_users/api_enseignant';
+import { createEnseignant, updateEnseignant } from '../../../_redux/features/enseignant_slice';
+import createToast from '../../../hooks/toastify';
 
 
-export function ModalCreateUpdateEnseignant({ enseignant }: ModalCreateUpdateAdmin) {
+function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | null }) {
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
+    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
+    const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes) ?? [];
+    const grades: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
+    const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
+    const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
+    const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
+    
 
     const { t } = useTranslation();
+
     const dispatch = useDispatch();
-
-
-    const lang = useSelector((state: RootState) => state.setting.language);
-    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
-    const [modalTitle, setModalTitle] = useState("");
-    const [isFirstRender, setIsFirstRender] = useState(true);
-
-    // select value
-    const grades: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.grades);
-    const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories);
-    const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions);
-    const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services);
-    const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions);
-    const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements);
-    const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes);
-
-    // VALEUR DU FORMULAIRE
-    const [matricule, setMatricule] = useState("");
     const [nom, setNom] = useState("");
-    const [prenom, setPrenom] = useState<string | null>("");
+    const [prenom, setPrenom] = useState("");
     const [genre, setGenre] = useState("");
-    const [dateNaiss, setDateNaiss] = useState<string | null>("");
-    const [lieuNaiss, setLieuNaiss] = useState<string | null>("");
+    const [dateNaiss, setDateNaiss] = useState("");
+    const [lieuNaiss, setLieuNaiss] = useState("");
     const [email, setEmail] = useState("");
-    const [contact, setContact] = useState<string | null>("");
-    const [dateEntreeAdmin, setDateEntreeAdmin] = useState<string | null>("");
-    //
+    const [contact, setContact] = useState("");
+    const [matricule, setMatricule] = useState("");
+    const [section, setSection] = useState<CommonSettingProps>();
+    const [cycle, setCycle] = useState<CycleProps>();
+    const [niveau, setNiveau] = useState<NiveauProps>();
     const [grade, setGrade] = useState<CommonSettingProps>();
     const [categorie, setCategorie] = useState<CommonSettingProps>();
     const [fonction, setFonction] = useState<CommonSettingProps>();
@@ -55,237 +45,52 @@ export function ModalCreateUpdateEnseignant({ enseignant }: ModalCreateUpdateAdm
     const [region, setRegion] = useState<CommonSettingProps>();
     const [departement, setDepartement] = useState<DepartementProps>();
     const [commune, setCommune] = useState<CommuneProps>();
+    const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
 
-
-    // ERREUR DE VALIDATION
     const [errorNom, setErrorNom] = useState("");
     const [errorGenre, setErrorGenre] = useState("");
     const [errorEmail, setErrorEmail] = useState("");
+    const [errorSection, setErrorSection] = useState("");
+    const [errorCycle, setErrorCycle] = useState("");
+    const [errorNiveau, setErrorNiveau] = useState("");
+    const [isFirstRender, setIsFirstRender] = useState(true);
 
-
-    const handleFonctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedFonctionLibelle = e.target.value;
-        const selectedFonction = fonctions.find(fonction => fonction?.libelleFr === selectedFonctionLibelle || fonction.libelleEn === selectedFonctionLibelle);
-        if (selectedFonction) {
-            setFonction(selectedFonction);
-        }
-    };
-    // handleChange
-    const handleGradeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedGradeLibelle = e.target.value;
-        const selectedGrade = grades.find(grade => (grade.libelleFr === selectedGradeLibelle || grade.libelleEn === selectedGradeLibelle));
-        if (selectedGrade) {
-            setGrade(selectedGrade);
-        }
-    };
-    const handleCategorieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCategorieLibelle = e.target.value;
-        const selectedCategorie = categories.find(categorie => (categorie.libelleFr === selectedCategorieLibelle || categorie.libelleEn === selectedCategorieLibelle));
-        if (selectedCategorie) {
-            setCategorie(selectedCategorie);
-        }
-    };
-
-    const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedServiceLibelle = e.target.value;
-        const selectedService = services.find(service => (service.libelleFr === selectedServiceLibelle || service.libelleEn === selectedServiceLibelle));
-        if (selectedService) {
-            setService(selectedService);
-        }
-    };
-    const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionLibelle = e.target.value;
-        const selectedRegion = regions.find(region => (region.libelleFr === selectedRegionLibelle || region.libelleEn === selectedRegionLibelle));
-        if (selectedRegion) {
-            setRegion(selectedRegion);
-        }
-    };
-    const handleDepartementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedDepartementLibelle = e.target.value;
-        const selectedDepartement = departements.find(departement => (departement.libelleFr === selectedDepartementLibelle || departement.libelleEn === selectedDepartementLibelle));
-        if (selectedDepartement) {
-            setDepartement(selectedDepartement);
-        }
-    };
-    const handleCommuneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCommuneLibelle = e.target.value;
-        const selectedCommune = communes.find(commune => (commune.libelleFr === selectedCommuneLibelle || commune.libelleEn === selectedCommuneLibelle));
-        if (selectedCommune) {
-            setCommune(selectedCommune);
-        }
-    };
-
-
-    const closeModal = () => {
-        setErrorNom("");
-        setErrorGenre("");
-        setErrorEmail("");
-        setIsFirstRender(true);
-        dispatch(setShowModal());
-    };
-
-
-    const handleSubmit = async () => {
-
-        if (!nom || !genre || !email) {
-            if (!nom) {
-                setErrorNom(t('error.nom'));
-            }
-            if (!genre) {
-                setErrorGenre(t('error.genre'));
-            }
-            if (!email) {
-                setErrorEmail(t('error.email'));
-            }
-
-            return;
-        }
-        if (email) {
-            const notValidEmail = validateEmail(email);
-            if (notValidEmail) {
-                setErrorEmail(t(notValidEmail));
-                return;
-            }
-        }
-
-        //
-        const dataForm: AdminCreateType = {
-            genre,
-            date_entree: dateEntreeAdmin,
-            date_naiss: dateNaiss,
-            nom: nom,
-            prenom: prenom,
-            email: email,
-            matricule: matricule,
-            lieu_naiss: lieuNaiss,
-            contact,
-            grade: grade?._id ? grade._id : null,
-            categorie: categorie?._id ? categorie._id : null,
-            fonction: fonction?._id ? fonction._id : null,
-            service: service?._id ? service._id : null,
-            region: region?._id ? region._id : null,
-            departement: departement?._id ? departement._id : null,
-            commune: commune?._id ? commune._id : null,
-        }
-
-
-
-        if (!enseignant) {
-            //  create admin
-            await apiCreateAdministrateur({
-                ...dataForm
-            }).then((reponse: ReponseApiPros) => {
-
-                if (reponse.success) {
-                    try {
-                        dispatch(createAdmin({ ...reponse.data }));
-                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
-                    }
-                    catch (e) {
-                        try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
-                        catch (e) { throw e; }
-                    }
-
-                    closeModal();
-
-                } else {
-                    try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
-                    catch (e) { throw e; }
-
-                }
-            }).catch((e) => {
-                try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
-                catch (e) { throw e; }
-            })
-
-        } else {
-
-            //
-            //
-            //
-            // update admin
-            await apiUpdateAdministrateur(
-                { _id: enseignant!._id.toString(), ...dataForm },
-            ).then((reponse: ReponseApiPros) => {
-                if (reponse.success) {
-                    try {
-                        dispatch(updateAdmin({ newAdmin: { ...reponse.data } }));
-                        createToast(reponse.message[lang as keyof typeof reponse.message], '', 0);
-                    }
-                    catch (e) {
-
-
-                        try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
-                        catch (e) { throw e; }
-                    }
-                    closeModal();
-
-                } else {
-
-                    try { createToast(reponse.message[lang as keyof typeof reponse.message], '', 2); }
-                    catch (e) { throw e; }
-                }
-            }).catch((e) => {
-
-                try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
-                catch (e) { throw e; }
-            })
-        }
-
-
-
-    }
+    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
+    const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
 
     useEffect(() => {
-        setErrorNom('')
-    }, [nom])
-    useEffect(() => {
-        setErrorGenre('')
-    }, [genre])
-    useEffect(() => {
-        setErrorEmail('')
-    }, [email])
-
-
-    useEffect(() => {
-        // UPDATE
         if (enseignant) {
-            setModalTitle(t('form_update.enregistrer') + t('form_update.administrateur'));
-            setMatricule(enseignant.matricule ? enseignant.matricule.toString() : "");
+            setModalTitle(t('form_update.enregistrer') + t('form_update.enseignant'));
+            const currentNiveau = niveaux.find(niveau => niveau._id === "" + enseignant.niveaux[0].niveau);
+            const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
+            const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
+            currentSection && filterCycleBySection(currentSection._id);
+            currentCycle && filterNiveauByCycle(currentCycle._id);
+            const currentCommune = communes.find(commune => commune._id === "" + enseignant.commune);
+            const currentDepartement = currentCommune && departements.find(departement => departement._id === "" + currentCommune.departement);
+            const currentRegion = currentDepartement && regions.find(region => region._id === "" + currentDepartement.region);
+            currentRegion && filterDepartementByRegion(currentRegion._id);
+            currentDepartement && filterCommuneByDepartement(currentDepartement._id)
             setNom(enseignant.nom);
-            setPrenom(enseignant.prenom);
-            setGenre(enseignant.genre);
-            setDateNaiss(enseignant.date_naiss ? enseignant.date_naiss.toString() : "");
-            setLieuNaiss(enseignant.lieu_naiss);
+            setPrenom(enseignant.prenom ? enseignant.prenom : ""); setGenre(enseignant.genre);
+            setDateNaiss(enseignant.date_naiss ? enseignant.date_naiss.split("T")[0] : "");
+            setLieuNaiss(enseignant.lieu_naiss ? enseignant.lieu_naiss : "");
             setEmail(enseignant.email);
-            setContact(enseignant.contact);
-
-            const currentGrade = services.find(grade => (grade._id === enseignant.grade));
-            setGrade(currentGrade);
-
-            const currentCategorie = services.find(categorie => (categorie._id === enseignant.categorie));
-            setCategorie(currentCategorie);
-
-            const currentFonction = services.find(fonction => (fonction._id === enseignant.fonction));
-            setFonction(currentFonction);
-
-            const currentSerivce = services.find(service => (service._id === enseignant.service));
-            setService(currentSerivce);
-
-            const currentRegion = regions.find(region => (region._id === enseignant.region));
+            setContact(enseignant.contact ? enseignant.contact : "");
+            setMatricule(enseignant.matricule ? enseignant.matricule : "");
+            setSection(currentSection);
+            setCycle(currentCycle);
+            setNiveau(currentNiveau);
+            setGrade(enseignant.grade ? grades.find(grade=>grade._id===enseignant.grade) : undefined);
+            setCategorie(enseignant.categorie ? categories.find(categorie=>categorie._id===enseignant.categorie) : undefined);
+            setFonction(enseignant.fonction ? fonctions.find(fonction=>fonction._id===enseignant.fonction) : undefined);
+            setService(enseignant.service ? services.find(service=>service._id===enseignant.service) : undefined);
             setRegion(currentRegion);
-
-            const currentDepartement = departements.find(departement => (departement._id === enseignant.departement));
             setDepartement(currentDepartement);
-
-            const currentCommune = communes.find(commune => (commune._id === enseignant.commune));
             setCommune(currentCommune);
-            setDateEntreeAdmin(enseignant.date_entree ? enseignant.date_entree.toString() : "");
-
-        }
-        // CREATE
-        else {
-            setModalTitle(t('form_save.enregistrer') + t('form_save.administrateur'));
+            setDateEntreeAdmin(enseignant.date_entree ? enseignant.date_entree : "");
+        } else {
+            setModalTitle(t('form_save.enregistrer') + t('form_save.enseignant'));
             setNom("");
             setPrenom("");
             setGenre("");
@@ -294,6 +99,9 @@ export function ModalCreateUpdateEnseignant({ enseignant }: ModalCreateUpdateAdm
             setEmail("");
             setContact("");
             setMatricule("");
+            setSection(undefined);
+            setCycle(undefined);
+            setNiveau(undefined);
             setGrade(undefined);
             setCategorie(undefined);
             setFonction(undefined);
@@ -304,14 +112,429 @@ export function ModalCreateUpdateEnseignant({ enseignant }: ModalCreateUpdateAdm
             setDateEntreeAdmin("");
         }
 
+
         if (isFirstRender) {
             setErrorNom("");
             setErrorGenre("");
             setErrorEmail("");
+            setErrorSection("");
+            setErrorCycle("");
+            setErrorNiveau("");
             setIsFirstRender(false);
         }
     }, [enseignant, isFirstRender, t]);
 
+    const closeModal = () => {
+        setErrorNom("");
+        setErrorGenre("");
+        setErrorEmail("");
+        setErrorSection("");
+        setErrorCycle("");
+        setErrorNiveau("");
+        setIsFirstRender(true);
+        dispatch(setShowModal());
+    };
+
+    const validateEmail = () => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            setErrorEmail(t('error.incorrect_email'));
+            return false;
+        }
+        setErrorEmail("");
+        return true;
+    };
+
+    const [filteredCycle, setFilteredCycle] = useState<CycleProps[] | undefined>([]);
+    const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[] | undefined>([]);
+    const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[] | undefined>([]);
+    const [filteredCommune, setFilteredCommune] = useState<CommuneProps[] | undefined>([]);
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCycleBySection = (sectionId: string | undefined) => {
+        if (sectionId && sectionId !== '') {
+            // Filtrer les cycles en fonction de l'ID de la section
+            const result: CycleProps[] = cycles.filter(cycle => "" + cycle.section === sectionId);
+
+            setFilteredCycle(result);
+
+        }
+    };
+
+    // filtrer les donnee a partir de l'id du cycle selectionner
+    const filterNiveauByCycle = (cycleId: string | undefined) => {
+        if (cycleId && cycleId !== '') {
+            // Filtrer les cycles en fonction de l'ID de la cycle
+            const result: NiveauProps[] = niveaux.filter(niveau => "" + niveau.cycle === cycleId);
+
+            setFilteredNiveau(result);
+        }
+    };
+
+    const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSectionLibelle = e.target.value;
+        var selectedSection = null;
+
+        if (lang === 'fr') {
+            selectedSection = sections.find(section => section.libelleFr === selectedSectionLibelle);
+
+        }
+        else {
+            selectedSection = sections.find(section => section.libelleEn === selectedSectionLibelle);
+
+        }
+
+
+        if (selectedSection) {
+            setSection(selectedSection);
+            filterCycleBySection(selectedSection._id);
+            setErrorSection("");
+        }
+    };
+    const handleCycleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCycleLibelle = e.target.value;
+        var selectedCycle = null;
+
+        if (lang === 'fr') {
+            selectedCycle = cycles.find(cycle => cycle.libelleFr === selectedCycleLibelle);
+
+        }
+        else {
+            selectedCycle = cycles.find(cycle => cycle.libelleEn === selectedCycleLibelle);
+        }
+
+        if (selectedCycle) {
+            setCycle(selectedCycle);
+            filterNiveauByCycle(selectedCycle._id);
+            setErrorCycle("");
+        }
+    };
+    const handleNiveauChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedNiveauLibelle = e.target.value;
+        var selectedNiveau = null;
+
+        if (lang === 'fr') {
+            selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleFr === selectedNiveauLibelle);
+
+        }
+        else {
+            selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleEn === selectedNiveauLibelle);
+
+        }
+
+
+        if (selectedNiveau) {
+            setNiveau(selectedNiveau);
+            setErrorNiveau("");
+        }
+    };
+
+    const handleFonctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedFonctionLibelle = e.target.value;
+        var selectedFonction = null;
+
+        if (lang === 'fr') {
+            selectedFonction = fonctions.find(fonction => fonction.libelleFr === selectedFonctionLibelle);
+
+        }
+        else {
+            selectedFonction = fonctions.find(fonction => fonction.libelleEn === selectedFonctionLibelle);
+
+        }
+
+
+        if (selectedFonction) {
+            setFonction(selectedFonction);
+        }
+    };
+    
+    const handleGradeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedGradeLibelle = e.target.value;
+        var selectedGrade = null;
+
+        if (lang === 'fr') {
+            selectedGrade = grades.find(grade => grade.libelleFr === selectedGradeLibelle);
+
+        }
+        else {
+            selectedGrade = grades.find(grade => grade.libelleEn === selectedGradeLibelle);
+
+        }
+
+
+        if (selectedGrade) {
+            setGrade(selectedGrade);
+        }
+    };
+
+    const handleCategorieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCategorieLibelle = e.target.value;
+        var selectedCategorie = null;
+
+        if (lang === 'fr') {
+            selectedCategorie = categories.find(categorie => categorie.libelleFr === selectedCategorieLibelle);
+
+        }
+        else {
+            selectedCategorie = categories.find(categorie => categorie.libelleEn === selectedCategorieLibelle);
+
+        }
+
+
+        if (selectedCategorie) {
+            setCategorie(selectedCategorie);
+        }
+    };
+
+    const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedServiceLibelle = e.target.value;
+        var selectedService = null;
+
+        if (lang === 'fr') {
+            selectedService = services.find(service => service.libelleFr === selectedServiceLibelle);
+
+        }
+        else {
+            selectedService = services.find(service => service.libelleEn === selectedServiceLibelle);
+
+        }
+
+
+        if (selectedService) {
+            setService(selectedService);
+        }
+    };
+    // filtrer les donnee a partir de l'id de la region selectionner
+    const filterDepartementByRegion = (regionId: string | undefined) => {
+        if (regionId && regionId !== '') {
+            // Filtrer les departements en fonction de l'ID de la region
+            const result: DepartementProps[] = departements.filter(departement => "" + departement.region === regionId);
+
+            setFilteredDepartement(result);
+
+        }
+    };
+
+    // filtrer les donnee a partir de l'id du departement selectionner
+    const filterCommuneByDepartement = (departementId: string | undefined) => {
+        if (departementId && departementId !== '') {
+            // Filtrer les departements en fonction de l'ID de la departement
+            const result: CommuneProps[] = communes.filter(commune => "" + commune.departement === departementId);
+
+            setFilteredCommune(result);
+        }
+    };
+
+    const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionLibelle = e.target.value;
+        var selectedRegion = null;
+
+        if (lang === 'fr') {
+            selectedRegion = regions.find(region => region.libelleFr === selectedRegionLibelle);
+
+        }
+        else {
+            selectedRegion = regions.find(region => region.libelleEn === selectedRegionLibelle);
+
+        }
+
+
+        if (selectedRegion) {
+            setRegion(selectedRegion);
+            filterDepartementByRegion(selectedRegion._id);
+        }
+    };
+    const handleDepartementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedDepartementLibelle = e.target.value;
+        var selectedDepartement = null;
+
+        if (lang === 'fr') {
+            selectedDepartement = departements.find(departement => departement.libelleFr === selectedDepartementLibelle);
+
+        }
+        else {
+            selectedDepartement = departements.find(departement => departement.libelleEn === selectedDepartementLibelle);
+        }
+
+        if (selectedDepartement) {
+            setDepartement(selectedDepartement);
+            filterCommuneByDepartement(selectedDepartement._id);
+        }
+    };
+    const handleCommuneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCommuneLibelle = e.target.value;
+        var selectedCommune = null;
+
+        if (lang === 'fr') {
+            selectedCommune = filteredCommune && filteredCommune.find(commune => commune.libelleFr === selectedCommuneLibelle);
+
+        }
+        else {
+            selectedCommune = filteredCommune && filteredCommune.find(commune => commune.libelleEn === selectedCommuneLibelle);
+
+        }
+
+
+        if (selectedCommune) {
+            setCommune(selectedCommune);
+        }
+    };
+
+
+
+    const handleCreateEnseignant = async () => {
+        if (!nom || !genre || !email || !section || !cycle || !niveau) {
+            if (!nom) {
+                setErrorNom(t('error.nom'));
+            }
+            if (!genre) {
+                setErrorGenre(t('error.genre'));
+            }
+
+            if (!email) {
+                setErrorEmail(t('error.email'));
+            }
+
+            if (!section) {
+                setErrorSection(t('error.section'));
+            }
+            if (!cycle) {
+                setErrorCycle(t('error.cycle'));
+            }
+            if (!niveau) {
+                setErrorNiveau(t('error.niveau'));
+            }
+            return;
+        }
+        if (!validateEmail()) {
+            return;
+        }
+
+        if (!enseignant) {
+            if (niveau._id) {
+                await apiCreateEnseignant(
+                    {
+                        nom,
+                        genre,
+                        email,
+                        photo_profil:"",
+                        contact,
+                        matricule,
+                        prenom,
+                        date_naiss:dateNaiss,
+                        lieu_naiss:lieuNaiss,
+                        date_entree:dateEntreeAdmin,
+                        absences:[],
+                        niveaux:[{niveau:niveau._id, annee:currentYear}],
+                        grade:grade?._id||null,
+                        categorie:categorie?._id||null,
+                        fonction:fonction?._id||null,
+                        service:service?._id||null,
+                        commune:commune?._id||null
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(createEnseignant({
+                            
+                            enseignant: {
+                                _id: e.data._id,
+                                nom:e.data.nom,
+                                genre:e.data.genre,
+                                email:e.data.email,
+                                photo_profil:e.data.photo_profil,
+                                contact:e.data.contact,
+                                matricule:e.data.matricule,
+                                prenom:e.data.matricule,
+                                date_naiss:e.data.date_naiss,
+                                lieu_naiss:e.data.lieu_naiss,
+                                date_entree:e.data.date_entree,
+                                absences:e.data.absences,
+                                niveaux:e.data.niveaux,
+                                grade:e.data.grade,
+                                categorie:e.data.categorie,
+                                fonction:e.data.fonction,
+                                service:e.data.service,
+                                commune:e.data.commune
+                            }
+                            
+                        }));
+
+                        closeModal();
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        } else {
+            if (niveau._id) {
+                await apiUpdateEnseignant(
+                    {
+                        _id:enseignant._id,
+                        nom,
+                        genre,
+                        email,
+                        photo_profil:"",
+                        contact,
+                        matricule,
+                        prenom,
+                        date_naiss:dateNaiss,
+                        lieu_naiss:lieuNaiss,
+                        date_entree:dateEntreeAdmin,
+                        absences:[],
+                        niveaux:[{niveau:niveau._id, annee:currentYear}],
+                        grade:grade?._id||null,
+                        categorie:categorie?._id||null,
+                        fonction:fonction?._id||null,
+                        service:service?._id||null,
+                        commune:commune?._id||null
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(updateEnseignant({
+                            id:e.data._id,
+                            enseignantData: {
+                                _id: e.data._id,
+                                nom:e.data.nom,
+                                genre:e.data.genre,
+                                email:e.data.email,
+                                photo_profil:e.data.photo_profil,
+                                contact:e.data.contact,
+                                matricule:e.data.matricule,
+                                prenom:e.data.matricule,
+                                date_naiss:e.data.date_naiss,
+                                lieu_naiss:e.data.lieu_naiss,
+                                date_entree:e.data.date_entree,
+                                absences:e.data.absences,
+                                niveaux:e.data.niveaux,
+                                grade:e.data.grade,
+                                categorie:e.data.categorie,
+                                fonction:e.data.fonction,
+                                service:e.data.service,
+                                commune:e.data.commune
+                            }
+                            
+                        }));
+
+                        closeModal();
+
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }
+    }
 
     return (
         <>
@@ -320,222 +543,208 @@ export function ModalCreateUpdateEnseignant({ enseignant }: ModalCreateUpdateAdm
                 isModalOpen={isModalOpen}
                 isDelete={false}
                 closeModal={closeModal}
-                handleConfirm={handleSubmit}
+                handleConfirm={handleCreateEnseignant}
             >
-
-
-                {/* MATRICULE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.matricule')} />
-                    <Input
-                        type="text"
-                        placeholder={t('label.matricule')}
-                        value={matricule}
-                        setValue={setMatricule}
+                <label>{t('label.matricule')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={matricule}
+                    onChange={(e) => setMatricule(e.target.value)}
+                />
+                <label>{t('label.nom')}</label><label className="text-red-500"> *</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={nom}
+                    onChange={(e) => { setNom(e.target.value); setErrorNom("") }}
+                />
+                {errorNom && <p className="text-red-500" >{errorNom}</p>}
+                <label>{t('label.prenom')}</label><input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={prenom}
+                    onChange={(e) => setPrenom(e.target.value)}
+                />
+                <label>{t('label.date_naiss')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="date"
+                    value={dateNaiss}
+                    onChange={(e) => setDateNaiss(e.target.value)}
+                />
+                <label>{t('label.lieu_naiss')}</label><input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={lieuNaiss}
+                    onChange={(e) => { setLieuNaiss(e.target.value) }}
+                />
+                <label>{t('label.genre')}</label><label className="text-red-500"> *</label>
+                <div>
+                    <input
+                        className='radio-label-space'
+                        type="radio"
+                        id={t('label.homme')}
+                        name="genre"
+                        value={t('label.homme')}
+                        checked={genre === "M"}
+                        onChange={() => { setGenre("M"); setErrorGenre("") }}
                     />
-                </div>
+                    <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
 
-
-                {/* NOM */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.nom')} required={true} />
-                    <Input
-                        type="text"
-                        placeholder={t('label.nom')}
-                        value={nom}
-                        setValue={setNom}
+                    <input
+                        className='radio-label-space'
+                        type="radio"
+                        id={t('label.femme')}
+                        name="genre"
+                        value={t('label.femme')}
+                        checked={genre === "F"}
+                        onChange={() => { setGenre("F"); setErrorGenre("") }}
                     />
-                    {errorNom && <ErrorInput title={errorNom} />}
+                    <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                 </div>
-
-
-                {/* PRENOM */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.prenom')} />
-                    <Input
-                        type="text"
-                        placeholder={t('label.prenom')}
-                        value={prenom}
-                        setValue={setPrenom}
-                    />
-                </div>
-
-
-                {/* GENRE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.genre')} required={true} />
-                    <div>
-                        <input
-                            className='radio-label-space'
-                            type="radio"
-                            id={t('label.homme')}
-                            name="genre"
-                            value={t('label.homme')}
-                            checked={genre === "m"}
-                            onChange={() => { setGenre("m"); setErrorGenre("") }}
-                        />
-                        <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
-
-                        <input
-                            className='radio-label-space'
-                            type="radio"
-                            id={t('label.femme')}
-                            name="genre"
-                            value={t('label.femme')}
-                            checked={genre === "f"}
-                            onChange={() => { setGenre("f"); setErrorGenre("") }}
-                        />
-                        <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
-                    </div>
-                    {errorGenre && <ErrorInput title={errorGenre} />}
-                </div>
-
-
-                {/* EMAIL */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.email')} required={true} />
-                    <Input
-                        type="email"
-                        placeholder={t('label.email')}
-                        value={email}
-                        setValue={setEmail}
-                    />
-                    {errorEmail && <ErrorInput title={errorEmail} />}
-                </div>
-
-
-                {/* CONTACT */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.contact')} />
-                    <Input
-                        type="text"
-                        placeholder={t('label.contact')}
-                        value={contact}
-                        setValue={setContact}
-                    />
-                </div>
-
-
-                {/* DATE DE NAISSANCE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.date_naiss')} />
-                    <Input
-                        type="date"
-                        placeholder={t('label.email')}
-                        value={dateNaiss}
-                        setValue={setDateNaiss}
-                    />
-                </div>
-
-
-                {/* LIEU DE NAISSANCE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.lieu_naiss')} />
-                    <Input
-                        type="text"
-                        placeholder={t('label.lieu_naiss')}
-                        value={lieuNaiss}
-                        setValue={setLieuNaiss}
-                    />
-                </div>
-
-
-                {/* FONCTION */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.fonction')} />
-                    <Select
-                        value={fonction ? (lang === 'fr' ? fonction.libelleFr : fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
-                        list={fonctions}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
-                        handleGradeChange={handleFonctionChange}
-                    />
-                </div>
-
-
-                {/* GRADE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.grade')} />
-                    <Select
-                        value={grade ? (lang === 'fr' ? grade.libelleFr : grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
-                        list={grades}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
-                        handleGradeChange={handleGradeChange}
-                    />
-                </div>
-
-
-                {/* CATEGORIE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.categorie')} />
-                    <Select
-                        value={categorie ? (lang === 'fr' ? categorie.libelleFr : categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
-                        list={categories}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
-                        handleGradeChange={handleCategorieChange}
-                    />
-                </div>
-
-
-                {/* SERVICE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.service')} />
-                    <Select
-                        value={service ? (lang === 'fr' ? service.libelleFr : service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
-                        list={services}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
-                        handleGradeChange={handleServiceChange}
-                    />
-                </div>
-
-
-                {/* REGION */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.region')} />
-                    <Select
-                        value={region ? (lang === 'fr' ? region.libelleFr : region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
-                        list={regions}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
-                        handleGradeChange={handleRegionChange}
-                    />
-                </div>
-
-
-                {/* DEPARTEMENT */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.departement')} />
-                    <Select
-                        value={departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
-                        list={departements}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
-                        handleGradeChange={handleDepartementChange}
-                    />
-                </div>
-
-
-                {/* COMMUNE */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.commune')} />
-                    <Select
-                        value={commune ? (lang === 'fr' ? commune.libelleFr : commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
-                        list={communes}
-                        optionText={t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
-                        handleGradeChange={handleCommuneChange}
-                    />
-                </div>
-
-
-                {/* DATE ENTREE DANS L'ADMINISTRATION */}
-                <div className="mb-4 w-full ">
-                    <LabelInput title={t('label.date_entree_admin')} />
-                    <Input
-                        type="date"
-                        placeholder={t('label.date_entree_admin')}
-                        value={dateEntreeAdmin}
-                        setValue={setDateEntreeAdmin}
-                    />
-                </div>
+                {errorGenre && <p className="text-red-500">{errorGenre}</p>}
+                <label>{t('label.email')}</label><label className="text-red-500"> *</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="e-mail"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setErrorEmail(""); }}
+                />
+                {errorEmail && <p className="text-red-500">{errorEmail}</p>}
+                <label>{t('label.contact')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={contact}
+                    onChange={(e) => { setContact(e.target.value) }}
+                />
+                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={section ? (lang==='fr'?section.libelleFr:section.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.section')}
+                    onChange={handleSectionChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.section')}</option>
+                    {sections.map(section => (
+                        <option key={section._id} value={lang==='fr'?section.libelleFr:section.libelleEn}>{lang==='fr'?section.libelleFr:section.libelleEn}</option>
+                    ))}
+                </select>
+                {errorSection && <p className="text-red-500">{errorSection}</p>}
+                <label>{t('label.cycle')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={cycle ? (lang==='fr'?cycle.libelleFr:cycle.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.cycle')}
+                    onChange={handleCycleChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.cycle')}</option>
+                    {filteredCycle && filteredCycle.map(cycle => (
+                        <option key={cycle._id} value={lang==='fr'?cycle.libelleFr:cycle.libelleEn}>{lang==='fr'?cycle.libelleFr:cycle.libelleEn}</option>
+                    ))}
+                </select>
+                {errorCycle && <p className="text-red-500">{errorCycle}</p>}
+                <label>{t('label.niveau')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={niveau ? (lang==='fr'?niveau.libelleFr:niveau.libelleEn): t('select_par_defaut.selectionnez') + t('select_par_defaut.niveau')}
+                    onChange={handleNiveauChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.niveau')}</option>
+                    {filteredNiveau && filteredNiveau.map(niveau => (
+                        <option key={niveau._id} value={lang==='fr'?niveau.libelleFr:niveau.libelleEn}>{lang==='fr'?niveau.libelleFr:niveau.libelleEn}</option>
+                    ))}
+                </select>
+                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
+                <label>{t('label.grade')}</label>
+                <select
+                    value={grade ? (lang==='fr'?grade.libelleFr:grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
+                    onChange={handleGradeChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
+                    {grades.map(grade => (
+                        <option key={grade._id} value={(lang==='fr'?grade.libelleFr:grade.libelleEn)}>{(lang==='fr'?grade.libelleFr:grade.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.categorie')}</label>
+                <select
+                    value={categorie ? (lang==='fr'?categorie.libelleFr:categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
+                    onChange={handleCategorieChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
+                    {categories.map(categorie => (
+                        <option key={categorie._id} value={(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}>{(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.fonction')}</label>
+                <select
+                    value={fonction ? (lang==='fr'?fonction.libelleFr:fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
+                    onChange={handleFonctionChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
+                    {fonctions.map(fonction => (
+                        <option key={fonction._id} value={(lang==='fr'?fonction.libelleFr:fonction.libelleEn)}>{(lang==='fr'?fonction.libelleFr:fonction.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.service')}</label>
+                <select
+                    value={service ? (lang==='fr'?service.libelleFr:service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
+                    onChange={handleServiceChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
+                    {services.map(service => (
+                        <option key={service._id} value={(lang==='fr'?service.libelleFr:service.libelleEn)}>{(lang==='fr'?service.libelleFr:service.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.region')}</label>
+                <select
+                    value={region ? (lang==='fr'?region.libelleFr:region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
+                    onChange={handleRegionChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
+                    {regions.map(region => (
+                        <option key={region._id} value={(lang==='fr'?region.libelleFr:region.libelleEn)}>{(lang==='fr'?region.libelleFr:region.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.departement')}</label>
+                <select
+                    value={departement ? (lang==='fr'?departement.libelleFr:departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
+                    onChange={handleDepartementChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
+                    {filteredDepartement && filteredDepartement.map(departement => (
+                        <option key={departement._id} value={(lang==='fr'?departement.libelleFr:departement.libelleEn)}>{(lang==='fr'?departement.libelleFr:departement.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.commune')}</label>
+                <select
+                    value={commune ? (lang==='fr'?commune.libelleFr:commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
+                    onChange={handleCommuneChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
+                    {filteredCommune && filteredCommune.map(commune => (
+                        <option key={commune._id} value={(lang==='fr'?commune.libelleFr:commune.libelleEn)}>{(lang==='fr'?commune.libelleFr:commune.libelleEn)}</option>
+                    ))}
+                </select>
+                <label>{t('label.date_entree_admin')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="date"
+                    value={dateEntreeAdmin}
+                    onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
+                />
             </CustomDialogModal>
+
         </>
     );
-
 }
+
+
+
+export default ModalCreateEnseignant;

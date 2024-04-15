@@ -28,23 +28,19 @@ const etudiantSlice = createSlice({
         setEtudiant(state, action: PayloadAction<EtudiantListGetType>) {
             state.data = action.payload;
         },
-        createEtudiant(state, action: PayloadAction<EtudiantType>) {
-            state.data.etudiants.push(action.payload);
+        createEtudiant(state, action: PayloadAction<CreateEtudiantPayload>) {
+            state.data.etudiants.push(action.payload.etudiant);
         },
 
 
-        updateEtudiant(state, action: PayloadAction<{ newEtudiant: EtudiantType }>) {
-            const { newEtudiant } = action.payload;
-
-            const index = state.data.etudiants.findIndex(etudiant => etudiant._id === newEtudiant._id);
-
+        updateEtudiant(state, action: PayloadAction<UpdateEtudiantPayload>) {
+            const { id, etudiantData } = action.payload;
+            const index = state.data.etudiants.findIndex(e => e._id === id);
             if (index !== -1) {
-                state.data.etudiants[index] = { ...state.data.etudiants[index], ...newEtudiant };
+                state.data.etudiants[index] = { ...state.data.etudiants[index], ...etudiantData };
             }
         },
-
-
-        deleteEtudiant(state, action: PayloadAction<{ id: string }>) {
+        deleteEtudiant(state, action: PayloadAction<DeleteEtudiantPayload>) {
             const { id } = action.payload;
             state.data.etudiants = state.data.etudiants.filter(e => e._id !== id);
         },

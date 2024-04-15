@@ -62,11 +62,11 @@ export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauI
 // 
 //
 // create
-export async function apiCreateEtudiant({ ...newEtudiant }: EtudiantCreateType): Promise<ReponseApiPros> {
+export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create/create-etudiant`,
-            { ...newEtudiant },
+            { nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,11 +85,11 @@ export async function apiCreateEtudiant({ ...newEtudiant }: EtudiantCreateType):
 //
 //
 // update 
-export async function apiUpdateEtudiant(etudiantUpdate: EtudiantType): Promise<ReponseApiPros> {
+export async function apiUpdateEtudiant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
-            `${api}/update/${etudiantUpdate._id}`,
-            { ...etudiantUpdate },
+            `${api}/update/${_id}`,
+            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
             {
                 headers: {
                     'Content-Type': 'application/json',

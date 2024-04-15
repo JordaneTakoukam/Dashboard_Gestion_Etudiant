@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import createToast from "../../hooks/toastify";
 import { apiGetEtudiantsWithPagination } from "../../api/other_users/api_etudiant";
+import ModalCreateEtudiant from "../../components/Modals/ModalEtudiant/DialogCreateEtudiant";
 
 
 
@@ -16,7 +17,7 @@ const ListeDesEtudiants = () => {
     const dispatch = useDispatch();
     const [selectedEtudiant, setSelectedEtudiant] = useState<EtudiantType | null>(null);
     
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante);
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
@@ -70,7 +71,7 @@ const ListeDesEtudiants = () => {
             <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
 
             {/* Boite de dialogue */}
-            {/* <ModalCreateEtudiant etudiant={selectedEtudiant} />  */}
+            <ModalCreateEtudiant etudiant={selectedEtudiant} /> 
             <ModalDeleteEtudiant etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
         </>
     );

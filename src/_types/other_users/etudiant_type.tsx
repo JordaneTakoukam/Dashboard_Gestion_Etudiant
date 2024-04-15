@@ -1,16 +1,16 @@
 interface EtudiantType extends EtudiantCreateType {
-    _id: string;
+    _id?: string;
     status?: string;
     historique_connexion?: Date[];
     photo_profil?: string | null;
-    date_creation?: String | null;
+    date_creation?: string | null;
 }
 
 
 interface EtudiantCreateType {
     genre: string;
-    date_entree: String | null;
-    date_naiss: String | null;
+    date_entree: string | null;
+    date_naiss: string | null;
 
     nom: string;
     prenom: string | null;
@@ -23,10 +23,12 @@ interface EtudiantCreateType {
     // fonction: string | null;
     // service: string | null;
 
-    abscences: string[];
+    absences: string[];
 
     grade: string | null;
     categorie: string | null;
+    fonction: string | null;
+    service: string | null;
 
     commune: string | null;
 
@@ -51,7 +53,18 @@ interface EtudiantInitialData {
     pageError: string | null;
 }
 
+interface CreateEtudiantPayload {
+    etudiant: EtudiantType; // Données de l'événement à créer
+}
 
+interface UpdateEtudiantPayload {
+    id: string; // ID de l'événement à mettre à jour
+    etudiantData: Partial<EtudiantType>; // Données mises à jour de l'événement
+}
+
+interface DeleteEtudiantPayload {
+    id: string; // ID de l'événement à supprimer
+}
 interface EtudiantListGetType {
     etudiants: EtudiantType[];
     currentPage: number;

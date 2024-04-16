@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading } from "../../_redux/features/enseignant_slice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
-import createToast from "../../hooks/toastify";
 import { apiGetEnseignantsWithPagination } from "../../api/other_users/api_enseignant";
 import Table from "../../components/Tables/TablesEnseignants/Table";
 import ModalCreateEnseignant from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
@@ -43,7 +42,6 @@ const ListeDesEnseignants = () => {
                 }
             } catch (error) {
                 dispatch(setErrorPageEnseignant(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2)
             } finally {
                 dispatch(setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
             }

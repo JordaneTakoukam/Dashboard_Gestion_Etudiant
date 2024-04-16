@@ -101,15 +101,19 @@ const ListeDesAdministrateur = () => {
             }
 
 
-            {
+            {/* {
                 userRole === r_sup_ad ?
-                    <div>
-                        <ModalCreateUpdateAdmin admin={selectedAdministrateur} />
-                        <FormDelete administrateur={selectedAdministrateur} />
-                    </div>
-                    : <ModalNonAutoriser />
-            }
+                <div>
+                    <ModalCreateUpdateAdmin admin={selectedAdministrateur} />
+                    <FormDelete administrateur={selectedAdministrateur} />
+                </div>
+                : <ModalNonAutoriser />
+            } */}
 
+            <div>
+                <ModalCreateUpdateAdmin admin={selectedAdministrateur} />
+                <FormDelete administrateur={selectedAdministrateur} />
+            </div>
 
         </>
     );

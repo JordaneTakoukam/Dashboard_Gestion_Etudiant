@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
-import { Enseignant } from "./ListeEnseignants";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
@@ -92,4 +91,3 @@ const ListeDesPeriodesEnseignement = () => {
 
 export default ListeDesPeriodesEnseignement;
 
-export const enseignants: Enseignant[] = [];

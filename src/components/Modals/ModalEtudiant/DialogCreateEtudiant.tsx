@@ -72,7 +72,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             currentRegion && filterDepartementByRegion(currentRegion._id);
             currentDepartement && filterCommuneByDepartement(currentDepartement._id)
             setNom(etudiant.nom);
-            setPrenom(etudiant.prenom ? etudiant.prenom : ""); setGenre(etudiant.genre);
+            setPrenom(etudiant.prenom ? etudiant.prenom : ""); 
+            setGenre(etudiant.genre);
             setDateNaiss(etudiant.date_naiss ? etudiant.date_naiss.split("T")[0] : "");
             setLieuNaiss(etudiant.lieu_naiss ? etudiant.lieu_naiss : "");
             setEmail(etudiant.email);
@@ -479,14 +480,13 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         nom,
                         genre,
                         email,
-                        photo_profil:"",
+                        photo_profil:etudiant.photo_profil,
                         contact,
                         matricule,
                         prenom,
                         date_naiss:dateNaiss,
                         lieu_naiss:lieuNaiss,
                         date_entree:dateEntreeAdmin,
-                        absences:[],
                         niveaux:[{niveau:niveau._id, annee:currentYear}],
                         grade:grade?._id||null,
                         categorie:categorie?._id||null,

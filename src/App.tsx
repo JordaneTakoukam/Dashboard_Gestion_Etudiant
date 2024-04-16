@@ -72,23 +72,57 @@ function App() {
           const localUser = isAuth.value;
 
           if (localUser) {
-            const { userId, roles, role, nom, prenom } = localUser;
-
+            const { 
+                userId, 
+                roles, 
+                role, 
+                nom, 
+                prenom, 
+                genre, 
+                email, 
+                photo_profil, 
+                contact, 
+                matricule, 
+                date_naiss, 
+                lieu_naiss, 
+                date_entree, 
+                abscences, 
+                niveaux, 
+                grade, 
+                categorie, 
+                fonction, 
+                service, 
+                commune 
+            } = localUser;
+        
             if (role !== "" && role !== null && role !== undefined) {
-              dispatch(setMinimumUser({
-                _id: userId,
-                roles: roles,
-                role: role,
-                nom: nom,
-                prenom: prenom,
-              }));
-
-              setUserRole(role);
+                dispatch(setMinimumUser({
+                  _id: userId,
+                  roles: roles,
+                  role: role,
+                  nom: nom,
+                  prenom: prenom,
+                  genre: genre,
+                  email: email,
+                  photo_profil: photo_profil,
+                  contact: contact,
+                  matricule: matricule,
+                  date_naiss: date_naiss,
+                  lieu_naiss: lieu_naiss,
+                  date_entree: date_entree,
+                  abscence: abscences,
+                  niveaux: niveaux,
+                  grade: grade,
+                  categorie: categorie,
+                  fonction: fonction,
+                  service: service,
+                  commune: commune
+                }));
+        
+                setUserRole(role);
             }
-
-            setLoading(false);
-
-          }
+        }
+        
 
         } else {
           if (isAuth.value != null)

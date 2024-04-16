@@ -36,7 +36,7 @@ export async function signInApi({ email, mot_de_passe }: SignInApiProps): Promis
         );
 
         const data = response.data;
-
+        
         if (data.data.roles.length === 1) {
             if (data.token) {
                 storeTokenInLocalStorage(data.token);

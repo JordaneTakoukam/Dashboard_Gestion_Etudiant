@@ -2,7 +2,6 @@ import { ApexOptions } from 'apexcharts';
 import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import LoadingTable from '../Tables/common/LoadingTable';
-import { Etudiant } from '../../pages/Admin/ListeEtudiants';
 import { useTranslation } from 'react-i18next';
 
 

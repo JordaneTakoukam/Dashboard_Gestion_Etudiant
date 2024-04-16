@@ -23,7 +23,7 @@ interface EtudiantCreateType {
     // fonction: string | null;
     // service: string | null;
 
-    absences: string[];
+    absences?: string[];
 
     grade: string | null;
     categorie: string | null;

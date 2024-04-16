@@ -64,3 +64,22 @@ export async function apiDeleteChapitre(chapitreId: string): Promise<ReponseApiP
         throw error;
     }
 }
+
+export async function getProgressionGlobalEnseignants(): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getProgressionGlobalEnseignants`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const progress: number = response.data.data;
+        return parseFloat(progress.toFixed(2));
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}

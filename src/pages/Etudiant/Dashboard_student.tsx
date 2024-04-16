@@ -4,10 +4,52 @@ import { CardAlertRecente } from '../../components/CardDashboard/CardAlertRecent
 import { CardCourProgrammer } from '../../components/CardDashboard/CardCourProgrammer.tsx';
 import CardDashboard from '../../components/CardDashboard/CardDashboard.tsx';
 import { CardEvenement } from '../../components/CardDashboard/CardEvenement.tsx';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../_redux/store.tsx';
+import { getProgressionGlobalEnseignants } from '../../api/api_chapitre.tsx';
+import { getFirstTenEventsOfYear } from '../../api/api_evenement.tsx';
+import { apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx';
+import { apiGetTotalEtudiantByYear } from '../../api/other_users/api_etudiant.tsx';
 
 
 const DashBoardStudent = () => {
     const {t}=useTranslation();
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const [totalEtudiant, setTotalEtudiant] = useState<number>(0);
+    const [totalEnseignant, setTotalEnseignant] = useState<number>(0);
+    const [evenements, setEvenements] = useState<EvenementType[]>([]);
+    const [progression, setProgression] = useState<number>(0);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
+                if (totalEtudiantByYear !== null) {
+                    setTotalEtudiant(totalEtudiantByYear);
+                }
+
+                const totalEnseignants = await apiGetTotalEnseignants();
+                if (totalEnseignants !== null) {
+                    setTotalEnseignant(totalEnseignants);
+                }
+
+                const progressionGlobal = await getProgressionGlobalEnseignants();
+                if (progressionGlobal !== null) {
+                    setProgression(progressionGlobal);
+                }
+
+                const eventsOfYear = await getFirstTenEventsOfYear({ annee: currentYear });
+                if (eventsOfYear !== null && eventsOfYear.evenements) {
+                    setEvenements(eventsOfYear.evenements);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, [currentYear]);
     return (
         <>
             <Breadcrumb pageName={t('menu.tableau_de_bord')} isDashboard={true} />
@@ -23,7 +65,7 @@ const DashBoardStudent = () => {
 
                 {/*  */}
                 <CardCourProgrammer  listCourProgrammer={[]}/>
-                <CardEvenement listEvenement={[]} />
+                <CardEvenement listEvenement={evenements} />
 
 
             </div>

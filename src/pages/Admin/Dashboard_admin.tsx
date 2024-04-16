@@ -10,118 +10,73 @@ import { useEffect, useState } from "react";
 import { apiGetTotalEtudiantByYear } from "../../api/other_users/api_etudiant";
 import { apiGetTotalEnseignants } from "../../api/other_users/api_enseignant";
 import { getFirstTenEventsOfYear } from "../../api/api_evenement";
-
+import { getProgressionGlobalEnseignants } from "../../api/api_chapitre";
 
 const DashBoardAmin = () => {
     const style = 'text-[13px] xl:text-[14px]';
     const { t } = useTranslation();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const[totalEtudiant, setTotalEtudiant]=useState<number>();
-    const[totalEnseignant, setTotalEnseignant]=useState<number>();
-    const [evenements, setEvenements]=useState<EvenementType[]>();
+    const [totalEtudiant, setTotalEtudiant] = useState<number>(0);
+    const [totalEnseignant, setTotalEnseignant] = useState<number>(0);
+    const [evenements, setEvenements] = useState<EvenementType[]>([]);
+    const [progression, setProgression] = useState<number>(0);
+
     useEffect(() => {
-        const fetchTotalEtudiants = async () => {
+        const fetchData = async () => {
             try {
-                setTotalEtudiant(0);
-                let fetchedTotal = await apiGetTotalEtudiantByYear({annee:currentYear });
-                if (fetchedTotal) { 
-                    setTotalEtudiant(fetchedTotal)
-                } 
-                setTotalEnseignant(0);
-                fetchedTotal = await apiGetTotalEnseignants();
-                if (fetchedTotal) { // Vérifiez si fetchedEtudiants n'est pas faux, vide ou indéfini
-                    setTotalEnseignant(fetchedTotal)
-                } 
-            } catch (error) {
-                console.log("error")
-            } finally {
-               
-            }
-        }
-        fetchTotalEtudiants();
-        const fetchTotalEnseignant = async () => {
-            try {
-                setTotalEnseignant(0);
-                const fetchedTotal = await apiGetTotalEnseignants();
-                if (fetchedTotal) { // Vérifiez si fetchedEtudiants n'est pas faux, vide ou indéfini
-                    setTotalEnseignant(fetchedTotal)
-                } 
-            } catch (error) {
-                console.log("error")
-            } finally {
-            }
-        }
-        fetchTotalEnseignant();
-        const fetchEvenements = async () => {
-            try {
-                setEvenements([]);
-                const fetchedEvenements = await getFirstTenEventsOfYear({ annee: currentYear});
-                if(fetchedEvenements){
-                    setEvenements(fetchedEvenements.evenements);
+                const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
+                if (totalEtudiantByYear !== null) {
+                    setTotalEtudiant(totalEtudiantByYear);
                 }
-                // Mettez à jour l'état Redux avec les données récupérées
-    
+
+                const totalEnseignants = await apiGetTotalEnseignants();
+                if (totalEnseignants !== null) {
+                    setTotalEnseignant(totalEnseignants);
+                }
+
+                const progressionGlobal = await getProgressionGlobalEnseignants();
+                if (progressionGlobal !== null) {
+                    setProgression(progressionGlobal);
+                }
+
+                const eventsOfYear = await getFirstTenEventsOfYear({ annee: currentYear });
+                if (eventsOfYear !== null && eventsOfYear.evenements) {
+                    setEvenements(eventsOfYear.evenements);
+                }
             } catch (error) {
-            } finally {
+                console.error("Error fetching data:", error);
             }
         };
-        fetchEvenements();
-    }, [t]);
+
+        fetchData();
+    }, [currentYear]);
+
     return (
-        
         <>
             <Breadcrumb pageName={t('tableau_de_bord.title')} isDashboard={true} />
 
-            {/*  */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5">
-                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant?.toString()} id={1} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant.toString()} id={1} additionalStyle={style} />
                 <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={'100H'} id={2} additionalStyle={style} />
-                <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant?.toString()} id={3} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={3} additionalStyle={style} />
                 <CardDashboard title={t('tableau_de_bord.absences_enseignants')} value={'100H'} id={2} additionalStyle={style} />
-                <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={40}  />
-
+                <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression}  />
             </div>
 
-            <div className="xl:hidden mt-5 block" >
+            <div className="xl:hidden mt-5 block">
                 <CardEvenement listEvenement={evenements} />
             </div>
-            <div className="flex justify-between  mt-6">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:gap-7.5 w-full mr-0 xl:mr-3 ">
 
+            <div className="flex justify-between mt-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:gap-7.5 w-full mr-0 xl:mr-3">
                     <ChartEtudiantNiveau />
                     <ChartNombreEtudiant />
-
-                    {/* a droite */}
-
                 </div>
 
-                <div className="hidden xl:block" >
-                    <CardEvenement additionalStyle={'min-w-[350px] min-h-[431px]'} listEvenement={[]} />
+                <div className="hidden xl:block">
+                    <CardEvenement additionalStyle={'min-w-[350px] min-h-[431px]'} listEvenement={evenements} />
                 </div>
             </div>
-
-
-
-
-            {/* <div className="mt-4 grid grid-cols-10 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-                <ChartConducteur />
-                <ChartDepense />
-            </div> */}
-
-            {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:gap-7.5 mt-6">
-        <CardPrixAuKm />
-        <CardPrixAuLitre />
-      </div> */}
-
-            {/* Depenses par semaines  */}
-
-            {/* <div className="my-4 grid grid-cols-10 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-                <ChartSemaine />
-                <ChartMonth />
-            </div> */}
-
-            {/* Depenses annuelles  */}
-            {/* <ChartAnnee /> */}
         </>
     );
 };

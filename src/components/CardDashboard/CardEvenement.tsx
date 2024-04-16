@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { CurrentYearDate } from "./_CommonYear";
+import { useSelector } from "react-redux";
+import { RootState } from "../../_redux/store";
 
 interface CardEvenementProps {
     additionalStyle?: String,
@@ -9,6 +11,7 @@ interface CardEvenementProps {
 
 export const CardEvenement = ({ additionalStyle, listEvenement }: CardEvenementProps) => {
     const { t } = useTranslation();
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     return (
         <div className={`relative ${additionalStyle} rounded-sm border border-stroke bg-white py-6 px-5 shadow-default dark:border-strokedark dark:bg-boxdark  w-full`}>
 
@@ -23,20 +26,23 @@ export const CardEvenement = ({ additionalStyle, listEvenement }: CardEvenementP
 
             {/* contenu */}
             <div className='flex justify-center'>
-                {
-                    listEvenement && listEvenement.length === 0 ?
-                        <h4 className="text-[15px] font-normal text-body dark:text-white py-[100px] text-center mt-0   lg:py-[150px]">
-                            {t('tableau_de_bord.evenements_aucun')}
-                        </h4>
-
-                        :
-                        <div>
-
-                        </div>
-                }
-
-
+                {listEvenement && listEvenement.length === 0 ? (
+                    <h4 className="text-[15px] font-normal text-body dark:text-white py-[100px] text-center mt-0 lg:py-[150px]">
+                        {t('tableau_de_bord.evenements_aucun')}
+                    </h4>
+                ) : (
+                    <div>
+                        {listEvenement && listEvenement.map((evenement, index) => (
+                            <div key={index} className={index % 2 === 0 ? "border-b border-[#eee] py-0 lg:py-2 px-2 dark:border-strokedark bg-gray-2 dark:bg-black" :
+                            "border-b border-[#eee] py-0 lg:py-2 px-2  dark:border-strokedark"}>
+                                <p>{t('label.periode')} : {lang === 'fr' ? evenement.periodeFr : evenement.periodeEn}</p>
+                                <p>{t('label.libelle')} : {lang === 'fr' ? evenement.libelleFr : evenement.libelleEn}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
+
 
 
 

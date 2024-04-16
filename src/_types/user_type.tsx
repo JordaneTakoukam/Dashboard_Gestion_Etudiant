@@ -4,9 +4,9 @@ interface UserState {
     roles: string[];
     role: string;
     genre: string;
-    date_creation: Date | null;
-    date_entree: Date | null;
-    date_naiss: Date | null;
+    date_creation?: Date | null;
+    date_entree: string | null;
+    date_naiss: string | null;
 
     nom: string;
     prenom: string | null;
@@ -15,22 +15,23 @@ interface UserState {
 
     lieu_naiss: string | null;
     contact: string | null;
-    status: string;
-    historique_connexion: Date[];
+    status?: string;
+    historique_connexion?: Date[];
     photo_profil: string | null;
 
     // son tous des objectId
     abscence: string | null;
-    section: string | null;
-    cycle: string | null;
-    niveau: string | null;
-    grades: string | null;
-    categories: string | null;
+    niveaux: InscriptionType[];
+    grade: string | null;
+    categorie: string | null;
     fonction: string | null;
     service: string | null;
-    region: string | null;
-    departement: string | null;
-    communes: string | null;
+    commune: string | null;
+}
+
+interface InscriptionType{
+    niveau:string,
+    annee:number
 }
 
 // interface Absence {
@@ -41,7 +42,10 @@ interface UserState {
 //     annee: string | null;
 // }
 
-
+interface UpdateUserPayload {
+    id: string; // ID de l'événement à mettre à jour
+    userData: Partial<UserState>; // Données mises à jour de l'événement
+}
 interface UserReturnGetType {
     users: UserState[];
 }

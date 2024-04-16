@@ -104,11 +104,11 @@ export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,ma
 //
 //
 // update 
-export async function apiUpdateEtudiant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
+export async function apiUpdateEtudiant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
+            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,grade,categorie,fonction,service,commune },
             {
                 headers: {
                     'Content-Type': 'application/json',

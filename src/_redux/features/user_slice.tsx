@@ -10,16 +10,12 @@ const initialState: UserState = {
     nom: '',
     prenom: '',
     email: '',
-    section: '',
-    cycle: '',
-    niveau: '',
-    grades: '',
-    categories: '',
+    niveaux: [],
+    grade: '',
+    categorie: '',
     fonction: '',
     service: '',
-    region: '',
-    departement: '',
-    communes: '',
+    commune: '',
     matricule: '',
     date_naiss: null,
     date_entree: null,
@@ -41,11 +37,11 @@ export const userSlice = createSlice({
             return { ...state, ...action.payload };
         },
         // Définir l'utilisateur avec des propriétés minimales
-        setMinimumUser: (state, action: PayloadAction<PropsUserMinState>) => {
+        setMinimumUser: (state, action: PayloadAction<UserState>) => {
             return { ...state, ...action.payload };
         },
         // Mettre à jour l'utilisateur avec de nouvelles propriétés
-        updateUser: (state, action: PayloadAction<Partial<UserState>>) => {
+        updateUser: (state, action: PayloadAction<Partial<UpdateUserPayload>>) => {
             return { ...state, ...action.payload };
         },
     },

@@ -28,7 +28,7 @@ const Enseignements = ({ matiereSelectionnee, returnWithMatiere }: Enseignements
             <Breadcrumb pageName={t('sub_menu.enseignements')} isEnseignement={true} returnWithMatiere={returnWithMatiere}/>
             <Table data={matiereSelectionnee?.typesEnseignement}  onCreate={handleAddEnseignement} onEdit={handleEditEnseignement} matiere={matiereSelectionnee}/>
 
-            <FormCreateUpdate enseignement={selectedEnseignement}/>
+            <FormCreateUpdate enseignement={selectedEnseignement} matiere={matiereSelectionnee}/>
             <FormDelete enseignement={selectedEnseignement}/>
 
         </>

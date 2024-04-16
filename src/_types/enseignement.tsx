@@ -2,8 +2,8 @@
 interface EnseignementType {
     _id?: string;
     typeEnseignement : string;
-    enseignantPrincipal?:UserState ;
-    enseignantSuppleant?: UserState;
+    enseignantPrincipal?:EnseignantType ;
+    enseignantSuppleant?: EnseignantType;
     volumeHoraire?: number;
 }
 

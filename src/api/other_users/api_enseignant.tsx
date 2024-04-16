@@ -64,8 +64,47 @@ export async function apiGetEnseignants({grade, categorie, service, fonction }: 
     }
 }
 
-// 
-//
+export async function apiGetEnseignantsByNomPrenom(): Promise<EnseignantListGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getEnseignantsByNomPrenom`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+        const enseignants: EnseignantListGetType = response.data.data;
+
+        return enseignants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiGetTotalEnseignants(): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getTotalEnseignants`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+        const totalEnseignant: number = response.data.data;
+        console.log("===="+totalEnseignant);
+        return totalEnseignant;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+
 // create
 export async function apiCreateEnseignant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {
     try {
@@ -87,8 +126,7 @@ export async function apiCreateEnseignant({nom,genre,email,photo_profil,contact,
     }
 }
 
-//
-//
+
 // update 
 export async function apiUpdateEnseignant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {
     try {
@@ -110,8 +148,7 @@ export async function apiUpdateEnseignant({_id,nom,genre,email,photo_profil,cont
     }
 }
 
-//
-//
+
 // delete
 export async function apiDeleteEnseignant(id: string): Promise<ReponseApiPros> {
     try {

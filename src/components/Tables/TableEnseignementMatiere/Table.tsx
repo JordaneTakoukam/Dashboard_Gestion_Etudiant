@@ -51,10 +51,9 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableEnseignementProps) => {
     //    return [];
     // };
 
-    // useEffect(() => {
-    //     const result = filterEnseignementByContent(data);
-    //     setFilteredData(result);
-    // }, [searchText, data]);
+    useEffect(() => {
+        setFilteredData(data);
+    }, [dispatch]);
 
     return (
         <div>

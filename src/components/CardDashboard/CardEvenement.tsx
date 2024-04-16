@@ -3,7 +3,7 @@ import { CurrentYearDate } from "./_CommonYear";
 
 interface CardEvenementProps {
     additionalStyle?: String,
-    listEvenement: [],
+    listEvenement: EvenementType[] | undefined,
 }
 
 
@@ -24,13 +24,15 @@ export const CardEvenement = ({ additionalStyle, listEvenement }: CardEvenementP
             {/* contenu */}
             <div className='flex justify-center'>
                 {
-                    listEvenement.length === 0 ?
+                    listEvenement && listEvenement.length === 0 ?
                         <h4 className="text-[15px] font-normal text-body dark:text-white py-[100px] text-center mt-0   lg:py-[150px]">
                             {t('tableau_de_bord.evenements_aucun')}
                         </h4>
 
                         :
-                        <div></div>
+                        <div>
+
+                        </div>
                 }
 
 

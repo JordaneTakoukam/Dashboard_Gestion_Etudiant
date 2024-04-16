@@ -59,8 +59,27 @@ export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauI
     }
 }
 
-// 
-//
+export async function apiGetTotalEtudiantByYear({annee}: {annee:number}): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getTotalEtudiantsByYear`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee:annee
+                },
+            },
+        );
+        const totalEtudiant: number = response.data.data;
+        return totalEtudiant;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 // create
 export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
     try {

@@ -354,8 +354,8 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                         approchePedEn, 
                         evaluationAcquisFr, 
                         evaluationAcquisEn,
-                        typesEnseignement:enseignements,
-                        chapitres,
+                        typesEnseignement:matiere.typesEnseignement,
+                        chapitres:matiere.chapitres,
                         _id:matiere._id,
                     }
                 ).then((e: ReponseApiPros) => {
@@ -376,8 +376,8 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                     approchePedEn:e.data.approchePedEn, 
                                     evaluationAcquisFr:e.data.evaluationAcquisFr, 
                                     evaluationAcquisEn:e.data.evaluationAcquisEn,
-                                    typesEnseignement:e.data.typesEnseignement,
-                                    chapitres:e.data.chapitres,
+                                    typesEnseignement:matiere.typesEnseignement,
+                                    chapitres:matiere.chapitres,
 
                                 }
                             }));

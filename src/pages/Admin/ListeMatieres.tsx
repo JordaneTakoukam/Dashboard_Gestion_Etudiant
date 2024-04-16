@@ -4,7 +4,6 @@ import Table from "../../components/Tables/TableMatiere/Table";
 import { Niveau } from "./Niveaux";
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
 import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
-import { Enseignant } from "./ListeEnseignants";
 import Chapitres from "./Chapitres";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,21 +12,6 @@ import { getMatieresByNiveauWithPagination } from "../../api/api_matiere";
 import createToast from "../../hooks/toastify";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redux/features/matiere_slice";
 import Enseignements from "./Enseignements";
-
-export interface Matiere {
-    id?: number;
-    code: string;
-    libelle: string;
-    prerequis?: string;
-    evaluationDesAcquis?: string;
-    niveau: Niveau;
-    enseignant: Enseignant;
-    enseignantSup?: Enseignant
-    approchePedagogique?: string;
-}
-
-
-
 
 const ListeDesMatieres = () => {
     const { t } = useTranslation();
@@ -113,7 +97,3 @@ const ListeDesMatieres = () => {
 };
 
 export default ListeDesMatieres;
-
-export const enseignants: Enseignant[] = [];
-
-export const matieres: Matiere[] = [];

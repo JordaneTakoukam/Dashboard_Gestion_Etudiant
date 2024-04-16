@@ -78,6 +78,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
     };
 
+    
+
     const handleSectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSectionLibelle = e.target.value;
         var selectedSection = null;
@@ -122,11 +124,9 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
         if (lang === 'fr') {
             selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleFr === selectedNiveauLibelle);
-
         }
         else {
             selectedNiveau = filteredNiveau && filteredNiveau.find(niveau => niveau.libelleEn === selectedNiveauLibelle);
-
         }
 
 
@@ -151,10 +151,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     totalPages: 0,
                     pageSize: 0
                 }
-                if (periodeCours) {
-                    const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
-                    setNiveau(currentNiveau);
-                }
+                
                 if (niveau && niveau._id) {
                     
                     const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id});
@@ -178,7 +175,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         };
 
         fetchMatieres();
-    }, [periodeCours, niveau, dispatch]);
+    }, [periodeCours,niveau, dispatch]);
 
 
 
@@ -244,9 +241,20 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setErrorTypeEnseignement("");
             setIsFirstRender(false);
         }
-    }, [periodeCours, isFirstRender, matieres, t]);
+    }, [periodeCours, isFirstRender, t]);
+
+    useEffect(() => {
+
+        if (periodeCours) {
+            const mat = matieres.find(matiere => matiere._id === periodeCours.matiere._id);
+            setMatiere(mat);
+        }
+
+    }, [matieres]);
+    
     // Troisième useEffect pour gérer le changement de matière sélectionnée
     useEffect(() => {
+        
         if (matiere && matiere.typesEnseignement) {
             const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
                 .map(type => type.typeEnseignement)
@@ -518,6 +526,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
         
     }
+
+    
 
     return (
         <>

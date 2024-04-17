@@ -13,6 +13,7 @@ import { getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
 import * as XLSX from 'xlsx';
+import { config } from "../../../config";
 
 const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }) => {
     const {t}=useTranslation();
@@ -50,7 +51,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     };
 
     // let matiere:Matiere=listMatieres[0];
-
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
@@ -63,6 +64,8 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const [filteredMatiere, setFilteredMatiere] = useState<MatiereType | undefined>(data);
     const [formatToDownload, setFormatToDownload] = useState("");
     const [progress, setProgress] = useState(calculateProgress(data));
+    const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const roles = config.roles;
 
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
@@ -120,27 +123,33 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
-        if (selected?._id) {
-            setSelectIdSection(selected._id);
-            filterCycleBySection(selected._id);
-            setSection(selected);
+        if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
+            if (selected?._id) {
+                setSelectIdSection(selected._id);
+                filterCycleBySection(selected._id);
+                setSection(selected);
+            }
         }
     };
 
     // valeur de la l'id du cycle selectionner    
     const handleCycleSelect = (selected: CycleProps | undefined) => {
-        if (selected?._id) {
-            setSelectIdCycle(selected._id);
-            filterNiveauxByCycle(selected._id);
-            setCycle(selected);
+        if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
+            if (selected?._id) {
+                setSelectIdCycle(selected._id);
+                filterNiveauxByCycle(selected._id);
+                setCycle(selected);
+            }
         }
     };
 
     // valeur de la l'id du niveau selectionner    
     const handleNiveauSelect = (selected: NiveauProps | undefined) => {
-        if (selected && selected?._id) {
-            setSelectIdNiveau(selected._id);
-            setNiveau(selected)
+        if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
+            if (selected && selected?._id) {
+                setSelectIdNiveau(selected._id);
+                setNiveau(selected)
+            }
         }
     };
 
@@ -242,6 +251,16 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                 filterNiveauxByCycle(selectCycleId);
             }
                 
+        } 
+        if (roles.delegue === currentUser.role || roles.etudiant === currentUser.role) {
+            const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau => niveau.annee === currentYear)?.niveau);
+            const currentCycle = cycles.find(cycle => cycle._id === currentNiveau?.cycle)
+            setSection(sections.find(section => section._id === currentCycle?.section));
+            setCycle(currentCycle);
+            setNiveau(currentNiveau);
+            setSelectIdSection(section?._id);
+            setSelectIdCycle(cycle?._id);
+            setSelectIdNiveau(niveau?._id);
         }        
     }, [filteredCycle]);
 

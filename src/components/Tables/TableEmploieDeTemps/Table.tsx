@@ -41,6 +41,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const currentUser:UserState = useSelector((state: RootState) => state.user);
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
             onEdit(periode);
@@ -152,6 +153,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
     const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
+   
 
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
@@ -198,27 +200,33 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
-        if (selected?._id) {
-            setSelectIdSection(selected._id);
-            filterCycleBySection(selected._id);
-            setSection(selected);
+        if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
+            if (selected?._id) {
+                setSelectIdSection(selected._id);
+                filterCycleBySection(selected._id);
+                setSection(selected);
+            }
         }
     };
 
     // valeur de la l'id du cycle selectionner    
     const handleCycleSelect = (selected: CycleProps | undefined) => {
-        if (selected?._id) {
-            setSelectIdCycle(selected._id);
-            filterNiveauxByCycle(selected._id);
-            setCycle(selected);
+        if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
+            if (selected?._id) {
+                setSelectIdCycle(selected._id);
+                filterNiveauxByCycle(selected._id);
+                setCycle(selected);
+            }
         }
     };
 
     // valeur de la l'id du niveau selectionner    
     const handleNiveauSelect = (selected: NiveauProps | undefined) => {
-        if (selected && selected?._id) {
-            setSelectIdNiveau(selected._id);
-            setNiveau(selected)
+        if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
+            if (selected && selected?._id) {
+                setSelectIdNiveau(selected._id);
+                setNiveau(selected)
+            }
         }
     };
     const handleSemestreSelect = (selected: number | undefined) => {
@@ -279,7 +287,6 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
    // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
         if(!selectSectionId){
-            console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
             }
@@ -301,12 +308,25 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 filterNiveauxByCycle(selectCycleId);
             }
                 
-        }        
+        }   
+        if (roles.delegue === currentUser.role || roles.etudiant === currentUser.role) {
+            const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau => niveau.annee === selectedYear)?.niveau);
+            const currentCycle = cycles.find(cycle => cycle._id === currentNiveau?.cycle)
+            setSection(sections.find(section => section._id === currentCycle?.section));
+            setCycle(currentCycle);
+            setNiveau(currentNiveau);
+            setSelectIdSection(section?._id);
+            setSelectIdCycle(cycle?._id);
+            setSelectIdNiveau(niveau?._id);
+        } 
+            
     }, [filteredCycle]);
+    
     useEffect(() => {
         const fetchPeriodes = async () => {
             dispatch(setPeriodeLoading(true));
             try {
+                
                 const periodes:PeriodeReturnGetType={
                     periodes: [],
                     currentPage: 0,
@@ -355,7 +375,6 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
-
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<number>
@@ -378,7 +397,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
                                 selectedItem={cycle}
-                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+                                displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
                             <CustomDropDown2<NiveauProps>
@@ -386,7 +405,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
                                 selectedItem={niveau}
-                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
+                                displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
                             
@@ -428,7 +447,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
                                 selectedItem={cycle}
-                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+                                displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
                             <CustomDropDown2<NiveauProps>
@@ -436,7 +455,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 items={filteredNiveaux}
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
                                 selectedItem={niveau}
-                                displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
+                                displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
                             

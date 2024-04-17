@@ -91,7 +91,8 @@ export async function getPeriodesByNiveau({ niveauId, annee, semestre }: { nivea
     }
 }
 
-export async function getPeriodesAVenirByNiveau({ niveauId }: { niveauId: string }): Promise<PeriodeReturnGetType> {
+export async function getPeriodesAVenirByNiveau({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<PeriodeReturnGetType> {
+    const nbElement=5;
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getPeriodesAVenirByNiveau/${niveauId}`,
@@ -99,12 +100,47 @@ export async function getPeriodesAVenirByNiveau({ niveauId }: { niveauId: string
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
+                },
+                params : {
+                    annee:annee,
+                    semestre : semestre,
+                    nbElement:nbElement
                 }
             },
         );
 
         // Extraction de tous les objets de paramètres de la réponse
         const periodes: PeriodeReturnGetType = response.data.data;
+        console.log(periodes);
+
+        return periodes;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function getPeriodesAVenirByEnseignant({ enseignantId, annee, semestre }: { enseignantId: string, annee:number, semestre:number }): Promise<PeriodeReturnGetType> {
+    const nbElement=10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getPeriodesAVenirByEnseignant/${enseignantId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params : {
+                    annee:annee,
+                    semestre : semestre,
+                    nbElement:nbElement
+                }
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const periodes: PeriodeReturnGetType = response.data.data;
+        console.log(periodes);
 
         return periodes;
     } catch (error) {

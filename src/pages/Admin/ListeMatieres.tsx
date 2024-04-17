@@ -12,6 +12,7 @@ import { getMatieresByNiveauWithPagination } from "../../api/api_matiere";
 import createToast from "../../hooks/toastify";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redux/features/matiere_slice";
 import Enseignements from "./Enseignements";
+import { config } from "../../config";
 
 const ListeDesMatieres = () => {
     const { t } = useTranslation();
@@ -20,9 +21,13 @@ const ListeDesMatieres = () => {
     const [openEnseignements, setOpenEnseignements] = useState(false);
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType | null>(null);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
-    const currentNiveauId = niveaux && niveaux.length > 0 && niveaux[0]._id;
     // Utilisez useSelector pour accéder à l'état du reducer
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const roles = config.roles;
 
     useEffect(() => {
         const fetchMatieres = async () => {
@@ -35,6 +40,10 @@ const ListeDesMatieres = () => {
                     totalPages: 0,
                     pageSize: 0
                 }
+                const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
+                const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
+                
+                
                 if (currentNiveauId) {
                     const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: 1 });
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
@@ -53,7 +62,7 @@ const ListeDesMatieres = () => {
         };
 
         fetchMatieres();
-    }, [currentNiveauId, dispatch, t]);
+    }, [dispatch, t]);
 
     const handleEditSection = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);

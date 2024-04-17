@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableEmploieDeTemps/Table";
-import { Matiere, matieres } from "../Admin/ListeMatieres";
 import { SalleCours, sallesCours } from "../Admin/SallesDeCours";
 import FormCreateUpdate from "../../components/Modals/ModalEmploiTemps/FormCreateUpdate";
 import { useTranslation } from "react-i18next";
@@ -9,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../_redux/features/periode_slice";
 import { RootState } from "../../_redux/store";
 import { getPeriodesByNiveau } from "../../api/api_periode";
+import { config } from "../../config";
 
 
 
@@ -26,11 +26,13 @@ const EmploiDeTemp = () => {
     // Récupérer les données de l'état Redux
     const periodes = useSelector((state: RootState) => state.periodeSlice.data.periodes);
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     // Récupérer le premier niveau du premier cycle
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-
+    const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const roles = config.roles;
 
     useEffect(() => {
         const fetchPeriodes = async () => {
@@ -38,11 +40,16 @@ const EmploiDeTemp = () => {
             try {
                 // Initialisation de currentCycleId et currentNiveauId
                 const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
-                const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
-
+                let currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
+                
+                if(roles.delegue === currentUser.role || roles.etudiant === currentUser.role){
+                    const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
+                    currentNiveauId=currentNiveau?._id;
+                }
+            
 
                 if (currentNiveauId) {
-                    const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: 1 });
+                    const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: currentSemester });
                     dispatch(setPeriodes(fetchedPeriodes));
                 }
                 dispatch(setErrorPagePeriode(null)); // Réinitialiser les erreurs s'il y en a

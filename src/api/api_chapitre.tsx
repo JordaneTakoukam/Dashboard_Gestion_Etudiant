@@ -83,3 +83,41 @@ export async function getProgressionGlobalEnseignants(): Promise<number> {
         throw error;
     }
 }
+
+export async function getProgressionGlobalEnseignantsNiveau(niveauId: string): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getProgressionGlobalEnseignantsNiveau/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const progress: number = response.data.data;
+        return parseFloat(progress.toFixed(2));
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function getProgressionGlobalEnseignant(enseignantId: string): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getProgressionGlobalEnseignant/${enseignantId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const progress: number = response.data.data;
+        return parseFloat(progress.toFixed(2));
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}

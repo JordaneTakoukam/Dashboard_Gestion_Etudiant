@@ -7,19 +7,27 @@ import { CardEvenement } from '../../components/CardDashboard/CardEvenement.tsx'
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../_redux/store.tsx';
-import { getProgressionGlobalEnseignants } from '../../api/api_chapitre.tsx';
+import { getProgressionGlobalEnseignants, getProgressionGlobalEnseignantsNiveau } from '../../api/api_chapitre.tsx';
 import { getFirstTenEventsOfYear } from '../../api/api_evenement.tsx';
 import { apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx';
 import { apiGetTotalEtudiantByYear } from '../../api/other_users/api_etudiant.tsx';
+import { getPeriodesAVenirByNiveau } from '../../api/api_periode.tsx';
+
 
 
 const DashBoardStudent = () => {
     const {t}=useTranslation();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const [totalEtudiant, setTotalEtudiant] = useState<number>(0);
     const [totalEnseignant, setTotalEnseignant] = useState<number>(0);
     const [evenements, setEvenements] = useState<EvenementType[]>([]);
+    const [periodes, setPeriodes] = useState<PeriodeType[]>([]);
     const [progression, setProgression] = useState<number>(0);
+    const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
+    const currentNiveauId=currentNiveau?._id;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,23 +41,31 @@ const DashBoardStudent = () => {
                 if (totalEnseignants !== null) {
                     setTotalEnseignant(totalEnseignants);
                 }
-
-                const progressionGlobal = await getProgressionGlobalEnseignants();
-                if (progressionGlobal !== null) {
-                    setProgression(progressionGlobal);
+                if(currentNiveauId){
+                    const progressionGlobal = await getProgressionGlobalEnseignantsNiveau(currentNiveauId);
+                    if (progressionGlobal !== null) {
+                        setProgression(progressionGlobal);
+                    }
                 }
 
                 const eventsOfYear = await getFirstTenEventsOfYear({ annee: currentYear });
                 if (eventsOfYear !== null && eventsOfYear.evenements) {
                     setEvenements(eventsOfYear.evenements);
                 }
+                if(currentNiveauId){                    
+                    const periodeBecome = await getPeriodesAVenirByNiveau({ niveauId: currentNiveauId, annee:currentYear, semestre:currentSemester });
+                    if (periodeBecome !== null && periodeBecome.periodes) {
+                        setPeriodes(periodeBecome.periodes);
+                    }
+                }
+                
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
-    }, [currentYear]);
+    }, [currentYear, currentNiveauId, t]);
     return (
         <>
             <Breadcrumb pageName={t('menu.tableau_de_bord')} isDashboard={true} />
@@ -58,13 +74,13 @@ const DashBoardStudent = () => {
                 {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5"> */}
                 <div className="flex flex-col gap-y-3">
                     <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={'22H'} id={1} />
-                    <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={40} />
+                    <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression} />
                     <CardAlertRecente alertList={[]} />
 
                 </div>
 
                 {/*  */}
-                <CardCourProgrammer  listCourProgrammer={[]}/>
+                <CardCourProgrammer  listCourProgrammer={periodes}/>
                 <CardEvenement listEvenement={evenements} />
 
 

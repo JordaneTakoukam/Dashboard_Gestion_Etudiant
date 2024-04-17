@@ -3,6 +3,7 @@
     import { AiOutlineClockCircle } from "react-icons/ai";
     import { CurrentYearDate } from "./_CommonYear";
     import ProgressBar from "@ramonak/react-progress-bar";
+import LoadingTable from "../Tables/common/LoadingTable";
 
 
     interface CardDashboardProps {
@@ -16,6 +17,8 @@
 
 
     const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: CardDashboardProps) => {
+        const pageIsLoading=!progressionValue;
+        const pageValueIsLoading=!value;
         return (
             <div className={`
             
@@ -53,7 +56,8 @@
                 <div className='flex justify-center'>
                     {
                         progressionValue == null ?
-                            <h4 className={`text-[22px] font-bold ml-1 pb-[50px] lg:pb-[40px] `}>
+                        pageValueIsLoading ?
+                            <LoadingTable />:<h4 className={`text-[22px] font-bold ml-1 pb-[50px] lg:pb-[40px] `}>
                                 {value}
                             </h4> :
                             <div className="w-full mt-2">

@@ -11,14 +11,12 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants";
-import { Etudiant } from "../../../pages/Admin/ListeEtudiants";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 
-export function nbTotal(data: Etudiant | Enseignant, semestre:number) {
+export function nbTotal(data: EtudiantType | EnseignantType, semestre: number) {
     // Filtrer les abscences pour le semestre spécifié
-    const abscencesSemestre = data.abscences.filter(abscence => abscence.semestre === semestre);
+    const abscencesSemestre = data.absences.filter(absence => absence.semestre === semestre);
 
     // Initialiser le nombre total d'heures d'abscence
     let totalHeuresAbscence = 0;
@@ -48,8 +46,8 @@ interface TableProps {
     onEdit: (user: Etudiant | Enseignant | null) => void;
 }
 
-const Table = ({ data, onEdit}:TableProps) => {
-    const {t}=useTranslation();
+const Table = ({ data, onEdit }: TableProps) => {
+    const { t } = useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -64,7 +62,7 @@ const Table = ({ data, onEdit}:TableProps) => {
     const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
     const [filtreSection, setFiltreSemestre] = useState("");
     const [formatToDownload, setFormatToDownload] = useState("");
-  
+
 
     const handleAnneeSelect = (selected: String | undefined) => {
         // setFiltreAnnee(selected);
@@ -88,7 +86,7 @@ const Table = ({ data, onEdit}:TableProps) => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data.abscences.slice(indexOfFirstItem, indexOfLastItem);
-    
+
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -100,7 +98,7 @@ const Table = ({ data, onEdit}:TableProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.signaler_absence')}
-                    onClick={() => {onEdit(data); dispatch(setShowModal()) }}
+                    onClick={() => { onEdit(data); dispatch(setShowModal()) }}
                 />
                 <h5>{t('label.total_heure_absence')} : {nbTotal(data, 1)} {t('label.heure')}(s)</h5>
                 {/* <InputSearch hintText="Rechercher une matière" onSubmit={() => { }} /> */}
@@ -120,14 +118,14 @@ const Table = ({ data, onEdit}:TableProps) => {
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<String>
                                 title={t('label.semestre')}
-                                items={["1","2"]}
+                                items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleSemestreSelect}
                             />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
@@ -144,19 +142,19 @@ const Table = ({ data, onEdit}:TableProps) => {
                                 title={t('label.annee')}
                                 items={['2023-2024', '2022-2023', '2021-2022']}
                                 defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<String>
                                 title={t('label.semestre')}
-                                items={["1","2"]}
+                                items={["1", "2"]}
                                 defaultValue={"1"} // ou spécifie une valeur par défaut
-                                
+
                                 onSelect={handleSemestreSelect}
                             />
                             {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} />
                             <CustomDropDown title="Semestre" items={['1', '2']} defaultValue="1" onSelect={handleSemestreSelect} /> */}
-                            
+
                         </div>
                     </div>
                 </div>
@@ -166,7 +164,7 @@ const Table = ({ data, onEdit}:TableProps) => {
 
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
-                    {nbTotal(data, 1)>0? <table className="w-full table-auto">
+                    {nbTotal(data, 1) > 0 ? <table className="w-full table-auto">
                         {/* en tete du tableau */}
                         {
                             pageIsLoading ?
@@ -181,12 +179,12 @@ const Table = ({ data, onEdit}:TableProps) => {
                         {
                             !pageIsLoading && <BodyTable data={data.abscences} />
                         }
-                    </table>:<h1>{t('label.aucune_absence')}</h1>}
+                    </table> : <h1>{t('label.aucune_absence')}</h1>}
                 </div>
 
                 {/* Pagination */}
 
-                {nbTotal(data, 1)>0?<h1>Pagination ici</h1>:""}
+                {nbTotal(data, 1) > 0 ? <h1>Pagination ici</h1> : ""}
 
             </div>
 

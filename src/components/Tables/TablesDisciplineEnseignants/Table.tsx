@@ -1,14 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
-import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";

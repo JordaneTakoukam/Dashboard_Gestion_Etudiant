@@ -33,6 +33,7 @@ const ListeDesEnseignants = () => {
             dispatch(setEnseignantsLoading(true));
             const fetchedEnseignants = await apiGetEnseignantsWithPagination({ page: 1 });
             if (fetchedEnseignants) {
+                dispatch(setErrorPageEnseignant(null));
                 dispatch(setEnseignant(fetchedEnseignants));
             } else {
                 dispatch(setErrorPageEnseignant(t('message.erreur')));
@@ -55,7 +56,7 @@ const ListeDesEnseignants = () => {
 
 
     const handleRefresh = async () => {
-        fetchEnseignants();
+        await fetchEnseignants();
     };
 
     const handleCreate = () => {

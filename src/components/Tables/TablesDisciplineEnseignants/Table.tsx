@@ -9,6 +9,7 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import Pagination from "../../Pagination/Pagination";
 
 interface TableDisciplineProps {
     data: EnseignantType[];
@@ -40,7 +41,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         }
     };
 
- 
+
     const handleSemestreSelect = (selected: String | undefined) => {
         // setFiltreSemestre(selected);
         console.log(selected);
@@ -140,8 +141,18 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
 
+                /> */}
             </div>
 
             {/* bouton downlod Download */}

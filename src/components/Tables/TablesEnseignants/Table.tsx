@@ -11,16 +11,12 @@ import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
-import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading, setEnseignantsLoadingOnTable } from "../../../_redux/features/enseignant_slice";
+import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading, setEnseignantsLoadingOnTable, setSelectedEnseignant, resetSelectedEnseignant } from "../../../_redux/features/enseignant_slice";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
 import { apiGetEnseignants, apiGetEnseignantsWithPagination } from "../../../api/other_users/api_enseignant";
-import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import BoutonTextMobile from "../../ui/BoutonTextMobile";
-import { SectionRefresh } from "../../ui/SectionRefresh";
 import Bouton from "../../ui/Bouton";
-import LoadingTable from "../common/LoadingTable";
 import LoadingOnTable from "../common/LoadingOnTable";
 
 interface TableEnseignantProps {
@@ -44,10 +40,13 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
     const fonctions = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
-    const [grade, setGrade] = useState<CommonSettingProps>();
-    const [categorie, setCatgeorie] = useState<CommonSettingProps>();
-    const [service, setService] = useState<CommonSettingProps>();
-    const [fonction, setFonction] = useState<CommonSettingProps>();
+
+    // state save
+    const selectSave = useSelector((state: RootState) => state.enseignantSlice.selected);
+    const [grade, setGrade] = useState<CommonSettingProps | undefined>(selectSave.grade);
+    const [categorie, setCatgeorie] = useState<CommonSettingProps | undefined>(selectSave.categorie);
+    const [service, setService] = useState<CommonSettingProps | undefined>(selectSave.service);
+    const [fonction, setFonction] = useState<CommonSettingProps | undefined>(selectSave.fonction);
 
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -92,7 +91,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const etuds = await fetchAllEnseignants().then((enseignants) => {
+        await fetchAllEnseignants().then((enseignants) => {
             let title = "liste_des_enseignants_"
             if (lang !== 'fr') {
                 title = "subjects_list_"
@@ -148,6 +147,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const handleGradeSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
             setGrade(selected);
+            dispatch(setSelectedEnseignant({ key: "grade", value: selected }))
             setCatgeorie(undefined);
             setService(undefined);
             setFonction(undefined);
@@ -158,6 +158,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         if (selected?._id) {
             setGrade(undefined);
             setCatgeorie(selected);
+            dispatch(setSelectedEnseignant({ key: "categorie", value: selected }))
             setService(undefined);
             setFonction(undefined);
         }
@@ -168,6 +169,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             setGrade(undefined);
             setCatgeorie(undefined);
             setService(selected);
+            dispatch(setSelectedEnseignant({ key: "service", value: selected }))
+
             setFonction(undefined);
         }
     };
@@ -178,6 +181,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             setCatgeorie(undefined);
             setService(undefined);
             setFonction(selected);
+            dispatch(setSelectedEnseignant({ key: "fonction", value: selected }))
+
         }
     };
 
@@ -202,7 +207,6 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
     const count = useSelector((state: RootState) => state.enseignantSlice.data.totalItems);
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -227,14 +231,12 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.enseignantSlice.pageIsLoadingOnTable);
     useEffect(() => {
-        // if (isInitialMount) {
-        //     setIsInitialMount(false);
-        //     return;
-        // }
+        if (isInitialMount) {
+            setIsInitialMount(false);
+            return;
+        }
 
         const fetchEnseignants = async () => {
-            console.log('is fetching ...');
-
             dispatch(setEnseignantsLoadingOnTable(true)); // Définissez le loading à true avant le chargement
             try {
                 const emptyEnseignants: EnseignantListGetType = {
@@ -292,6 +294,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         setCatgeorie(undefined);
         setService(undefined);
         setFonction(undefined);
+        dispatch(resetSelectedEnseignant(["grade", "categorie", "fonction", "service"]))
     };
 
     return (

@@ -21,7 +21,7 @@ const DisciplineDesEnseignants = () => {
 
     const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantSlice);
 
-    const [selectedEnseignant, setSelectedEnseignant] = useState<EtudiantType | EnseignantType | null>(null);
+    const [selectedEnseignant, setSelectedEnseignant] = useState<EnseignantType | null>(null);
     const [isHourRemove, setHourRemove] = useState(false);
     const handleEditHourEnseignant = (enseignant: EnseignantType, isHourRemove: boolean) => {
         console.log("handleEditHour");

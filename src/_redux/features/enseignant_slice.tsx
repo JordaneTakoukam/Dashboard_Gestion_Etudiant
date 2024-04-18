@@ -12,6 +12,13 @@ const initialState: EnseignantInitialData = {
     },
     pageIsLoading: false,
     pageError: null,
+    pageIsLoadingOnTable: false,
+    selected: {
+        grade: undefined,
+        categorie: undefined,
+        service: undefined,
+        fonction: undefined,
+    }
 };
 
 // Création du slice
@@ -21,6 +28,9 @@ const enseignantSlice = createSlice({
     reducers: {
         setEnseignantsLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
+        },
+        setEnseignantsLoadingOnTable(state, action: PayloadAction<boolean>) {
+            state.pageIsLoadingOnTable = action.payload;
         },
         setErrorPageEnseignant(state, action: PayloadAction<string | null>) {
             state.pageError = action.payload;
@@ -44,6 +54,21 @@ const enseignantSlice = createSlice({
             const { id } = action.payload;
             state.data.enseignants = state.data.enseignants.filter(e => e._id !== id);
         },
+
+        // ,odifier les valeurs selectionner sur le dropdown
+
+        setSelectedEnseignant(state, action: PayloadAction<{ key: keyof EnseignantInitialData["selected"]; value: CommonSettingProps }>) {
+            const { key, value } = action.payload;
+            state.selected[key] = value;
+        },
+
+        resetSelectedEnseignant(state, action: PayloadAction<(keyof EnseignantInitialData["selected"])[]>) {
+            for (const prop of action.payload) {
+                state.selected[prop] = undefined;
+            }
+        },
+
+
     },
 });
 
@@ -54,7 +79,11 @@ export const {
     setEnseignant,
     createEnseignant,
     updateEnseignant,
-    deleteEnseignant
+    deleteEnseignant,
+    setEnseignantsLoadingOnTable,
+    setSelectedEnseignant,
+    resetSelectedEnseignant,
+
 } = enseignantSlice.actions;
 
 // Reducer exporté

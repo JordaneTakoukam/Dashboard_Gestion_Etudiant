@@ -35,9 +35,9 @@ interface EnseignantCreateType {
     niveaux: InscriptionType[];
 }
 
-interface InscriptionType{
-    niveau:string,
-    annee:number
+interface InscriptionType {
+    niveau: string,
+    annee: number
 }
 
 
@@ -51,6 +51,13 @@ interface EnseignantInitialData {
     };
     pageIsLoading: boolean;
     pageError: string | null;
+    pageIsLoadingOnTable: boolean,
+    selected: {
+        grade: CommonSettingProps | undefined,
+        categorie: CommonSettingProps | undefined,
+        service: CommonSettingProps | undefined,
+        fonction: CommonSettingProps | undefined,
+    }
 }
 
 interface CreateEnseignantPayload {

@@ -8,47 +8,42 @@ import { apiGetEnseignantsWithPagination } from "../../api/other_users/api_ensei
 import Table from "../../components/Tables/TablesEnseignants/Table";
 import ModalCreateEnseignant from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
 import ModalDeleteEnseignant from "../../components/Modals/ModalEnseignant/FormDelete";
+import { setShowModal } from "../../_redux/features/setting";
+import { SectionRefresh } from "../../components/ui/SectionRefresh";
+import { PageNoData } from "../../components/_Global/PageNoData";
+import { PageErreur } from "../../components/_Global/PageErreur";
+import LoadingTable from "../../components/Tables/common/LoadingTable";
 
 
 
 const ListeDesEnseignants = () => {
-    const {t}=useTranslation();
+
+    const { t } = useTranslation();
     const dispatch = useDispatch();
+
+    const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantSlice);
     const [selectedEnseignant, setSelectedEnseignant] = useState<EnseignantType | null>(null);
-    
+
+
     // Utilisez useSelector pour accéder à l'état du reducer
-    const { data: { enseignants } } = useSelector((state: RootState) => state.enseignantSlice);
 
 
-    useEffect(() => {
-        const fetchEnseignants = async () => {
-            dispatch(setEnseignantsLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                // Initialisation de currentCycleId et currentNiveauId
-               
-                const emptyEnseignants : EnseignantListGetType={
-                    enseignants: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
-                }
-                const fetchedEnseignants = await apiGetEnseignantsWithPagination({page:1});
-                if (fetchedEnseignants) { // Vérifiez si fetchedEnseignants n'est pas faux, vide ou indéfini
-                    dispatch(setEnseignant(fetchedEnseignants));
-                    console.log(enseignants);
-                } else {
-                    dispatch(setEnseignant(emptyEnseignants));
-                }
-            } catch (error) {
+    const fetchEnseignants = async () => {
+        try {
+            dispatch(setEnseignantsLoading(true));
+            const fetchedEnseignants = await apiGetEnseignantsWithPagination({ page: 1 });
+            if (fetchedEnseignants) {
+                dispatch(setEnseignant(fetchedEnseignants));
+            } else {
                 dispatch(setErrorPageEnseignant(t('message.erreur')));
-            } finally {
-                dispatch(setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
             }
-        };
+        } catch (error) {
+            dispatch(setErrorPageEnseignant(t('message.erreur')));
+        } finally {
+            dispatch(setEnseignantsLoading(false));
+        }
+    };
 
-        fetchEnseignants();
-    }, [dispatch, t]);
     const handleEditEnseignant = (enseignant: EnseignantType) => {
         setSelectedEnseignant(enseignant);
     }
@@ -57,16 +52,57 @@ const ListeDesEnseignants = () => {
     const handleAddEnseignant = () => {
         setSelectedEnseignant(null);
     }
-    
+
+
+    const handleRefresh = async () => {
+        fetchEnseignants();
+    };
+
+    const handleCreate = () => {
+        setSelectedEnseignant(null);
+        dispatch(setShowModal())
+    }
+
+    useEffect(() => {
+        if (enseignants.length === 0) {
+            fetchEnseignants();
+        }
+    }, [dispatch]);
+
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.liste_enseignant')} />
-            
-            <Table data={enseignants} onCreate={handleAddEnseignant} onEdit={handleEditEnseignant} />
+
+            {
+                pageIsLoading === true ?
+                    <LoadingTable /> :
+                    pageError ?
+                        <PageErreur onRefresh={handleRefresh} /> :
+                        enseignants.length === 0 ?
+                            <PageNoData
+                                titrePage={t('aucun.enseignant')}
+                                titreBouton={t('ajouter_votre_premier.enseignant')}
+                                showModalCreate={handleCreate}
+                                refreshFunction={handleRefresh}
+                            />
+                            :
+                            <div>
+                                <SectionRefresh refreshFunction={handleRefresh} />
+
+                                <Table
+                                    data={enseignants}
+                                    onCreate={handleAddEnseignant}
+                                    onEdit={handleEditEnseignant} />
+
+
+                            </div>
+
+            }
 
             {/* Boite de dialogue */}
-            <ModalCreateEnseignant enseignant={selectedEnseignant} /> 
-            <ModalDeleteEnseignant enseignant={selectedEnseignant}/>
+            <ModalCreateEnseignant enseignant={selectedEnseignant} />
+            <ModalDeleteEnseignant enseignant={selectedEnseignant} />
         </>
     );
 };

@@ -166,6 +166,7 @@ function App() {
     const fetchSettingsDataIfAuth = async () => {
       if (isAuth.status) {
         await fetchSettingsData();
+        
       } else {
       }
     };

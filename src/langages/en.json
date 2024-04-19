@@ -73,8 +73,8 @@
     "total_enseignants": "Total number of teachers",
     "absences_etudiants": "Total student absences",
     "absences_enseignants": "Total teacher absences",
-    "nombre_etudiant_niveau": "Number of students per level",
-    "nombre_absence_niveau": "Number of absence hours per level",
+    "nombre_etudiant_section": "Number of students per section",
+    "nombre_absence_section": "Number of absence hours per section",
     "progression": "Overall teachers' progression",
     "evenements_titre": "Upcoming events",
     "evenements_aucun": "No events at the moment",
@@ -87,6 +87,7 @@
   },
   "label": {
     "ajouter": "Add",
+    "roles":"Roles",
     "matricule": "Registration N°",
     "nom": "First Name",
     "prenom": "Last Name",
@@ -329,6 +330,7 @@
     "periode_enseignement":"a teaching period"
   },
   "form_update": {
+    "roles":"Change student role",
     "absence": "Add an absence : ",
     "signaler": "Report my abscence",
     "enregistrer": "Update Information ",

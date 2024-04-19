@@ -9,7 +9,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_redux/features/progession_matiere_slice";
-import { getMatieresByNiveau } from "../../../api/api_matiere";
+import { getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
 import * as XLSX from 'xlsx';
@@ -286,9 +286,17 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
             if (sections.length > 0 && cycles.length > 0 && niveaux.length > 0) {
                 dispatch(setMatiereLoading(true)); // Définir le chargement à true avant de récupérer les données
                 try {
+                    
                    
                     if (selectNiveauId) {
-                        const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
+                        
+                        let fetchedMatieres = null
+                        if(currentUser && currentUser.role===roles.enseignant){
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id });
+                        }else{
+                            fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
+                        }
+
                         if(fetchedMatieres){
                             dispatch(setMatieres(fetchedMatieres));    
                         }else{

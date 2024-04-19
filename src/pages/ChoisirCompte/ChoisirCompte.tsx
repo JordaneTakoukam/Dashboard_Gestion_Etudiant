@@ -9,7 +9,6 @@ import { setUser, updateUser } from '../../_redux/features/user_slice';
 import createToast from '../../hooks/toastify';
 import { signInApi } from '../../api/auth/api_signin';
 import { reJwtApi } from '../../api/auth/api_re_jwt';
-import { UserState } from '../../_types/user_type';
 import LoaderCircular from '../../components/Loader/LoaderCircular';
 import Loading from '../../components/ui/loading';
 import LanguageToogle from '../../components/ui/language_toggle';

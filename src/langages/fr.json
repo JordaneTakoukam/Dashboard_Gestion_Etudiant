@@ -71,8 +71,8 @@
     "total_enseignants": "Nombre total d'enseignants",
     "absences_etudiants": "Absences total des étudiants",
     "absences_enseignants": "Absences total des enseignants",
-    "nombre_etudiant_niveau": "Nombre d'étudiants par niveau",
-    "nombre_absence_niveau": "Nombre d'heures d'absence par niveau",
+    "nombre_etudiant_section": "Nombre d'étudiants par section",
+    "nombre_absence_section": "Nombre d'heures d'absence par section",
     "progression": "Progression globale des enseignants",
     "evenements_titre": "Evènements à venir",
     "evenements_aucun": "Aucun événement pour le moment",
@@ -85,6 +85,7 @@
   },
   "label": {
     "ajouter": "Ajouter",
+    "roles":"Roles",
     "matricule": "Matricule",
     "nom": "Nom",
     "prenom": "Prénom",
@@ -327,6 +328,7 @@
     "periode_enseignement":"une période d'enseignement"
   },
   "form_update": {
+    "roles":"Modifier le rôle de l'étudiant",
     "absence": "Ajouter une absence : ",
     "signaler": "Signaler mon abscence",
     "enregistrer": "Mettre à jour les informations ",

@@ -40,6 +40,14 @@ const etudiantSlice = createSlice({
                 state.data.etudiants[index] = { ...state.data.etudiants[index], ...etudiantData };
             }
         },
+
+        updateRolesEtudiant(state, action: PayloadAction<UpdateRolesPayload>) {
+            const { id, roles } = action.payload;
+            const index = state.data.etudiants.findIndex(e => e._id === id);
+            if (index !== -1) {
+                state.data.etudiants[index].roles=roles
+            }
+        },
         deleteEtudiant(state, action: PayloadAction<DeleteEtudiantPayload>) {
             const { id } = action.payload;
             state.data.etudiants = state.data.etudiants.filter(e => e._id !== id);
@@ -54,7 +62,8 @@ export const {
     setEtudiant,
     createEtudiant,
     updateEtudiant,
-    deleteEtudiant
+    deleteEtudiant,
+    updateRolesEtudiant
 } = etudiantSlice.actions;
 
 // Reducer exporté

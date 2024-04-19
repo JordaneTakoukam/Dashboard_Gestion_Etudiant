@@ -23,10 +23,11 @@ import { extractYear, formatYear, generateYearRange } from "../../../fonctions/f
 interface TableEtudiantProps {
     data: EtudiantType[];
     onCreate:()=>void;
+    onAddRole:(etudiant : EtudiantType)=>void;
     onEdit: (etudiant : EtudiantType) => void;
 }
 
-const Table = ({ data, onCreate, onEdit}: TableEtudiantProps) => {
+const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -409,7 +410,7 @@ const Table = ({ data, onCreate, onEdit}: TableEtudiantProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTableEtudiant data={filteredData} onEdit={onEdit} />
+                            !pageIsLoading && <BodyTableEtudiant data={filteredData} onEdit={onEdit} onAddRole={onAddRole}/>
                         }
 
 

@@ -42,6 +42,8 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const [niveau, setNiveau] = useState<NiveauProps>();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const userNiveaux = useSelector((state: RootState) => state.user.niveaux);
+
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
             onEdit(periode);
@@ -234,6 +236,8 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             setSelectedSemestre(selected);
         }
     };
+
+    
     const [formatToDownload, setFormatToDownload] = useState("");
     const handleDownloadSelect = (selected: string) => {
         setFormatToDownload(selected);
@@ -299,8 +303,23 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     }, [sections, selectSectionId]);
 
    
-
+    const filterNiveauxForUser = () => {
+        const filteredNiveaux = niveaux.filter(niveau => {
+            for (const prop in userNiveaux) {
+                if (userNiveaux.hasOwnProperty(prop)) {
+                    if (userNiveaux[prop].niveau === niveau._id) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+        console.log(userNiveaux);
+    };
+    
+    
     useEffect(() => {
+        filterNiveauxForUser();
         if (filteredCycle && filteredCycle.length > 0) {
             if(!selectCycleId){
                 filterNiveauxByCycle(filteredCycle[0]?._id);

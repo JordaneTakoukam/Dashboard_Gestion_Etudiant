@@ -80,6 +80,54 @@ export async function apiGetTotalEtudiantByYear({annee}: {annee:number}): Promis
         throw error;
     }
 }
+
+export async function apiGetTotalEtudiantByNiveaux({niveaux, annee}: {niveaux:InscriptionType[], annee:number}): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getTotalEtudiantsByNiveau`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    niveaux:niveaux,
+                    annee:annee
+                },
+            },
+        );
+        const totalEtudiant = response.data.data;
+        return totalEtudiant.totalEtudiant;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+
+export async function apiGetNbEtudiantsParSection({ annee }: { annee: number }): Promise<{ [section: string]: number }> {
+    try {
+        const response: AxiosResponse<{ data: { [section: string]: number } }> = await axios.get(
+            `${api}/getNbEtudiantsParSection`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee: annee
+                },
+            },
+        );
+        const totalEtudiant = response.data.data;
+        console.log(totalEtudiant)
+        return totalEtudiant;
+    } catch (error) {
+        console.error('Error getting total students per section:', error);
+        throw error;
+    }
+}
+
 // create
 export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
     try {
@@ -104,11 +152,12 @@ export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,ma
 //
 //
 // update 
-export async function apiUpdateEtudiant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
+export async function apiUpdateEtudiant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,grade,categorie,fonction,service,commune,roles}: EtudiantType): Promise<ReponseApiPros> {
+    
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,grade,categorie,fonction,service,commune },
+            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,grade,categorie,fonction,service,commune,roles },
             {
                 headers: {
                     'Content-Type': 'application/json',

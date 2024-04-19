@@ -9,6 +9,7 @@ import { RootState } from "../../_redux/store";
 import createToast from "../../hooks/toastify";
 import { apiGetEtudiantsWithPagination } from "../../api/other_users/api_etudiant";
 import ModalCreateEtudiant from "../../components/Modals/ModalEtudiant/DialogCreateEtudiant";
+import ModalRole from "../../components/Modals/ModalEtudiant/ModalRole";
 
 
 
@@ -65,14 +66,19 @@ const ListeDesEtudiants = () => {
     const handleAddEtudiant = () => {
         setSelectedEtudiant(null);
     }
+
+    const handleAddRole = (etudiant: EtudiantType) => {
+        setSelectedEtudiant(etudiant);
+    };
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.liste_etudiant')} />
-            <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onEdit={handleEditEtudiant} />
+            <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
 
             {/* Boite de dialogue */}
             <ModalCreateEtudiant etudiant={selectedEtudiant} /> 
             <ModalDeleteEtudiant etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
+            <ModalRole etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
         </>
     );
 };

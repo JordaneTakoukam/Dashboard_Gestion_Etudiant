@@ -9,6 +9,7 @@ interface SettingState {
         update: boolean,
         delete: boolean,
         open: boolean,
+        addRole:boolean,
         openChapitre: boolean,
         toDoSondage: boolean,
     };
@@ -23,6 +24,7 @@ const initialState: SettingState = {
         update: false,
         delete: false,
         open: false,
+        addRole:false,
         openChapitre: false,
         toDoSondage: false,
     },
@@ -52,6 +54,10 @@ export const settingSlice = createSlice({
 
         setShowModal: (state) => {
             state.showModal.open = !state.showModal.open;
+        },
+
+        setShowRoleModal: (state) => {
+            state.showModal.addRole = !state.showModal.addRole;
         },
 
         setShowModalToDOSondage: (state) => {
@@ -84,7 +90,7 @@ export const {
     setShowModalDeleteCustom,
     setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
-    , setSaveDeviceType,
+    , setSaveDeviceType,setShowRoleModal,
     setCurrentIndexUserRole,
 } = settingSlice.actions;
 

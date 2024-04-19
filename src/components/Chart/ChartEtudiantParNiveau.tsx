@@ -4,9 +4,6 @@ import ReactApexChart from 'react-apexcharts';
 import LoadingTable from '../Tables/common/LoadingTable';
 import { useTranslation } from 'react-i18next';
 
-
-
-
 interface ChartProps {
     series: {
         name: string;
@@ -14,14 +11,17 @@ interface ChartProps {
     }[];
 }
 
+export interface DataPair {
+    name: string;
+    value: number;
+}
 
-
-export const ChartEtudiantNiveau: React.FC = () => {
-    const pageIsLoading = false;
-    const listNiveau = ['1ère année', '2ème année', '3ème année', '4ème année', '5ème année'];
-    const listNbreEtudiant = [30, 35, 20, 25, 30];
+export const ChartEtudiantSection: React.FC<{ data: DataPair[] }> = ({ data }) => {
     const { t } = useTranslation();
 
+    const [state, setState] = useState<ChartProps>({
+        series: [{ name: '', data: [] }]
+    });
 
     const options: ApexOptions = {
         colors: ['#FF7F00'], // Remplacez la couleur par orange
@@ -37,7 +37,6 @@ export const ChartEtudiantNiveau: React.FC = () => {
                 enabled: true,
             },
         },
-
         responsive: [
             {
                 breakpoint: 1536,
@@ -63,9 +62,8 @@ export const ChartEtudiantNiveau: React.FC = () => {
         dataLabels: {
             enabled: false,
         },
-
         xaxis: {
-            categories: listNiveau,
+            categories: data.map(item => item.name),
         },
         legend: {
             position: 'top',
@@ -73,7 +71,6 @@ export const ChartEtudiantNiveau: React.FC = () => {
             fontFamily: 'Satoshi',
             fontWeight: 500,
             fontSize: '12px',
-
             markers: {
                 radius: 99,
             },
@@ -83,51 +80,35 @@ export const ChartEtudiantNiveau: React.FC = () => {
         },
     };
 
-
-
-
     useEffect(() => {
-        setState({ series: [{ name: "Nbre. d'étudiants", data: listNbreEtudiant }] });
-    }, []);
-
-
-    const [state, setState] = useState<ChartProps>({
-        series: [{ name: '', data: [] }]
-    });
+        setState({ series: [{ name: "Nbre. d'étudiants", data: data.map(item => item.value) }] });
+    }, [data]);
 
     return (
-
-
         <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-3">
             <div className="mb-4 justify-between gap-4 sm:flex">
                 <div>
                     <h4 className="text-md xl:text-[18px]  font-semibold text-black dark:text-white">
-                        {t('tableau_de_bord.nombre_etudiant_niveau')}
+                        {t('tableau_de_bord.nombre_etudiant_section')}
                     </h4>
                 </div>
-
             </div>
-
             <div>
                 <div id="chartTwo" className="-ml-5 -mb-9">
                     {
-                        !pageIsLoading ?
-
+                        state.series[0].data.length > 0 ? (
                             <ReactApexChart
                                 options={options}
                                 series={state.series}
                                 type="bar"
                                 height={350}
-                            /> : <LoadingTable />
+                            />
+                        ) : (
+                            <LoadingTable />
+                        )
                     }
-
-
                 </div>
             </div>
         </div>
     );
 };
-
-
-
-

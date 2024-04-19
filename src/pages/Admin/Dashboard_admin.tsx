@@ -1,13 +1,13 @@
 import Breadcrumb from "../../components/Breadcrumb";
 import CardDashboard from "../../components/CardDashboard/CardDashboard";
 import { CardEvenement } from "../../components/CardDashboard/CardEvenement";
-import { ChartEtudiantNiveau } from "../../components/Chart/ChartEtudiantParNiveau";
+import { ChartEtudiantSection, DataPair } from "../../components/Chart/ChartEtudiantParNiveau";
 import { ChartNombreEtudiant } from "../../components/Chart/ChartAbscenceEtudiant";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { useEffect, useState } from "react";
-import { apiGetTotalEtudiantByYear } from "../../api/other_users/api_etudiant";
+import { apiGetNbEtudiantsParSection, apiGetTotalEtudiantByYear } from "../../api/other_users/api_etudiant";
 import { apiGetTotalEnseignants } from "../../api/other_users/api_enseignant";
 import { getFirstTenEventsOfYear } from "../../api/api_evenement";
 import { getProgressionGlobalEnseignants } from "../../api/api_chapitre";
@@ -15,11 +15,14 @@ import { getProgressionGlobalEnseignants } from "../../api/api_chapitre";
 const DashBoardAmin = () => {
     const style = 'text-[13px] xl:text-[14px]';
     const { t } = useTranslation();
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const sections:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const [totalEtudiant, setTotalEtudiant] = useState<number>(0);
     const [totalEnseignant, setTotalEnseignant] = useState<number>(0);
     const [evenements, setEvenements] = useState<EvenementType[]>([]);
     const [progression, setProgression] = useState<number>(0);
+    const [nbEtudiantParSection, setNbEtudiantParSection] = useState<DataPair[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,6 +45,17 @@ const DashBoardAmin = () => {
                 const eventsOfYear = await getFirstTenEventsOfYear({ annee: currentYear });
                 if (eventsOfYear !== null && eventsOfYear.evenements) {
                     setEvenements(eventsOfYear.evenements);
+                }
+
+                const nbEtudiantSection = await apiGetNbEtudiantsParSection({ annee: currentYear });
+                if (nbEtudiantSection !== null) {
+                    const formattedData: DataPair[] = Object.entries(nbEtudiantSection).map(([sectionId, count]) => {
+                        const sectionIndex = sections.findIndex(section => section._id === sectionId); // Trouver l'index de la section correspondant à l'ObjectId
+                        const sectionLabel = sectionIndex !== -1 ? lang==='fr'?sections[sectionIndex].libelleFr:sections[sectionIndex].libelleEn : 'Unknown'; // Récupérer le libellé de la section ou 'Unknown' s'il n'est pas trouvé
+                        return { name: sectionLabel, value: count };
+                    });
+                    // const formattedData: DataPair[] = Object.entries(nbEtudiantSection).map(([section, count]) => ({ name: section, value: count }));
+                    setNbEtudiantParSection(formattedData);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -69,7 +83,7 @@ const DashBoardAmin = () => {
 
             <div className="flex justify-between mt-6">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:gap-7.5 w-full mr-0 xl:mr-3">
-                    <ChartEtudiantNiveau />
+                    <ChartEtudiantSection data={nbEtudiantParSection}/>
                     <ChartNombreEtudiant />
                 </div>
 

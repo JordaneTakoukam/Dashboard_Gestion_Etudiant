@@ -7,13 +7,13 @@ import LoadingTable from "../Tables/common/LoadingTable";
 interface CardEvenementProps {
     additionalStyle?: String,
     listEvenement: EvenementType[] | undefined,
+    pageIsLoading?:boolean;
 }
 
 
-export const CardEvenement = ({ additionalStyle, listEvenement }: CardEvenementProps) => {
+export const CardEvenement = ({ additionalStyle, listEvenement, pageIsLoading }: CardEvenementProps) => {
     const { t } = useTranslation();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const pageIsLoading=listEvenement && listEvenement.length==0;
     return (
         <div className={`relative ${additionalStyle} rounded-sm border border-stroke bg-white py-6 px-5 shadow-default dark:border-strokedark dark:bg-boxdark  w-full`}>
 

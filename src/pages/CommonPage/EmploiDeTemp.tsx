@@ -46,7 +46,11 @@ const EmploiDeTemp = () => {
                     const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
                     currentNiveauId=currentNiveau?._id;
                 }
-            
+
+                if(roles.enseignant === currentUser.role){
+                    const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
+                    currentNiveauId=currentNiveau?._id;
+                }
 
                 if (currentNiveauId) {
                     const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: currentSemester });

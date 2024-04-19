@@ -10,14 +10,14 @@ import LoadingTable from "../Tables/common/LoadingTable";
         title: String,
         value?: String,
         id: Number,
+        pageIsLoading?:boolean,
         progressionValue?: number,
         additionalStyle?: String,
     }
 
 
 
-    const CardDashboard = ({ title, value, id, progressionValue, additionalStyle }: CardDashboardProps) => {
-        const pageIsLoading=!progressionValue;
+    const CardDashboard = ({ title, value, id, pageIsLoading, progressionValue, additionalStyle }: CardDashboardProps) => {
         const pageValueIsLoading=!value;
         return (
             <div className={`
@@ -56,11 +56,12 @@ import LoadingTable from "../Tables/common/LoadingTable";
                 <div className='flex justify-center'>
                     {
                         progressionValue == null ?
-                        pageValueIsLoading ?
+                        pageIsLoading ?
                             <LoadingTable />:<h4 className={`text-[22px] font-bold ml-1 pb-[50px] lg:pb-[40px] `}>
                                 {value}
                             </h4> :
-                            <div className="w-full mt-2">
+                            pageIsLoading ?
+                            <LoadingTable />:<div className="w-full mt-2">
                                 <ProgressBar completed={progressionValue}  />
 
                             </div>}

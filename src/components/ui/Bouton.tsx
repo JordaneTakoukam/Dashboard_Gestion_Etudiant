@@ -1,18 +1,21 @@
 import { IoMdAdd } from "react-icons/io";
 import { IoRefresh } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import { BiReset } from "react-icons/bi";
 
 interface BoutonProps {
     iconeSmall?: boolean,
     titreBouton?: string;
     typeRefresh?: boolean;
+    typeReset?: boolean;
+
     onClick: () => void;
     outline?: boolean; // Nouvelle prop pour activer/désactiver le style outline
     circle?: boolean; // Nouvelle prop pour activer/désactiver le style circulaire
     style?: string;
 }
 
-const Bouton = ({ iconeSmall, typeRefresh, titreBouton, onClick, outline = false, circle = false, style }: BoutonProps) => {
+const Bouton = ({ typeReset, iconeSmall, typeRefresh, titreBouton, onClick, outline = false, circle = false, style }: BoutonProps) => {
     const { t } = useTranslation();
 
     // w-[50px] h-[35px] lg:h-[41.5px]  lg:min-w-[210px]  lg:w-auto  text-[11.5px] lg:text-sm md:text-md gap-2 my-2   
@@ -29,7 +32,7 @@ const Bouton = ({ iconeSmall, typeRefresh, titreBouton, onClick, outline = false
     
     `}>
             <div className={`text-[18px] ${iconeSmall ? "md:text-[18px]" : "md:text-[22px]"} `}>
-                {typeRefresh ? <IoRefresh /> : <IoMdAdd />}
+                {typeRefresh ? <IoRefresh /> : typeReset ? <BiReset /> : <IoMdAdd />}
             </div>
             {
                 !circle && <h1 className="hidden lg:block pr-1">

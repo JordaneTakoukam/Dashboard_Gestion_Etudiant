@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../../config.js';
 
 
-const api = `${apiUrl}/user/`;
+const api = `${apiUrl}/user`;
 const token = localStorage.getItem(wstjqer);
 
 

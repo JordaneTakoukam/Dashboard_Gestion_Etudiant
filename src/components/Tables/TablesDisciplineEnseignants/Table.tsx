@@ -1,22 +1,19 @@
 import { useDispatch, useSelector } from "react-redux";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { Cycle, cycles } from "../../../pages/Admin/Cycles";
-import { Niveau, niveaux } from "../../../pages/Admin/Niveaux";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import Pagination from "../../Pagination/Pagination";
 
 interface TableDisciplineProps {
-    data: EnseignantType[];
-    onEdit: (enseignant: EnseignantType, isHourRemove: boolean) => void;
+    data: UserDiscipline[];
+    onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void;
 }
 
 
@@ -44,7 +41,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         }
     };
 
- 
+
     const handleSemestreSelect = (selected: String | undefined) => {
         // setFiltreSemestre(selected);
         console.log(selected);
@@ -132,20 +129,24 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         <HeaderTable />
-
                         <BodyTable data={data} onEdit={onEdit} />
-
-
-
-
-
                     </table>
                 </div>
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
 
+                /> */}
             </div>
 
             {/* bouton downlod Download */}

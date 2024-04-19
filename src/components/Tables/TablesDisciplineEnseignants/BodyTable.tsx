@@ -1,14 +1,12 @@
 import { useDispatch, useSelector } from "react-redux"
-import { capitalizeFirstLetter } from "../../../fonctions/fonction"
+import { capitalizeFirstLetter, nbTotalAbsences } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting"
-import { Enseignant } from "../../../pages/Admin/ListeEnseignants"
-import { nbTotal } from "../TableAbsences/Table"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 
 
-const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant: Enseignant, isHourRemove:boolean) => void }) => {
+const BodyTable = ({ data, onEdit }: { data: UserDiscipline[], onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void }) => {
 
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -24,7 +22,7 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant:
 
                 {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.matricule?item.matricule:""}</h5>
+                    <h5>{item.matricule ? item.matricule : ""}</h5>
                 </td>
 
                 {/* nom */}
@@ -34,7 +32,7 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant:
 
                 {/* prenom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.prenom?item.prenom:""}</h5>
+                    <h5>{item.prenom ? item.prenom : ""}</h5>
                 </td>
 
 
@@ -45,12 +43,12 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant:
 
                 {/* contact */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.contact?item.contact:""}</h5>
+                    <h5>{item.contact ? item.contact : ""}</h5>
                 </td>
 
                 {/* nombre d'heure d'absence */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{nbTotal(item, 1)}</h5>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{nbTotalAbsences(item.absences)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}
@@ -59,11 +57,11 @@ const BodyTable = ({ data, onEdit }: { data: Enseignant[],  onEdit: (enseignant:
                         onClickAddHour={() => {
                             onEdit(item, false);
                             dispatch(setShowModal())
-                        } }
-                        onClickRemovHour={roles.admin === userRole || roles.superAdmin === userRole ?() => {
+                        }}
+                        onClickRemovHour={roles.admin === userRole || roles.superAdmin === userRole ? () => {
                             onEdit(item, true);
                             dispatch(setShowModal())
-                        }:undefined }                                             
+                        } : undefined}
                     />
                 </td>
             </tr>

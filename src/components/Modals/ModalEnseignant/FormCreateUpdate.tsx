@@ -22,7 +22,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
     const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
-    
+
 
     const { t } = useTranslation();
 
@@ -81,10 +81,10 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             // setSection(currentSection);
             // setCycle(currentCycle);
             // setNiveau(currentNiveau);
-            setGrade(enseignant.grade ? grades.find(grade=>grade._id===enseignant.grade) : undefined);
-            setCategorie(enseignant.categorie ? categories.find(categorie=>categorie._id===enseignant.categorie) : undefined);
-            setFonction(enseignant.fonction ? fonctions.find(fonction=>fonction._id===enseignant.fonction) : undefined);
-            setService(enseignant.service ? services.find(service=>service._id===enseignant.service) : undefined);
+            setGrade(enseignant.grade ? grades.find(grade => grade._id === enseignant.grade) : undefined);
+            setCategorie(enseignant.categorie ? categories.find(categorie => categorie._id === enseignant.categorie) : undefined);
+            setFonction(enseignant.fonction ? fonctions.find(fonction => fonction._id === enseignant.fonction) : undefined);
+            setService(enseignant.service ? services.find(service => service._id === enseignant.service) : undefined);
             setRegion(currentRegion);
             setDepartement(currentDepartement);
             setCommune(currentCommune);
@@ -247,7 +247,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             setFonction(selectedFonction);
         }
     };
-    
+
     const handleGradeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedGradeLibelle = e.target.value;
         var selectedGrade = null;
@@ -407,47 +407,47 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     nom,
                     genre,
                     email,
-                    photo_profil:"",
+                    photo_profil: "",
                     contact,
                     matricule,
                     prenom,
-                    date_naiss:dateNaiss,
-                    lieu_naiss:lieuNaiss,
-                    date_entree:dateEntreeAdmin,
-                    absences:[],
-                    niveaux:[],
-                    grade:grade?._id||null,
-                    categorie:categorie?._id||null,
-                    fonction:fonction?._id||null,
-                    service:service?._id||null,
-                    commune:commune?._id||null
+                    date_naiss: dateNaiss,
+                    lieu_naiss: lieuNaiss,
+                    date_entree: dateEntreeAdmin,
+                    absences: [],
+                    niveaux: [],
+                    grade: grade?._id || null,
+                    categorie: categorie?._id || null,
+                    fonction: fonction?._id || null,
+                    service: service?._id || null,
+                    commune: commune?._id || null
                 }
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     dispatch(createEnseignant({
-                        
+
                         enseignant: {
                             _id: e.data._id,
-                            nom:e.data.nom,
-                            genre:e.data.genre,
-                            email:e.data.email,
-                            photo_profil:e.data.photo_profil,
-                            contact:e.data.contact,
-                            matricule:e.data.matricule,
-                            prenom:e.data.matricule,
-                            date_naiss:e.data.date_naiss,
-                            lieu_naiss:e.data.lieu_naiss,
-                            date_entree:e.data.date_entree,
-                            absences:e.data.absences,
-                            niveaux:e.data.niveaux,
-                            grade:e.data.grade,
-                            categorie:e.data.categorie,
-                            fonction:e.data.fonction,
-                            service:e.data.service,
-                            commune:e.data.commune
+                            nom: e.data.nom,
+                            genre: e.data.genre,
+                            email: e.data.email,
+                            photo_profil: e.data.photo_profil,
+                            contact: e.data.contact,
+                            matricule: e.data.matricule,
+                            prenom: e.data.matricule,
+                            date_naiss: e.data.date_naiss,
+                            lieu_naiss: e.data.lieu_naiss,
+                            date_entree: e.data.date_entree,
+                            absences: e.data.absences,
+                            niveaux: e.data.niveaux,
+                            grade: e.data.grade,
+                            categorie: e.data.categorie,
+                            fonction: e.data.fonction,
+                            service: e.data.service,
+                            commune: e.data.commune
                         }
-                        
+
                     }));
 
                     closeModal();
@@ -460,66 +460,66 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
             })
-            
+
         } else {
             await apiUpdateEnseignant(
                 {
-                    _id:enseignant._id,
+                    _id: enseignant._id,
                     nom,
                     genre,
                     email,
-                    photo_profil:"",
+                    photo_profil: "",
                     contact,
                     matricule,
                     prenom,
-                    date_naiss:dateNaiss,
-                    lieu_naiss:lieuNaiss,
-                    date_entree:dateEntreeAdmin,
-                    absences:[],
-                    niveaux:[],
-                    grade:grade?._id||null,
-                    categorie:categorie?._id||null,
-                    fonction:fonction?._id||null,
-                    service:service?._id||null,
-                    commune:commune?._id||null
-            }).then((e: ReponseApiPros) => {
-                if (e.success) {
-                    createToast(e.message[lang as keyof typeof e.message], '', 0);
-                    dispatch(updateEnseignant({
-                        id:e.data._id,
-                        enseignantData: {
-                            _id: e.data._id,
-                            nom:e.data.nom,
-                            genre:e.data.genre,
-                            email:e.data.email,
-                            photo_profil:e.data.photo_profil,
-                            contact:e.data.contact,
-                            matricule:e.data.matricule,
-                            prenom:e.data.prenom,
-                            date_naiss:e.data.date_naiss,
-                            lieu_naiss:e.data.lieu_naiss,
-                            date_entree:e.data.date_entree,
-                            absences:e.data.absences,
-                            niveaux:e.data.niveaux,
-                            grade:e.data.grade,
-                            categorie:e.data.categorie,
-                            fonction:e.data.fonction,
-                            service:e.data.service,
-                            commune:e.data.commune
-                        }
-                        
-                    }));
+                    date_naiss: dateNaiss,
+                    lieu_naiss: lieuNaiss,
+                    date_entree: dateEntreeAdmin,
+                    absences: [],
+                    niveaux: [],
+                    grade: grade?._id || null,
+                    categorie: categorie?._id || null,
+                    fonction: fonction?._id || null,
+                    service: service?._id || null,
+                    commune: commune?._id || null
+                }).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(updateEnseignant({
+                            id: e.data._id,
+                            enseignantData: {
+                                _id: e.data._id,
+                                nom: e.data.nom,
+                                genre: e.data.genre,
+                                email: e.data.email,
+                                photo_profil: e.data.photo_profil,
+                                contact: e.data.contact,
+                                matricule: e.data.matricule,
+                                prenom: e.data.prenom,
+                                date_naiss: e.data.date_naiss,
+                                lieu_naiss: e.data.lieu_naiss,
+                                date_entree: e.data.date_entree,
+                                absences: e.data.absences,
+                                niveaux: e.data.niveaux,
+                                grade: e.data.grade,
+                                categorie: e.data.categorie,
+                                fonction: e.data.fonction,
+                                service: e.data.service,
+                                commune: e.data.commune
+                            }
 
-                    closeModal();
+                        }));
 
-                } else {
-                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                        closeModal();
 
-                }
-            }).catch((e) => {
-                console.log(e);
-                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-            })
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
         }
     }
 
@@ -644,79 +644,79 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>} */}
                 <label>{t('label.grade')}</label>
                 <select
-                    value={grade ? (lang==='fr'?grade.libelleFr:grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
+                    value={grade ? (lang === 'fr' ? grade.libelleFr : grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
                     onChange={handleGradeChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
                     {grades.map(grade => (
-                        <option key={grade._id} value={(lang==='fr'?grade.libelleFr:grade.libelleEn)}>{(lang==='fr'?grade.libelleFr:grade.libelleEn)}</option>
+                        <option key={grade._id} value={(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}>{(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.categorie')}</label>
                 <select
-                    value={categorie ? (lang==='fr'?categorie.libelleFr:categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
+                    value={categorie ? (lang === 'fr' ? categorie.libelleFr : categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
                     onChange={handleCategorieChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
                     {categories.map(categorie => (
-                        <option key={categorie._id} value={(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}>{(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}</option>
+                        <option key={categorie._id} value={(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}>{(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.fonction')}</label>
                 <select
-                    value={fonction ? (lang==='fr'?fonction.libelleFr:fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
+                    value={fonction ? (lang === 'fr' ? fonction.libelleFr : fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
                     onChange={handleFonctionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
                     {fonctions.map(fonction => (
-                        <option key={fonction._id} value={(lang==='fr'?fonction.libelleFr:fonction.libelleEn)}>{(lang==='fr'?fonction.libelleFr:fonction.libelleEn)}</option>
+                        <option key={fonction._id} value={(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}>{(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.service')}</label>
                 <select
-                    value={service ? (lang==='fr'?service.libelleFr:service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
+                    value={service ? (lang === 'fr' ? service.libelleFr : service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
                     onChange={handleServiceChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
                     {services.map(service => (
-                        <option key={service._id} value={(lang==='fr'?service.libelleFr:service.libelleEn)}>{(lang==='fr'?service.libelleFr:service.libelleEn)}</option>
+                        <option key={service._id} value={(lang === 'fr' ? service.libelleFr : service.libelleEn)}>{(lang === 'fr' ? service.libelleFr : service.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.region')}</label>
                 <select
-                    value={region ? (lang==='fr'?region.libelleFr:region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
+                    value={region ? (lang === 'fr' ? region.libelleFr : region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
                     onChange={handleRegionChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
                     {regions.map(region => (
-                        <option key={region._id} value={(lang==='fr'?region.libelleFr:region.libelleEn)}>{(lang==='fr'?region.libelleFr:region.libelleEn)}</option>
+                        <option key={region._id} value={(lang === 'fr' ? region.libelleFr : region.libelleEn)}>{(lang === 'fr' ? region.libelleFr : region.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.departement')}</label>
                 <select
-                    value={departement ? (lang==='fr'?departement.libelleFr:departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
+                    value={departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
                     onChange={handleDepartementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
                     {filteredDepartement && filteredDepartement.map(departement => (
-                        <option key={departement._id} value={(lang==='fr'?departement.libelleFr:departement.libelleEn)}>{(lang==='fr'?departement.libelleFr:departement.libelleEn)}</option>
+                        <option key={departement._id} value={(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}>{(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.commune')}</label>
                 <select
-                    value={commune ? (lang==='fr'?commune.libelleFr:commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
+                    value={commune ? (lang === 'fr' ? commune.libelleFr : commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
                     onChange={handleCommuneChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
                     {filteredCommune && filteredCommune.map(commune => (
-                        <option key={commune._id} value={(lang==='fr'?commune.libelleFr:commune.libelleEn)}>{(lang==='fr'?commune.libelleFr:commune.libelleEn)}</option>
+                        <option key={commune._id} value={(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}>{(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}</option>
                     ))}
                 </select>
                 <label>{t('label.date_entree_admin')}</label>

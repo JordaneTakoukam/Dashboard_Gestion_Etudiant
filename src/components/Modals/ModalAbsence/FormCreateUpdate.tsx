@@ -1,29 +1,27 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal} from '../../../_redux/features/setting';
+import { setShowModal } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
-import { Enseignant } from '../../../pages/Admin/ListeEnseignants';
-import { Etudiant } from '../../../pages/Admin/ListeEtudiants';
 import { useTranslation } from 'react-i18next';
 
 
-function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant | Enseignant | null, isSignaled?:boolean, isHourRemove:boolean }) {
-    const {t}=useTranslation();
+function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: UserDiscipline | null, isSignaled?: boolean, isHourRemove: boolean }) {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [date, setDate] = useState("");
     const [debutPeriode, setDebutPeriode] = useState("");
     const [finPeriode, setFinPeriode] = useState("");
-    const [semestre, setSemestre]=useState(0);
-    
+    const [semestre, setSemestre] = useState(0);
+
 
     const [errorDate, setErrorDate] = useState("");
     const [errorDebutPeriode, setErrorDebutPeriode] = useState("");
     const [errorFinPeriode, setErrorFinPeriode] = useState("");
     const [errorSemestre, setErrorSemestre] = useState("");
     const [isFirstRender, setIsFirstRender] = useState(true);
-    
+
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
@@ -31,7 +29,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
     const verifierHeureFinApresDebut = (heureDebut: string, heureFin: string): boolean => {
         const debutMinutes = convertirHeureVersMinutes(heureDebut);
         const finMinutes = convertirHeureVersMinutes(heureFin);
-    
+
         return finMinutes < debutMinutes;
     };
 
@@ -47,12 +45,12 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
         setFinPeriode("");
         setSemestre(0);
         if (isHourRemove) {
-            setModalTitle(t('form_delete.absence')+user?.nom+" "+user?.prenom);            
-        } else{
-            setModalTitle(t('form_update.absence')+user?.nom+" "+user?.prenom);
+            setModalTitle(t('form_delete.absence') + user?.nom + " " + user?.prenom);
+        } else {
+            setModalTitle(t('form_update.absence') + user?.nom + " " + user?.prenom);
         }
-        if(isSignaled){
-            setModalTitle(t('form_update.signaler'));            
+        if (isSignaled) {
+            setModalTitle(t('form_update.signaler'));
         }
 
 
@@ -65,22 +63,22 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
         }
     }, [isHourRemove, isSignaled, user, isFirstRender, t]);
 
-    const closeModal = () => { 
-        setErrorDate(""); 
+    const closeModal = () => {
+        setErrorDate("");
         setErrorDebutPeriode("");
         setErrorFinPeriode("");
         setErrorSemestre("");
         setIsFirstRender(true);
-        dispatch(setShowModal()); 
+        dispatch(setShowModal());
     };
 
 
-    
+
     const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSemestre(parseInt(event.target.value));
         setErrorSemestre("");
     };
-    
+
 
     const handleCreateUpdate = () => {
         if (!date || !debutPeriode || !finPeriode || !semestre) {
@@ -100,11 +98,11 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
             return;
         }
 
-        if(verifierHeureFinApresDebut(debutPeriode, finPeriode)){
+        if (verifierHeureFinApresDebut(debutPeriode, finPeriode)) {
             setErrorFinPeriode(t('error.debut_sup_fin_periode'));
             return;
         }
-        
+
         closeModal();
     }
 
@@ -123,20 +121,20 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                     onChange={handleSemestreChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
-                    <option value="">{t('select_par_defaut.selectionnez')+t('select_par_defaut.semestre')}</option>
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.semestre')}</option>
                     {semestres.map((semestre, index) => (
                         <option key={index} value={semestre}>{semestre}</option>
                     ))}
-                    
+
                 </select>
                 {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
-                
+
                 <label>{t('label.date')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
                     value={date}
-                    onChange={(e) => {setDate(e.target.value); setErrorDate("")}}
+                    onChange={(e) => { setDate(e.target.value); setErrorDate("") }}
                 />
                 {errorDate && <p className="text-red-500" >{errorDate}</p>}
                 <label>{t('label.heure_debut')}</label><label className="text-red-500"> *</label>
@@ -144,7 +142,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"
                     value={debutPeriode}
-                    onChange={(e) => {setDebutPeriode(e.target.value); setErrorDebutPeriode("")}}
+                    onChange={(e) => { setDebutPeriode(e.target.value); setErrorDebutPeriode("") }}
                 />
                 {errorDebutPeriode && <p className="text-red-500" >{errorDebutPeriode}</p>}
                 <label>{t('label.heure_fin')}</label><label className="text-red-500"> *</label>
@@ -152,7 +150,7 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="time"
                     value={finPeriode}
-                    onChange={(e) => {setFinPeriode(e.target.value); setErrorFinPeriode("")}}
+                    onChange={(e) => { setFinPeriode(e.target.value); setErrorFinPeriode("") }}
                 />
                 {errorFinPeriode && <p className="text-red-500" >{errorFinPeriode}</p>}
             </CustomDialogModal>
@@ -161,4 +159,4 @@ function ModalCreateUpdate({ user, isSignaled, isHourRemove }: { user : Etudiant
     );
 }
 
-export default ModalCreateUpdate;
+export default ModalCreateUpdateAbsence;

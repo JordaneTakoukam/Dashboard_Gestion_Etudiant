@@ -51,7 +51,7 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
             <div key={index} >
                 <div className={`
                 ${showAllDates[monthYear] && 'bg-primary text-white'}
-                flex items-center justify-start gap-x-1 mb-2 cursor-pointer hover:bg-primary hover:text-white p-2`} onClick={() => toggleDateGroup(monthYear)}>
+                flex items-center justify-start gap-x-1 mb-2 cursor-pointer  hover:bg-primary hover:text-white duration-300 p-2`} onClick={() => toggleDateGroup(monthYear)}>
                     <MdDateRange />
                     <h3 className="font-semibold">{monthYear}</h3>
                     {showAllDates[monthYear] ? <MdExpandLess /> : <MdExpandMore />}
@@ -64,7 +64,7 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                         <div className="flex flex-col w-full">
                             <div className={` 
                         ${showAllDates[date] && 'bg-form-strokedark text-white'}
-                        flex px-5 items-center justify-start gap-x-1 mb-2 cursor-pointer hover:bg-form-strokedark hover:text-white p-2`} onClick={() => toggleDateGroup(date)}>
+                        flex px-5 items-center justify-start gap-x-1 mb-2 cursor-pointer hover:bg-form-strokedark hover:text-white  duration-300 p-2`} onClick={() => toggleDateGroup(date)}>
                                 <h3 className="font-semibold">{date}</h3>
                                 {showAllDates[date] ? <MdExpandLess /> : <MdExpandMore />}
                             </div>

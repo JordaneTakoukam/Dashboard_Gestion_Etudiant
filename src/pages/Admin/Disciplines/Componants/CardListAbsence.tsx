@@ -99,7 +99,7 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                 my-4
                 text-black bg-white
                 dark:bg-boxdark dark:text-gray
-                relative rounded-sm border border-stroke  py-20 px-5 shadow-default dark:border-strokedark  w-full`}
+                relative rounded-sm border border-stroke  py-24 px-5 shadow-default dark:border-strokedark  w-full`}
             >
                 <p>{t('gestion_absence.aucune_heure_d_absence_pendant_ce_semestre')}</p>
             </div>

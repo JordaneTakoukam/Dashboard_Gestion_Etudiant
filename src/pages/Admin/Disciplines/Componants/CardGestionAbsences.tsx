@@ -22,7 +22,7 @@ export const CardGestionUser = ({ title, value, id, }: CardGestionUserProps) => 
         
         text-black bg-white
     dark:bg-boxdark dark:text-gray
-    relative rounded-sm border border-stroke pb-10  py-6 px-5 shadow-default dark:border-strokedark  w-full`}>
+    relative rounded-sm border border-stroke pb-12  py-6 px-5 shadow-default dark:border-strokedark  w-full`}>
             {
                 id != 4 && <div className="absolute top-0 right-0 mt-5 mr-2 z-10">
                     <div className='flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 '>
@@ -35,7 +35,7 @@ export const CardGestionUser = ({ title, value, id, }: CardGestionUserProps) => 
             }
 
             {/* titre */}
-            <div className="flex justify-between h-[50px] ">
+            <div className="flex justify-between h-[40px] ">
                 <h3 className={` mt-0  text-[13px] xl:text-[14px] text-start  font-semibold`}>
                     {t(title.toString())}
                 </h3>

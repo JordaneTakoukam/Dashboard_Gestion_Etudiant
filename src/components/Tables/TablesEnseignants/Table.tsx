@@ -289,6 +289,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         const result = filterEnseignantByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
+    
     const handleRefreshFilters = () => {
         setGrade(undefined);
         setCatgeorie(undefined);
@@ -302,10 +303,9 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === userRole || roles.superAdmin === userRole && (
-                <ButtonCreate
-                    title={t('boutton.nouvelle_enseignant')}
-                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
-                />)}
+                    <ButtonCreate
+                        onClick={() => { onCreate(); dispatch(setShowModal()) }}
+                    />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -412,9 +412,9 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                     <table className="w-full table-auto ">
                         {/* en tete du tableau */}
 
-                        {
-                            <HeaderTableEnseignant />
-                        }
+
+                        <HeaderTableEnseignant />
+
 
                         {/* corp du tableau*/}
                         {

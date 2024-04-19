@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import InputSearch from "../common/SearchTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
@@ -10,6 +10,9 @@ import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import Pagination from "../../Pagination/Pagination";
+import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantsDisciplineLoadingOnTable, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/discipline_enseignant_slice";
+import { apiGetAbsencesWithEnseignantsByFilter } from "../../../api/discipline/api_discipline";
+import LoadingOnTable from "../common/LoadingOnTable";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -18,11 +21,12 @@ interface TableDisciplineProps {
 
 
 const Table = ({ data, onEdit }: TableDisciplineProps) => {
+
+
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -32,26 +36,66 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     };
 
     const [formatToDownload, setFormatToDownload] = useState("");
-    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
 
-    const handleAnneeSelect = (selected: String | undefined) => {
+
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const selectedSemestre = useSelector((state: RootState) => state.enseignantDisciplineSlice.selected.semestre)
+
+
+    const listSemestre = ['1', '2']
+    const listAnnee = generateYearRange(currentYear, firstYear);
+
+    const [annee, setAnnee] = useState<string | undefined>(`${firstYear}/${firstYear + 1}`);
+    const [semestre, setSemestre] = useState<string | undefined>(selectedSemestre ? selectedSemestre : currentSemestre.toString());
+
+    const handleAnneeSelect = (selected: string | undefined) => {
         if (selected) {
-            setSelectedYear(extractYear(selected.toString()));
+            setAnnee(selected);
+            dispatch(setAnneeDisciplineEns(selected))
         }
+        // setFonction(selected);
+        // dispatch(setSelectedEnseignant({ key: "fonction", value: selected }))
+
     };
 
+    const handleSemestreSelect = (selected: string | undefined) => {
+        if (selected) {
+            setSemestre(selected);
+            dispatch(setSemestreDisciplineEns(selected));
+        }
 
-    const handleSemestreSelect = (selected: String | undefined) => {
-        // setFiltreSemestre(selected);
-        console.log(selected);
     };
 
     const handleDownloadSelect = (selected: string) => {
-        setFormatToDownload(selected);
-        console.log(selected);
+        // setFormatToDownload(selected);
+        // console.log(selected);
     };
 
+
+    // recherche
+    const [searchText, setSearchText] = useState<string>('');
+    const [filteredData, setFilteredData] = useState<UserDiscipline[]>(data);
+
+    // Filtrer les matières en fonction de la langue
+    const filterEnseignantByContent = (enseignants: UserDiscipline[]) => {
+        if (searchText === '') {
+            const result: UserDiscipline[] = enseignants;
+            return result;
+        }
+        return enseignants.filter(enseignant => {
+            const prenom = enseignant?.prenom || "";
+            // Vérifie si le code ou le libellé contient le texte de recherche
+            return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
+        });
+    };
+
+    useEffect(() => {
+        const result = filterEnseignantByContent(data);
+        setFilteredData(result);
+    }, [searchText, data]);
 
     // variable pour la pagination
     //
@@ -64,11 +108,54 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         setCurrentPage(pageNumber);
     };
 
+
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    const pageIsLoadingOnTable = useSelector((state: RootState) => state.enseignantDisciplineSlice.pageIsLoadingOnTable);
+
+    useEffect(() => {
+        if (annee && semestre) {
+            dispatch(setAnneeDisciplineEns(annee));
+            dispatch(setSemestreDisciplineEns(semestre));
+        }
+
+
+
+        if (isInitialMount) {
+            setIsInitialMount(false);
+            return;
+        }
+
+
+        const fetchEnseignantWithAbsences = async () => {
+            dispatch(setEnseignantsDisciplineLoadingOnTable(true));
+
+            try {
+                const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
+                    page: 1, semestre: semestre, annee: annee
+                });
+                if (fetchedEnseignants) {
+                    dispatch(setEnseignantDiscipline(fetchedEnseignants));
+
+                    dispatch(setErrorPageEnseignantDiscipline(null));
+                } else {
+                    dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+                }
+            } catch (error) {
+                dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+            } finally {
+                dispatch(setEnseignantsDisciplineLoadingOnTable(false));
+            }
+        }
+
+        fetchEnseignantWithAbsences();
+
+    }, [dispatch, annee, semestre, currentPage, t]);
+
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={() => { }} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -81,18 +168,18 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<String>
+                            <CustomDropDown2<string>
                                 title={t('label.annee')}
-                                selectedItem={formatYear(selectedYear)}
-                                items={generateYearRange(currentYear, firstYear)}
-                                defaultValue={formatYear(currentYear)}
+                                selectedItem={annee}
+                                items={listAnnee}
+                                defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-
-                            <CustomDropDown2<String>
+                            <CustomDropDown2<string>
                                 title={t('label.semestre')}
-                                items={["1", "2"]}
-                                defaultValue={"1"}
+                                selectedItem={semestre}
+                                items={listSemestre}
+                                defaultValue={semestre}
                                 onSelect={handleSemestreSelect}
                             />
                         </div>
@@ -103,20 +190,23 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<String>
+
+                            <CustomDropDown2<string>
                                 title={t('label.annee')}
-                                selectedItem={formatYear(selectedYear)}
-                                items={generateYearRange(currentYear, firstYear)}
-                                defaultValue={formatYear(currentYear)}
+                                selectedItem={annee}
+                                items={listAnnee}
+                                defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-
-                            <CustomDropDown2<String>
+                            <CustomDropDown2<string>
                                 title={t('label.semestre')}
-                                items={["1", "2"]}
-                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                selectedItem={semestre}
+                                items={listSemestre}
+                                defaultValue={semestre}
                                 onSelect={handleSemestreSelect}
                             />
+
+
                         </div>
                     </div>
                 </div>
@@ -125,10 +215,16 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
                 {/* DEBUT DU TABLE */}
-                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
+                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8 relative min-h-[250px]">
                     <table className="w-full table-auto">
                         <HeaderTable />
-                        <BodyTable data={data} />
+
+                        {
+                            pageIsLoadingOnTable ?
+                                <LoadingOnTable /> :
+                                <BodyTable data={filteredData} />
+
+                        }
                     </table>
                 </div>
 

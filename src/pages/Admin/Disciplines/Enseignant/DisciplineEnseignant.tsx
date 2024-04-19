@@ -13,6 +13,7 @@ import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence
 
 import { useNavigate } from 'react-router-dom';
 import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/discipline_enseignant_slice";
+import { generateYearRange } from "../../../../fonctions/fonction";
 
 const DisciplineDesEnseignants = () => {
     const dispatch = useDispatch();
@@ -30,14 +31,25 @@ const DisciplineDesEnseignants = () => {
     }
 
 
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const currentPlageDate: string[] = generateYearRange(currentYear, firstYear);
+
+
+    const loadingSetting = useSelector((state: RootState) => state.dataSetting.loading);
+
     const fetchEnseignants = async () => {
         dispatch(setEnseignantsDisciplineLoading(true));
+
         try {
-            const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({ page: 1 });
+            const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
+                page: 1, semestre: currentSemestre.toString(), annee: currentPlageDate[currentPlageDate.length - 1] // dernier eleemt du tableau (donc la derniere plage d'annee)
+            });
             if (fetchedEnseignants) {
                 dispatch(setEnseignantDiscipline(fetchedEnseignants));
                 console.log(fetchedEnseignants);
-                
+
                 dispatch(setErrorPageEnseignantDiscipline(null));
             } else {
                 dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
@@ -55,10 +67,18 @@ const DisciplineDesEnseignants = () => {
 
 
     useEffect(() => {
-        if (enseignants.length === 0) {
-            fetchEnseignants();
-        }
-    }, [dispatch]);
+        const fetchData = async () => {
+            if (enseignants.length === 0) {
+                while (loadingSetting) {
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Attendre 100ms avant de vérifier à nouveau
+                }
+                fetchEnseignants();
+            }
+        };
+
+        fetchData();
+
+    }, [dispatch, enseignants.length, loadingSetting, fetchEnseignants]);
 
 
     return (

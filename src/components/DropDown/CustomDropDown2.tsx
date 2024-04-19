@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
 
 interface CustomDropDownProps<T> {
     title: string;
     items: T[];
     defaultValue?: T | null;
-    selectedItem?:T;
+    selectedItem?: T;
     onSelect: (selected: T | undefined) => void;
     displayProperty?: (item: T) => string;
 }
 
 function CustomDropDown2<T>({ title, items, defaultValue, selectedItem, onSelect, displayProperty = (item: T) => String(item) }: CustomDropDownProps<T>): JSX.Element {
     // const [selectedItem, setSelectedItem] = useState<T | null>(defaultValue || null);
-    
-    
-    
+
+
+
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = event.target.value;
 
@@ -29,7 +28,7 @@ function CustomDropDown2<T>({ title, items, defaultValue, selectedItem, onSelect
         <div className="custom-dropdown">
             <label className="text-sm lg:text-md" htmlFor={title}>{title}</label>
             <select
-               
+
                 id={title}
                 value={selectedItem ? displayProperty(selectedItem) : ""}
                 onChange={handleSelectChange}

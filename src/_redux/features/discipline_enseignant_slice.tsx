@@ -29,6 +29,13 @@ const disciplineEnseignantSlice = createSlice({
         setEnseignantSelected(state, action: PayloadAction<UserDiscipline>) {
             state.selected.user = action.payload;
         },
+        setSemestreDisciplineEns(state, action: PayloadAction<string>) {
+            state.selected.semestre = action.payload;
+        },
+        // Define a reducer to set the year
+        setAnneeDisciplineEns(state, action: PayloadAction<string>) {
+            state.selected.annee = action.payload;
+        },
         // Add other reducers if needed
         setEnseignantsDisciplineLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
@@ -52,7 +59,12 @@ export const {
     setErrorPageEnseignantDiscipline,
     setEnseignantDiscipline,
     setEnseignantsDisciplineLoadingOnTable,
+
+    setSemestreDisciplineEns,
+    setAnneeDisciplineEns,
 } = disciplineEnseignantSlice.actions;
+
+;
 
 // Export the reducer
 export default disciplineEnseignantSlice.reducer;

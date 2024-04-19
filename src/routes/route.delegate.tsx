@@ -1,4 +1,4 @@
-import DisciplineDesEnseignants from '../pages/Admin/DisciplineEnseignant';
+import DisciplineDesEnseignants from '../pages/Admin/Disciplines/Enseignant/DisciplineEnseignant';
 
 const coreRoutes = [
     // etudiants

@@ -26,6 +26,8 @@
     "deconnexion": "Log out"
   },
   "menu": {
+    "heure_d_absence": "Absent hour",
+    "heures_d_absences": "Absent hours",
     "menu": "MENU",
     "tableau_de_bord": "Dashboard",
     "etudiants": "Students",
@@ -44,6 +46,8 @@
   },
   "sub_menu": {
     "liste_etudiant": "Student List",
+    "gestion_absences_enseignant": "Management of teacher absences",
+    "gestion_absences_etudiant": "Management of student absences",
     "liste_enseignant": "Teacher List",
     "discipline": "Discipline",
     "liste_matiere": "Subject List",
@@ -62,10 +66,10 @@
     "regions": "Regions",
     "departements": "Departments",
     "communes": "Communes",
-    "objectifs":"Objectives",
-    "enseignements":"Teachings",
-    "periodes_enseignement":"Teaching periods",
-    "enseignement_periode":"Teachings of the period"
+    "objectifs": "Objectives",
+    "enseignements": "Teachings",
+    "periodes_enseignement": "Teaching periods",
+    "enseignement_periode": "Teachings of the period"
   },
   "tableau_de_bord": {
     "title": "Dashboard",
@@ -141,7 +145,7 @@
     "personnel_concerne": "Concerned Personnel",
     "numero_evenement": "Event Number",
     "n_evenement": "Event No",
-    "progression":"Progression",
+    "progression": "Progression",
     "enseignant": "Teacher",
     "enseignant_sup": "Supplementary Teacher",
     "prerequis": "Prerequisites",
@@ -193,15 +197,15 @@
     "entree_pass": "Enter your password",
     "content": "Welcome back !",
     "chapitres": "Chapters",
-    "atteind":"Achieved",
-    "non_atteind":"Not achieved",
-    "enseignements":"Teachings",
-    "nb_seance":"Number of sessions",
-    "title_progression":"Progression of the lessons of the period",
-    "nb_seance_periode":"Number of sessions in the period",
-    "nb_seance_pratique":"Number of sessions practiced",
-    "gap":"Gap",
-    "taux_presence":"Relative presence rate"
+    "atteind": "Achieved",
+    "non_atteind": "Not achieved",
+    "enseignements": "Teachings",
+    "nb_seance": "Number of sessions",
+    "title_progression": "Progression of the lessons of the period",
+    "nb_seance_periode": "Number of sessions in the period",
+    "nb_seance_pratique": "Number of sessions practiced",
+    "gap": "Gap",
+    "taux_presence": "Relative presence rate"
   },
   "recherche": {
     "rechercher": "Search ",
@@ -222,9 +226,9 @@
     "region": "a region",
     "departement": "a department",
     "commune": "a commune",
-    "objectif":"an objective",
-    "periodes_enseignement":"a teaching period",
-    "enseignement":"a teaching"
+    "objectif": "an objective",
+    "periodes_enseignement": "a teaching period",
+    "enseignement": "a teaching"
   },
   "boutton": {
     "daccord": "Okay",
@@ -302,7 +306,7 @@
     "departement": "Filter the list of departments by:",
     "commune": "Filter the list of communes by:",
     "absence": "Filter my absences by : ",
-    "periodes_enseignement":"Filter teaching periods"
+    "periodes_enseignement": "Filter teaching periods"
   },
   "form_save": {
     "enregistrer": "Save ",
@@ -324,9 +328,9 @@
     "commune": "a new commune",
     "periode": "a new period",
     "evenement": "a new event",
-    "objectif":"an objective",
-    "enseignement":"a teaching",
-    "periode_enseignement":"a teaching period"
+    "objectif": "an objective",
+    "enseignement": "a teaching",
+    "periode_enseignement": "a teaching period"
   },
   "form_update": {
     "absence": "Add an absence : ",
@@ -350,9 +354,9 @@
     "commune": "of the commune",
     "periode": "of the period",
     "evenement": "of the event",
-    "objectif":"of the objective",
-    "enseignement":"of the teaching",
-    "periode_enseignement":"of the teaching period"
+    "objectif": "of the objective",
+    "enseignement": "of the teaching",
+    "periode_enseignement": "of the teaching period"
   },
   "form_delete": {
     "supprimer": "Delete",
@@ -376,9 +380,9 @@
     "commune": "of the commune",
     "periode": "of the period",
     "evenement": "of the event",
-    "objectif":"of the objective",
-    "enseignement":"of the teaching",
-    "periode_enseignement":"of the teaching period"
+    "objectif": "of the objective",
+    "enseignement": "of the teaching",
+    "periode_enseignement": "of the teaching period"
   },
   "error": {
     "code": "Code field is required.",
@@ -423,5 +427,11 @@
     "vous_etes_pas_autoriser_a_mener_cette_action": "You are not authorized to perform this action",
     "erreur": "An error occurred",
     "erreur_recuperation": "An error occurred while retrieving data!"
+  },
+  "gestion_absence": {
+    "nom_et_prenom": "Name and surname",
+    "semestre": "Semester",
+    "liste_des_heures_d_absences_de_ce_semenstre": "List of absence hours for this semester",
+    "aucune_heure_d_absence_pendant_ce_semestre": "No absence hours during this semester"
   }
 }

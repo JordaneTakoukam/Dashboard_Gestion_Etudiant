@@ -1,4 +1,4 @@
-import DisciplineEtudiants from '../pages/Admin/DisciplineEtudiant';
+import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import Abscences from '../pages/CommonPage/Abscences';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';

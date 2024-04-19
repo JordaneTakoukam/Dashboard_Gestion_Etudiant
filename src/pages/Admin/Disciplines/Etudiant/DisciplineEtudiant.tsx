@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux";
-import Breadcrumb from "../../components/Breadcrumb";
-import { RootState } from "../../_redux/store";
-import { config } from "../../config";
-import TableDisciplineEtudiant from "../../components/Tables/TablesDisciplineEtudiants/TableDisciplineEdudiants";
+import Breadcrumb from "../../../../components/Breadcrumb";
+import { RootState } from "../../../../_redux/store";
+import { config } from "../../../../config";
+import TableDisciplineEtudiant from "../../../../components/Tables/TablesDisciplineEtudiants/TableDisciplineEdudiants";
 import { useState } from "react";
-import FormCreateUpdate from "../../components/Modals/ModalAbsence/FormCreateUpdate";
-import { Enseignant } from "./ListeEnseignants";
+import FormCreateUpdate from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
+import { Enseignant } from "../../ListeEnseignants";
 import { useTranslation } from "react-i18next";
 
 

@@ -20,6 +20,7 @@ interface UserDisciplineIntialData {
     pageError: string | null;
     pageIsLoadingOnTable: boolean,
     selected: {
+        user: UserDiscipline | undefined,
         semestre: string | undefined,
         annee: string | undefined,
     }

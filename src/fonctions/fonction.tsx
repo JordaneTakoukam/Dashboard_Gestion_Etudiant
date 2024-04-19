@@ -161,3 +161,20 @@ export function nbTotalAbsences(listeAbsences: AbsenceType[]): string {
   // Retourner la somme totale d'heures sous forme de chaîne
   return totalHours.toString();
 }
+
+
+export function reduceWord(word: string, maxSize: number): string {
+  // Vérifier si l'utilisateur est sur mobile ou non
+  const isMobile = window.innerWidth <= 768; // Taille standard de la vue mobile
+
+  if (!isMobile) {
+      return word;
+  } else {
+      // Sur PC, réduit le mot si nécessaire
+      if (word.length > maxSize) {
+          return word.slice(0, maxSize) + "...";
+      } else {
+          return word;
+      }
+  }
+}

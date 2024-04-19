@@ -3,11 +3,10 @@ import { IoMdAdd } from "react-icons/io";
 import { useTranslation } from "react-i18next";
 
 interface ButtonNewProps {
-    title: string;
     onClick: () => void;
 }
 
-const ButtonCreate = ({ title, onClick }: ButtonNewProps) => {
+const ButtonCreate = ({ onClick }: ButtonNewProps) => {
     const { t } = useTranslation();
 
     return (

@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import Breadcrumb from "../../components/Breadcrumb";
-import Table from "../../components/Tables/TablesDisciplineEnseignants/Table";
+import Breadcrumb from "../../../../components/Breadcrumb";
+import Table from "../../../../components/Tables/TablesDisciplineEnseignants/Table";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../_redux/store";
-import LoadingTable from "../../components/Tables/common/LoadingTable";
-import { PageErreur } from "../../components/_Global/PageErreur";
-import { PageNoData } from "../../components/_Global/PageNoData";
-import { SectionRefresh } from "../../components/ui/SectionRefresh";
-import { apiGetAbsencesWithEnseignantsByFilter } from "../../api/discipline/api_discipline";
-import ModalCreateUpdateAbsence from "../../components/Modals/ModalAbsence/FormCreateUpdate";
+import { RootState } from "../../../../_redux/store";
+import LoadingTable from "../../../../components/Tables/common/LoadingTable";
+import { PageErreur } from "../../../../components/_Global/PageErreur";
+import { PageNoData } from "../../../../components/_Global/PageNoData";
+import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
+import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
+import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
 
 import { useNavigate } from 'react-router-dom';
-import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../_redux/features/discipline_enseignant_slice";
+import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/discipline_enseignant_slice";
 
 const DisciplineDesEnseignants = () => {
     const dispatch = useDispatch();

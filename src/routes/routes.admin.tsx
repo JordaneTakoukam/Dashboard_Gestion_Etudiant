@@ -1,6 +1,6 @@
 import Cycles from '../pages/Admin/Cycles';
-import DisciplineDesEnseignants from '../pages/Admin/DisciplineEnseignant';
-import DisciplineEtudiants from '../pages/Admin/DisciplineEtudiant';
+import DisciplineDesEnseignants from '../pages/Admin/Disciplines/Enseignant/DisciplineEnseignant';
+import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
 import ListeDesEnseignant from '../pages/Admin/ListeEnseignants';
 import ListeDesEtudiants from '../pages/Admin/ListeEtudiants';
 import ListeDesMatieres from '../pages/Admin/ListeMatieres';
@@ -27,6 +27,7 @@ import { Departements } from '../pages/Admin/Departements';
 import ListeDesPeriodesEnseignement from '../pages/Admin/PeriodeEnseignement';
 import Chapitres from '../pages/Admin/Chapitres';
 import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
+import GererAbsencesEnseignant from '../pages/Admin/Disciplines/Enseignant/GererAbsencesEnseignant';
 
 
 
@@ -43,6 +44,7 @@ const coreRoutes = [
     component: DisciplineEtudiants,
   },
 
+
   // enseignants
   {
     path: '/teachers/teacher-list',
@@ -53,6 +55,11 @@ const coreRoutes = [
     path: '/teachers/disciplines',
     title: 'Disciplines des enseignants',
     component: DisciplineDesEnseignants,
+  },
+  {
+    path: '/teachers/disciplines/manage',
+    title: 'Disciplines des étudiants',
+    component: GererAbsencesEnseignant,
   },
 
   // matieres
@@ -67,7 +74,7 @@ const coreRoutes = [
     title: 'Liste des chapitres',
     component: Chapitres,
   },
-  
+
   {
     path: '/subjects/progressions-par-matiere',
     title: 'Progréssion par matiere',
@@ -94,24 +101,24 @@ const coreRoutes = [
 
   //sondages
   {
-    path:'/sondages/rubriques',
-    title:'Rubriques',
-    component:Rubriques
+    path: '/sondages/rubriques',
+    title: 'Rubriques',
+    component: Rubriques
   },
   {
-    path:'/sondages/groupe_de_question',
-    title:'Groupe de questions',
-    component:GroupeQuestions
+    path: '/sondages/groupe_de_question',
+    title: 'Groupe de questions',
+    component: GroupeQuestions
   },
   {
-    path:'/sondages/questions',
-    title:'Questions',
-    component:Questions
+    path: '/sondages/questions',
+    title: 'Questions',
+    component: Questions
   },
   {
-    path:'/sondages/liste_sondage',
-    title:'Liste des sondages',
-    component:ListeDesSondages
+    path: '/sondages/liste_sondage',
+    title: 'Liste des sondages',
+    component: ListeDesSondages
   },
 
   // structuraction academique

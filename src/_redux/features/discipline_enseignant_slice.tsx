@@ -1,7 +1,7 @@
+// Import necessary modules
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
-// Initial state
+// Define the initial state
 const initialState: EnseignatDisciplineIntialData = {
     data: {
         enseignants: [],
@@ -14,16 +14,22 @@ const initialState: EnseignatDisciplineIntialData = {
     pageError: null,
     pageIsLoadingOnTable: false,
     selected: {
+        user: undefined,
         semestre: undefined,
         annee: undefined,
     }
 };
 
-// Création du slice
+// Create the slice
 const disciplineEnseignantSlice = createSlice({
     name: "disciplineEnseignantSlice",
     initialState,
     reducers: {
+        // Define the reducer to set the user
+        setEnseignantSelected(state, action: PayloadAction<UserDiscipline>) {
+            state.selected.user = action.payload;
+        },
+        // Add other reducers if needed
         setEnseignantsDisciplineLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
         },
@@ -39,13 +45,14 @@ const disciplineEnseignantSlice = createSlice({
     },
 });
 
-// Actions exportées
+// Export the actions
 export const {
+    setEnseignantSelected,
     setEnseignantsDisciplineLoading,
     setErrorPageEnseignantDiscipline,
     setEnseignantDiscipline,
     setEnseignantsDisciplineLoadingOnTable,
 } = disciplineEnseignantSlice.actions;
 
-// Reducer exporté
+// Export the reducer
 export default disciplineEnseignantSlice.reducer;

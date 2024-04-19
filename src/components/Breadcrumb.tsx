@@ -1,22 +1,28 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { reduceWord } from '../fonctions/fonction';
 
 interface BreadcrumbProps {
   pageName: string;
   isDashboard?: boolean;
-  isChapitre? : boolean;
-  isObjectif?:boolean;
-  isPeriodeEnseignement?:boolean;
-  isEnseignement?:boolean;
-  returnWithMatiere?:()=>void;
-  returnWithChapitre?:()=>void;
-  returnWithPeriodeEnseignement?:()=>void;
+  isChapitre?: boolean;
+  isObjectif?: boolean;
+  isPeriodeEnseignement?: boolean;
+  isEnseignement?: boolean;
+  returnWithMatiere?: () => void;
+  returnWithChapitre?: () => void;
+  returnWithPeriodeEnseignement?: () => void;
+
+  //
+  isGestionEnseignant?: boolean;
+  isGestionEtudiant?: boolean;
 }
 
 
 
-const Breadcrumb = ({ pageName, isDashboard = false, isChapitre=false, isObjectif=false, isEnseignement=false, isPeriodeEnseignement=false,  returnWithMatiere, returnWithChapitre, returnWithPeriodeEnseignement}: BreadcrumbProps) => {
+const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant = false, isDashboard = false, isChapitre = false, isObjectif = false, isEnseignement = false, isPeriodeEnseignement = false, returnWithMatiere, returnWithChapitre, returnWithPeriodeEnseignement }: BreadcrumbProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const handleChapitreClick = () => {
     returnWithChapitre && returnWithChapitre();
   };
@@ -29,6 +35,17 @@ const Breadcrumb = ({ pageName, isDashboard = false, isChapitre=false, isObjecti
     returnWithPeriodeEnseignement && returnWithPeriodeEnseignement();
   };
 
+  const handleDisciplneEnseignant = () => {
+    navigate('/teachers/disciplines/');
+  };
+
+
+  const handleDisciplneEtudiant = () => {
+    navigate('/students/disciplines/');
+  };
+
+
+ 
 
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -39,7 +56,10 @@ const Breadcrumb = ({ pageName, isDashboard = false, isChapitre=false, isObjecti
       <nav>
         <ol className="text-[14.5px]  md:text-[15px]  flex items-center gap-2">
           <li>
-            <Link to="/">{t('tableau_de_bord.title')} /</Link>
+            <li className='flex'>
+              <Link className='hover:underline' to={"/"} >{t('tableau_de_bord.title')}</Link>
+              <span className='ml-2'> /</span>
+            </li>
           </li>
 
           {isChapitre && (
@@ -67,11 +87,29 @@ const Breadcrumb = ({ pageName, isDashboard = false, isChapitre=false, isObjecti
           )}
 
           {
+            isGestionEnseignant &&
+            <li className='flex'>
+              <Link className='hover:underline ' to={"/teachers/disciplines"} onClick={handleDisciplneEnseignant}>{t('sub_menu.discipline')}</Link>
+              <span className='ml-2'> /</span>
+            </li>
+          }
+
+          {
+            isGestionEtudiant &&
+            <li className='flex'>
+              <Link className='hover:underline ' to={"/students/disciplines"} onClick={handleDisciplneEtudiant}>{t('sub_menu.discipline')}</Link>
+              <span className='ml-2'> /</span>
+            </li>
+          }
+          {
             isDashboard == false && (
-              <li className="text-primary">{pageName}</li>
+              <li className="text-primary">{reduceWord(pageName, 15)}</li>
 
             )
           }
+
+
+
         </ol>
       </nav>
     </div>

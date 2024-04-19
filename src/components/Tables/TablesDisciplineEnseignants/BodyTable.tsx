@@ -1,17 +1,15 @@
-import { useDispatch, useSelector } from "react-redux"
-import { capitalizeFirstLetter, nbTotalAbsences } from "../../../fonctions/fonction"
-import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting"
-import { RootState } from "../../../_redux/store"
-import { config } from "../../../config"
+import { useDispatch } from "react-redux"
+import { nbTotalAbsences } from "../../../fonctions/fonction"
+import { useNavigate } from "react-router-dom"
+import { setEnseignantSelected } from "../../../_redux/features/discipline_enseignant_slice"
+import { MdOutlineManageAccounts } from "react-icons/md";
 
 
-const BodyTable = ({ data, onEdit }: { data: UserDiscipline[], onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void }) => {
+const BodyTable = ({ data }: { data: UserDiscipline[] }) => {
 
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
 
+    const navigate = useNavigate();
     return <tbody>
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -53,16 +51,26 @@ const BodyTable = ({ data, onEdit }: { data: UserDiscipline[], onEdit: (enseigna
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
-                    <ButtonCrudTable
+
+                    <button
+                        className="bg-primary text-white px-6 py-2 mx-4 rounded-lg hover:bg-opacity-75"
+                        onClick={() => {
+                            dispatch(setEnseignantSelected(item))
+                            navigate('/teachers/disciplines/manage')
+
+                        }}>
+                        <MdOutlineManageAccounts className="text-lg" />
+                    </button>
+
+
+                    {/* <ButtonCrudTable
                         onClickAddHour={() => {
                             onEdit(item, false);
                             dispatch(setShowModal())
                         }}
                         onClickRemovHour={roles.admin === userRole || roles.superAdmin === userRole ? () => {
-                            onEdit(item, true);
-                            dispatch(setShowModal())
                         } : undefined}
-                    />
+                    /> */}
                 </td>
             </tr>
         ))}

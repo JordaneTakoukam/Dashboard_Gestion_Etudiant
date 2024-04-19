@@ -59,7 +59,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -129,7 +128,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         <HeaderTable />
-                        <BodyTable data={data} onEdit={onEdit} />
+                        <BodyTable data={data} />
                     </table>
                 </div>
 

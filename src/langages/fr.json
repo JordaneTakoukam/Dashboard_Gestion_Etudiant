@@ -25,6 +25,8 @@
   },
   "menu": {
     "menu": "MENU",
+    "heure_d_absence": "Heure d'absence",
+    "heures_d_absences": "Heures d'absences",
     "tableau_de_bord": "Tableau de bord",
     "etudiants": "Étudiants",
     "enseignants": "Enseignants",
@@ -42,6 +44,8 @@
   },
   "sub_menu": {
     "liste_etudiant": "Liste des étudiants",
+    "gestion_absences_enseignant": "Gestion des absences de l'enseignant",
+    "gestion_absences_etudiant": "Gestion des absences de l'étudiant",
     "liste_enseignant": "Liste des enseignants",
     "discipline": "Discipline",
     "liste_matiere": "Liste des matières",
@@ -60,10 +64,10 @@
     "regions": "Régions",
     "departements": "Départements",
     "communes": "Communes",
-    "objectifs":"Objectifs",
-    "enseignements":"Enseignements",
-    "periodes_enseignement":"Périodes d'enseignement",
-    "enseignement_periode":"Enseignements de la période"
+    "objectifs": "Objectifs",
+    "enseignements": "Enseignements",
+    "periodes_enseignement": "Périodes d'enseignement",
+    "enseignement_periode": "Enseignements de la période"
   },
   "tableau_de_bord": {
     "title": "Tableau de bord",
@@ -117,7 +121,7 @@
     "nom_chose_en": "Nom en anglais",
     "actions": "Actions",
     "nombre_place": "Nombre de place",
-    "progression":"Progression",
+    "progression": "Progression",
     "periode": "Période",
     "periode_fr": "Période en français",
     "periode_en": "Période en anglais",
@@ -191,15 +195,15 @@
     "entree_pass": "Entrer votre mot de passe",
     "content": "Content de vous revoir !",
     "chapitres": "Chapitres",
-    "atteind":"Atteind",
-    "non_atteind":"Non atteind",
-    "enseignements":"Enseignements",
-    "nb_seance":"Nombre de séance",
-    "title_progression":"Progression des enseignements de la période",
-    "nb_seance_periode":"Nombre de séance de la période",
-    "nb_seance_pratique":"Nombre de séance pratiqué",
-    "gap":"Gap",
-    "taux_presence":"Taux de présence relatif"
+    "atteind": "Atteind",
+    "non_atteind": "Non atteind",
+    "enseignements": "Enseignements",
+    "nb_seance": "Nombre de séance",
+    "title_progression": "Progression des enseignements de la période",
+    "nb_seance_periode": "Nombre de séance de la période",
+    "nb_seance_pratique": "Nombre de séance pratiqué",
+    "gap": "Gap",
+    "taux_presence": "Taux de présence relatif"
   },
   "recherche": {
     "rechercher": "Rechercher ",
@@ -220,9 +224,9 @@
     "region": "une région",
     "departement": "un département",
     "commune": "une commune",
-    "objectif":"un objectif",
-    "periodes_enseignement":"une période d'enseignement",
-    "enseignement":"un enseignement"
+    "objectif": "un objectif",
+    "periodes_enseignement": "une période d'enseignement",
+    "enseignement": "un enseignement"
   },
   "boutton": {
     "daccord": "D'accord",
@@ -300,7 +304,7 @@
     "departement": "Filtrer la liste des départements suivant :",
     "commune": "Filtrer la liste des communes suivant :",
     "absence": "Filtrer mes absences suivant : ",
-    "periodes_enseignement":"Filtrer les périodes d'enseignement"
+    "periodes_enseignement": "Filtrer les périodes d'enseignement"
   },
   "form_save": {
     "enregistrer": "Enregistrer ",
@@ -322,9 +326,9 @@
     "commune": "une nouvelle commune",
     "periode": "une nouvelle période",
     "evenement": "un nouvel évènement",
-    "objectif":"un objectif",
-    "enseignement":"un enseignement",
-    "periode_enseignement":"une période d'enseignement"
+    "objectif": "un objectif",
+    "enseignement": "un enseignement",
+    "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
     "absence": "Ajouter une absence : ",
@@ -348,9 +352,9 @@
     "commune": "de la commune",
     "periode": "de la période",
     "evenement": "de l'évènement",
-    "objectif":"de l'objectif",
-    "enseignement":"de l'enseignement",
-    "periode_enseignement":"de la période d'enseignement"
+    "objectif": "de l'objectif",
+    "enseignement": "de l'enseignement",
+    "periode_enseignement": "de la période d'enseignement"
   },
   "form_delete": {
     "supprimer": "Supprimer",
@@ -374,9 +378,9 @@
     "commune": "de la commune",
     "periode": "de la période",
     "evenement": "de l'évènement",
-    "objectif":"de l'objectif",
-    "enseignement":"de l'enseignement",
-    "periode_enseignement":"de la période d'enseignement"
+    "objectif": "de l'objectif",
+    "enseignement": "de l'enseignement",
+    "periode_enseignement": "de la période d'enseignement"
   },
   "error": {
     "code": "Le champ code est obligatoire.",
@@ -453,5 +457,13 @@
     "region": "Ajouter votre première région",
     "departement": "Ajouter votre premier département",
     "commune": "Ajouter votre première commune"
+  },
+  "gestion_absence": {
+    "nom_et_prenom": "Nom et prénom",
+    "semestre": "Semestre",
+    "liste_des_heures_d_absences_de_ce_semenstre": "Liste des heures d'absences de ce semestre",
+    "aucune_heure_d_absence_pendant_ce_semestre": "Aucune heure d'absence pendant ce semestre"
+    
+    
   }
 }

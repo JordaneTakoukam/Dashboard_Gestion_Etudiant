@@ -301,7 +301,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {roles.admin === userRole || roles.superAdmin === userRole && (<ButtonCreate
+                {roles.admin === userRole || roles.superAdmin === userRole && (
+                <ButtonCreate
                     title={t('boutton.nouvelle_enseignant')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />)}

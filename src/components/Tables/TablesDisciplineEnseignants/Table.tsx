@@ -12,8 +12,8 @@ import { extractYear, formatYear, generateYearRange } from "../../../fonctions/f
 import Pagination from "../../Pagination/Pagination";
 
 interface TableDisciplineProps {
-    data: EnseignantType[];
-    onEdit: (enseignant: EnseignantType, isHourRemove: boolean) => void;
+    data: UserDiscipline[];
+    onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void;
 }
 
 
@@ -129,13 +129,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
                         <HeaderTable />
-
                         <BodyTable data={data} onEdit={onEdit} />
-
-
-
-
-
                     </table>
                 </div>
 

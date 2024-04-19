@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TablesDisciplineEnseignants/Table";
-import FormCreateUpdate from "../../components/Modals/ModalAbsence/FormCreateUpdate";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
@@ -9,21 +8,22 @@ import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../components/_Global/PageErreur";
 import { PageNoData } from "../../components/_Global/PageNoData";
 import { SectionRefresh } from "../../components/ui/SectionRefresh";
-import { setEnseignant, setEnseignantsLoading, setErrorPageEnseignant } from "../../_redux/features/enseignant_slice";
-import ModalCreateEnseignant from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
-import { setShowModal } from "../../_redux/features/setting";
-import { apiGetEnseignantsWithPagination } from "../../api/other_users/api_enseignant";
+import { apiGetAbsencesWithEnseignantsByFilter } from "../../api/discipline/api_discipline";
+import ModalCreateUpdateAbsence from "../../components/Modals/ModalAbsence/FormCreateUpdate";
 
+import { useNavigate } from 'react-router-dom';
+import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../_redux/features/discipline_enseignant_slice";
 
 const DisciplineDesEnseignants = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
-    const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantSlice);
+    const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantDisciplineSlice);
 
-    const [selectedEnseignant, setSelectedEnseignant] = useState<EnseignantType | null>(null);
+    const [selectedEnseignant, setSelectedEnseignant] = useState<UserDiscipline | null>(null);
     const [isHourRemove, setHourRemove] = useState(false);
-    const handleEditHourEnseignant = (enseignant: EnseignantType, isHourRemove: boolean) => {
+    const handleEditHourEnseignant = (enseignant: UserDiscipline, isHourRemove: boolean) => {
         console.log("handleEditHour");
         setSelectedEnseignant(enseignant);
         setHourRemove(isHourRemove);
@@ -31,19 +31,21 @@ const DisciplineDesEnseignants = () => {
 
 
     const fetchEnseignants = async () => {
-        dispatch(setEnseignantsLoading(true));
+        dispatch(setEnseignantsDisciplineLoading(true));
         try {
-            const fetchedEnseignants = await apiGetEnseignantsWithPagination({ page: 1 });
+            const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({ page: 1 });
             if (fetchedEnseignants) {
-                dispatch(setEnseignant(fetchedEnseignants));
-                dispatch(setErrorPageEnseignant(null));
+                dispatch(setEnseignantDiscipline(fetchedEnseignants));
+                console.log(fetchedEnseignants);
+                
+                dispatch(setErrorPageEnseignantDiscipline(null));
             } else {
-                dispatch(setErrorPageEnseignant(t('message.erreur')));
+                dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
             }
         } catch (error) {
-            dispatch(setErrorPageEnseignant(t('message.erreur')));
+            dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
         } finally {
-            dispatch(setEnseignantsLoading(false));
+            dispatch(setEnseignantsDisciplineLoading(false));
         }
     };
 
@@ -51,17 +53,13 @@ const DisciplineDesEnseignants = () => {
         await fetchEnseignants();
     };
 
-    const handleCreate = () => {
-        setSelectedEnseignant(null);
-        dispatch(setShowModal())
-    }
-
 
     useEffect(() => {
         if (enseignants.length === 0) {
             fetchEnseignants();
         }
     }, [dispatch]);
+
 
     return (
         <>
@@ -75,7 +73,7 @@ const DisciplineDesEnseignants = () => {
                             <PageNoData
                                 titrePage={t('aucun.enseignant')}
                                 titreBouton={t('ajouter_votre_premier.enseignant')}
-                                showModalCreate={handleCreate}
+                                showModalCreate={() => { navigate("/teachers/teacher-list") }}
                                 refreshFunction={handleRefresh}
                             />
                             :
@@ -91,9 +89,8 @@ const DisciplineDesEnseignants = () => {
             }
 
 
-            {enseignants.length === 0 ?
-                <ModalCreateEnseignant enseignant={selectedEnseignant} />
-                : <FormCreateUpdate user={selectedEnseignant} isHourRemove={isHourRemove} />
+            {
+                <ModalCreateUpdateAbsence user={selectedEnseignant} isHourRemove={isHourRemove} />
             }
 
             {/* Boite de dialogue */}

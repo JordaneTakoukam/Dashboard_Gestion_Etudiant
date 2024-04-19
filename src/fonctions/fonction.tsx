@@ -124,6 +124,40 @@ export function premierElement(value: String) {
 
 
 
-export function removeLastLowwecase(e: string) {
-  return e;
+// calculer le nombre total d'heure d'absence a partir de la liste d'abscene
+
+export function nbTotalAbsences(listeAbsences: AbsenceType[]): string {
+  // Vérifier si la liste d'absences est vide
+  if (listeAbsences.length === 0) {
+    return '0';
+  }
+
+  // Initialiser la somme totale d'heures à 0
+  let totalHours = 0;
+
+  // Parcourir chaque absence dans la liste
+  listeAbsences.forEach(absence => {
+    // Extraire les heures de début et de fin de l'absence
+    const heureDebut = parseInt(absence.heureDebut.split(':')[0]);
+    const minuteDebut = parseInt(absence.heureDebut.split(':')[1]);
+    const heureFin = parseInt(absence.heureFin.split(':')[0]);
+    const minuteFin = parseInt(absence.heureFin.split(':')[1]);
+
+    // Calculer la différence d'heures entre l'heure de début et l'heure de fin
+    const differenceHeures = heureFin - heureDebut;
+
+    // Calculer la différence de minutes entre l'heure de début et l'heure de fin
+    const differenceMinutes = minuteFin - minuteDebut;
+
+    // Ajouter la différence d'heures à la somme totale d'heures
+    totalHours += differenceHeures;
+
+    // Si la différence de minutes est positive, ajouter une heure supplémentaire
+    if (differenceMinutes > 0) {
+      totalHours += 1;
+    }
+  });
+
+  // Retourner la somme totale d'heures sous forme de chaîne
+  return totalHours.toString();
 }

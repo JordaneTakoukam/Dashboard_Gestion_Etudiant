@@ -1,13 +1,12 @@
 import { useDispatch, useSelector } from "react-redux"
-import { capitalizeFirstLetter } from "../../../fonctions/fonction"
+import { capitalizeFirstLetter, nbTotalAbsences } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting"
-import { nbTotal } from "../TableAbsences/Table"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 
 
-const BodyTable = ({ data, onEdit }: { data: EnseignantType[], onEdit: (enseignant: EnseignantType, isHourRemove: boolean) => void }) => {
+const BodyTable = ({ data, onEdit }: { data: UserDiscipline[], onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void }) => {
 
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -48,9 +47,8 @@ const BodyTable = ({ data, onEdit }: { data: EnseignantType[], onEdit: (enseigna
                 </td>
 
                 {/* nombre d'heure d'absence */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    {/* <h5>{nbTotal(item, 1)}</h5> */}
-                    <h5>1</h5>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{nbTotalAbsences(item.absences)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}

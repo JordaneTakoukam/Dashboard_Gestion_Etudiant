@@ -41,7 +41,6 @@ const BodyTable = ({ data }: { data: MatiereType | undefined }) => {
                                             }
                                             return o;
                                         }),
-                                        competences: chapitre.competences
                                     }).then((response) => {
                                         // Gestion de la réponse de l'API
                                         if (response.success) {

@@ -44,11 +44,16 @@ export const userSlice = createSlice({
         updateUser: (state, action: PayloadAction<Partial<UpdateUserPayload>>) => {
             return { ...state, ...action.payload };
         },
+
+        // Mettre à jour uniquement la liste des niveaux de l'utilisateur
+        updateUserNiveaux: (state, action: PayloadAction<InscriptionType[]>) => {
+            state.niveaux = action.payload;
+        },
     },
 });
 
 // Exporter les actions
-export const { setUser, setMinimumUser, updateUser } = userSlice.actions;
+export const { setUser, setMinimumUser, updateUserNiveaux, updateUser } = userSlice.actions;
 
 // Exporter le reducer
 export default userSlice.reducer;

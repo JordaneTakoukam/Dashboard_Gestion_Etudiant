@@ -21,18 +21,13 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const [typesEnseignementState, setTypesEnseignementState] = useState<CommonSettingProps[]>([]); // État local pour les types d'enseignement
     const [objectifs, setObjectifs] = useState<ObjectifType[]>([]); // État local pour les objectifs
-    const [competences, setCompetences] = useState<CompetenceType[]>([]); // État local pour les compétences
     const [enseignementState, setEnseignementState] = useState<EnseignementType[]>([]); // État local pour les types d'enseignement
-    const [selectedType, setSelectedType]=useState("");
-    const [selectedVolume, setSelectedVolume]=useState(0);
     
     const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
     const [errorTypesEnseignement, setErrorTypesEnseignement] = useState("");
-    const [errorObjectif, setErrorObjectif] = useState("");
-    const [errorCompetence, setErrorCompetence] = useState("");
    
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
@@ -80,8 +75,6 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             setErrorLibelleFr("");
             setErrorLibelleEn("");
             setErrorTypesEnseignement("");
-            setErrorObjectif("");
-            setErrorCompetence("");
             setIsFirstRender(false);
             setTypesEnseignementState([]);
             setObjectifs([]);
@@ -247,7 +240,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                         code, 
                         libelleFr, 
                         libelleEn, 
-                        typesEnseignement:chapitre.typesEnseignement, 
+                        typesEnseignement:enseignementState, 
                         matiere:matiere._id, 
                         objectifs:chapitre.objectifs,
                         _id:chapitre._id

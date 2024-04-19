@@ -3,7 +3,6 @@ import Breadcrumb from "../../components/Breadcrumb";
 import FormCreateUpdate from "../../components/Modals/ModalChapitre/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalChapitre/FormDelete";
 import Table from "../../components/Tables/TableChapitre/Table";
-import { Matiere } from "./ListeMatieres";
 import { useTranslation } from "react-i18next";
 import Objectifs from "./Objectifs";
 

@@ -91,6 +91,30 @@ export async function getMatieresByNiveauWithPagination({ niveauId, page }: { ni
         throw error;
     }
 }
+export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId }: { niveauId: string, enseignantId: string }): Promise<MatiereReturnGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getMatieresByEnseignantNiveau/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    enseignantId: enseignantId,
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const matieres: MatiereReturnGetType = response.data.data;
+        
+        return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 
 export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Promise<ProgressionMatiereReturnGetType> {
     try {

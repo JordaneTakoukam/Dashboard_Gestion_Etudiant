@@ -11,6 +11,7 @@ interface EtudiantCreateType {
     genre: string;
     date_entree: string | null;
     date_naiss: string | null;
+    roles?:string[];
 
     nom: string;
     prenom: string | null;
@@ -60,6 +61,11 @@ interface CreateEtudiantPayload {
 interface UpdateEtudiantPayload {
     id: string; // ID de l'événement à mettre à jour
     etudiantData: Partial<EtudiantType>; // Données mises à jour de l'événement
+}
+
+interface UpdateRolesPayload {
+    id: string; // ID de l'événement à mettre à jour
+    roles?: string[]; // Données mises à jour de l'événement
 }
 
 interface DeleteEtudiantPayload {

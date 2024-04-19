@@ -15,7 +15,7 @@ const initialState: DataSettingSlice = {
         niveaux: [],
         salleDeCours: [],
         typesEnseignement: [],
-        etatEvenements: [],
+        etatsEvenement: [],
         anneeCourante: 2024,
         premiereAnnee: 2024,
         semestreCourant : 0,
@@ -45,6 +45,15 @@ const dataSettingSlice = createSlice({
         //
         setDataSetting(state, action: PayloadAction<DataSettingProps>) {
             state.dataSetting = action.payload;
+        },
+        setSections(state, action:PayloadAction<CommonSettingProps[]>){
+            state.dataSetting.sections = action.payload;
+        },
+        setCycles(state, action:PayloadAction<CycleProps[]>){
+            state.dataSetting.cycles = action.payload;
+        },
+        setNiveaux(state, action:PayloadAction<NiveauProps[]>){
+            state.dataSetting.niveaux = action.payload;
         },
 
 
@@ -112,6 +121,9 @@ export const {
     createSettingItem,
     updateSettingItem,
     deleteSettingItem,
+    setSections,
+    setCycles,
+    setNiveaux
     //
 } = dataSettingSlice.actions;
 

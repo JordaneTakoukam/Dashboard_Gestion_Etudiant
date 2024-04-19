@@ -10,18 +10,20 @@ import Table from "../../components/Tables/TablePeriodeEnseignement/Table";
 import FormCreateUpdate from "../../components/Modals/ModalPeriodeEnseignement/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalPeriodeEnseignement/FormDelete";
 import EnseignementsPeriode from "./EnseignementsPeriode";
+import { setShowModalPeriode } from "../../_redux/features/setting";
 
 
 
 const ListeDesPeriodesEnseignement = () => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const [openEnseignementsPeriode, setOpenEnseignement]=useState(false);
+    // const [openEnseignementsPeriode, setOpenEnseignement]=useState(false);
     const [selectedPeriodeEnseignement, setSelectedPeriodeEnseignement] = useState<PeriodeEnseignementType | null>(null);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     const currentNiveauId =niveaux && niveaux.length>0 && niveaux[0]._id;
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const openEnseignementsPeriode = useSelector((state: RootState) => state.setting.showModal.openPeriode);
     // Utilisez useSelector pour accéder à l'état du reducer
     const { data: { periodes } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
 
@@ -65,17 +67,17 @@ const ListeDesPeriodesEnseignement = () => {
 
     const handleEditPeriodeEnseignement = (periodeEnseignement : PeriodeEnseignementType) => {
         setSelectedPeriodeEnseignement(periodeEnseignement);
-        setOpenEnseignement(false);
+        // setOpenEnseignement(false);
     }
 
     const handleAddPeriodeEnseignement = () => {
         setSelectedPeriodeEnseignement(null);
-        setOpenEnseignement(false);
+        dispatch(setShowModalPeriode(false));
     }
 
     const handleOpenEnseignementsPeriode = (periodeEnseignement: PeriodeEnseignementType) => {
         setSelectedPeriodeEnseignement(periodeEnseignement);
-        setOpenEnseignement(true);
+        // setOpenEnseignement(true);
     };
     return (
         <>

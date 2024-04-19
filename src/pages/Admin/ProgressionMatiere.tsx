@@ -4,7 +4,7 @@ import Table from "../../components/Tables/TableProgressionMatiere/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { RootState } from "../../_redux/store";
-import { getMatieresByNiveau } from "../../api/api_matiere";
+import { getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../api/api_matiere";
 import createToast from "../../hooks/toastify";
 import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../_redux/features/progession_matiere_slice";
 import { config } from "../../config";
@@ -27,15 +27,38 @@ const ProgressionMatiere = () => {
             if (sections.length > 0 && cycles.length > 0 && niveaux.length > 0) {
                 dispatch(setMatiereLoading(true)); // Définir le chargement à true avant de récupérer les données
                 try {
+                    const matieres : ProgressionMatiereReturnGetType = {
+                        matieres: [],
+                        currentPage: 0,
+                        totalItems: 0,
+                        totalPages: 0,
+                        pageSize: 0
+                    }
                     const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
                     let currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
                     if(roles.delegue === currentUser.role || roles.etudiant === currentUser.role){
                         const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
                         currentNiveauId=currentNiveau?._id;
                     }
+                    if(roles.enseignant === currentUser.role){
+                        const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux[0]?.niveau);
+                        currentNiveauId=currentNiveau?._id;
+                    }
                     if (currentNiveauId) {
-                        const fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId });
-                        dispatch(setMatieres(fetchedMatieres));
+                        let fetchedMatieres = null
+                        if(currentUser && currentUser.role===roles.enseignant){
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id });
+                        }else{
+                            fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId });
+                        }
+                        if(fetchedMatieres){
+                            dispatch(setMatieres(fetchedMatieres));
+                        }else{
+                            dispatch(setMatieres(matieres));
+                        }
+                        
+                    }else{
+                        dispatch(setMatieres(matieres));
                     }
                     dispatch(setErrorPageMatiere(null)); // Réinitialiser les erreurs s'il y en a
                 } catch (error) {

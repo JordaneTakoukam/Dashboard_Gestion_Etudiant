@@ -1,11 +1,14 @@
 import { useDispatch } from "react-redux"
 import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting"
+import { setShowModal, setShowModalDelete, setShowModalUpdate, setShowRoleModal } from "../../../_redux/features/setting"
+import { SelectButton } from "../common/composants/SelectButton"
+import { useTranslation } from "react-i18next"
 
-const BodyTableEtudiant = ({ data, onEdit }: { data: EtudiantType[], onEdit: (etudiant: EtudiantType) => void }) => {
+const BodyTableEtudiant = ({ data, onEdit, onAddRole }: { data: EtudiantType[], onEdit: (etudiant: EtudiantType) => void, onAddRole: (etudiant: EtudiantType) => void }) => {
 
     const dispatch = useDispatch();
+    const {t}=useTranslation();
 
     return <tbody>
         {data && data.map((item, index) => (
@@ -47,7 +50,15 @@ const BodyTableEtudiant = ({ data, onEdit }: { data: EtudiantType[], onEdit: (et
                 
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                    <SelectButton
+                        listPage={[
+                            {
+                                "name": t('label.roles'),
+                                "handleClick": () => { onAddRole(item) ; dispatch(setShowRoleModal());}
+                            },
+                        ]}
+                    />
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);

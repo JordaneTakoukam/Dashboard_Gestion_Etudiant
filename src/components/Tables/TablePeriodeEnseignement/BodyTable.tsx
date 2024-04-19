@@ -1,10 +1,12 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalChapitre, setShowModalDelete } from "../../../_redux/features/setting"
+import { setShowModal, setShowModalChapitre, setShowModalDelete, setShowModalPeriode } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
+import { SelectButton } from "../common/composants/SelectButton"
+import { useTranslation } from "react-i18next"
 
 interface BodyPeriodeEnseignementProps {
     data: PeriodeEnseignementType[];
@@ -20,7 +22,7 @@ const BodyTable = ({ data, onEdit, onAddEnseignement }: BodyPeriodeEnseignementP
         onAddEnseignement(matiere); // Appeler la fonction onAddEnseignement avec la matière sélectionnée
         navigate("save/chapitres"); // Rediriger vers l'interface d'ajout de chapitres
     };
-    
+    const {t}=useTranslation();
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
@@ -49,7 +51,15 @@ const BodyTable = ({ data, onEdit, onAddEnseignement }: BodyPeriodeEnseignementP
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                    <SelectButton
+                        listPage={[
+                           {
+                                "name": t('label.enseignements'),
+                                "handleClick": () => {onAddEnseignement(item); dispatch(setShowModalPeriode(true))}
+                            }
+                        ]}
+                    />
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);
@@ -60,7 +70,7 @@ const BodyTable = ({ data, onEdit, onAddEnseignement }: BodyPeriodeEnseignementP
                             dispatch(setShowModalDelete())
                         }:undefined}
                         
-                        onClickOpenChapitres={() => onAddEnseignement(item)} 
+                        // onClickOpenChapitres={() => onAddEnseignement(item)} 
                     />
                     
                 </td>

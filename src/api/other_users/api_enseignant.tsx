@@ -104,6 +104,29 @@ export async function apiGetTotalEnseignants(): Promise<number> {
     }
 }
 
+export async function apiGetNiveauxByEnseignant({enseignantId, annee, semestre}: {enseignantId:string,annee:number,semestre:number }): Promise<InscriptionType[]> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getNiveauxByEnseignant/${enseignantId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee:annee,
+                    semestre:semestre
+                },
+            },
+        );
+        const niveaux: InscriptionType[] = response.data.data;
+        console.log("===="+niveaux);
+        return niveaux;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 
 // create
 export async function apiCreateEnseignant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {

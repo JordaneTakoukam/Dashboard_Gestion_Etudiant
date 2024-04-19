@@ -7,15 +7,15 @@ import LoadingTable from "../Tables/common/LoadingTable";
 
 interface CardCourProgrammerPros {
     additionalStyle?: String,
-    listCourProgrammer: PeriodeType[]
+    listCourProgrammer: PeriodeType[] 
+    pageIsLoading?:boolean,
 }
 
-export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer }: CardCourProgrammerPros) => {
+export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer, pageIsLoading }: CardCourProgrammerPros) => {
     const {t}=useTranslation();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
     const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
-    const pageIsLoading=listCourProgrammer && listCourProgrammer.length==0;
     return (
         <div className={`relative ${additionalStyle} rounded-sm border border-stroke bg-white py-6 px-5 shadow-default dark:border-strokedark dark:bg-boxdark  w-full`}>
 

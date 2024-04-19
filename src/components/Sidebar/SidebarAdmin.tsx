@@ -16,6 +16,8 @@ import { LuBookMarked } from "react-icons/lu";
 import { FaCalendarAlt } from "react-icons/fa";
 import { FaRegCopyright } from "react-icons/fa6";
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { setShowModalChapitre, setShowModalEnseignement, setShowModalPeriode } from '../../_redux/features/setting';
 
 
 
@@ -30,6 +32,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
     const [sidebarExpanded, setSidebarExpanded] = useState(
@@ -321,8 +324,10 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 'group relative flex items-center  pb-2 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && ' text-secondary')
                                                             }
+                                                            onClick={() => { dispatch(setShowModalChapitre(false)); dispatch(setShowModalEnseignement(false)); }}
                                                         >
                                                             {t('sub_menu.liste_matiere')}
+                                                            
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -332,6 +337,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && 'text-secondary')
                                                             }
+
                                                         >
                                                             {t('sub_menu.progression')}
                                                         </NavLink>
@@ -343,6 +349,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && 'text-secondary')
                                                             }
+                                                            onClick={() => { dispatch(setShowModalPeriode(false)); }}
                                                         >
                                                             {t('sub_menu.periodes_enseignement')}
                                                         </NavLink>

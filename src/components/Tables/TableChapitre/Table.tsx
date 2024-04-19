@@ -53,6 +53,10 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
     };
 
     useEffect(() => {
+        setFilteredData(data);
+    }, [dispatch, data]);
+
+    useEffect(() => {
         const result = filterChapitreByContent(data);
         setFilteredData(result);
     }, [searchText, data]);

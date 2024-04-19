@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalChapitre, setShowModalDelete } from "../../../_redux/features/setting"
-import { Matiere } from "../../../pages/Admin/ListeMatieres"
+import { setShowModal, setShowModalChapitre, setShowModalDelete, setShowModalEnseignement } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { useState } from "react"
@@ -31,7 +30,7 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
                 if (selectedMatiere) {
                     onAddChap(selectedMatiere);
                 }
-                dispatch(setShowModalChapitre())
+                // dispatch(setShowModalChapitre())
                 break;
             case 'Ajouter un objectif':
                 // Logic to add an objective                    
@@ -118,11 +117,11 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
                         listPage={[
                             {
                                 "name": t('label.chapitres'),
-                                "handleClick": () => { onAddChap(item) }
+                                "handleClick": () => { onAddChap(item);dispatch(setShowModalChapitre(true)) }
                             },
                             {
                                 "name": t('label.enseignements'),
-                                "handleClick": () => {onAddEnseignement(item) }
+                                "handleClick": () => {onAddEnseignement(item); dispatch(setShowModalEnseignement(true))}
                             }
                         ]}
                     />

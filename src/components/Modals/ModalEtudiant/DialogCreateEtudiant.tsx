@@ -492,7 +492,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         categorie:categorie?._id||null,
                         fonction:fonction?._id||null,
                         service:service?._id||null,
-                        commune:commune?._id||null
+                        commune:commune?._id||null,
+                        roles:etudiant.roles
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {

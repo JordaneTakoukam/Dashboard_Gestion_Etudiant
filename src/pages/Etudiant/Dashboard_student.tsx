@@ -5,31 +5,46 @@ import { CardCourProgrammer } from '../../components/CardDashboard/CardCourProgr
 import CardDashboard from '../../components/CardDashboard/CardDashboard.tsx';
 import { CardEvenement } from '../../components/CardDashboard/CardEvenement.tsx';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../_redux/store.tsx';
 import { getProgressionGlobalEnseignants, getProgressionGlobalEnseignantsNiveau } from '../../api/api_chapitre.tsx';
 import { getFirstTenEventsOfYear } from '../../api/api_evenement.tsx';
 import { apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx';
 import { apiGetTotalEtudiantByYear } from '../../api/other_users/api_etudiant.tsx';
 import { getPeriodesAVenirByNiveau } from '../../api/api_periode.tsx';
+import { setSections, setCycles, setNiveaux } from '../../_redux/features/data_setting_slice.tsx';
 
 
 
 const DashBoardStudent = () => {
     const {t}=useTranslation();
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const [totalEtudiant, setTotalEtudiant] = useState<number>(0);
     const [totalEnseignant, setTotalEnseignant] = useState<number>(0);
     const [evenements, setEvenements] = useState<EvenementType[]>([]);
     const [periodes, setPeriodes] = useState<PeriodeType[]>([]);
     const [progression, setProgression] = useState<number>(0);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
-    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const niveaux:NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
     const currentNiveauId=currentNiveau?._id;
+    const dispatch = useDispatch();
 
     useEffect(() => {
+        const niveauxEtuIds = currentUser.niveaux.map(inscription => inscription.niveau) ?? [];
+        const niveauxEtu = niveaux.filter(niveau => niveau._id && niveauxEtuIds.includes(niveau._id));
+        const filteredCycles = cycles.filter(cycle =>
+            niveauxEtu.some(niveau => niveau.cycle === cycle._id)
+        );
+        const filteredSections = sections.filter(section =>
+            filteredCycles.some(cycle => cycle.section === section._id)
+        );
+        dispatch(setSections(filteredSections));
+        dispatch(setCycles(filteredCycles));
+        dispatch(setNiveaux(niveauxEtu));
         const fetchData = async () => {
             try {
                 const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });

@@ -18,7 +18,7 @@ interface ChartProps {
 
 export const ChartNombreEtudiant: React.FC = () => {
     const pageIsLoading = false;
-    const listNiveau = ['1ère année', '2ème année', '3ème année', '4ème année', '5ème année'];
+    const listSection = ['1ère année', '2ème année', '3ème année', '4ème année', '5ème année'];
     const listHeureAbscenceEtudiant = [40, 105, 15, 55, 20];
     const { t } = useTranslation();
 
@@ -64,7 +64,7 @@ export const ChartNombreEtudiant: React.FC = () => {
         },
 
         xaxis: {
-            categories: listNiveau,
+            categories: listSection,
         },
         legend: {
             position: 'top',
@@ -101,7 +101,7 @@ export const ChartNombreEtudiant: React.FC = () => {
             <div className="mb-4 justify-between gap-4 sm:flex">
                 <div>
                     <h4 className="text-md xl:text-[18px]  font-semibold text-black dark:text-white">
-                        {t('tableau_de_bord.nombre_absence_niveau')}
+                        {t('tableau_de_bord.nombre_absence_section')}
                     </h4>
                 </div>
 

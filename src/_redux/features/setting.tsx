@@ -11,6 +11,8 @@ interface SettingState {
         open: boolean,
         addRole:boolean,
         openChapitre: boolean,
+        openEnseignement:boolean,
+        openPeriode:boolean,
         toDoSondage: boolean,
     };
     currentIndexUserRole: number,
@@ -26,6 +28,8 @@ const initialState: SettingState = {
         open: false,
         addRole:false,
         openChapitre: false,
+        openEnseignement:false,
+        openPeriode:false,
         toDoSondage: false,
     },
     currentIndexUserRole: 0,
@@ -64,8 +68,16 @@ export const settingSlice = createSlice({
             state.showModal.toDoSondage = !state.showModal.toDoSondage;
         },
 
-        setShowModalChapitre: (state) => {
-            state.showModal.openChapitre = !state.showModal.openChapitre;
+        setShowModalChapitre: (state, action:PayloadAction<boolean>) => {
+            state.showModal.openChapitre = action.payload;
+        },
+
+        setShowModalEnseignement: (state, action:PayloadAction<boolean>) => {
+            state.showModal.openEnseignement = action.payload;
+        },
+
+        setShowModalPeriode: (state, action:PayloadAction<boolean>) => {
+            state.showModal.openPeriode = action.payload;
         },
 
         setShowLanguage: (state, action: PayloadAction<string>) => {
@@ -89,8 +101,8 @@ export const settingSlice = createSlice({
 export const {
     setShowModalDeleteCustom,
     setShowModalCustom,
-    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre, setShowModalToDOSondage
-    , setSaveDeviceType,setShowRoleModal,
+    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre,setShowModalEnseignement, setShowModalToDOSondage
+    , setSaveDeviceType,setShowRoleModal, setShowModalPeriode,
     setCurrentIndexUserRole,
 } = settingSlice.actions;
 

@@ -18,7 +18,6 @@ import { getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveau
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
-import { setCycles, setSections } from "../../../_redux/features/data_setting_slice";
 
 interface TableMatiereProps {
     data: MatiereType[];

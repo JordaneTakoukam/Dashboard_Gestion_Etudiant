@@ -14,12 +14,15 @@ import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redu
 import Enseignements from "./Enseignements";
 import { config } from "../../config";
 import { setSections, setCycles } from "../../_redux/features/data_setting_slice";
+import { setShowModalChapitre, setShowModalEnseignement } from "../../_redux/features/setting";
 
 const ListeDesMatieres = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [openChapitres, setOpenChapitre] = useState(false);
-    const [openEnseignements, setOpenEnseignements] = useState(false);
+    // const [openChapitres, setOpenChapitre] = useState(false);
+    // const [openEnseignements, setOpenEnseignements] = useState(false);
+    const openChapitres = useSelector((state: RootState) => state.setting.showModal.openChapitre);
+    const openEnseignements = useSelector((state: RootState) => state.setting.showModal.openEnseignement);
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType | null>(null);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
@@ -84,27 +87,27 @@ const ListeDesMatieres = () => {
 
     const handleEditMatiere = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);
-        setOpenChapitre(false);
-        setOpenEnseignements(false);
+        // setOpenChapitre(false);
+        // setOpenEnseignements(false);
     }
 
     const handleAddMatiere = () => {
         setSelectedMatiere(null);
-        setOpenChapitre(false);
-        setOpenEnseignements(false);
+        dispatch(setShowModalChapitre(false));
+        dispatch(setShowModalEnseignement(false));
     }
 
     const handleOpenChapitres = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);
-        setOpenChapitre(true);
-        setOpenEnseignements(false);
+        // setOpenChapitre(true);
+        // setOpenEnseignements(false);
         
     };
 
     const handleOpenEnseignement = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);
-        setOpenEnseignements(true);
-        setOpenChapitre(false);
+        // setOpenEnseignements(true);
+        // setOpenChapitre(false);
     };
     return (
         <>

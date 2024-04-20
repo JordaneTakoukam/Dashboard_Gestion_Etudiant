@@ -69,6 +69,8 @@ const DisciplineDesEnseignants = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (enseignants.length === 0) {
+                dispatch(setEnseignantsDisciplineLoading(true));
+
                 while (loadingSetting) {
                     await new Promise(resolve => setTimeout(resolve, 100)); // Attendre 100ms avant de vérifier à nouveau
                 }
@@ -78,7 +80,7 @@ const DisciplineDesEnseignants = () => {
 
         fetchData();
 
-    }, [dispatch, enseignants.length, loadingSetting, fetchEnseignants]);
+    }, [enseignants.length, loadingSetting]);
 
 
     return (

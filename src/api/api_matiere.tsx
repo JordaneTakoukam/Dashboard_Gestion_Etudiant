@@ -27,6 +27,7 @@ export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, pre
 }
 
 export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
+    
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,

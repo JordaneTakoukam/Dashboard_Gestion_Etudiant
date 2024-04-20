@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { updateEnseignant } from "./enseignant_slice";
 
 
 
@@ -39,6 +40,24 @@ const matiereSlice = createSlice({
             if (index !== -1) {
                 state.data.matieres[index] = { ...state.data.matieres[index], ...matiereData };
             }
+            
+        },
+        updateChapitres(state, action: PayloadAction<UpdateChapitresPayload>) {
+            const { id, chapitresData } = action.payload;
+            const index = state.data.matieres.findIndex(e => e._id === id);
+            if (index !== -1) {
+                state.data.matieres[index].chapitres = chapitresData
+                
+            }
+        },
+
+        updateEnseignements(state, action: PayloadAction<UpdateEnseignementsPayload>) {
+            const { id, enseignementsData } = action.payload;
+            const index = state.data.matieres.findIndex(e => e._id === id);
+            if (index !== -1) {
+                state.data.matieres[index].typesEnseignement = enseignementsData
+                
+            }
         },
         deleteMatiere(state, action: PayloadAction<DeleteMatierePayload>) {
             const { id } = action.payload;
@@ -54,7 +73,9 @@ export const {
     setMatieres,
     createMatiere,
     updateMatiere,
-    deleteMatiere
+    deleteMatiere,
+    updateChapitres,
+    updateEnseignements
 } = matiereSlice.actions;
 
 // Reducer exporté

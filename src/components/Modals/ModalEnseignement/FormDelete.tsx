@@ -55,7 +55,7 @@ function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : Mat
                                 periodeEn: e.data.periodeEn,
                                 dateDebut: e.data.dateDebut,
                                 dateFin: e.data.dateFin,
-                                enseignements: e.data.enseignements
+                                enseignements: newEnseignements
                             }
                         }));
                     closeModal();

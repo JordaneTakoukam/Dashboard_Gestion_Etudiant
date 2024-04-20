@@ -106,6 +106,8 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
             // Filtrer les départements en fonction de l'ID de la région
             const result: CommuneProps[] = data.filter(commune => commune.departement === departementId);
             setFilteredCommune(result);
+        }else{
+            setFilteredCommune([]);
         }
     };
 
@@ -144,7 +146,9 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
                 filterCommunexByDepartement(selectDepartementId);
             }
                 
-        }        
+        } else{
+            setFilteredCommune([]);
+        }      
     }, [filteredDepartement, data]);
 
 

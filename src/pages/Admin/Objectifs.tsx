@@ -9,12 +9,13 @@ import FormDelete from "../../components/Modals/ModalObjectif/FormDelete";
 
 interface ObjectifsProps {
     chapitreSelectionnee?: ChapitreType | null; 
-    returnWithMatiere?:()=>void;
+    matiereCourant?:MatiereType|null;
     returnWithChapitre?:()=>void;
-    
+    onEditMatiere: (matiere : MatiereType) => void;
+    onEditChapitre: (chapitre : ChapitreType) => void;
 }
 
-const Objectifs = ({ chapitreSelectionnee, returnWithChapitre }: ObjectifsProps) => {
+const Objectifs = ({ chapitreSelectionnee, matiereCourant, returnWithChapitre, onEditMatiere, onEditChapitre }: ObjectifsProps) => {
     const [selectedObjectif, setSelectedObjectif] = useState<ObjectifType | null>(null);
     const handleEditObejctif = (objectif: ObjectifType) => {
         setSelectedObjectif(objectif);
@@ -30,10 +31,10 @@ const Objectifs = ({ chapitreSelectionnee, returnWithChapitre }: ObjectifsProps)
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.objectifs')} isObjectif={true} isChapitre={false} returnWithChapitre={returnWithChapitre}/>
-            <Table data={chapitreSelectionnee?.objectifs}  onCreate={handleAddObjectif} onEdit={handleEditObejctif} chapitre={chapitreSelectionnee}/>
+            <Table data={chapitreSelectionnee?.objectifs}  onCreate={handleAddObjectif} onEdit={handleEditObejctif} chapitre={chapitreSelectionnee} onEditMatiere={onEditMatiere} onEditChapitre={onEditChapitre}/>
 
-            <FormCreateUpdate objectif={selectedObjectif} chapitre={chapitreSelectionnee}/>
-            <FormDelete objectif={selectedObjectif}  chapitre={chapitreSelectionnee}/>
+            <FormCreateUpdate objectif={selectedObjectif} chapitre={chapitreSelectionnee} matiere={matiereCourant}/>
+            <FormDelete objectif={selectedObjectif}  chapitre={chapitreSelectionnee} matiere={matiereCourant}/>
 
         </>
     );

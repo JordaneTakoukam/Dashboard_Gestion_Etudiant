@@ -225,7 +225,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                                 periodeEn: e.data.periodeEn,
                                 dateDebut: e.data.dateDebut,
                                 dateFin: e.data.dateFin,
-                                enseignements: e.data.enseignements
+                                enseignements: newEnseignements
                             }
                         }));
                     closeModal();

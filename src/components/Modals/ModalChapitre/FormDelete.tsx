@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { apiDeleteChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
 import { deleteChapitre } from '../../../_redux/features/chapitre_slice';
-import { updateMatiere } from '../../../_redux/features/matiere_slice';
+import { updateChapitres, updateMatiere } from '../../../_redux/features/matiere_slice';
 
 
 
@@ -36,26 +36,10 @@ function ModalDelete({ chapitre, matiere }: { chapitre : ChapitreType|null, mati
                                 
                             }
     
-                            dispatch(
-                                updateMatiere({
-                                    id: matiere._id,
-                                    matiereData: {
-                                        _id: matiere._id,
-                                        code:matiere.code,
-                                        libelleFr:matiere.libelleFr,
-                                        libelleEn:matiere.libelleEn,
-                                        niveau:matiere.niveau, 
-                                        prerequisFr:matiere.prerequisFr, 
-                                        prerequisEn:matiere.prerequisEn, 
-                                        approchePedFr:matiere.approchePedFr, 
-                                        approchePedEn:matiere.approchePedEn, 
-                                        evaluationAcquisFr:matiere.evaluationAcquisFr, 
-                                        evaluationAcquisEn:matiere.evaluationAcquisEn,
-                                        typesEnseignement:matiere.typesEnseignement,
-                                        chapitres:newChapitres,
-    
-                                    }
-                                }));
+                            dispatch(updateChapitres({
+                                id: matiere._id,
+                                chapitresData:newChapitres
+                            }));
                         }
                     }
     

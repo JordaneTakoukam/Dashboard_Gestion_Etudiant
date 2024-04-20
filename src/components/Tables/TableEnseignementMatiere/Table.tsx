@@ -14,11 +14,12 @@ interface TableEnseignementProps {
     data?: EnseignementType[];
     onCreate:()=>void;
     onEdit: (enseignement:EnseignementType) => void;
+    onEditMatiere: (matiere : MatiereType) => void;
     matiere?: MatiereType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, matiere }: TableEnseignementProps) => {
+const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -50,7 +51,15 @@ const Table = ({ data, onCreate, onEdit, matiere }: TableEnseignementProps) => {
     //     }
     //    return [];
     // };
-
+    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    useEffect(() => {
+        console.log(matieres)
+        const mat = matieres.find(m=>m._id===matiere?._id);
+        if(mat){
+            onEditMatiere(mat)
+        }
+        setFilteredData(mat?.typesEnseignement);
+    },[matieres]);
     useEffect(() => {
         setFilteredData(data);
     }, [dispatch]);

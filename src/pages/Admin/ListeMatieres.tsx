@@ -116,8 +116,8 @@ const ListeDesMatieres = () => {
 
             {!openChapitres && !openEnseignements && <FormCreateUpdate matiere={selectedMatiere} />}
             {!openChapitres && !openEnseignements && <FormDelete matiere={selectedMatiere} />}
-            {openChapitres && !openEnseignements && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} />}
-            {openEnseignements && !openChapitres && <Enseignements matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} />}
+            {openChapitres && !openEnseignements && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} onEditMatiere={handleEditMatiere}/>}
+            {openEnseignements && !openChapitres && <Enseignements matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} onEditMatiere={handleEditMatiere}/>}
         </>
     );
 };

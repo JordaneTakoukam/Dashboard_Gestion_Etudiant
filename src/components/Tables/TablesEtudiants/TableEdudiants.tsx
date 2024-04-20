@@ -19,6 +19,7 @@ import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
 import { apiGetEtudiants, apiGetEtudiantsWithPagination } from "../../../api/other_users/api_etudiant";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import MyPDFComponent from "./MyPDFComponent";
 
 interface TableEtudiantProps {
     data: EtudiantType[];
@@ -65,12 +66,18 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
                 setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+                filterNiveauxByCycle(cycle?._id)
             }else{
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
+                filterNiveauxByCycle(undefined);
+                setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
-          
+        }else{
+            setFilteredCycle([])
+            setSelectIdCycle(undefined);
+            setCycle(undefined);
         }
     };
 
@@ -83,11 +90,17 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
                 setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
+                setFilteredNiveaux(result)
             }else{
                 setSelectIdNiveau(undefined);
                 setNiveau(undefined);
+                setFilteredNiveaux([])
             }
-            setFilteredNiveaux(result);
+            
+        }else{
+            setFilteredNiveaux([])
+            setSelectIdNiveau(undefined);
+            setNiveau(undefined);
         }
     };
     const [formatToDownload, setFormatToDownload] = useState("");
@@ -115,15 +128,21 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 title = "subjects_list_"+formatYear(selectedYear);
             }
             if(selected === 'PDF'){
+                if(etudiants){
+                    console.log("students")
+                    MyPDFComponent({students:etudiants})
+                }
 
             }else if (selected === 'CSV'){
-
+                
             }else{
                 exportToExcel(title+".xlsx", etudiants)
             }
         })
         
     };
+
+    
 
     const exportToExcel = ( filename: string,etudiants: EtudiantType[] | undefined) => {
         if(etudiants){

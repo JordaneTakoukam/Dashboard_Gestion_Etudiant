@@ -14,11 +14,13 @@ interface TableObjectifProps {
     data?: ObjectifType[];
     onCreate:()=>void;
     onEdit: (objectif:ObjectifType) => void;
+    onEditMatiere: (matiere : MatiereType) => void;
+    onEditChapitre: (chapitre : ChapitreType) => void;
     chapitre?: ChapitreType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, chapitre }: TableObjectifProps) => {
+const Table = ({ data, onCreate, onEdit, chapitre, onEditMatiere, onEditChapitre}: TableObjectifProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -50,6 +52,24 @@ const Table = ({ data, onCreate, onEdit, chapitre }: TableObjectifProps) => {
         }
        return [];
     };
+
+    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    useEffect(() => {
+        
+        const mat = matieres.find(m=>m._id===chapitre?.matiere);
+        if(mat){
+            onEditMatiere(mat)
+        }
+        if(mat && mat.chapitres && mat.chapitres.length>0){
+            const chap=chapitre && mat.chapitres.find(chap=>chap._id=== chapitre._id);
+            if(chap){
+                onEditChapitre(chap);
+                setFilteredData(chap.objectifs);
+            }
+            
+        }
+        
+    },[matieres]);
 
     useEffect(() => {
         const result = filterObjectifByContent(data);

@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
-import { updateChapitre } from '../../../_redux/features/chapitre_slice';
 import { apiUpdateChapitre } from '../../../api/api_chapitre';
+import { updateMatiere } from '../../../_redux/features/matiere_slice';
 
 
 
-function ModalCreateUpdate({ objectif, chapitre  }: { objectif: ObjectifType | null, chapitre : ChapitreType |undefined|null }) {
+function ModalCreateUpdate({ objectif, chapitre, matiere  }: { objectif: ObjectifType | null, chapitre : ChapitreType |undefined|null, matiere:MatiereType | undefined | null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
     const dispatch = useDispatch();
@@ -103,6 +103,54 @@ function ModalCreateUpdate({ objectif, chapitre  }: { objectif: ObjectifType | n
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        const chap= {
+                            _id: e.data._id,
+                            code: e.data.code, 
+                            libelleFr: e.data.libelleFr, 
+                            libelleEn: e.data.libelleEn, 
+                            typesEnseignement:chapitre.typesEnseignement, 
+                            matiere:e.data.matiere, 
+                            objectifs:e.data.objectifs,
+                        }
+                        
+                        const newChapitres:ChapitreType[] = [];
+                        if(matiere){
+                            for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
+                                const chap = matiere.chapitres[i];
+                                // if(chapitre._id!==chap._id){
+                                newChapitres.push(chap)
+                                // }
+                            }
+                            const index = newChapitres.findIndex(e => e._id === chapitre._id);
+                            if (index !== -1) {
+                                newChapitres[index]=chap;
+                            }else{
+                                newChapitres.push(chap)
+                            }
+                        }
+                        
+                        if(matiere && matiere._id){    
+                            dispatch(
+                                updateMatiere({
+                                    id: matiere._id,
+                                    matiereData: {
+                                        _id: matiere._id,
+                                        code:matiere.code,
+                                        libelleFr:matiere.libelleFr,
+                                        libelleEn:matiere.libelleEn,
+                                        niveau:matiere.niveau, 
+                                        prerequisFr:matiere.prerequisFr, 
+                                        prerequisEn:matiere.prerequisEn, 
+                                        approchePedFr:matiere.approchePedFr, 
+                                        approchePedEn:matiere.approchePedEn, 
+                                        evaluationAcquisFr:matiere.evaluationAcquisFr, 
+                                        evaluationAcquisEn:matiere.evaluationAcquisEn,
+                                        typesEnseignement:matiere.typesEnseignement,
+                                        chapitres:newChapitres,
+        
+                                    }
+                                }));
+                            }
                         closeModal();
 
                     } else {
@@ -111,7 +159,7 @@ function ModalCreateUpdate({ objectif, chapitre  }: { objectif: ObjectifType | n
                     }
                 }).catch((e) => {
                     console.log(e);
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    createToast(e.responsmatiere.message[lang as keyof typeof e.responsmatiere.message], '', 2);
                 })
             }
         }else{
@@ -123,7 +171,6 @@ function ModalCreateUpdate({ objectif, chapitre  }: { objectif: ObjectifType | n
                     libelleEn,
                     etat: objectif.etat
                 };
-                
                
                 var newObjectifs:ObjectifType[] = [];
                 for (let i = 0; chapitre.objectifs && i < chapitre.objectifs.length; i++) {
@@ -134,6 +181,7 @@ function ModalCreateUpdate({ objectif, chapitre  }: { objectif: ObjectifType | n
                 if (index !== -1) {
                     newObjectifs[index] = updatedObjectif;
                 }
+                console.log(newObjectifs)
                 await apiUpdateChapitre(
                     {
                         _id:chapitre._id, 
@@ -146,14 +194,60 @@ function ModalCreateUpdate({ objectif, chapitre  }: { objectif: ObjectifType | n
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
                         
+                        const chap= {
+                            _id: e.data._id,
+                            code: e.data.code, 
+                            libelleFr: e.data.libelleFr, 
+                            libelleEn: e.data.libelleEn, 
+                            typesEnseignement:chapitre.typesEnseignement, 
+                            matiere:e.data.matiere, 
+                            objectifs:e.data.objectifs,
+                        }
+
+                        const newChapitres:ChapitreType[] = [];
+                        if(matiere){
+                            for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
+                                const chap = matiere.chapitres[i];
+                                // if(chapitre._id!==chap._id){
+                                newChapitres.push(chap)
+                                // }
+                            }
+                            const index = newChapitres.findIndex(e => e._id === chapitre._id);
+                            if (index !== -1) {
+                                newChapitres[index]=chap;
+                            }
+                        }
+                        
+                        if(matiere && matiere._id){    
+                            dispatch(
+                                updateMatiere({
+                                    id: matiere._id,
+                                    matiereData: {
+                                        _id: matiere._id,
+                                        code:matiere.code,
+                                        libelleFr:matiere.libelleFr,
+                                        libelleEn:matiere.libelleEn,
+                                        niveau:matiere.niveau, 
+                                        prerequisFr:matiere.prerequisFr, 
+                                        prerequisEn:matiere.prerequisEn, 
+                                        approchePedFr:matiere.approchePedFr, 
+                                        approchePedEn:matiere.approchePedEn, 
+                                        evaluationAcquisFr:matiere.evaluationAcquisFr, 
+                                        evaluationAcquisEn:matiere.evaluationAcquisEn,
+                                        typesEnseignement:matiere.typesEnseignement,
+                                        chapitres:newChapitres,
+        
+                                    }
+                                }));
+                            }
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
                         closeModal();
                     } else {
                         createToast(e.message[lang as keyof typeof e.message], '', 2);
                     }
                 }).catch((e) => {
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    createToast(e.responsmatiere.message[lang as keyof typeof e.responsmatiere.message], '', 2);
                 })
             }
         }

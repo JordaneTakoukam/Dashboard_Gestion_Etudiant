@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { apiCreateChapitre, apiUpdateChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
 import { createChapitre, updateChapitre } from '../../../_redux/features/chapitre_slice';
-import { updateMatiere } from '../../../_redux/features/matiere_slice';
+import { updateChapitres, updateMatiere } from '../../../_redux/features/matiere_slice';
 
 
 
@@ -198,27 +198,30 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                                 newChapitres.push(chapitre)
                             }
                             newChapitres.push(chapitre);
-
-                            dispatch(
-                                updateMatiere({
-                                    id: matiere._id,
-                                    matiereData: {
-                                        _id: matiere._id,
-                                        code:matiere.code,
-                                        libelleFr:matiere.libelleFr,
-                                        libelleEn:matiere.libelleEn,
-                                        niveau:matiere.niveau, 
-                                        prerequisFr:matiere.prerequisFr, 
-                                        prerequisEn:matiere.prerequisEn, 
-                                        approchePedFr:matiere.approchePedFr, 
-                                        approchePedEn:matiere.approchePedEn, 
-                                        evaluationAcquisFr:matiere.evaluationAcquisFr, 
-                                        evaluationAcquisEn:matiere.evaluationAcquisEn,
-                                        typesEnseignement:matiere.typesEnseignement,
-                                        chapitres:newChapitres,
+                            dispatch(updateChapitres({
+                                id: matiere._id,
+                                chapitresData:newChapitres
+                            }));
+                            // dispatch(
+                            //     updateMatiere({
+                            //         id: matiere._id,
+                            //         matiereData: {
+                            //             _id: matiere._id,
+                            //             code:matiere.code,
+                            //             libelleFr:matiere.libelleFr,
+                            //             libelleEn:matiere.libelleEn,
+                            //             niveau:matiere.niveau, 
+                            //             prerequisFr:matiere.prerequisFr, 
+                            //             prerequisEn:matiere.prerequisEn, 
+                            //             approchePedFr:matiere.approchePedFr, 
+                            //             approchePedEn:matiere.approchePedEn, 
+                            //             evaluationAcquisFr:matiere.evaluationAcquisFr, 
+                            //             evaluationAcquisEn:matiere.evaluationAcquisEn,
+                            //             typesEnseignement:matiere.typesEnseignement,
+                            //             chapitres:newChapitres,
     
-                                    }
-                                }));
+                            //         }
+                            //     }));
                         }
                         
                         
@@ -272,33 +275,23 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                             }
                             
                             if(matiere && matiere._id){
-                                var newChapitres:ChapitreType[] = [];
+                                const newChapitres:ChapitreType[] = [];
+                                
                                 for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
-                                    const chapitre = matiere.chapitres[i];
-                                    newChapitres.push(chapitre)
+                                    const chap = matiere.chapitres[i];
+                                    // if(chapitre._id!==chap._id){
+                                    newChapitres.push(chap)
+                                    // }
                                 }
-                                newChapitres.push(chapitre);
-    
-                                dispatch(
-                                    updateMatiere({
-                                        id: matiere._id,
-                                        matiereData: {
-                                            _id: matiere._id,
-                                            code:matiere.code,
-                                            libelleFr:matiere.libelleFr,
-                                            libelleEn:matiere.libelleEn,
-                                            niveau:matiere.niveau, 
-                                            prerequisFr:matiere.prerequisFr, 
-                                            prerequisEn:matiere.prerequisEn, 
-                                            approchePedFr:matiere.approchePedFr, 
-                                            approchePedEn:matiere.approchePedEn, 
-                                            evaluationAcquisFr:matiere.evaluationAcquisFr, 
-                                            evaluationAcquisEn:matiere.evaluationAcquisEn,
-                                            typesEnseignement:matiere.typesEnseignement,
-                                            chapitres:newChapitres,
-        
-                                        }
-                                    }));
+                                const index = newChapitres.findIndex(e => e._id === chapitre._id);
+                                if (index !== -1) {
+                                    newChapitres[index]=chapitre;
+                                }
+                                dispatch(updateChapitres({
+                                    id: matiere._id,
+                                    chapitresData:newChapitres
+                                }));
+                                
                             }
                         closeModal();
                     } else {

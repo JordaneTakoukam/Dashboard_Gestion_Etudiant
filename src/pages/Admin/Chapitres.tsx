@@ -10,11 +10,12 @@ import Objectifs from "./Objectifs";
 
 interface ChapitresProps {
     matiereSelectionnee?: MatiereType | null; 
+    onEditMatiere: (matiere : MatiereType) => void;
     returnWithMatiere?:()=>void;
     
 }
 
-const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) => {
+const Chapitres = ({ matiereSelectionnee, returnWithMatiere, onEditMatiere }: ChapitresProps) => {
     const [selectedChapitre, setSelectedChapitre] = useState<ChapitreType | null>(null);
     const [matiereChapitres, setMatiereChapitres] = useState<ChapitreType[]>([]); // État pour les chapitres de la matière
     const [openObjectifs, setOpenObjectifs] = useState(false);
@@ -34,10 +35,11 @@ const Chapitres = ({ matiereSelectionnee, returnWithMatiere }: ChapitresProps) =
     };
     
     
+    
     return (
         <>
             {!openObjectifs && <Breadcrumb pageName={t('sub_menu.chapitres')} isChapitre={true} isObjectif={false} returnWithMatiere={returnWithMatiere}/>}
-            {!openObjectifs && <Table data={matiereSelectionnee?.chapitres}  onCreate={handleAddChapitre} onEdit={handleEditChapitre} onAddObj={handleOpenObjectifs} matiere={matiereSelectionnee}/>}
+            {!openObjectifs && <Table data={matiereSelectionnee?.chapitres}  onCreate={handleAddChapitre} onEdit={handleEditChapitre} onAddObj={handleOpenObjectifs} matiere={matiereSelectionnee} onEditMatiere={onEditMatiere}/>}
 
             {!openObjectifs && <FormCreateUpdate chapitre={selectedChapitre} matiere={matiereSelectionnee}/>}
             {!openObjectifs && <FormDelete chapitre={selectedChapitre}  matiere={matiereSelectionnee}/>}

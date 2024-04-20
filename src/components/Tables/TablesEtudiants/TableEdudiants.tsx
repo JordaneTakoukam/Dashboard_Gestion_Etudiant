@@ -19,6 +19,7 @@ import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
 import { apiGetEtudiants, apiGetEtudiantsWithPagination } from "../../../api/other_users/api_etudiant";
 import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import MyPDFComponent from "./MyPDFComponent";
 
 interface TableEtudiantProps {
     data: EtudiantType[];
@@ -115,15 +116,21 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 title = "subjects_list_"+formatYear(selectedYear);
             }
             if(selected === 'PDF'){
+                if(etudiants){
+                    console.log("students")
+                    MyPDFComponent({students:etudiants})
+                }
 
             }else if (selected === 'CSV'){
-
+                
             }else{
                 exportToExcel(title+".xlsx", etudiants)
             }
         })
         
     };
+
+    
 
     const exportToExcel = ( filename: string,etudiants: EtudiantType[] | undefined) => {
         if(etudiants){

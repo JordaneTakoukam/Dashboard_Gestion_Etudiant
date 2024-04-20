@@ -9,7 +9,6 @@ import FormDelete from "../../components/Modals/ModalObjectif/FormDelete";
 
 interface ObjectifsProps {
     chapitreSelectionnee?: ChapitreType | null; 
-    returnWithMatiere?:()=>void;
     returnWithChapitre?:()=>void;
     
 }

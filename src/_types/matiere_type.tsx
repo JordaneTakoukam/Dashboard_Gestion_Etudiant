@@ -49,6 +49,16 @@ interface UpdateMatierePayload {
     matiereData: Partial<MatiereType>; // Données mises à jour de l'événement
 }
 
+interface UpdateChapitresPayload {
+    id: string; // ID de l'événement à mettre à jour
+    chapitresData: ChapitreType[]; // Données mises à jour de l'événement
+}
+
+interface UpdateEnseignementsPayload {
+    id: string; // ID de l'événement à mettre à jour
+    enseignementsData: EnseignementType[]; // Données mises à jour de l'événement
+}
+
 interface DeleteMatierePayload {
     id: string; // ID de l'événement à supprimer
 }

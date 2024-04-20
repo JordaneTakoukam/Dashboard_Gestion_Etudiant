@@ -125,6 +125,7 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
             }else{
                 newEnseignements.push(saveEnseignement);
             }
+            
             await apiUpdateMatiere(
                 {
                     code:matiere.code,
@@ -159,8 +160,8 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
                                 approchePedEn:e.data.approchePedEn, 
                                 evaluationAcquisFr:e.data.evaluationAcquisFr, 
                                 evaluationAcquisEn:e.data.evaluationAcquisEn,
-                                typesEnseignement:e.data.typesEnseignement,
-                                chapitres:e.data.matieres,
+                                typesEnseignement:newEnseignements,
+                                chapitres:matiere.chapitres,
 
                             }
                         }));

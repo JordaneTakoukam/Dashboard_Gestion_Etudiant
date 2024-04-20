@@ -15,11 +15,12 @@ interface TableChapitreProps {
     onCreate:()=>void;
     onEdit: (chapitre:ChapitreType) => void;
     onAddObj:(chapitre : ChapitreType)=>void;
+    onEditMatiere: (matiere : MatiereType) => void;
     matiere?: MatiereType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps) => {
+const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: TableChapitreProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -51,10 +52,15 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere }: TableChapitreProps
         }
        return [];
     };
-
+    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
     useEffect(() => {
-        setFilteredData(data);
-    }, [dispatch, data]);
+        console.log(matieres)
+        const mat = matieres.find(m=>m._id===matiere?._id);
+        if(mat){
+            onEditMatiere(mat)
+        }
+        setFilteredData(mat?.chapitres);
+    },[matieres]);
 
     useEffect(() => {
         const result = filterChapitreByContent(data);

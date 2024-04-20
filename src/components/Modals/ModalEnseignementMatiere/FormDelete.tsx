@@ -4,10 +4,13 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import { updateMatiere } from '../../../_redux/features/matiere_slice';
+import { apiUpdateMatiere } from '../../../api/api_matiere';
+import createToast from '../../../hooks/toastify';
 
 
 
-function ModalDelete({ enseignement }: { enseignement : EnseignementType|null}) {
+function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementType|null, matiere:MatiereType|null|undefined}) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -16,9 +19,67 @@ function ModalDelete({ enseignement }: { enseignement : EnseignementType|null}) 
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
     
-    const handleDelete = () => {
-        console.log("delete ok");
-        closeModal();
+    const handleDelete = async () => {
+        
+        if(matiere && matiere._id && enseignement){
+            var newEnseignements:EnseignementType[] = [];
+            for (let i = 0; matiere.typesEnseignement && i < matiere.typesEnseignement.length; i++) {
+                
+                const ens = matiere.typesEnseignement[i];
+                if(ens._id !== enseignement._id){
+                    newEnseignements.push(ens)
+                }
+                
+            }
+
+            await apiUpdateMatiere(
+                {
+                    code:matiere.code,
+                    libelleFr:matiere.libelleFr,
+                    libelleEn:matiere.libelleEn,
+                    niveau:matiere.niveau, 
+                    prerequisFr:matiere.prerequisFr, 
+                    prerequisEn:matiere.prerequisEn, 
+                    approchePedFr:matiere.approchePedFr, 
+                    approchePedEn:matiere.approchePedEn, 
+                    evaluationAcquisFr:matiere.evaluationAcquisFr, 
+                    evaluationAcquisEn:matiere.evaluationAcquisEn,
+                    typesEnseignement:newEnseignements,
+                    chapitres:matiere.chapitres,
+                    _id:matiere._id,
+                }
+            ).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(
+                        updateMatiere({
+                            id: e.data._id,
+                            matiereData: {
+                                _id: e.data._id,
+                                code:e.data.code,
+                                libelleFr:e.data.libelleFr,
+                                libelleEn:e.data.libelleEn,
+                                niveau:e.data.niveau, 
+                                prerequisFr:e.data.prerequisFr, 
+                                prerequisEn:e.data.prerequisEn, 
+                                approchePedFr:e.data.approchePedFr, 
+                                approchePedEn:e.data.approchePedEn, 
+                                evaluationAcquisFr:e.data.evaluationAcquisFr, 
+                                evaluationAcquisEn:e.data.evaluationAcquisEn,
+                                typesEnseignement:newEnseignements,
+                                chapitres:matiere.chapitres,
+
+                            }
+                        }));
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            })
+        }
+        
     }
     useEffect(()=>{
         if(enseignement){

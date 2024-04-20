@@ -63,3 +63,21 @@ interface EtudiantDisciplineListGetType {
     totalPages: number;
     pageSize: number;
 }
+
+
+
+interface CustomEnseignantSelect {
+    user: UserDiscipline | undefined;
+    absence: AbsenceType | undefined;
+}
+
+
+
+interface CreateAbsenceType {
+    userId: string,
+    semestre: string,
+    annee: string,
+    dateAbsence: string,
+    heureDebut: string,
+    heureFin: string,
+}

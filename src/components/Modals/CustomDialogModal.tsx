@@ -76,14 +76,14 @@ function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeM
 
                                             <div className="flex justify-end gap-4.5 mt-8">
                                                 <button
-                                                    className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-8  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm"
+                                                    className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-10 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm"
                                                     type="submit"
                                                     onClick={closeModal}
                                                 >
                                                     {!isDelete ? t('boutton.annuler') : t('boutton.non')}
                                                 </button>
                                                 <button
-                                                    className="flex justify-center rounded bg-primary py-2 px-8 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm"
+                                                    className={`flex justify-center hover:bg-opacity-70 rounded ${isDelete ? ' bg-[#de1717f9] px-10' : 'bg-primary '} py-2 px-8 font-medium text-gray  text-[12px] lg:text-sm`}
                                                     onClick={handleConfirm}
                                                 >
                                                     {!isDelete ? t('boutton.enregistrer') : t('boutton.oui')}

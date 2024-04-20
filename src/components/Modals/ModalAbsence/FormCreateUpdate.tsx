@@ -7,13 +7,32 @@ import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
 
 
-function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: UserDiscipline | null, isSignaled?: boolean, isHourRemove: boolean }) {
+function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: CustomEnseignantSelect | null, isSignaled?: boolean, isHourRemove: boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [date, setDate] = useState("");
+
+    const semestreCourant = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant); // converti en string
+    const dateObj = new Date();
+
+    // get the month in this format of 04, the same for months
+    const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+    const day = ("0" + dateObj.getDate()).slice(-2);
+    const year = dateObj.getFullYear();
+
+    const shortDate = `${day}/${month}/${year}`;
+
+    const [date, setDate] = useState<string>();
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setDate(event.target.value);
+        setErrorDate("");
+    };
+
     const [debutPeriode, setDebutPeriode] = useState("");
-    const [finPeriode, setFinPeriode] = useState("");
-    const [semestre, setSemestre] = useState(0);
+    const [finPeriode, setFinPeriode] = useState('');
+    const [semestre, setSemestre] = useState<string>(
+        isHourRemove ? (user?.absence?.semestre ?? '') : semestreCourant.toString()
+    );
 
 
     const [errorDate, setErrorDate] = useState("");
@@ -43,11 +62,19 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Us
         setDate("");
         setDebutPeriode("");
         setFinPeriode("");
-        setSemestre(0);
+        setSemestre('1');
         if (isHourRemove) {
-            setModalTitle(t('form_delete.absence') + user?.nom + " " + user?.prenom);
+            if (user?.user) {
+                setModalTitle(t('form_delete.absence') + user?.user.nom + " " + user?.user.prenom);
+            } else {
+                setModalTitle(t('form_delete.absence'));
+            }
         } else {
-            setModalTitle(t('form_update.absence') + user?.nom + " " + user?.prenom);
+            if (user?.user) {
+                setModalTitle(t('form_update.absence') + user?.user.nom + " " + user?.user.prenom);
+            } else {
+                setModalTitle(t('form_update.absence'));
+            }
         }
         if (isSignaled) {
             setModalTitle(t('form_update.signaler'));
@@ -75,7 +102,7 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Us
 
 
     const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSemestre(parseInt(event.target.value));
+        setSemestre((event.target.value));
         setErrorSemestre("");
     };
 
@@ -103,6 +130,13 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Us
             return;
         }
 
+        if (!isHourRemove) {
+            // ajouter
+        }
+        else {
+            // supprimer
+        }
+
         closeModal();
     }
 
@@ -111,48 +145,69 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Us
             <CustomDialogModal
                 title={modalTitle} // Utilisation du titre dynamique
                 isModalOpen={isModalOpen}
-                isDelete={false}
+                isDelete={isHourRemove ? true : false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={semestre}
-                    onChange={handleSemestreChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.semestre')}</option>
-                    {semestres.map((semestre, index) => (
-                        <option key={index} value={semestre}>{semestre}</option>
-                    ))}
 
-                </select>
-                {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
+                {
+                    !isHourRemove ?
+                        <div>
+                            <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
+                            <select
+                                value={semestre}
+                                onChange={handleSemestreChange}
+                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            >
+                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.semestre')}</option>
+                                {semestres.map((semestre, index) => (
+                                    <option key={index} value={semestre}>{semestre}</option>
+                                ))}
 
-                <label>{t('label.date')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="date"
-                    value={date}
-                    onChange={(e) => { setDate(e.target.value); setErrorDate("") }}
-                />
-                {errorDate && <p className="text-red-500" >{errorDate}</p>}
-                <label>{t('label.heure_debut')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="time"
-                    value={debutPeriode}
-                    onChange={(e) => { setDebutPeriode(e.target.value); setErrorDebutPeriode("") }}
-                />
-                {errorDebutPeriode && <p className="text-red-500" >{errorDebutPeriode}</p>}
-                <label>{t('label.heure_fin')}</label><label className="text-red-500"> *</label>
-                <input
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="time"
-                    value={finPeriode}
-                    onChange={(e) => { setFinPeriode(e.target.value); setErrorFinPeriode("") }}
-                />
-                {errorFinPeriode && <p className="text-red-500" >{errorFinPeriode}</p>}
+                            </select>
+                            {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
+
+                            <label>{t('label.date')}</label><label className="text-red-500"> *</label>
+                            <input
+                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                type="date"
+                                value={date}
+                                onChange={handleChange}
+                            />
+                            {errorDate && <p className="text-red-500" >{errorDate}</p>}
+                            <label>{t('label.heure_debut')}</label><label className="text-red-500"> *</label>
+                            <input
+                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                type="time"
+                                value={debutPeriode}
+                                onChange={(e) => { setDebutPeriode(e.target.value); setErrorDebutPeriode("") }}
+                            />
+                            {errorDebutPeriode && <p className="text-red-500" >{errorDebutPeriode}</p>}
+                            <label>{t('label.heure_fin')}</label><label className="text-red-500"> *</label>
+                            <input
+                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                type="time"
+                                value={finPeriode}
+                                onChange={(e) => { setFinPeriode(e.target.value); setErrorFinPeriode("") }}
+                            />
+                            {errorFinPeriode && <p className="text-red-500" >{errorFinPeriode}</p>}
+
+                        </div>
+                        : <div>
+                            {
+                                user?.absence && <div>
+                                    <p>{t('gestion_absence.annee_academique')} : {user?.absence?.annee}</p>
+                                    <p>{t('gestion_absence.semestre')} : {user?.absence?.semestre}</p>
+                                    <p>{t('gestion_absence.jour')} : {user?.absence?.dateAbsence}</p>
+                                    <p>{t('')} : {user?.absence?.dateAbsence}</p>
+
+                                </div>
+                            }
+
+
+                        </div>
+                }
+
             </CustomDialogModal>
 
         </>

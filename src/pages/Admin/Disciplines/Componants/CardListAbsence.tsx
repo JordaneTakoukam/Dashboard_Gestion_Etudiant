@@ -2,20 +2,24 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { RootState } from "../../../../_redux/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MdDateRange, MdDeleteForever, MdExpandLess, MdExpandMore } from "react-icons/md";
-import { FaDeleteLeft } from "react-icons/fa6";
 import { nbTotalAbsences } from "../../../../fonctions/fonction";
+import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
+import { setShowModal } from "../../../../_redux/features/setting";
 
 interface CardListAbsenceProps {
     listAbsence: AbsenceType[];
-    onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void;
+    onEdit: (absence: AbsenceType, isHourRemove: boolean) => void;
 }
 
 const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+
     const lang = useSelector((state: RootState) => state.setting.language);
     const [showAllDates, setShowAllDates] = useState<{ [monthYear: string]: boolean }>({});
+
 
     const groupAbsencesByMonthYear = () => {
         const groupedAbsences: { [monthYear: string]: { [date: string]: AbsenceType[] } } = {};
@@ -43,6 +47,11 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
             [monthYear]: !prevState[monthYear]
         }));
     };
+
+    const handleDeleteClick = (absence: AbsenceType, isHourRemove: boolean) => {
+        onEdit(absence, isHourRemove);
+    };
+
 
     const renderAbsenceList = () => {
         const groupedAbsences = groupAbsencesByMonthYear();
@@ -77,7 +86,7 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                                         <p>{nbTotalAbsences(listAbsence)} {listAbsence.length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </p>
                                         <button
                                             className="text-meta-1 flex justify-center items-center hover:underline"
-                                        // onClick={() => onEdit(absence, true)}
+                                            onClick={() => handleDeleteClick(absence, true)}
                                         >
                                             <MdDeleteForever className=" hover:underline grou" />
                                             {t('Retirer')}
@@ -93,28 +102,34 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
     };
 
     return (
-        listAbsence.length === 0 ? (
-            <div className={`
+        <>
+            {listAbsence.length === 0 ? (
+                <div className={`
             flex items-center justify-center
                 my-4
                 text-black bg-white
                 dark:bg-boxdark dark:text-gray
                 relative rounded-sm border border-stroke  py-24 px-5 shadow-default dark:border-strokedark  w-full`}
-            >
-                <p>{t('gestion_absence.aucune_heure_d_absence_pendant_ce_semestre')}</p>
-            </div>
-        ) :
+                >
+                    <p>{t('gestion_absence.aucune_heure_d_absence_pendant_ce_semestre')}</p>
+                </div>
+            ) :
 
-            <div className={`
+                <div className={`
             my-4
             text-black bg-white
             dark:bg-boxdark dark:text-gray
             relative rounded-sm border border-stroke pb-10  py-6 px-5 shadow-default dark:border-strokedark  w-full`}
-            >
-                <h1 className="font-semibold text-primary mb-8">{t('gestion_absence.liste_des_heures_d_absences_de_ce_semenstre')}</h1>
+                >
+                    <h1 className="font-semibold text-primary mb-8">{t('gestion_absence.liste_des_heures_d_absences_de_ce_semenstre')}</h1>
 
-                {renderAbsenceList()}
-            </div>
+                    {renderAbsenceList()}
+                </div>
+            }
+
+        </>
+
+
     );
 };
 

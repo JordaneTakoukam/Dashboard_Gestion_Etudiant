@@ -34,3 +34,24 @@ export async function apiGetAbsencesWithEnseignantsByFilter({ page, semestre, an
         throw error;
     }
 }
+
+
+export async function apiCreateAbsence({ userId, ...absence }: CreateAbsenceType): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/create/:${userId}`,
+            { ...absence },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error creating section:', error);
+        throw error;
+    }
+}

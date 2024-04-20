@@ -89,7 +89,7 @@
   },
   "label": {
     "ajouter": "Ajouter",
-    "roles":"Roles",
+    "roles": "Roles",
     "matricule": "Matricule",
     "nom": "Nom",
     "prenom": "Prénom",
@@ -332,7 +332,7 @@
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
-    "roles":"Modifier le rôle de l'étudiant",
+    "roles": "Modifier le rôle de l'étudiant",
     "absence": "Ajouter une absence : ",
     "signaler": "Signaler mon abscence",
     "enregistrer": "Mettre à jour les informations ",
@@ -464,8 +464,7 @@
     "nom_et_prenom": "Nom et prénom",
     "semestre": "Semestre",
     "liste_des_heures_d_absences_de_ce_semenstre": "Liste des heures d'absences de ce semestre",
-    "aucune_heure_d_absence_pendant_ce_semestre": "Aucune heure d'absence pendant ce semestre"
-    
-    
+    "aucune_heure_d_absence_pendant_ce_semestre": "Aucune heure d'absence pendant ce semestre",
+    "annee_academique": "Année académique"
   }
 }

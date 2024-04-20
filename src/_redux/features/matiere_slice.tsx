@@ -40,7 +40,6 @@ const matiereSlice = createSlice({
             if (index !== -1) {
                 state.data.matieres[index] = { ...state.data.matieres[index], ...matiereData };
             }
-            console.log(state.data.matieres[index])
             
         },
         updateChapitres(state, action: PayloadAction<UpdateChapitresPayload>) {

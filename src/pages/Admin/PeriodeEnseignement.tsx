@@ -86,7 +86,7 @@ const ListeDesPeriodesEnseignement = () => {
             
             {!openEnseignementsPeriode && <FormCreateUpdate periodeEnseignement={selectedPeriodeEnseignement}/>}
             {!openEnseignementsPeriode && <FormDelete periodeEnseignement={selectedPeriodeEnseignement}/>}
-            {openEnseignementsPeriode && <EnseignementsPeriode periodeSelectionnee={selectedPeriodeEnseignement} returnWithPeriodeEnseignement={handleAddPeriodeEnseignement}/>}
+            {openEnseignementsPeriode && <EnseignementsPeriode periodeSelectionnee={selectedPeriodeEnseignement} returnWithPeriodeEnseignement={handleAddPeriodeEnseignement} onEditPeriode={handleEditPeriodeEnseignement}/>}
         </>
     );
 };

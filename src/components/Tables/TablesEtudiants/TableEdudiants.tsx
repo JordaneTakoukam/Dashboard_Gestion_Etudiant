@@ -66,12 +66,18 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
                 setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+                filterNiveauxByCycle(cycle?._id)
             }else{
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
+                filterNiveauxByCycle(undefined);
+                setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
-          
+        }else{
+            setFilteredCycle([])
+            setSelectIdCycle(undefined);
+            setCycle(undefined);
         }
     };
 
@@ -84,11 +90,17 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
                 setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
+                setFilteredNiveaux(result)
             }else{
                 setSelectIdNiveau(undefined);
                 setNiveau(undefined);
+                setFilteredNiveaux([])
             }
-            setFilteredNiveaux(result);
+            
+        }else{
+            setFilteredNiveaux([])
+            setSelectIdNiveau(undefined);
+            setNiveau(undefined);
         }
     };
     const [formatToDownload, setFormatToDownload] = useState("");

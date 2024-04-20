@@ -14,11 +14,12 @@ interface TableEnseignementProps {
     data?: MatiereEnseignement[];
     onCreate:()=>void;
     onEdit: (enseignement:MatiereEnseignement) => void;
+    onEditPeriode: (periodeEnseignement : PeriodeEnseignementType) => void;
     periodeEnseignement?: PeriodeEnseignementType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, periodeEnseignement }: TableEnseignementProps) => {
+const Table = ({ data, onCreate, onEdit, periodeEnseignement, onEditPeriode}: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -51,6 +52,15 @@ const Table = ({ data, onCreate, onEdit, periodeEnseignement }: TableEnseignemen
         }
        return [];
     };
+
+    const { data: { periodes } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
+    useEffect(() => {
+        const per = periodes.find(p=>p._id===periodeEnseignement?._id);
+        if(per){
+            onEditPeriode(per)
+        }
+        setFilteredData(per?.enseignements);
+    },[periodes]);
 
     useEffect(() => {
         const result = filterEnseignementByContent(data);

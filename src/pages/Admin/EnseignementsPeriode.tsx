@@ -10,9 +10,10 @@ import FormDelete from "../../components/Modals/ModalEnseignement/FormDelete";
 interface EnseignementsPeriodeProps {
     periodeSelectionnee?: PeriodeEnseignementType | null; 
     returnWithPeriodeEnseignement?:()=>void;
+    onEditPeriode: (periodeEnseignement : PeriodeEnseignementType) => void;
 }
 
-const EnseignementsPeriode = ({ periodeSelectionnee, returnWithPeriodeEnseignement }: EnseignementsPeriodeProps) => {
+const EnseignementsPeriode = ({ periodeSelectionnee, returnWithPeriodeEnseignement, onEditPeriode }: EnseignementsPeriodeProps) => {
     const [selectedEnseignement, setSelectedEnseignement] = useState<MatiereEnseignement | null>(null);
     const handleEditEnseignement = (chapitre: MatiereEnseignement) => {
         setSelectedEnseignement(chapitre);
@@ -27,7 +28,7 @@ const EnseignementsPeriode = ({ periodeSelectionnee, returnWithPeriodeEnseigneme
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.enseignement_periode')} isPeriodeEnseignement={true} returnWithPeriodeEnseignement={returnWithPeriodeEnseignement}/>
-            <Table data={periodeSelectionnee?.enseignements}  onCreate={handleAddEnseignement} onEdit={handleEditEnseignement} periodeEnseignement={periodeSelectionnee}/>
+            <Table data={periodeSelectionnee?.enseignements}  onCreate={handleAddEnseignement} onEdit={handleEditEnseignement} periodeEnseignement={periodeSelectionnee} onEditPeriode={onEditPeriode}/>
 
             <FormCreateUpdate enseignement={selectedEnseignement} periodeEnseignement={periodeSelectionnee}/>
             <FormDelete enseignement={selectedEnseignement} periodeEnseignement={periodeSelectionnee}/>

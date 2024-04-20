@@ -106,6 +106,8 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
             // Filtrer les départements en fonction de l'ID de la région
             const result: NiveauProps[] = data.filter(niveau => niveau.cycle === cycleId);
             setFilteredNiveau(result);
+        }else{
+            setFilteredNiveau([]);
         }
     };
 
@@ -144,7 +146,9 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                 filterNiveauxByCycle(selectCycleId);
             }
                 
-        }        
+        } else{
+            setFilteredNiveau([]);
+        }       
     }, [filteredCycle, data]);
 
 

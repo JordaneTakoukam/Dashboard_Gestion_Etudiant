@@ -29,7 +29,7 @@ const adminSlice = createSlice({
             state.data = action.payload;
         },
         createAdmin(state, action: PayloadAction<AdminType>) {
-            state.data.list.push(action.payload);
+            state.data.list.unshift(action.payload);
         },
 
 

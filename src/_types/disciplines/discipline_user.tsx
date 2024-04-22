@@ -11,7 +11,7 @@ interface UserDiscipline {
     contact: string | null;
     photo_profil: string | null;
     status: string;
-    absences: AbsenceType[] | [];
+    absences: AbsenceType[]
 }
 
 
@@ -21,8 +21,8 @@ interface UserDisciplineIntialData {
     pageIsLoadingOnTable: boolean,
     selected: {
         user: UserDiscipline | undefined,
-        semestre: string | undefined,
-        annee: string | undefined,
+        semestre: Number | undefined,
+        annee: Number | undefined,
     }
 }
 
@@ -75,9 +75,15 @@ interface CustomEnseignantSelect {
 
 interface CreateAbsenceType {
     userId: string,
-    semestre: string,
-    annee: string,
+    semestre: Number,
+    annee: Number,
     dateAbsence: string,
     heureDebut: string,
     heureFin: string,
+}
+
+
+interface DeleteAbsenceType {
+    userId: string,
+    absenceId: string
 }

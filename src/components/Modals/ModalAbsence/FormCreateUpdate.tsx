@@ -5,23 +5,24 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
+import { apiCreateAbsence, apiDeleteAbsence } from '../../../api/discipline/api_discipline';
+import createToast from '../../../hooks/toastify';
+import { ajouterAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/discipline_enseignant_slice';
+import { nbTotalAbsences } from '../../../fonctions/fonction';
 
 
 function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: CustomEnseignantSelect | null, isSignaled?: boolean, isHourRemove: boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
+
+
+    const lang = useSelector((state: RootState) => state.setting.language);
+    const anneeAcademique = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante); // converti en string
     const semestreCourant = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant); // converti en string
-    const dateObj = new Date();
+    const [date, setDate] = useState<string>('');
 
-    // get the month in this format of 04, the same for months
-    const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
-    const day = ("0" + dateObj.getDate()).slice(-2);
-    const year = dateObj.getFullYear();
 
-    const shortDate = `${day}/${month}/${year}`;
-
-    const [date, setDate] = useState<string>();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDate(event.target.value);
@@ -30,9 +31,7 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
 
     const [debutPeriode, setDebutPeriode] = useState("");
     const [finPeriode, setFinPeriode] = useState('');
-    const [semestre, setSemestre] = useState<string>(
-        isHourRemove ? (user?.absence?.semestre ?? '') : semestreCourant.toString()
-    );
+    const [semestre, setSemestre] = useState<string>(semestreCourant.toString());
 
 
     const [errorDate, setErrorDate] = useState("");
@@ -107,35 +106,59 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
     };
 
 
-    const handleCreateUpdate = () => {
-        if (!date || !debutPeriode || !finPeriode || !semestre) {
-            if (!semestre) {
-                setErrorSemestre(t('error.semestre'));
+    const handleCreateUpdate = async () => {
+        if (isHourRemove) {
+            // supprimer
+            if (user?.user && user.absence) {
+                
+                await apiDeleteAbsence(
+                    {
+                        userId: user?.user?._id,
+                        absenceId: user.absence?._id,
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        if (user?.user && user.absence) {
+                            dispatch(retirerAbsenceEnseignant({
+                                absenceId: user.absence?._id,
+                            }));
+                        }
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
             }
-            if (!date) {
-                setErrorDate(t('error.date'));
-            }
-            if (!debutPeriode) {
-                setErrorDebutPeriode(t('error.heure_debut'));
-            }
-            if (!finPeriode) {
-                setErrorFinPeriode(t('error.heure_fin'));
-            }
-
-            return;
-        }
-
-        if (verifierHeureFinApresDebut(debutPeriode, finPeriode)) {
-            setErrorFinPeriode(t('error.debut_sup_fin_periode'));
-            return;
-        }
-
-        if (!isHourRemove) {
-            // ajouter
         }
         else {
-            // supprimer
+            if (!date || !debutPeriode || !finPeriode || !semestre) {
+                if (!semestre) {
+                    setErrorSemestre(t('error.semestre'));
+                }
+                if (!date) {
+                    setErrorDate(t('error.date'));
+                }
+                if (!debutPeriode) {
+                    setErrorDebutPeriode(t('error.heure_debut'));
+                }
+                if (!finPeriode) {
+                    setErrorFinPeriode(t('error.heure_fin'));
+                }
+
+                return;
+            }
+
+            if (verifierHeureFinApresDebut(debutPeriode, finPeriode)) {
+                setErrorFinPeriode(t('error.debut_sup_fin_periode'));
+                return;
+            }
+
         }
+
+
 
         closeModal();
     }
@@ -196,10 +219,13 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
                         : <div>
                             {
                                 user?.absence && <div>
-                                    <p>{t('gestion_absence.annee_academique')} : {user?.absence?.annee}</p>
-                                    <p>{t('gestion_absence.semestre')} : {user?.absence?.semestre}</p>
-                                    <p>{t('gestion_absence.jour')} : {user?.absence?.dateAbsence}</p>
-                                    <p>{t('')} : {user?.absence?.dateAbsence}</p>
+                                    <p className='pb-3'>{t('gestion_absence.semestre')} : {user?.absence?.semestre.toString()}</p>
+
+                                    <p className=' pb-3'>{t('gestion_absence.date')} : {lang === 'fr' ? new Date(user?.absence?.dateAbsence).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : new Date(user?.absence?.dateAbsence).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+
+                                    <p className=' pb-3'>{t('gestion_absence.nombre_heure_absence')} : <span className='text-meta-1 font-medium'>{nbTotalAbsences([user.absence])} {[user.absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </span></p>
+
+
 
                                 </div>
                             }

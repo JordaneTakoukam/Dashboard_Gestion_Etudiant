@@ -29,7 +29,7 @@ const etudiantSlice = createSlice({
             state.data = action.payload;
         },
         createEtudiant(state, action: PayloadAction<CreateEtudiantPayload>) {
-            state.data.etudiants.push(action.payload.etudiant);
+            state.data.etudiants.unshift(action.payload.etudiant);
         },
 
 

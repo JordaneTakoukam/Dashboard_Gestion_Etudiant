@@ -5,8 +5,7 @@ import { RootState } from "../../../../_redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDateRange, MdDeleteForever, MdExpandLess, MdExpandMore } from "react-icons/md";
 import { nbTotalAbsences } from "../../../../fonctions/fonction";
-import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
-import { setShowModal } from "../../../../_redux/features/setting";
+
 
 interface CardListAbsenceProps {
     listAbsence: AbsenceType[];
@@ -15,7 +14,6 @@ interface CardListAbsenceProps {
 
 const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }) => {
     const { t } = useTranslation();
-    const dispatch = useDispatch();
 
     const lang = useSelector((state: RootState) => state.setting.language);
     const [showAllDates, setShowAllDates] = useState<{ [monthYear: string]: boolean }>({});
@@ -56,49 +54,64 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
     const renderAbsenceList = () => {
         const groupedAbsences = groupAbsencesByMonthYear();
 
-        return Object.entries(groupedAbsences).map(([monthYear, absencesByDate], index) => (
-            <div key={index} >
-                <div className={`
+        return Object.entries(groupedAbsences)
+            .map(([monthYear, absencesByDate], index) => (
+                <div key={index} >
+                    <div className={`
                 ${showAllDates[monthYear] && 'bg-primary text-white'}
-                flex items-center justify-start gap-x-1 mb-2 cursor-pointer  hover:bg-primary hover:text-white duration-300 p-2`} onClick={() => toggleDateGroup(monthYear)}>
-                    <MdDateRange />
-                    <h3 className="font-semibold">{monthYear}</h3>
-                    {showAllDates[monthYear] ? <MdExpandLess /> : <MdExpandMore />}
-                </div>
+                flex  items-center justify-start gap-x-1 mb-2 cursor-pointer  hover:bg-primary hover:text-white duration-300 p-2`} onClick={() => toggleDateGroup(monthYear)}>
+                        <MdDateRange />
+                        <h3 className="font-semibold">{monthYear}</h3>
+                        {showAllDates[monthYear] ? <MdExpandLess /> : <MdExpandMore />}
+                        <p className="pl-5">{nbTotalAbsences(Object.values(absencesByDate).flat())} {nbTotalAbsences(Object.values(absencesByDate).flat()) <= '1' ? t('menu.heure_d_absence') : t('menu.heures_d_absences')}</p>
+                    </div>
 
-                {showAllDates[monthYear] && Object.entries(absencesByDate).map(([date, absences], idx) => (
-                    <div key={idx} className="flex">
-                        <div className=" bg-primary w-0.5 rounded-full ml mr-8"></div>
+                    {showAllDates[monthYear] && Object.entries(absencesByDate).map(([date, absences], idx) => (
+                        <div key={idx} className="flex">
+                            <div className=" bg-primary w-0.5 rounded-full ml mr-8"></div>
 
-                        <div className="flex flex-col w-full">
-                            <div className={` 
+                            <div className="flex flex-col w-full">
+                                <div className={` 
                         ${showAllDates[date] && 'bg-form-strokedark text-white'}
                         flex px-5 items-center justify-start gap-x-1 mb-2 cursor-pointer hover:bg-form-strokedark hover:text-white  duration-300 p-2`} onClick={() => toggleDateGroup(date)}>
-                                <h3 className="font-semibold">{date}</h3>
-                                {showAllDates[date] ? <MdExpandLess /> : <MdExpandMore />}
-                            </div>
+                                    <h3 className="font-semibold">{date}</h3>
+                                    {showAllDates[date] ? <MdExpandLess /> : <MdExpandMore />}
+                                    <p className="pl-5">{nbTotalAbsences(absences)} {nbTotalAbsences(absences) <= '1' ? t('menu.heure_d_absence') : t('menu.heures_d_absences')}</p>
 
-                            {showAllDates[date] && absences.map((absence, i) => (
-                                <div className="flex  ml-0" key={i}>
-                                    <div className=" bg-form-strokedark w-0.5 rounded-full  mr-2"></div>
-                                    <div className="flex justify-between items-center w-full hover:bg-[#1111] duration-300 px-4 rounded-sm py-1 mb-1">
-                                        <p>{`${absence.heureDebut} - ${absence.heureFin}`}</p>
-                                        <p>{nbTotalAbsences(listAbsence)} {listAbsence.length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </p>
-                                        <button
-                                            className="text-meta-1 flex justify-center items-center hover:underline"
-                                            onClick={() => handleDeleteClick(absence, true)}
-                                        >
-                                            <MdDeleteForever className=" hover:underline grou" />
-                                            {t('Retirer')}
-                                        </button>
-                                    </div>
                                 </div>
-                            ))}
+
+                                {showAllDates[date] && absences.map((absence, i) => (
+                                    <div className="flex  ml-0" key={i}>
+                                        <div className=" bg-form-strokedark w-0.5 rounded-full  mr-2"></div>
+                                        <div className="flex flex-col  lg:flex-row justify-start lg:justify-between items-start lg:items-center w-full hover:bg-[#1111] duration-300 px-4 rounded-sm py-3 lg:py-1 mb-1">
+                                            <p>{`${absence.heureDebut} - ${absence.heureFin}`}</p>
+
+                                            <p >{nbTotalAbsences([absence])} {[absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </p>
+                                            {absence?.dateCreation && (
+                                                <p className="text-sm">
+                                                    ({t('gestion_absence.ajouter_le')} : {lang === "fr" ?
+                                                        new Date(absence?.dateCreation).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })
+                                                        : new Date(absence?.dateCreation).toLocaleDateString('en-US', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })} {t('gestion_absence.a')} {lang === "fr" ? `${new Date(absence?.dateCreation).getHours()}h${new Date(absence?.dateCreation).getMinutes()}` : new Date(absence?.dateCreation).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })})
+                                                </p>
+                                            )}
+
+
+
+                                            <button
+                                                className="text-meta-1 flex justify-center items-center hover:underline"
+                                                onClick={() => handleDeleteClick(absence, true)}
+                                            >
+                                                <MdDeleteForever className=" hover:underline grou" />
+                                                {t('Retirer')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
-        ));
+                    ))}
+                </div>
+            ));
     };
 
     return (

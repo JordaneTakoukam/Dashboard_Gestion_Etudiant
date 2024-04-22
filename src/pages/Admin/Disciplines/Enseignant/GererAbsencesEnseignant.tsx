@@ -62,7 +62,7 @@ const GererAbsencesEnseignant = () => {
 
 
             {
-                <ModalCreateUpdateAbsence user={enseignantCustomSelected} isHourRemove={isHourRemove} />
+                <ModalCreateUpdateAbsence  user={enseignantCustomSelected} isHourRemove={isHourRemove} />
             }
 
             {/* Boite de dialogue */}

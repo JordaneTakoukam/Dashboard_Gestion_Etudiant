@@ -30,7 +30,7 @@ const chapitreSlice = createSlice({
             state.data = action.payload;
         },
         createChapitre(state, action: PayloadAction<CreateChapitrePayload>) {
-            state.data.chapitres.push(action.payload.chapitre);
+            state.data.chapitres.unshift(action.payload.chapitre);
         },
         updateChapitre(state, action: PayloadAction<UpdateChapitrePayload>) {
             const { id, chapitreData } = action.payload;

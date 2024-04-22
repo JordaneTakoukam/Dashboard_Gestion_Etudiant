@@ -91,7 +91,7 @@
   },
   "label": {
     "ajouter": "Add",
-    "roles":"Roles",
+    "roles": "Roles",
     "matricule": "Registration N°",
     "nom": "First Name",
     "prenom": "Last Name",
@@ -334,7 +334,7 @@
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
-    "roles":"Change student role",
+    "roles": "Change student role",
     "absence": "Add an absence : ",
     "signaler": "Report my abscence",
     "enregistrer": "Update Information ",
@@ -434,6 +434,10 @@
     "nom_et_prenom": "Name and surname",
     "semestre": "Semester",
     "liste_des_heures_d_absences_de_ce_semenstre": "List of absence hours for this semester",
-    "aucune_heure_d_absence_pendant_ce_semestre": "No absence hours during this semester"
+    "aucune_heure_d_absence_pendant_ce_semestre": "No absence hours during this semester",
+    "date": "Academic year",
+    "nombre_heure_absence": "Academic year",
+    "ajouter_le": "Add on",
+    "a":"at"
   }
 }

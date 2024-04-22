@@ -44,7 +44,7 @@ const DisciplineDesEnseignants = () => {
 
         try {
             const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
-                page: 1, semestre: currentSemestre.toString(), annee: currentPlageDate[currentPlageDate.length - 1] // dernier eleemt du tableau (donc la derniere plage d'annee)
+                page: 1, semestre: currentSemestre, annee: currentYear
             });
             if (fetchedEnseignants) {
                 dispatch(setEnseignantDiscipline(fetchedEnseignants));

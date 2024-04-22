@@ -1,9 +1,10 @@
 // Définir le type de données pour la période de cours
 
 interface AbsenceType {
-    _id:string,
-    semestre: string,
-    annee: string,
+    _id: string,
+    dateCreation?: Date,
+    semestre: Number,
+    annee: Number,
     dateAbsence: Date,
     heureDebut: string,
     heureFin: string,

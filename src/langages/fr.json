@@ -465,6 +465,10 @@
     "semestre": "Semestre",
     "liste_des_heures_d_absences_de_ce_semenstre": "Liste des heures d'absences de ce semestre",
     "aucune_heure_d_absence_pendant_ce_semestre": "Aucune heure d'absence pendant ce semestre",
-    "annee_academique": "Année académique"
+    "annee_academique": "Année académique",
+    "date": "Date",
+    "nombre_heure_absence": "Nombre d'heures d'absence",
+    "ajouter_le": "Ajouter le",
+    "a": "à"
   }
 }

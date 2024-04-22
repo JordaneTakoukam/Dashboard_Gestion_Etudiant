@@ -49,12 +49,12 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const listAnnee = generateYearRange(currentYear, firstYear);
 
     const [annee, setAnnee] = useState<string | undefined>(`${firstYear}/${firstYear + 1}`);
-    const [semestre, setSemestre] = useState<string | undefined>(selectedSemestre ? selectedSemestre : currentSemestre.toString());
+    const [semestre, setSemestre] = useState<string | undefined>(selectedSemestre ? selectedSemestre.toString() : currentSemestre.toString());
 
     const handleAnneeSelect = (selected: string | undefined) => {
         if (selected) {
             setAnnee(selected);
-            dispatch(setAnneeDisciplineEns(selected))
+            dispatch(setAnneeDisciplineEns(parseInt(selected)))
         }
         // setFonction(selected);
         // dispatch(setSelectedEnseignant({ key: "fonction", value: selected }))
@@ -64,7 +64,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const handleSemestreSelect = (selected: string | undefined) => {
         if (selected) {
             setSemestre(selected);
-            dispatch(setSemestreDisciplineEns(selected));
+            dispatch(setSemestreDisciplineEns(parseInt(selected)));
         }
 
     };
@@ -114,8 +114,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     useEffect(() => {
         if (annee && semestre) {
-            dispatch(setAnneeDisciplineEns(annee));
-            dispatch(setSemestreDisciplineEns(semestre));
+            dispatch(setAnneeDisciplineEns(currentYear));
+            dispatch(setSemestreDisciplineEns(parseInt(semestre)));
         }
 
 
@@ -130,15 +130,17 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             dispatch(setEnseignantsDisciplineLoadingOnTable(true));
 
             try {
-                const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
-                    page: 1, semestre: semestre, annee: annee
-                });
-                if (fetchedEnseignants) {
-                    dispatch(setEnseignantDiscipline(fetchedEnseignants));
+                if (semestre) {
+                    const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
+                        page: 1, semestre: parseInt(semestre), annee: currentYear
+                    });
+                    if (fetchedEnseignants) {
+                        dispatch(setEnseignantDiscipline(fetchedEnseignants));
 
-                    dispatch(setErrorPageEnseignantDiscipline(null));
-                } else {
-                    dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+                        dispatch(setErrorPageEnseignantDiscipline(null));
+                    } else {
+                        dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+                    }
                 }
             } catch (error) {
                 dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));

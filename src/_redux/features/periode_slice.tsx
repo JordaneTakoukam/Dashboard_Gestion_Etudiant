@@ -30,7 +30,7 @@ const periodeSlice = createSlice({
             state.data = action.payload;
         },
         createPeriode(state, action: PayloadAction<CreatePeriodePayload>) {
-            state.data.periodes.push(action.payload.periode);
+            state.data.periodes.unshift(action.payload.periode);
         },
         updatePeriode(state, action: PayloadAction<UpdatePeriodePayload>) {
             const { id, periodeData } = action.payload;

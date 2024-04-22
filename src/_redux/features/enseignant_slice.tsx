@@ -39,7 +39,7 @@ const enseignantSlice = createSlice({
             state.data = action.payload;
         },
         createEnseignant(state, action: PayloadAction<CreateEnseignantPayload>) {
-            state.data.enseignants.push(action.payload.enseignant);
+            state.data.enseignants.unshift(action.payload.enseignant);
         },
 
 

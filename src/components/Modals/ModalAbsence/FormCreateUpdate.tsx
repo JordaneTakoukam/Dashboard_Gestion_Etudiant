@@ -110,7 +110,7 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
         if (isHourRemove) {
             // supprimer
             if (user?.user && user.absence) {
-                
+
                 await apiDeleteAbsence(
                     {
                         userId: user?.user?._id,
@@ -156,6 +156,28 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
                 return;
             }
 
+            if (user?.user) {
+                await apiCreateAbsence(
+                    {
+                        userId: user?.user?._id,
+                        semestre: parseInt(semestre),
+                        annee: anneeAcademique,
+                        dateAbsence: date,
+                        heureDebut: debutPeriode,
+                        heureFin: finPeriode,
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        dispatch(ajouterAbsenceEnseignant({ ...e.data }));
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
         }
 
 

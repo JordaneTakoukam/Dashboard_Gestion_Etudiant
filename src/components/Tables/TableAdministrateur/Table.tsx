@@ -9,6 +9,8 @@ import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import Pagination from "../../Pagination/Pagination";
+import { setAdmin, setAdminsLoading, setErrorPageAdmin } from "../../../_redux/features/admin_slice";
+import { apiGetAdministrateurs } from "../../../api/other_users/api_administrateur";
 
 interface TableAdministrateurProps {
     data: AdminType[];
@@ -60,27 +62,57 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
     }, [searchText, data]);
 
 
-    // gestion de la pagination
-    // const [currentPage, setCurrentPage] = useState<number>(1);
-    // const indexOfLastItem = currentPage * adminState.pageSize;
-    // const indexOfFirstItem = Math.max(0, indexOfLastItem - adminState.pageSize);
-    // const startItem = currentPage === Math.ceil(adminState.totalItems / adminState.pageSize) ? adminState.totalItems - adminState.pageSize + 1 : indexOfFirstItem + 1;
-    // const endItem = Math.min(adminState.totalItems, indexOfLastItem);
-    // const hasNext = currentPage < Math.ceil(adminState.totalItems / adminState.pageSize);
-    // const hasPrevious = currentPage > 1;
+    // start pagination
+    // Récupération du nombre total d'éléments et du nombre d'éléments par page
+    const count: number = useSelector((state: RootState) => state.admin.data.totalItems);
+    const itemsPerPage = useSelector((state: RootState) => state.admin.data.pageSize); // nombre maximum d'éléments par page
 
-    // // Render page numbers
-    // const pageNumbers = [];
-    // for (let i = 1; i <= Math.ceil(adminState.totalItems / adminState.pageSize); i++) {
-    //     pageNumbers.push(i);
-    // }
+    // État pour suivre la page actuelle
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
-    // const handlePageClick = (pageNumber: number) => {
-    //     setCurrentPage(pageNumber);
-    //     console.log(pageNumber);
+    // Calcul des index du premier et du dernier élément affiché sur la page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
 
-    // };
+    // Calcul de l'élément de départ et de fin affiché sur la page
+    const startItem = currentPage === 1 ? 1 : indexOfFirstItem + 1;
+    const endItem = currentPage === Math.ceil(count / itemsPerPage) ? count : indexOfLastItem;
 
+    // Vérification de la présence d'une page précédente et suivante
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    // Génération des numéros de page
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const handlePageClick = async (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+        await fetchList({ page: pageNumber })
+        setCurrentPage(pageNumber);
+
+    };
+    // end --------- pagination
+
+    const fetchList = async ({ page }: { page: number }) => {
+        dispatch(setAdminsLoading(true));
+        try {
+            const fetchResult = await apiGetAdministrateurs({ page: page });
+
+            if (fetchResult) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                dispatch(setAdmin(fetchResult));
+                dispatch(setErrorPageAdmin(null));
+            } else {
+                dispatch(setErrorPageAdmin(t('message.erreur')));
+            }
+        } catch (error) {
+            dispatch(setErrorPageAdmin(t('message.erreur')));
+        } finally {
+            dispatch(setAdminsLoading(false)); // Définissez le loading à false après le chargement
+        }
+    };
 
 
     return (
@@ -88,7 +120,6 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title={t('boutton.nouvel_admin')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
                 <InputSearch
@@ -113,7 +144,7 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
                 </div>
 
                 {/* Pagination */}
-                {/* <Pagination
+                <Pagination
                     count={adminState.totalItems}
                     itemsPerPage={adminState.pageSize}
                     startItem={startItem}
@@ -123,7 +154,7 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-                /> */}
+                />
 
             </div>
 

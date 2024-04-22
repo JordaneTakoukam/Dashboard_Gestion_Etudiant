@@ -1,4 +1,5 @@
-import { GrFormPreviousLink, GrFormNextLink } from 'react-icons/gr';
+import { useTranslation } from 'react-i18next';
+import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
 
 interface PaginationProps {
     count: number;
@@ -13,54 +14,83 @@ interface PaginationProps {
 }
 
 function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasNext, currentPage, pageNumbers, handlePageClick }: PaginationProps) {
+
+    const { t } = useTranslation();
     return (
         <>
-            {count > itemsPerPage && (
+            { (
                 <div className='flex items-center mt-8 mb-5'>
                     <div className="flex justify-between items-center w-full">
                         <div>
-                            <p>Affichage l'élément{" "}
-                                <span className="font-semibold">{startItem}</span>
-                                {" "}-{" "}
+                            <p>{t("pagination.affichage_des_elements")}{" "}
+                                <span className="font-semibold">{!(count > itemsPerPage) ? '1' : startItem}</span>
+                                {" "}{t("gestion_absence.a")}{" "}
                                 <span className="font-semibold">{endItem}</span>
                                 {" "}
-                                sur
+                                {t("pagination.sur_un_total_de")}
                                 <span className="font-semibold">{" "}{count}{" "}</span>
-                                entrées
+                                {t("pagination.entree")}
                             </p>
                         </div>
                         <div className="flex">
-                            {hasPrevious && (
+                            {hasPrevious ? (
                                 <button
                                     className="pr-3 text-black text hover:text-primary duration-300 flex items-center  font-semibold text-[13px] dark:text-gray-2 hover:dark:text-primary"
                                     onClick={() => handlePageClick(currentPage - 1)}
                                 >
-                                    <div className="text-[20px] text-black dark:text-gray-2 ">
-                                        <GrFormPreviousLink />
+                                    <div className="text-[20px]  ">
+                                        <IoArrowBack />
                                     </div>
-                                    Précédent
+                                    {t("pagination.precedent")}
+
+                                </button>
+                            ) : (
+                                <button
+                                    className={` ${count > itemsPerPage ? 'text-black ' : 'text-[#aaa6a6]'} pr-3  hover:text-gray-500 duration-300 flex items-center  font-semibold text-[13px] dark:text-gray-2 cursor-not-allowed`}
+                                    disabled
+                                >
+                                    <div className="text-[20px] ">
+                                        <IoArrowBack />
+                                    </div>
+
+                                    {t("pagination.precedent")}
+
                                 </button>
                             )}
-                            <ul className="pagination">
+                            <ul className="flex gap-x-1">
                                 {pageNumbers.map((pageNumber) => (
-                                    <button
-                                        key={pageNumber}
-                                        className={`w-[40px] h-[32px] duration-300 text-sm mx-1 border border-gray-300 shadow-sm font-bold  ${currentPage === pageNumber ? 'border-2 border-primary text-white bg-primary' : 'hover:bg-boxdark hover:text-white'}`}
-                                        onClick={() => {
-                                            handlePageClick(pageNumber);
-                                        }}
-                                    >
-                                        {pageNumber}
-                                    </button>
+                                    <li key={pageNumber}>
+                                        <button
+                                            className={`w-[40px] h-[32px] duration-300 text-sm  border border-gray-300 shadow-sm font-bold  ${currentPage === pageNumber ? 'border border-strokedark text-white  bg-strokedark' : 'hover:bg-primary border border-primary hover:text-white'}`}
+                                            onClick={() => {
+                                                handlePageClick(pageNumber);
+                                            }}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    </li>
                                 ))}
                             </ul>
-                            {hasNext && (
+                            {hasNext ? (
                                 <button
                                     className="pl-3 text-black  hover:text-primary duration-300 flex items-center  font-semibold text-[13px] dark:text-gray-2 hover:dark:text-primary"
-                                    onClick={() => handlePageClick(currentPage + 1)}>
-                                    Suivant
-                                    <div className="text-[20px] text-black dark:text-gray-2">
-                                        <GrFormNextLink />
+                                    onClick={() => handlePageClick(currentPage + 1)}
+                                >
+                                    {t("pagination.suivant")}
+
+                                    <div className="text-[20px] ">
+                                        <IoArrowForward />
+                                    </div>
+                                </button>
+                            ) : (
+                                <button
+                                    className={` ${count > itemsPerPage ? 'text-black ' : 'text-[#aaa6a6]'} pl-3  hover:text-gray-500 duration-300 flex items-center  font-semibold text-[13px] dark:text-gray-2 cursor-not-allowed`}
+                                    disabled
+                                >
+                                    {t("pagination.suivant")}
+
+                                    <div className="text-[20px]">
+                                        <IoArrowForward />
                                     </div>
                                 </button>
                             )}

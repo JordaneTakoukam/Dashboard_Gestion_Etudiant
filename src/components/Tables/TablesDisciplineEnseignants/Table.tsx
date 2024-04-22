@@ -35,8 +35,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
-    const [formatToDownload, setFormatToDownload] = useState("");
-
 
 
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
@@ -69,10 +67,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     };
 
-    const handleDownloadSelect = (selected: string) => {
-        // setFormatToDownload(selected);
-        // console.log(selected);
-    };
 
 
     // recherche
@@ -97,20 +91,34 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         setFilteredData(result);
     }, [searchText, data]);
 
-    // variable pour la pagination
-    //
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
 
 
     const [isInitialMount, setIsInitialMount] = useState(true);
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.enseignantDisciplineSlice.pageIsLoadingOnTable);
+
+
+
+    // start pagination
+    const count: number = useSelector((state: RootState) => state.enseignantDisciplineSlice.data.totalItems);
+    const itemsPerPage = useSelector((state: RootState) => state.enseignantDisciplineSlice.data.pageSize); // nombre delements maximum par page
+
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+
+    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const handlePageClick = (pageNumber: number) => { setCurrentPage(pageNumber); };
+    // end --------- pagination
 
     useEffect(() => {
         if (annee && semestre) {
@@ -151,7 +159,27 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
         fetchEnseignantWithAbsences();
 
-    }, [dispatch, annee, semestre, currentPage, t]);
+    }, [data.length, annee, semestre, currentPage, t]);
+
+
+
+    const handleDownloadSelect = async (selected: string) => {
+        // setFormatToDownload(selected);
+        // const mats = await fetchAllMatieres().then((matieres) => {
+        //     let title = "liste_des_matieres";
+        //     if (lang !== 'fr') {
+        //         title = "subjects_list";
+        //     }
+        //     if (selected === 'PDF') {
+
+        //     } else if (selected === 'CSV') {
+
+        //     } else {
+        //         exportToExcel(title + ".xlsx", matieres)
+        //     }
+        // })
+
+    };
 
     return (
         <div>
@@ -232,7 +260,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
                 {/* Pagination */}
 
-                {/* <Pagination
+                <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -242,8 +270,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-
-                /> */}
+                />
             </div>
 
             {/* bouton downlod Download */}

@@ -438,6 +438,13 @@
     "date": "Academic year",
     "nombre_heure_absence": "Academic year",
     "ajouter_le": "Add on",
-    "a":"at"
+    "a": "at"
+  },
+  "pagination": {
+    "affichage_des_elements": "Displaying items",
+    "sur_un_total_de": "out of",
+    "entree": "entries",
+    "precedent": "Previous",
+    "suivant": "Next"
   }
 }

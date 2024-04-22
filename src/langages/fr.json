@@ -470,5 +470,12 @@
     "nombre_heure_absence": "Nombre d'heures d'absence",
     "ajouter_le": "Ajouter le",
     "a": "à"
+  },
+  "pagination": {
+    "affichage_des_elements": "Affichage des éléments",
+    "sur_un_total_de": "sur un total de",
+    "entree": "entrées",
+    "precedent": "Précédent",
+    "suivant": "Suivant"
   }
 }

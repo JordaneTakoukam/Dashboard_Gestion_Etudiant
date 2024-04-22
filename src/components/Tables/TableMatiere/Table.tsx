@@ -21,23 +21,23 @@ import * as XLSX from 'xlsx';
 
 interface TableMatiereProps {
     data: MatiereType[];
-    onCreate:()=>void;
-    onEdit: (matiere : MatiereType) => void;
-    onAddChap:(matiere : MatiereType)=>void;
-    onAddEnseignement:(matiere:MatiereType)=>void;
+    onCreate: () => void;
+    onEdit: (matiere: MatiereType) => void;
+    onAddChap: (matiere: MatiereType) => void;
+    onAddEnseignement: (matiere: MatiereType) => void;
 }
 
-const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMatiereProps) => {
-    const {t}=useTranslation();
+const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement }: TableMatiereProps) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
-    const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
     // const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const sections:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
     const [section, setSection] = useState<CommonSettingProps>();
     const [cycle, setCycle] = useState<CycleProps>();
@@ -59,7 +59,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
-    
+
 
 
     // filtrer les donnee a partir de l'id de la section selectionner
@@ -69,16 +69,16 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
             const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
-                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+                setCycle(cycles.find(cycle => cycle._id === result[0]._id))
                 filterNiveauxByCycle(cycle?._id)
-            }else{
+            } else {
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
                 filterNiveauxByCycle(undefined);
                 setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
-        }else{
+        } else {
             setFilteredCycle([])
             setSelectIdCycle(undefined);
             setCycle(undefined);
@@ -87,21 +87,21 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
 
     // filtrer les donnee a partir de l'id du cycle selectionner
     const filterNiveauxByCycle = (cycleId: string | undefined) => {
-        
+
         if (cycleId && cycleId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
-                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
+                setNiveau(niveaux.find(niveau => niveau._id === result[0]._id))
                 setFilteredNiveaux(result)
-            }else{
+            } else {
                 setSelectIdNiveau(undefined);
                 setNiveau(undefined);
                 setFilteredNiveaux([])
             }
-            
-        }else{
+
+        } else {
             setFilteredNiveaux([])
             setSelectIdNiveau(undefined);
             setNiveau(undefined);
@@ -111,12 +111,12 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
 
     const fetchAllMatieres = async () => {
         try {
-            
+
             if (selectNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId});
+                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
                 return fetchedMatieres.matieres;
             }
-                // Réinitialisez les erreurs s'il y en a
+            // Réinitialisez les erreurs s'il y en a
         } catch (error) {
             dispatch(setErrorPageMatiere(t('message.erreur')));
             createToast(t('message.erreur'), "", 2)
@@ -126,82 +126,82 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const mats = await fetchAllMatieres().then((matieres)=>{
+        const mats = await fetchAllMatieres().then((matieres) => {
             let title = "liste_des_matieres";
-            if(lang !== 'fr'){
+            if (lang !== 'fr') {
                 title = "subjects_list";
             }
-            if(selected === 'PDF'){
+            if (selected === 'PDF') {
 
-            }else if (selected === 'CSV'){
+            } else if (selected === 'CSV') {
 
-            }else{
-                exportToExcel(title+".xlsx", matieres)
+            } else {
+                exportToExcel(title + ".xlsx", matieres)
             }
         })
-        
+
     };
 
-    const exportToExcel = ( filename: string,matieres: MatiereType[] | undefined) => {
-        if(matieres){
+    const exportToExcel = (filename: string, matieres: MatiereType[] | undefined) => {
+        if (matieres) {
             const wb = XLSX.utils.book_new();
-            
+
             // Créer une feuille de calcul
             const ws = XLSX.utils.aoa_to_sheet([
                 [t('label.matieres'), "CM", "TD", "TP"],
                 ...matieres.flatMap(matiere => {
                     const rows = [];
-        
+
                     // Vérifier si matiere.chapitres est défini
                     if (matiere.chapitres) {
-                        rows.push([`${matiere.code} : ${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`]);
-        
+                        rows.push([`${matiere.code} : ${lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}`]);
+
                         // Parcourir les chapitres
                         matiere.chapitres.forEach(chapitre => {
                             rows.push([
-                                lang==='fr'?chapitre.libelleFr:chapitre.libelleEn,
-                                chapitre.typesEnseignement.length>0 && chapitre.typesEnseignement[0].volumeHoraire || "", // Volume horaire pour le premier type d'enseignement
-                                chapitre.typesEnseignement.length>1 && chapitre.typesEnseignement[1].volumeHoraire || "", // Volume horaire pour le deuxième type d'enseignement
-                                chapitre.typesEnseignement.length>2 && chapitre.typesEnseignement[2].volumeHoraire || ""  // Volume horaire pour le troisième type d'enseignement
+                                lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn,
+                                chapitre.typesEnseignement.length > 0 && chapitre.typesEnseignement[0].volumeHoraire || "", // Volume horaire pour le premier type d'enseignement
+                                chapitre.typesEnseignement.length > 1 && chapitre.typesEnseignement[1].volumeHoraire || "", // Volume horaire pour le deuxième type d'enseignement
+                                chapitre.typesEnseignement.length > 2 && chapitre.typesEnseignement[2].volumeHoraire || ""  // Volume horaire pour le troisième type d'enseignement
                             ]);
                         });
                     }
-        
+
                     rows.push([
-                        (t('label.approche_ped'))+":"+(lang==='fr'?matiere.approchePedFr:matiere.approchePedEn), 
+                        (t('label.approche_ped')) + ":" + (lang === 'fr' ? matiere.approchePedFr : matiere.approchePedEn),
                     ]);
                     rows.push([
-                        (t('label.prerequis'))+":"+(lang==='fr'?matiere.prerequisFr:matiere.prerequisEn),
+                        (t('label.prerequis')) + ":" + (lang === 'fr' ? matiere.prerequisFr : matiere.prerequisEn),
                     ]);
                     rows.push([
-                        (t('label.evaluation_acquis'))+":"+(lang==='fr'?matiere.evaluationAcquisFr:matiere.evaluationAcquisEn),
+                        (t('label.evaluation_acquis')) + ":" + (lang === 'fr' ? matiere.evaluationAcquisFr : matiere.evaluationAcquisEn),
                     ]);
-                    let objectifs="";
-                    if(matiere.chapitres){
+                    let objectifs = "";
+                    if (matiere.chapitres) {
                         matiere.chapitres.forEach(chapitre => {
-                            if(chapitre.objectifs){
-                               
+                            if (chapitre.objectifs) {
+
                                 chapitre.objectifs.forEach(objectif => {
-                                    if(objectifs.length>0){
-                                        objectifs=objectifs+","+(lang==='fr'?objectif.libelleFr:objectif.libelleEn)
-                                    }else{
-                                        objectifs=(lang==='fr'?objectif.libelleFr:objectif.libelleEn)
+                                    if (objectifs.length > 0) {
+                                        objectifs = objectifs + "," + (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
+                                    } else {
+                                        objectifs = (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
                                     }
-                                    
+
                                 })
                             }
                         });
                     }
                     rows.push([
-                        (t('label.competences_acquis'))+":"+objectifs,
+                        (t('label.competences_acquis')) + ":" + objectifs,
                     ]);
                     rows.push(Array(4).fill("")); // Espacement entre les matières
-        
+
                     return rows;
                 })
             ]);
 
-          
+
             // Ajouter la feuille de calcul au classeur
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
             // Générer un fichier Excel binaire
@@ -214,14 +214,14 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
             link.download = filename;
             // Cliquez sur le lien pour télécharger le fichier Excel
             link.click();
-        }else{
-            
+        } else {
+
         }
-        
+
     }
-    
-     // recuperer l'id de la section suite au click sur l'input select
-     const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+
+    // recuperer l'id de la section suite au click sur l'input select
+    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
@@ -259,34 +259,34 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
         });
     };
 
-    
 
-     // variable pour la pagination
-     const itemsPerPage = useSelector((state: RootState) => state.matiereSlice.data.pageSize); // nombre delements maximum par page
-     const [currentPage, setCurrentPage] = useState<number>(1);
- 
-     const indexOfLastItem = currentPage * itemsPerPage;
-     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
-     const count =useSelector((state: RootState) => state.matiereSlice.data.totalItems);
-     const handlePageClick = (pageNumber: number) => {
-         setCurrentPage(pageNumber);
-     };
-     // Render page numbers
-     const pageNumbers = [];
-     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
-         pageNumbers.push(i);
-     }
- 
-     const hasPrevious = currentPage > 1;
-     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
- 
-     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-     const endItem = Math.min(count, indexOfLastItem);
+
+    // variable pour la pagination
+    const itemsPerPage = useSelector((state: RootState) => state.matiereSlice.data.pageSize); // nombre delements maximum par page
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+
+    const count:number = useSelector((state: RootState) => state.matiereSlice.data.totalItems);
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
 
     //fournir initialement les données à la page
     // Effet pour filtrer les options des CustomDropDown
-    
+
     // const filteredCycles = cycles.filter(cycle =>
     //     niveauxEnseignant.some(niveau => niveau.cycle === cycle._id)
     // );
@@ -294,39 +294,39 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
     //     filteredCycles.some(cycle => cycle.section === section._id)
     // );
     useEffect(() => {
-        setFilteredSection(sections);       
+        setFilteredSection(sections);
     }, []);
     useEffect(() => {
-        if(!selectSectionId){
+        if (!selectSectionId) {
             console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
             }
-        }else{
+        } else {
             setFilteredCycle([]);
             filterCycleBySection(selectSectionId);
         }
-        
-        
+
+
     }, [sections, selectSectionId]);
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
-            if(!selectCycleId){
+            if (!selectCycleId) {
                 filterNiveauxByCycle(filteredCycle[0]?._id);
-            }else{
+            } else {
                 filterNiveauxByCycle(selectCycleId);
             }
-                
-        }        
+
+        }
     }, [filteredCycle]);
 
     useEffect(() => {
-        
+
         const fetchMatieres = async () => {
             dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
             try {
-                const emptyMatieres : MatiereReturnGetType={
+                const emptyMatieres: MatiereReturnGetType = {
                     matieres: [],
                     currentPage: 0,
                     totalItems: 0,
@@ -334,24 +334,24 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                     pageSize: 0
                 }
                 if (selectNiveauId) {
-                    let fetchedMatieres=null;
-                    if(currentUser && currentUser.role===roles.enseignant){
+                    let fetchedMatieres = null;
+                    if (currentUser && currentUser.role === roles.enseignant) {
                         fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id });
-                    }else{
+                    } else {
                         fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage });
                     }
-                    
+
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
                         console.log(fetchedMatieres)
                     } else {
-                        
+
                         dispatch(setMatieres(emptyMatieres));
                     }
-                } else{
+                } else {
                     dispatch(setMatieres(emptyMatieres));
                 }
-                    // Réinitialisez les erreurs s'il y en a
+                // Réinitialisez les erreurs s'il y en a
             } catch (error) {
                 dispatch(setErrorPageMatiere(t('message.erreur')));
                 createToast(t('message.erreur'), "", 2)
@@ -370,18 +370,17 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
         setFilteredData(result);
     }, [searchText, data]);
 
-    
-    
+
+
 
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === currentUser.role || roles.superAdmin === currentUser.role && (<ButtonCreate
-                    title={t('boutton.nouvelle_matiere')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.matiere')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.matiere')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -486,7 +485,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddChap={onAddChap} onAddEnseignement={onAddEnseignement}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddChap={onAddChap} onAddEnseignement={onAddEnseignement} />
                         }
 
 
@@ -507,7 +506,6 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement}: TableMat
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-
                 />
 
             </div>

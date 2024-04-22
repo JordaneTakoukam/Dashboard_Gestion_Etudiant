@@ -177,6 +177,7 @@
     "changer_pass": "Changer de mot de passe",
     "actuel_pass": "Mot de passe actuel",
     "nouveau_pass": "Nouveau mot de passe",
+    "confirm_pass": "Confirmer le mot de passe",
     "nombre_chapitre": "Nombre de chapitre",
     "volume_horaire": "Volume horaire",
     "tableau_vide": "Aucune donnée enregistrée durant cette période.",
@@ -423,7 +424,11 @@
     "jour": "Le champ Jour est obligatoire.",
     "matiere": "Le champ matiere est obligatoire.",
     "type_ens_periode": "Le champ type d'enseignement est obligatoire.",
-    "salle": "Le champ salle de cours est obligatoire."
+    "salle": "Le champ salle de cours est obligatoire.",
+    "current_pass": "Le champ mot de passe actuelle est obligatoire.",
+    "new_pass": "Le champ mot de nouveau mot de passe est obligatoire.",
+    "confirm_pass_field": "Le champ comfirmation du mot de passe est obligatoire.",
+    "confirm_pass": "La confirmation du mot de passe est incorrecte."
   },
   "message": {
     "non_autoriser": "Non autorisé",

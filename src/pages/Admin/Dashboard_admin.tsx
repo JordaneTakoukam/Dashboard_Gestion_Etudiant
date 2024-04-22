@@ -11,7 +11,6 @@ import { apiGetNbAbsenceEtudiantsParSection, apiGetNbEtudiantsParSection, apiGet
 import { apiGetTotalEnseignants } from "../../api/other_users/api_enseignant";
 import { getFirstTenEventsOfYear } from "../../api/api_evenement";
 import { getProgressionGlobalEnseignants } from "../../api/api_chapitre";
-import { current } from "@reduxjs/toolkit";
 import { apiGetTotalHoursOfAbsenceByStudent, apiGetTotalHoursOfAbsenceByTeacher } from "../../api/discipline/api_discipline";
 
 const DashBoardAmin = () => {

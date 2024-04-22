@@ -179,6 +179,7 @@
     "changer_pass": "Change password",
     "actuel_pass": "Current password",
     "nouveau_pass": "New password",
+    "confirm_pass": "Confirm password",
     "nombre_chapitre": "Number of Chapters",
     "volume_horaire": "Hourly Volume",
     "tableau_vide": "No data recorded during this period.",
@@ -425,7 +426,11 @@
     "jour": "Day field is required.",
     "matiere": "Subject field is required.",
     "type_ens_periode": "Type of teaching field is required.",
-    "salle": "Classroom field is required."
+    "salle": "Classroom field is required.",
+    "current_pass": "The current password field is required.",
+    "new_pass": "The new password field is required.",
+    "confirm_pass_field": "The password confirmation field is required.",
+    "confirm_pass": "Password confirmation is incorrect."
   },
   "message": {
     "non_autoriser": "Unauthorized",

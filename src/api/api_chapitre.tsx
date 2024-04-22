@@ -96,7 +96,11 @@ export async function getProgressionGlobalEnseignantsNiveau(niveauId: string): P
             },
         );
         const progress: number = response.data.data;
-        return parseFloat(progress.toFixed(2));
+        if(progress){
+            return parseFloat(progress.toFixed(2));
+        }
+        return 0;
+        
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;
@@ -115,7 +119,10 @@ export async function getProgressionGlobalEnseignant(enseignantId: string): Prom
             },
         );
         const progress: number = response.data.data;
-        return parseFloat(progress.toFixed(2));
+        if(progress){
+            return parseFloat(progress.toFixed(2));
+        }
+        return 0;
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;

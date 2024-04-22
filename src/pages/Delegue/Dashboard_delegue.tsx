@@ -14,6 +14,9 @@ import { apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx
 import { apiGetTotalEtudiantByYear } from '../../api/other_users/api_etudiant.tsx';
 import { setSections, setCycles, setNiveaux } from '../../_redux/features/data_setting_slice.tsx';
 import { cycles } from '../Admin/Cycles.tsx';
+import { apiGetAbsencesByUserAndFilter } from '../../api/discipline/api_discipline.tsx';
+import { updateUserAbsences } from '../../_redux/features/user_slice.tsx';
+import { nbTotalAbsences } from '../../fonctions/fonction.tsx';
 
 
 const DashboardDelegate = () => {
@@ -32,6 +35,7 @@ const DashboardDelegate = () => {
     const [evenements, setEvenements] = useState<EvenementType[]>([]);
     const [periodes, setPeriodes] = useState<PeriodeType[]>([]);
     const [progression, setProgression] = useState<number>(0);
+    const [nbAbsence, setNbAbsence]=useState<string>("0");
 
     useEffect(() => {
         const niveauxEtuIds = currentUser.niveaux.map(inscription => inscription.niveau) ?? [];
@@ -46,16 +50,17 @@ const DashboardDelegate = () => {
         dispatch(setCycles(filteredCycles));
         dispatch(setNiveaux(niveauxEtu));
         const fetchData = async () => {
+            
             try {
-                const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
-                if (totalEtudiantByYear !== null) {
-                    setTotalEtudiant(totalEtudiantByYear);
-                }
+                // const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
+                // if (totalEtudiantByYear !== null) {
+                //     setTotalEtudiant(totalEtudiantByYear);
+                // }
 
-                const totalEnseignants = await apiGetTotalEnseignants();
-                if (totalEnseignants !== null) {
-                    setTotalEnseignant(totalEnseignants);
-                }
+                // const totalEnseignants = await apiGetTotalEnseignants();
+                // if (totalEnseignants !== null) {
+                //     setTotalEnseignant(totalEnseignants);
+                // }
                 if(currentNiveauId){
                     const progressionGlobal = await getProgressionGlobalEnseignantsNiveau(currentNiveauId);
                     if (progressionGlobal !== null) {
@@ -67,36 +72,42 @@ const DashboardDelegate = () => {
                 if (eventsOfYear !== null && eventsOfYear.evenements) {
                     setEvenements(eventsOfYear.evenements);
                 }
+                
                 if(currentNiveauId){                    
                     const periodeBecome = await getPeriodesAVenirByNiveau({ niveauId: currentNiveauId, annee:currentYear, semestre:currentSemester });
                     if (periodeBecome !== null && periodeBecome.periodes) {
                         setPeriodes(periodeBecome.periodes);
                     }
                 }
-                
+
+                const absences = await apiGetAbsencesByUserAndFilter({ userId: currentUser._id, annee: currentYear, semestre: currentSemester });
+                if(absences){
+                    dispatch(updateUserAbsences(absences));
+                    setNbAbsence(nbTotalAbsences(absences));
+                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
-    }, [currentYear, currentNiveauId, t]);
+    }, [dispatch, currentYear, currentSemester, currentUser._id, t]);
     return (
         <>
             <Breadcrumb pageName={t('menu.tableau_de_bord')} isDashboard={true} />
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5">
-                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant.toString()} id={1} />
-                <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={'100H'} id={2} />
-                <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={3} />
-                <CardDashboard title={t('tableau_de_bord.absences_enseignants')} value={'100H'} id={2} />
-                <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression} />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-3 2xl:gap-7.5">
+                <CardDashboard title={t('tableau_de_bord.semestre_courant')} value={currentSemester.toString()} id={1} />
+                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant.toString()} id={2} />
+                {/* <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={'100H'} id={2} /> */}
+                {/* <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={3} /> */}
+                <CardDashboard title={t('tableau_de_bord.progression')} id={3} progressionValue={progression} />
 
             </div>
 
             <div className='flex flex-col md:flex-row gap-3 mt-3'>
                 <div className='gap-3'>
-                    <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={'100H'} id={2} />
+                    <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={nbAbsence+' H'} id={2} />
 
                     <div className='mt-3'>
                         <CardAlertRecente alertList={[]} additionalStyle={'min-h-[250px]'} />

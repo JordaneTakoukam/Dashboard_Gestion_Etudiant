@@ -111,7 +111,6 @@ export async function getPeriodesAVenirByNiveau({ niveauId, annee, semestre }: {
 
         // Extraction de tous les objets de paramètres de la réponse
         const periodes: PeriodeReturnGetType = response.data.data;
-        console.log(periodes);
 
         return periodes;
     } catch (error) {

@@ -3,7 +3,7 @@
     import { AiOutlineClockCircle } from "react-icons/ai";
     import { CurrentYearDate } from "./_CommonYear";
     import ProgressBar from "@ramonak/react-progress-bar";
-import LoadingTable from "../Tables/common/LoadingTable";
+    import LoadingTable from "../Tables/common/LoadingTable";
 
 
     interface CardDashboardProps {
@@ -13,6 +13,7 @@ import LoadingTable from "../Tables/common/LoadingTable";
         pageIsLoading?:boolean,
         progressionValue?: number,
         additionalStyle?: String,
+        
     }
 
 

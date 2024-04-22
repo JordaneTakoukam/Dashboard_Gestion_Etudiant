@@ -21,6 +21,7 @@ interface UserState {
 
     // son tous des objectId
     abscence: string | null;
+    absences:AbsenceType[];
     niveaux: InscriptionType[];
     grade: string | null;
     categorie: string | null;

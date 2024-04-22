@@ -90,18 +90,19 @@ const DashBoardAmin = () => {
         };
 
         fetchData();
-    }, [currentYear]);
+    }, [currentSemester, currentYear]);
 
     return (
         <>
             <Breadcrumb pageName={t('tableau_de_bord.title')} isDashboard={true} />
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5">
-                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant.toString()} id={1} additionalStyle={style} />
-                <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={totalAbsenceEtudiant+'H'} id={2} additionalStyle={style} />
-                <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={3} additionalStyle={style} />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-3 2xl:gap-7.5">
+                <CardDashboard title={t('tableau_de_bord.semestre_courant')} value={currentSemester.toString()} id={1} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant.toString()} id={2} additionalStyle={style} />
+                <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={totalAbsenceEtudiant+' H'} id={3} additionalStyle={style} />
+                {/* <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={3} additionalStyle={style} />
                 <CardDashboard title={t('tableau_de_bord.absences_enseignants')} value={totalAbsenceEnseignant+' H'} id={2} additionalStyle={style} />
-                <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression}  />
+                <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression}  /> */}
             </div>
 
             <div className="xl:hidden mt-5 block">
@@ -115,6 +116,9 @@ const DashBoardAmin = () => {
                 </div>
 
                 <div className="hidden xl:block">
+                    <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={4} additionalStyle={style} />
+                    <CardDashboard title={t('tableau_de_bord.absences_enseignants')} value={totalAbsenceEnseignant+' H'} id={5} additionalStyle={style} />
+                    <CardDashboard title={t('tableau_de_bord.progression')} id={6} progressionValue={progression}  />
                     <CardEvenement additionalStyle={'min-w-[350px] min-h-[431px]'} listEvenement={evenements} />
                 </div>
             </div>

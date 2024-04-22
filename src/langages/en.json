@@ -74,6 +74,7 @@
   },
   "tableau_de_bord": {
     "title": "Dashboard",
+    "current_semester":"Current semester",
     "total_etudiants": "Total number of students",
     "total_enseignants": "Total number of teachers",
     "absences_etudiants": "Total student absences",

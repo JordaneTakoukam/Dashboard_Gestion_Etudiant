@@ -6,10 +6,32 @@ const api = `${apiUrl}/absence`;
 const token = localStorage.getItem(wstjqer);
 
 
+export async function apiGetAbsencesByUserAndFilter({ userId, semestre, annee }: { userId: string, semestre: Number, annee: Number }): Promise<AbsenceType[]> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAbsencesByUserAndFilter/${userId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    semestre: semestre,
+                    annee: annee
+                },
+            },
+        );
+        const absences = response.data.data.absences;
 
+        return absences;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 
 export async function apiGetAbsencesWithEnseignantsByFilter({ page, semestre, annee }: { page?: number, semestre?: Number, annee?: Number }): Promise<EnseignantDisciplineListGetType> {
-    const pageSize: number = 2;
+    const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getAbsencesWithEnseignantsByFilter`,

@@ -11,6 +11,7 @@ const initialState: UserState = {
     prenom: '',
     email: '',
     niveaux: [],
+    absences:[],
     grade: '',
     categorie: '',
     fonction: '',
@@ -49,11 +50,16 @@ export const userSlice = createSlice({
         updateUserNiveaux: (state, action: PayloadAction<InscriptionType[]>) => {
             state.niveaux = action.payload;
         },
+
+        //Mettre à jour uniquement la liste des absences
+        updateUserAbsences: (state, action: PayloadAction<AbsenceType[]>) => {
+            state.absences = action.payload;
+        },
     },
 });
 
 // Exporter les actions
-export const { setUser, setMinimumUser, updateUserNiveaux, updateUser } = userSlice.actions;
+export const { setUser, setMinimumUser, updateUserNiveaux,updateUserAbsences, updateUser } = userSlice.actions;
 
 // Exporter le reducer
 export default userSlice.reducer;

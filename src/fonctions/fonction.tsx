@@ -197,25 +197,37 @@ export function nbTotalAbsences(listeAbsences: AbsenceType[]): string {
     const heureFin = parseInt(absence.heureFin.split(':')[0]);
     const minuteFin = parseInt(absence.heureFin.split(':')[1]);
 
+    // Calculer les heures et minutes de début et de fin en décimales
+    const heureDebutDecimal = heureDebut + minuteDebut / 60;
+    const heureFinDecimal = heureFin + minuteFin / 60;
+
     // Calculer la différence d'heures entre l'heure de début et l'heure de fin
-    const differenceHeures = heureFin - heureDebut;
+    let differenceHeures = heureFinDecimal - heureDebutDecimal;
 
     // Calculer la différence de minutes entre l'heure de début et l'heure de fin
-    const differenceMinutes = minuteFin - minuteDebut;
-
-    // Ajouter la différence d'heures à la somme totale d'heures
-    totalHours += differenceHeures;
+    // const differenceMinutes = minuteFin - minuteDebut;
 
     // Si la différence de minutes est positive, ajouter une heure supplémentaire
-    if (differenceMinutes > 0) {
-      totalHours += 1;
+    // if (differenceMinutes > 0) {
+    //   totalHours += 1;
+    // }
+    // Si la différence de minutes est négative, ajuster les heures
+    if (minuteFin < minuteDebut) {
+        differenceHeures -= 1 / 60; // Retirer une heure
     }
+    // Ajouter la différence d'heures à la somme totale d'heures
+    totalHours += differenceHeures;
   });
 
   // Retourner la somme totale d'heures sous forme de chaîne
-  return totalHours.toString();
+  let formatHour;
+  if (Number.isInteger(totalHours)) {
+      formatHour = totalHours.toString();
+  } else {
+      formatHour = totalHours.toFixed(2);
+  }
+  return formatHour.toString();
 }
-
 
 export function reduceWord(word: string, maxSize: number): string {
   // Vérifier si l'utilisateur est sur mobile ou non

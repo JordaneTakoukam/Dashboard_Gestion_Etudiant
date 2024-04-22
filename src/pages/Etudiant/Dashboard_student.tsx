@@ -13,6 +13,9 @@ import { apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx
 import { apiGetTotalEtudiantByYear } from '../../api/other_users/api_etudiant.tsx';
 import { getPeriodesAVenirByNiveau } from '../../api/api_periode.tsx';
 import { setSections, setCycles, setNiveaux } from '../../_redux/features/data_setting_slice.tsx';
+import { updateUserAbsences } from '../../_redux/features/user_slice.tsx';
+import { apiGetAbsencesByUserAndFilter } from '../../api/discipline/api_discipline.tsx';
+import { nbTotalAbsences } from '../../fonctions/fonction.tsx';
 
 
 
@@ -32,6 +35,7 @@ const DashBoardStudent = () => {
     const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux.find(niveau=>niveau.annee===currentYear)?.niveau);
     const currentNiveauId=currentNiveau?._id;
     const dispatch = useDispatch();
+    const [nbAbsence, setNbAbsence]=useState<string>("0");
 
     useEffect(() => {
         const niveauxEtuIds = currentUser.niveaux.map(inscription => inscription.niveau) ?? [];
@@ -47,15 +51,15 @@ const DashBoardStudent = () => {
         dispatch(setNiveaux(niveauxEtu));
         const fetchData = async () => {
             try {
-                const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
-                if (totalEtudiantByYear !== null) {
-                    setTotalEtudiant(totalEtudiantByYear);
-                }
+                // const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
+                // if (totalEtudiantByYear !== null) {
+                //     setTotalEtudiant(totalEtudiantByYear);
+                // }
 
-                const totalEnseignants = await apiGetTotalEnseignants();
-                if (totalEnseignants !== null) {
-                    setTotalEnseignant(totalEnseignants);
-                }
+                // const totalEnseignants = await apiGetTotalEnseignants();
+                // if (totalEnseignants !== null) {
+                //     setTotalEnseignant(totalEnseignants);
+                // }
                 if(currentNiveauId){
                     const progressionGlobal = await getProgressionGlobalEnseignantsNiveau(currentNiveauId);
                     if (progressionGlobal !== null) {
@@ -73,6 +77,12 @@ const DashBoardStudent = () => {
                         setPeriodes(periodeBecome.periodes);
                     }
                 }
+
+                const absences = await apiGetAbsencesByUserAndFilter({ userId: currentUser._id, annee: currentYear, semestre: currentSemester });
+                if(absences){
+                    dispatch(updateUserAbsences(absences));
+                    setNbAbsence(nbTotalAbsences(absences));
+                }
                 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -80,7 +90,7 @@ const DashBoardStudent = () => {
         };
 
         fetchData();
-    }, [currentYear, currentNiveauId, t]);
+    }, [dispatch, currentYear, currentSemester,currentUser._id, t]);
     return (
         <>
             <Breadcrumb pageName={t('menu.tableau_de_bord')} isDashboard={true} />
@@ -88,7 +98,7 @@ const DashBoardStudent = () => {
             <div className='flex flex-col md:flex-row gap-3 justify-between '>
                 {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 xl:grid-cols-5 2xl:gap-7.5"> */}
                 <div className="flex flex-col gap-y-3">
-                    <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={'22H'} id={1} />
+                    <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={nbAbsence+' H'} id={1} />
                     <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression} />
                     <CardAlertRecente alertList={[]} />
 

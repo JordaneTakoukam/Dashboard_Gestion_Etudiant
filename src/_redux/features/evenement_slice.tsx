@@ -30,7 +30,7 @@ const evenementSlice = createSlice({
             state.data = action.payload;
         },
         createEvenement(state, action: PayloadAction<CreateEvenementPayload>) {
-            state.data.evenements.push(action.payload.evenement);
+            state.data.evenements.unshift(action.payload.evenement);
         },
         updateEvenement(state, action: PayloadAction<UpdateEvenementPayload>) {
             const { id, evenementData } = action.payload;

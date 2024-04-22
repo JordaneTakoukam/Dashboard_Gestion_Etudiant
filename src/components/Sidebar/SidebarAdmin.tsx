@@ -194,7 +194,21 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
+
+                                                    <li>
+                                                        <NavLink
+                                                            to="/students/absence_reporting"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.absence_reporting')}
+                                                        </NavLink>
+                                                    </li>
                                                 </ul>
+
+
                                             </div>
                                             {/* <!-- Dropdown Menu End --> */}
                                         </React.Fragment>
@@ -267,6 +281,17 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/teachers/absence_reporting"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.absence_reporting')}
+                                                        </NavLink>
+                                                    </li>
                                                 </ul>
                                             </div>
                                             {/* <!-- Dropdown Menu End --> */}
@@ -327,7 +352,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             onClick={() => { dispatch(setShowModalChapitre(false)); dispatch(setShowModalEnseignement(false)); }}
                                                         >
                                                             {t('sub_menu.liste_matiere')}
-                                                            
+
                                                         </NavLink>
                                                     </li>
                                                     <li>

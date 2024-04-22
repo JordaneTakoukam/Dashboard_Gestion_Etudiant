@@ -371,8 +371,8 @@ export function ModalCreateUpdateAdmin({ admin }: ModalCreateUpdateAdmin) {
                             id={t('label.homme')}
                             name="genre"
                             value={t('label.homme')}
-                            checked={genre === "m"}
-                            onChange={() => { setGenre("m"); setErrorGenre("") }}
+                            checked={genre === "M"}
+                            onChange={() => { setGenre("M"); setErrorGenre("") }}
                         />
                         <label htmlFor={t('label.homme')} className='radio-intern-space'>{t('label.homme')}</label>
 
@@ -382,8 +382,8 @@ export function ModalCreateUpdateAdmin({ admin }: ModalCreateUpdateAdmin) {
                             id={t('label.femme')}
                             name="genre"
                             value={t('label.femme')}
-                            checked={genre === "f"}
-                            onChange={() => { setGenre("f"); setErrorGenre("") }}
+                            checked={genre === "F"}
+                            onChange={() => { setGenre("F"); setErrorGenre("") }}
                         />
                         <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                     </div>

@@ -128,6 +128,30 @@ export async function apiGetNbEtudiantsParSection({ annee }: { annee: number }):
     }
 }
 
+export async function apiGetNbAbsenceEtudiantsParSection({ annee, semestre }: { annee: number, semestre:number }): Promise<{ [section: string]: number }> {
+    try {
+        const response: AxiosResponse<{ data: { [section: string]: number } }> = await axios.get(
+            `${api}/getNbAbsencesParSection`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee: annee,
+                    semestre:semestre
+                },
+            },
+        );
+        const totalAbsenceEtudiant = response.data.data;
+        console.log(totalAbsenceEtudiant)
+        return totalAbsenceEtudiant;
+    } catch (error) {
+        console.error('Error getting total students per section:', error);
+        throw error;
+    }
+}
+
 // create
 export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
     try {

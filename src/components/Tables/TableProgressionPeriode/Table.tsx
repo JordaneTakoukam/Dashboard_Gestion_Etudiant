@@ -15,11 +15,12 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
-import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { calculateSeancesEffectuees, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../../_redux/features/progession_periode_slice";
 import * as XLSX from 'xlsx';
 import React from "react";
+import { getPeriodesByNiveau } from "../../../api/api_periode";
 
 interface TablePeriodeEnseignementProps {
     data: PeriodeEnseignementType;
@@ -125,8 +126,14 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
         
     };
 
-    const exportToExcel = ( filename: string,periode: PeriodeEnseignementType | undefined) => {
-        if(periodes){
+    const exportToExcel = async ( filename: string,periode: PeriodeEnseignementType | undefined) => {
+        let fetchedPeriodes = null;
+        if(niveau && niveau._id){
+            fetchedPeriodes = await getPeriodesByNiveau({ niveauId: niveau._id, annee: currentYear, semestre: currentSemester });
+        }
+         
+        
+        if(periodes && fetchedPeriodes && fetchedPeriodes.periodes){
             const wb = XLSX.utils.book_new();
 
             // Créer une feuille de calcul
@@ -140,7 +147,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                 ...(periode?.enseignements || []).flatMap(enseignement => [
                     [enseignement.matiere.code+":"+(lang==='fr'?enseignement.matiere.libelleFr:enseignement.matiere.libelleEn)],
                     [t('label.nb_seance_periode'), t('label.nb_seance_pratique'), t('label.gap'), t('label.taux_presence')],
-                    [enseignement.nombreSeance, 0, enseignement.nombreSeance - 0, `${((0 / enseignement.nombreSeance) * 100).toFixed(2)}%`]
+                    [enseignement.nombreSeance, calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), enseignement.nombreSeance - calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), `${(( calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes)/ enseignement.nombreSeance) * 100).toFixed(2)}%`]
                 ])
             ]);
           

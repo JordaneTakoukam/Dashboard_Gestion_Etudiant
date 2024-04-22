@@ -10,7 +10,7 @@ const token = localStorage.getItem(wstjqer);
 // 
 //
 // get
-export async function apiGetEnseignantsWithPagination({ page, grade, categorie, service, fonction }: { page: number, grade?:string, categorie?:string, service?:string, fonction?:string }): Promise<EnseignantListGetType> {
+export async function apiGetEnseignantsWithPagination({ page, grade, categorie, service, fonction }: { page: number, grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<EnseignantListGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -23,10 +23,10 @@ export async function apiGetEnseignantsWithPagination({ page, grade, categorie, 
                 params: {
                     page: page,
                     pageSize: pageSize,
-                    grade:grade,
-                    categorie:categorie,
-                    service:service,
-                    fonction:fonction
+                    grade: grade,
+                    categorie: categorie,
+                    service: service,
+                    fonction: fonction
                 },
             },
         );
@@ -38,7 +38,7 @@ export async function apiGetEnseignantsWithPagination({ page, grade, categorie, 
     }
 }
 
-export async function apiGetEnseignants({grade, categorie, service, fonction }: {grade?:string, categorie?:string, service?:string, fonction?:string }): Promise<EnseignantListGetType> {
+export async function apiGetEnseignants({ grade, categorie, service, fonction }: { grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<EnseignantListGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getAllEnseignantsByFilter`,
@@ -48,10 +48,10 @@ export async function apiGetEnseignants({grade, categorie, service, fonction }: 
                     'token': token,
                 },
                 params: {
-                    grade:grade,
-                    categorie:categorie,
-                    service:service,
-                    fonction:fonction
+                    grade: grade,
+                    categorie: categorie,
+                    service: service,
+                    fonction: fonction
                 },
             },
         );
@@ -96,7 +96,7 @@ export async function apiGetTotalEnseignants(): Promise<number> {
             },
         );
         const totalEnseignant: number = response.data.data;
-        console.log("===="+totalEnseignant);
+        console.log("====" + totalEnseignant);
         return totalEnseignant;
     } catch (error) {
         console.error('Error getting all settings:', error);
@@ -104,7 +104,7 @@ export async function apiGetTotalEnseignants(): Promise<number> {
     }
 }
 
-export async function apiGetNiveauxByEnseignant({enseignantId, annee, semestre}: {enseignantId:string,annee:number,semestre:number }): Promise<InscriptionType[]> {
+export async function apiGetNiveauxByEnseignant({ enseignantId, annee, semestre }: { enseignantId: string, annee: number, semestre: number }): Promise<InscriptionType[]> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getNiveauxByEnseignant/${enseignantId}`,
@@ -114,13 +114,13 @@ export async function apiGetNiveauxByEnseignant({enseignantId, annee, semestre}:
                     'token': token,
                 },
                 params: {
-                    annee:annee,
-                    semestre:semestre
+                    annee: annee,
+                    semestre: semestre
                 },
             },
         );
         const niveaux: InscriptionType[] = response.data.data;
-        console.log("===="+niveaux);
+        console.log("====" + niveaux);
         return niveaux;
     } catch (error) {
         console.error('Error getting all settings:', error);
@@ -129,11 +129,11 @@ export async function apiGetNiveauxByEnseignant({enseignantId, annee, semestre}:
 }
 
 // create
-export async function apiCreateEnseignant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {
+export async function apiCreateEnseignant({ nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune }: EnseignantCreateType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create/create-enseignant`,
-            { nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
+            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -151,11 +151,11 @@ export async function apiCreateEnseignant({nom,genre,email,photo_profil,contact,
 
 
 // update 
-export async function apiUpdateEnseignant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune}: EnseignantType): Promise<ReponseApiPros> {
+export async function apiUpdateEnseignant({ _id, nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune }: EnseignantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,grade,categorie,fonction,service,commune },
+            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune },
             {
                 headers: {
                     'Content-Type': 'application/json',

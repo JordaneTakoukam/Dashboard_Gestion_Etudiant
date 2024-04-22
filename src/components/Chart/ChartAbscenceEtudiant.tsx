@@ -4,9 +4,6 @@ import ReactApexChart from 'react-apexcharts';
 import LoadingTable from '../Tables/common/LoadingTable';
 import { useTranslation } from 'react-i18next';
 
-
-
-
 interface ChartProps {
     series: {
         name: string;
@@ -14,16 +11,20 @@ interface ChartProps {
     }[];
 }
 
+export interface DataPair {
+    name: string;
+    value: number;
+}
 
-
-export const ChartNombreEtudiant: React.FC = () => {
-    const pageIsLoading = false;
-    const listSection = ['1ère année', '2ème année', '3ème année', '4ème année', '5ème année'];
-    const listHeureAbscenceEtudiant = [40, 105, 15, 55, 20];
+export const ChartAbsenceEtudiantSection: React.FC<{ data: DataPair[] }> = ({ data }) => {
     const { t } = useTranslation();
 
+    const [state, setState] = useState<ChartProps>({
+        series: [{ name: '', data: [] }]
+    });
+
     const options: ApexOptions = {
-        colors: ['#D2691E', '#80CAEE'],
+        colors: ['#FF7F00'], // Remplacez la couleur par orange
         chart: {
             fontFamily: 'Satoshi, sans-serif',
             type: 'bar',
@@ -36,7 +37,6 @@ export const ChartNombreEtudiant: React.FC = () => {
                 enabled: true,
             },
         },
-
         responsive: [
             {
                 breakpoint: 1536,
@@ -54,7 +54,7 @@ export const ChartNombreEtudiant: React.FC = () => {
             bar: {
                 horizontal: false,
                 borderRadius: 0,
-                columnWidth: '25%',
+                columnWidth: '50%',
                 borderRadiusApplication: 'end',
                 borderRadiusWhenStacked: 'last',
             },
@@ -62,9 +62,8 @@ export const ChartNombreEtudiant: React.FC = () => {
         dataLabels: {
             enabled: false,
         },
-
         xaxis: {
-            categories: listSection,
+            categories: data.map(item => item.name),
         },
         legend: {
             position: 'top',
@@ -72,7 +71,6 @@ export const ChartNombreEtudiant: React.FC = () => {
             fontFamily: 'Satoshi',
             fontWeight: 500,
             fontSize: '12px',
-
             markers: {
                 radius: 99,
             },
@@ -82,21 +80,11 @@ export const ChartNombreEtudiant: React.FC = () => {
         },
     };
 
-
-
-
     useEffect(() => {
-        setState({ series: [{ name: 'Abscences', data: listHeureAbscenceEtudiant }] });
-    }, []);
-
-
-    const [state, setState] = useState<ChartProps>({
-        series: [{ name: '', data: [] }]
-    });
+        setState({ series: [{ name: t('tableau_de_bord.abs_etudiant'), data: data.map(item => item.value) }] });
+    }, [data]);
 
     return (
-
-
         <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-3">
             <div className="mb-4 justify-between gap-4 sm:flex">
                 <div>
@@ -104,28 +92,23 @@ export const ChartNombreEtudiant: React.FC = () => {
                         {t('tableau_de_bord.nombre_absence_section')}
                     </h4>
                 </div>
-
             </div>
-
             <div>
                 <div id="chartTwo" className="-ml-5 -mb-9">
                     {
-                        !pageIsLoading ?
-
+                        state.series[0].data.length > 0 ? (
                             <ReactApexChart
                                 options={options}
                                 series={state.series}
                                 type="bar"
                                 height={350}
-                            /> : <LoadingTable />
+                            />
+                        ) : (
+                            <LoadingTable />
+                        )
                     }
-
-
                 </div>
             </div>
         </div>
     );
 };
-
-
-

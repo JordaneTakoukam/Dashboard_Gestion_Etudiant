@@ -1,5 +1,6 @@
 import { config } from "../config";
 import CryptoJS from 'crypto-js';
+import { jours } from "../pages/CommonPage/EmploiDeTemp";
 
 
 
@@ -99,6 +100,59 @@ export function premierElement(value: String) {
   }
   return undefined;
 }
+
+export function calculateSeancesEffectuees (enseignement: MatiereEnseignement, periodes:PeriodeType[]|null){
+        
+  if (!enseignement.matiere || !enseignement.matiere.typesEnseignement) {
+      return 0;
+  }
+
+
+  const absences = enseignement.matiere.typesEnseignement.reduce((acc: AbsenceType[], type: any) => {
+      acc.push(...type.enseignantPrincipal.absences);
+      return acc;
+  }, []);
+
+  let seancesEffectuees = enseignement.nombreSeance;
+  let countAbsences = 0;
+
+  if (absences.length > 0) {
+      const absencesMap = new Map<string, boolean>(); // Map pour stocker les absences déjà traitées
+      const joursSemaine = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+      absences.forEach((absence) => {
+          // Convertir la date d'absence en objet Date
+          const dateAbsence = new Date(absence.dateAbsence);
+
+          // Obtenez le jour de la semaine en utilisant les méthodes de l'objet Date
+          const jourSemaine = joursSemaine[dateAbsence.getDay()];
+          const ordre = jours.find((jour) => jour.libelleFr.toLowerCase() === jourSemaine.toLowerCase())?.ordre ?? -1;
+
+          if (ordre !== -1 && periodes) {
+              
+              const key = `${ordre}-${absence.heureDebut}-${absence.heureFin}`; // Clé pour identifier l'absence
+              if (!absencesMap.has(key)) {
+                  const periodesAvecJour = periodes.filter((periode) => 
+                      periode.jour == ordre && 
+                      periode.heureDebut === absence.heureDebut && 
+                      periode.heureFin === absence.heureFin
+                  );
+
+                  if (periodesAvecJour.length > 0) {
+                      const typeEns = enseignement.matiere.typesEnseignement && enseignement.matiere.typesEnseignement.find((ens) => ens.typeEnseignement === periodesAvecJour[0].typeEnseignement);
+                      if (typeEns) {
+                          countAbsences++;
+                      }
+                  }
+                  absencesMap.set(key, true); // Marquer l'absence comme traitée
+              }
+          }
+      });
+  }
+
+  // Calculer le nombre de séances effectuées
+  seancesEffectuees -= countAbsences;
+  return seancesEffectuees;
+};
 
 // Vérifie si une période chevauche une autre période dans l'emploi du temps
 // const verifierChevauchementPeriode = (periode: PeriodeType): boolean => {

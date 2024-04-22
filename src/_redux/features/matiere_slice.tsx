@@ -32,7 +32,7 @@ const matiereSlice = createSlice({
             state.data = action.payload;
         },
         createMatiere(state, action: PayloadAction<CreateMatierePayload>) {
-            state.data.matieres.push(action.payload.matiere);
+            state.data.matieres.unshift(action.payload.matiere);
         },
         updateMatiere(state, action: PayloadAction<UpdateMatierePayload>) {
             const { id, matiereData } = action.payload;

@@ -89,7 +89,7 @@ const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant =
           {
             isGestionEnseignant &&
             <li className='flex'>
-              <Link className='hover:underline ' to={"/teachers/disciplines"} onClick={handleDisciplneEnseignant}>{t('sub_menu.discipline')}</Link>
+              <Link className='hover:underline ' to={"/students/disciplines"} onClick={handleDisciplneEnseignant}>{t('sub_menu.discipline')}</Link>
               <span className='ml-2'> /</span>
             </li>
           }

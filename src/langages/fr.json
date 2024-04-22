@@ -43,6 +43,7 @@
     "profil": "Mon profil"
   },
   "sub_menu": {
+    "absence_reporting": "Absences signalées",
     "liste_etudiant": "Liste des étudiants",
     "gestion_absences_enseignant": "Gestion des absences de l'enseignant",
     "gestion_absences_etudiant": "Gestion des absences de l'étudiant",
@@ -77,6 +78,8 @@
     "absences_enseignants": "Absences total des enseignants",
     "nombre_etudiant_section": "Nombre d'étudiants par section",
     "nombre_absence_section": "Nombre d'heures d'absence par section",
+    "nb_etudiant":"Nb. d'étudiants",
+    "abs_etudiant":"Abs. des étudiants",
     "progression": "Progression globale des enseignants",
     "evenements_titre": "Evènements à venir",
     "evenements_aucun": "Aucun événement pour le moment",
@@ -89,7 +92,7 @@
   },
   "label": {
     "ajouter": "Ajouter",
-    "roles":"Roles",
+    "roles": "Roles",
     "matricule": "Matricule",
     "nom": "Nom",
     "prenom": "Prénom",
@@ -332,7 +335,7 @@
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
-    "roles":"Modifier le rôle de l'étudiant",
+    "roles": "Modifier le rôle de l'étudiant",
     "absence": "Ajouter une absence : ",
     "signaler": "Signaler mon abscence",
     "enregistrer": "Mettre à jour les informations ",
@@ -429,6 +432,7 @@
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !"
   },
   "aucun": {
+    "absence_signaler": "Aucune absence signalée.",
     "administrateur": "Aucun administrateur",
     "etudiant": "Aucun etudiant",
     "enseignant": "Aucun enseignant",
@@ -464,8 +468,18 @@
     "nom_et_prenom": "Nom et prénom",
     "semestre": "Semestre",
     "liste_des_heures_d_absences_de_ce_semenstre": "Liste des heures d'absences de ce semestre",
-    "aucune_heure_d_absence_pendant_ce_semestre": "Aucune heure d'absence pendant ce semestre"
-    
-    
+    "aucune_heure_d_absence_pendant_ce_semestre": "Aucune heure d'absence pendant ce semestre",
+    "annee_academique": "Année académique",
+    "date": "Date",
+    "nombre_heure_absence": "Nombre d'heures d'absence",
+    "ajouter_le": "Ajouter le",
+    "a": "à"
+  },
+  "pagination": {
+    "affichage_des_elements": "Affichage des éléments",
+    "sur_un_total_de": "sur un total de",
+    "entree": "entrées",
+    "precedent": "Précédent",
+    "suivant": "Suivant"
   }
 }

@@ -81,7 +81,7 @@ export const ChartEtudiantSection: React.FC<{ data: DataPair[] }> = ({ data }) =
     };
 
     useEffect(() => {
-        setState({ series: [{ name: "Nbre. d'étudiants", data: data.map(item => item.value) }] });
+        setState({ series: [{ name: t('tableau_de_bord.nb_etudiant'), data: data.map(item => item.value) }] });
     }, [data]);
 
     return (

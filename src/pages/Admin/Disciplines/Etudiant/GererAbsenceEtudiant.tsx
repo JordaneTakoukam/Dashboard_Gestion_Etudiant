@@ -12,7 +12,7 @@ import { setShowModal } from "../../../../_redux/features/setting";
 
 
 
-const GererAbsencesEnseignant = () => {
+const GererAbsencesEtudiant = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -42,15 +42,15 @@ const GererAbsencesEnseignant = () => {
 
     useEffect(() => {
         if (selectedEnseignant === undefined) {
-            navigate('/teachers/disciplines/')
+            navigate('/students/disciplines/')
         }
     }, [selectedEnseignant])
     return (
         <>
-            <Breadcrumb isGestionEnseignant={true} pageName={t('sub_menu.gestion_absences_enseignant')} />
+            <Breadcrumb isGestionEtudiant={true} pageName={t('sub_menu.gestion_absences_etudiant')} />
 
             <div className="flex justify-end mt-10">
-                <ButtonCreate onClick={handleShowModal} title={""} />
+                <ButtonCreate onClick={handleAddHourEnseignant} />
             </div>
 
             {selectedEnseignant &&
@@ -70,4 +70,4 @@ const GererAbsencesEnseignant = () => {
     );
 };
 
-export default GererAbsencesEnseignant;
+export default GererAbsencesEtudiant;

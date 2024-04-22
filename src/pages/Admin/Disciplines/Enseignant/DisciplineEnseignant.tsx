@@ -9,7 +9,6 @@ import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
 import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
 import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
-import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
 
 import { useNavigate } from 'react-router-dom';
 import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/discipline_enseignant_slice";
@@ -24,6 +23,7 @@ const DisciplineDesEnseignants = () => {
 
     const [selectedEnseignant, setSelectedEnseignant] = useState<UserDiscipline | null>(null);
     const [isHourRemove, setHourRemove] = useState(false);
+
     const handleEditHourEnseignant = (enseignant: UserDiscipline, isHourRemove: boolean) => {
         console.log("handleEditHour");
         setSelectedEnseignant(enseignant);
@@ -44,7 +44,7 @@ const DisciplineDesEnseignants = () => {
 
         try {
             const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
-                page: 1, semestre: currentSemestre.toString(), annee: currentPlageDate[currentPlageDate.length - 1] // dernier eleemt du tableau (donc la derniere plage d'annee)
+                page: 1, semestre: currentSemestre, annee: currentYear
             });
             if (fetchedEnseignants) {
                 dispatch(setEnseignantDiscipline(fetchedEnseignants));
@@ -108,11 +108,6 @@ const DisciplineDesEnseignants = () => {
 
                             </div>
 
-            }
-
-
-            {
-                <ModalCreateUpdateAbsence user={selectedEnseignant} isHourRemove={isHourRemove} />
             }
 
             {/* Boite de dialogue */}

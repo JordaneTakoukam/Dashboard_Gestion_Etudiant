@@ -45,6 +45,7 @@
     "profil": "My profile"
   },
   "sub_menu": {
+    "absence_reporting":"Absence Reporting",
     "liste_etudiant": "Student List",
     "gestion_absences_enseignant": "Management of teacher absences",
     "gestion_absences_etudiant": "Management of student absences",
@@ -79,6 +80,8 @@
     "absences_enseignants": "Total teacher absences",
     "nombre_etudiant_section": "Number of students per section",
     "nombre_absence_section": "Number of absence hours per section",
+    "nb_etudiant":"Nb. of students",
+    "abs_etudiant":"Abs. of students",
     "progression": "Overall teachers' progression",
     "evenements_titre": "Upcoming events",
     "evenements_aucun": "No events at the moment",
@@ -91,7 +94,7 @@
   },
   "label": {
     "ajouter": "Add",
-    "roles":"Roles",
+    "roles": "Roles",
     "matricule": "Registration N°",
     "nom": "First Name",
     "prenom": "Last Name",
@@ -334,7 +337,7 @@
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
-    "roles":"Change student role",
+    "roles": "Change student role",
     "absence": "Add an absence : ",
     "signaler": "Report my abscence",
     "enregistrer": "Update Information ",
@@ -430,10 +433,39 @@
     "erreur": "An error occurred",
     "erreur_recuperation": "An error occurred while retrieving data!"
   },
+  "aucun": {
+    "absence_signaler": "No absences reported.",
+    "administrateur": "No administrator",
+    "etudiant": "No student",
+    "enseignant": "No teacher",
+    "progression": "No progress",
+    "section": "No section",
+    "cycle": "No cycle",
+    "niveau": "No level",
+    "service": "No service",
+    "grade": "No grade",
+    "fonction": "No function",
+    "categorie": "No category",
+    "region": "No region",
+    "departement": "No department",
+    "commune": "No commune"
+}
+,
   "gestion_absence": {
     "nom_et_prenom": "Name and surname",
     "semestre": "Semester",
     "liste_des_heures_d_absences_de_ce_semenstre": "List of absence hours for this semester",
-    "aucune_heure_d_absence_pendant_ce_semestre": "No absence hours during this semester"
+    "aucune_heure_d_absence_pendant_ce_semestre": "No absence hours during this semester",
+    "date": "Academic year",
+    "nombre_heure_absence": "Academic year",
+    "ajouter_le": "Add on",
+    "a": "at"
+  },
+  "pagination": {
+    "affichage_des_elements": "Displaying items",
+    "sur_un_total_de": "out of",
+    "entree": "entries",
+    "precedent": "Previous",
+    "suivant": "Next"
   }
 }

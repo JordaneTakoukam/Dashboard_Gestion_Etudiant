@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 interface ButtonNewProps {
     onClick: () => void;
-    title:string,
+    title:string;
 }
 
 const ButtonCreate = ({ onClick }: ButtonNewProps) => {

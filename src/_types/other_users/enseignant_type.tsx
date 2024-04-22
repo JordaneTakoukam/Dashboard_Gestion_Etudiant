@@ -4,7 +4,6 @@ interface EnseignantType extends EnseignantCreateType {
     historique_connexion?: Date[];
     photo_profil?: string | null;
     date_creation?: string | null;
-    absence : []
 }
 
 
@@ -22,6 +21,8 @@ interface EnseignantCreateType {
 
     lieu_naiss: string | null;
     contact: string | null;
+
+    photo_profil?: string | null;
 
     // fonction: string | null;
     // service: string | null;

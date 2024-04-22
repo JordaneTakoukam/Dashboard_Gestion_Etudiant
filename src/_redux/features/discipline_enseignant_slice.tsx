@@ -29,11 +29,11 @@ const disciplineEnseignantSlice = createSlice({
         setEnseignantSelected(state, action: PayloadAction<UserDiscipline>) {
             state.selected.user = action.payload;
         },
-        setSemestreDisciplineEns(state, action: PayloadAction<string>) {
+        setSemestreDisciplineEns(state, action: PayloadAction<Number>) {
             state.selected.semestre = action.payload;
         },
         // Define a reducer to set the year
-        setAnneeDisciplineEns(state, action: PayloadAction<string>) {
+        setAnneeDisciplineEns(state, action: PayloadAction<Number>) {
             state.selected.annee = action.payload;
         },
         // Add other reducers if needed
@@ -49,6 +49,23 @@ const disciplineEnseignantSlice = createSlice({
         setEnseignantDiscipline(state, action: PayloadAction<EnseignantDisciplineListGetType>) {
             state.data = action.payload;
         },
+
+        ajouterAbsenceEnseignant(state, action: PayloadAction<AbsenceType>) {
+            // Ajoute l'absence à la liste des absences de l'enseignant sélectionné
+            const enseignant = state.selected.user;
+            if (enseignant) {
+                enseignant.absences.unshift(action.payload);
+            }
+        },
+        // Add an action to remove absence for an enseignant by ID
+        retirerAbsenceEnseignant(state, action: PayloadAction<{ absenceId: string }>) {
+            const { absenceId } = action.payload;
+            const enseignant = state.selected.user;
+            if (enseignant) {
+                enseignant.absences = enseignant.absences.filter(absence => absence._id !== absenceId);
+            }
+        }
+
     },
 });
 
@@ -62,6 +79,8 @@ export const {
 
     setSemestreDisciplineEns,
     setAnneeDisciplineEns,
+    ajouterAbsenceEnseignant,
+    retirerAbsenceEnseignant
 } = disciplineEnseignantSlice.actions;
 
 ;

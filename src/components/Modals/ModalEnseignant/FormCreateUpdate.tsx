@@ -407,7 +407,6 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     nom,
                     genre,
                     email,
-                    photo_profil: "",
                     contact,
                     matricule,
                     prenom,
@@ -427,26 +426,8 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     dispatch(createEnseignant({
 
-                        enseignant: {
-                            _id: e.data._id,
-                            nom: e.data.nom,
-                            genre: e.data.genre,
-                            email: e.data.email,
-                            photo_profil: e.data.photo_profil,
-                            contact: e.data.contact,
-                            matricule: e.data.matricule,
-                            prenom: e.data.matricule,
-                            date_naiss: e.data.date_naiss,
-                            lieu_naiss: e.data.lieu_naiss,
-                            date_entree: e.data.date_entree,
-                            absences: e.data.absences,
-                            niveaux: e.data.niveaux,
-                            grade: e.data.grade,
-                            categorie: e.data.categorie,
-                            fonction: e.data.fonction,
-                            service: e.data.service,
-                            commune: e.data.commune
-                        }
+                        ...e.data
+
 
                     }));
 

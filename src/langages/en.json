@@ -45,6 +45,7 @@
     "profil": "My profile"
   },
   "sub_menu": {
+    "absence_reporting":"Absence Reporting",
     "liste_etudiant": "Student List",
     "gestion_absences_enseignant": "Management of teacher absences",
     "gestion_absences_etudiant": "Management of student absences",
@@ -430,6 +431,24 @@
     "erreur": "An error occurred",
     "erreur_recuperation": "An error occurred while retrieving data!"
   },
+  "aucun": {
+    "absence_signaler": "No absences reported.",
+    "administrateur": "No administrator",
+    "etudiant": "No student",
+    "enseignant": "No teacher",
+    "progression": "No progress",
+    "section": "No section",
+    "cycle": "No cycle",
+    "niveau": "No level",
+    "service": "No service",
+    "grade": "No grade",
+    "fonction": "No function",
+    "categorie": "No category",
+    "region": "No region",
+    "departement": "No department",
+    "commune": "No commune"
+}
+,
   "gestion_absence": {
     "nom_et_prenom": "Name and surname",
     "semestre": "Semester",

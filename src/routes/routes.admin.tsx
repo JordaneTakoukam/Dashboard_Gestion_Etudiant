@@ -28,6 +28,9 @@ import ListeDesPeriodesEnseignement from '../pages/Admin/PeriodeEnseignement';
 import Chapitres from '../pages/Admin/Chapitres';
 import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
 import GererAbsencesEnseignant from '../pages/Admin/Disciplines/Enseignant/GererAbsencesEnseignant';
+import DisciplineDesEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
+import AbsenceSignalerEnseignant from '../pages/Admin/Disciplines/Enseignant/AbsenceSignalerEnseignant';
+import AbsenceSignalerEtudiant from '../pages/Admin/Disciplines/Etudiant/AbsenceSignalerEtudiant';
 
 
 
@@ -57,10 +60,28 @@ const coreRoutes = [
     component: DisciplineDesEnseignants,
   },
   {
+    path: '/students/disciplines',
+    title: 'Disciplines des etudiant',
+    component: DisciplineDesEtudiants,
+  },
+  {
     path: '/teachers/disciplines/manage',
     title: 'Disciplines des étudiants',
     component: GererAbsencesEnseignant,
   },
+  //  absence signaler
+  {
+    path: '/teachers/absence_reporting',
+    title: '',
+    component: AbsenceSignalerEnseignant,
+  },
+
+  {
+    path: '/students/absence_reporting',
+    title: '',
+    component: AbsenceSignalerEtudiant,
+  },
+
 
   // matieres
   {

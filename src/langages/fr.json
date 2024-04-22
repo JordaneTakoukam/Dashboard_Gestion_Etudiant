@@ -43,6 +43,7 @@
     "profil": "Mon profil"
   },
   "sub_menu": {
+    "absence_reporting":"Absence signaler",
     "liste_etudiant": "Liste des étudiants",
     "gestion_absences_enseignant": "Gestion des absences de l'enseignant",
     "gestion_absences_etudiant": "Gestion des absences de l'étudiant",
@@ -429,6 +430,7 @@
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !"
   },
   "aucun": {
+    "absence_signaler":"Aucune absence signalée.",
     "administrateur": "Aucun administrateur",
     "etudiant": "Aucun etudiant",
     "enseignant": "Aucun enseignant",

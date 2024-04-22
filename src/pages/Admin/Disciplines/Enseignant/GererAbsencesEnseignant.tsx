@@ -37,7 +37,7 @@ const GererAbsencesEnseignant = () => {
             <Breadcrumb isGestionEnseignant={true} pageName={t('sub_menu.gestion_absences_enseignant')} />
 
             <div className="flex justify-end mt-10">
-                <ButtonCreate onClick={handleShowModal} />
+                <ButtonCreate onClick={handleShowModal} title={""} />
             </div>
 
             {selectedEnseignant &&

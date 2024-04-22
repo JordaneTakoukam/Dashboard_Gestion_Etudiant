@@ -4,7 +4,7 @@ interface EnseignantType extends EnseignantCreateType {
     historique_connexion?: Date[];
     photo_profil?: string | null;
     date_creation?: string | null;
-    abscence : []
+    absence : []
 }
 
 

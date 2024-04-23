@@ -9,14 +9,16 @@ import { RootState } from "../../../../_redux/store";
 interface CardGestionUserProps {
     title: String,
     value?: String,
-    id: Number,
+    id: number,
+    isStudent?:boolean
 }
 
 
 
-export const CardGestionUser = ({ title, value, id, }: CardGestionUserProps) => {
+export const CardGestionUser = ({ title, value, id, isStudent}: CardGestionUserProps) => {
     const { t } = useTranslation();
-    const { semestre, annee } = useSelector((state: RootState) => state.enseignantDisciplineSlice.selected)
+    const { semestre, annee } = !isStudent?useSelector((state: RootState) => state.enseignantDisciplineSlice.selected):useSelector((state: RootState) => state.etudiantDisciplineSlice.selected)
+    
     return (
         <div className={`
         
@@ -44,9 +46,9 @@ export const CardGestionUser = ({ title, value, id, }: CardGestionUserProps) => 
 
             <div className="flex items-start justify-center">
                 <h3 className={` mt-0  text-[13px] xl:text-[14px] text-start  font-semibold
-            ${id === 102 && value === '0' && 'text-[#24910cf9]'}
-            ${id === 102 && value !== '0' && 'text-[#fd0707f3]'}
-            `}>
+                ${id === 102 && value === '0' && 'text-[#24910cf9]'}
+                ${id === 102 && value !== '0' && 'text-[#fd0707f3]'}
+                `}>
                     {value} <span className="pl-1">
                         {id === 101 && semestre}
                         {id === 102 && value === '0' && t('menu.heure_d_absence')}

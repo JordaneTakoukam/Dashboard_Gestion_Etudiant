@@ -57,6 +57,81 @@ export async function apiGetAbsencesWithEnseignantsByFilter({ page, semestre, an
     }
 }
 
+export async function apiGetAllAbsencesWithEnseignantsByFilter({semestre, annee }: { page?: number, semestre?: Number, annee?: Number }): Promise<EnseignantDisciplineListGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAllAbsencesWithEnseignantsByFilter`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    semestre: semestre,
+                    annee: annee
+                },
+            },
+        );
+        const enseignants = response.data.data;
+
+        return enseignants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiGetAbsencesWithEtudiantsByFilter({ page, semestre, annee, niveauId }: { page?: number, semestre?: Number, annee?: Number, niveauId:string }): Promise<EtudiantDisciplineListGetType> {
+    const pageSize: number = 10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAbsencesWithEtudiantsByFilter/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    page: page,
+                    pageSize: pageSize,
+                    semestre: semestre,
+                    annee: annee
+                },
+            },
+        );
+        const etudiants = response.data.data;
+
+        return etudiants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiGetAllAbsencesWithEtudiantsByFilter({semestre, annee, niveauId }: { semestre?: Number, annee?: Number, niveauId:string }): Promise<EtudiantDisciplineListGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAllAbsencesWithEtudiantsByFilter/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    semestre: semestre,
+                    annee: annee
+                },
+            },
+        );
+        const etudiants = response.data.data;
+
+        return etudiants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 export async function apiGetTotalHoursOfAbsenceByTeacher({semestre, annee }: {semestre?: Number, annee?: Number }): Promise<number> {
     try {
         const response: AxiosResponse<any> = await axios.get(

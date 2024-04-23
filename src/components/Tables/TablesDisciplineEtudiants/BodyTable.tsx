@@ -1,17 +1,15 @@
-import { useDispatch, useSelector } from "react-redux"
-import { Etudiant } from "../../../pages/Admin/ListeEtudiants"
-import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalUpdate } from "../../../_redux/features/setting"
-import { nbTotal } from "../TableAbsences/Table"
-import { RootState } from "../../../_redux/store"
-import { config } from "../../../config"
+import { useDispatch } from "react-redux"
+import { nbTotalAbsences } from "../../../fonctions/fonction"
+import { useNavigate } from "react-router-dom"
+import { setEtudiantselected } from "../../../_redux/features/discipline_etudiant_slice"
+import { MdOutlineManageAccounts } from "react-icons/md";
 
 
-const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdit: (etudiant: Etudiant, isHourRemove:boolean) => void }) => {
+const BodyTable = ({ data }: { data: UserDiscipline[] }) => {
 
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
+
+    const navigate = useNavigate();
     return <tbody>
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -22,7 +20,7 @@ const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdi
 
                 {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.matricule?item.matricule:""}</h5>
+                    <h5>{item.matricule ? item.matricule : ""}</h5>
                 </td>
 
                 {/* nom */}
@@ -32,7 +30,7 @@ const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdi
 
                 {/* prenom */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.prenom?item.prenom:""}</h5>
+                    <h5>{item.prenom ? item.prenom : ""}</h5>
                 </td>
 
 
@@ -43,30 +41,40 @@ const BodyTableDisciplineEtudiant = ({ data, onEdit }: { data: Etudiant[], onEdi
 
                 {/* contact */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.contact?item.contact:""}</h5>
+                    <h5>{item.contact ? item.contact : ""}</h5>
                 </td>
 
                 {/* nombre d'heure d'absence */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{nbTotal(item, 1)}</h5>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{nbTotalAbsences(item.absences)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
-                    <ButtonCrudTable
+
+                    <button
+                        className="bg-primary text-white px-6 py-2 mx-4 rounded-lg hover:bg-opacity-75"
+                        onClick={() => {
+                            dispatch(setEtudiantselected(item))
+                            navigate('/students/disciplines/manage')
+
+                        }}>
+                        <MdOutlineManageAccounts className="text-lg" />
+                    </button>
+
+
+                    {/* <ButtonCrudTable
                         onClickAddHour={() => {
                             onEdit(item, false);
                             dispatch(setShowModal())
-                        } }
-                        onClickRemovHour={(roles.admin === userRole || roles.superAdmin === userRole  || roles.enseignant === userRole )?() => {
-                            onEdit(item, true);
-                            dispatch(setShowModal())
-                        }:undefined}                                             
-                    />
+                        }}
+                        onClickRemovHour={roles.admin === userRole || roles.superAdmin === userRole ? () => {
+                        } : undefined}
+                    /> */}
                 </td>
             </tr>
         ))}
     </tbody>
 }
 
-export default BodyTableDisciplineEtudiant
+export default BodyTable

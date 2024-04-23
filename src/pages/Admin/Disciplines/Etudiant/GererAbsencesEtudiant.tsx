@@ -16,24 +16,24 @@ const GererAbsencesEtudiant = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const selectedEnseignant = useSelector((state: RootState) => state.enseignantDisciplineSlice.selected.user);
+    const selectedEtudiant = useSelector((state: RootState) => state.etudiantDisciplineSlice.selected.user);
     const [isHourRemove, setHourRemove] = useState(false);
 
-    const [enseignantCustomSelected, setEnseignantCustomSelected] = useState<CustomEnseignantSelect>({ absence: undefined, user: selectedEnseignant })
+    const [etudiantCustomSelected, setEtudiantCustomSelected] = useState<CustomEtudiantSelect>({ absence: undefined, user: selectedEtudiant })
 
-    const handleEditHourEnseignant = (absence: AbsenceType, isHourRemove: boolean) => {
+    const handleEditHourEtudiant = (absence: AbsenceType, isHourRemove: boolean) => {
         handleShowModal();
         setHourRemove(isHourRemove);
-        if (selectedEnseignant) {
+        if (selectedEtudiant) {
             // contien l'utilisateur et l'objet absence a supprimer
-            setEnseignantCustomSelected({ absence: absence, user: selectedEnseignant })
+            setEtudiantCustomSelected({ absence: absence, user: selectedEtudiant })
         }
     }
 
-    const handleAddHourEnseignant = () => {
+    const handleAddHourEtudiant = () => {
         handleShowModal();
         setHourRemove(false);
-        setEnseignantCustomSelected({ absence: undefined, user: selectedEnseignant })
+        setEtudiantCustomSelected({ absence: undefined, user: selectedEtudiant })
     }
 
 
@@ -41,28 +41,28 @@ const GererAbsencesEtudiant = () => {
 
 
     useEffect(() => {
-        if (selectedEnseignant === undefined) {
+        if (selectedEtudiant === undefined) {
             navigate('/students/disciplines/')
         }
-    }, [selectedEnseignant])
+    }, [selectedEtudiant])
     return (
         <>
             <Breadcrumb isGestionEtudiant={true} pageName={t('sub_menu.gestion_absences_etudiant')} />
 
             <div className="flex justify-end mt-10">
-                <ButtonCreate onClick={handleAddHourEnseignant} />
+                <ButtonCreate onClick={handleShowModal} title={""} />
             </div>
 
-            {selectedEnseignant &&
+            {selectedEtudiant &&
                 <>
-                    <SectionNomEtAction user={selectedEnseignant} />
-                    <CardListAbsence listAbsence={selectedEnseignant.absences} onEdit={handleEditHourEnseignant} />
+                    <SectionNomEtAction user={selectedEtudiant} isStudent={true}/>
+                    <CardListAbsence listAbsence={selectedEtudiant.absences} onEdit={handleEditHourEtudiant} />
                 </>
             }
 
 
             {
-                <ModalCreateUpdateAbsence  user={enseignantCustomSelected} isHourRemove={isHourRemove} />
+                <ModalCreateUpdateAbsence isStudent={true} user={etudiantCustomSelected} isHourRemove={isHourRemove} />
             }
 
             {/* Boite de dialogue */}

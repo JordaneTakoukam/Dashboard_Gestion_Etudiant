@@ -31,6 +31,7 @@ import GererAbsencesEnseignant from '../pages/Admin/Disciplines/Enseignant/Gerer
 import DisciplineDesEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
 import AbsenceSignalerEnseignant from '../pages/Admin/Disciplines/Enseignant/AbsenceSignalerEnseignant';
 import AbsenceSignalerEtudiant from '../pages/Admin/Disciplines/Etudiant/AbsenceSignalerEtudiant';
+import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
 
 
 
@@ -74,6 +75,12 @@ const coreRoutes = [
     path: '/teachers/absence_reporting',
     title: '',
     component: AbsenceSignalerEnseignant,
+  },
+
+  {
+    path: '/students/disciplines/manage',
+    title: 'Disciplines des étudiants',
+    component: GererAbsencesEtudiant,
   },
 
   {

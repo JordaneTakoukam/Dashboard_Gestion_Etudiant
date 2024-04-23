@@ -21,8 +21,8 @@ interface UserDisciplineIntialData {
     pageIsLoadingOnTable: boolean,
     selected: {
         user: UserDiscipline | undefined,
-        semestre: Number | undefined,
-        annee: Number | undefined,
+        semestre: number | undefined,
+        annee: number | undefined,
     }
 }
 
@@ -71,6 +71,10 @@ interface CustomEnseignantSelect {
     absence: AbsenceType | undefined;
 }
 
+interface CustomEtudiantSelect {
+    user: UserDiscipline | undefined;
+    absence: AbsenceType | undefined;
+}
 
 
 interface CreateAbsenceType {

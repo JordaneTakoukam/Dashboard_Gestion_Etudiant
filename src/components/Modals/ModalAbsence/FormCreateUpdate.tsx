@@ -9,9 +9,10 @@ import { apiCreateAbsence, apiDeleteAbsence } from '../../../api/discipline/api_
 import createToast from '../../../hooks/toastify';
 import { ajouterAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/discipline_enseignant_slice';
 import { nbTotalAbsences } from '../../../fonctions/fonction';
+import { ajouterAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/discipline_etudiant_slice';
 
 
-function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: CustomEnseignantSelect | null, isSignaled?: boolean, isHourRemove: boolean }) {
+function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }: { isStudent:boolean,user: CustomEnseignantSelect | CustomEtudiantSelect | null, isSignaled?: boolean, isHourRemove: boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -120,9 +121,15 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         if (user?.user && user.absence) {
-                            dispatch(retirerAbsenceEnseignant({
-                                absenceId: user.absence?._id,
-                            }));
+                            if(isStudent){
+                                dispatch(retirerAbsenceEtudiant({
+                                    absenceId: user.absence?._id,
+                                }));
+                            }else{
+                                dispatch(retirerAbsenceEnseignant({
+                                    absenceId: user.absence?._id,
+                                }));
+                            }
                         }
                         closeModal();
                     } else {
@@ -169,7 +176,12 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(ajouterAbsenceEnseignant({ ...e.data }));
+                        if(isStudent){
+                            dispatch(ajouterAbsenceEtudiant({ ...e.data }));
+
+                        }else{
+                            dispatch(ajouterAbsenceEnseignant({ ...e.data }));
+                        }
                         closeModal();
                     } else {
                         createToast(e.message[lang as keyof typeof e.message], '', 2);
@@ -180,9 +192,6 @@ function ModalCreateUpdateAbsence({ user, isSignaled, isHourRemove }: { user: Cu
             }
         }
 
-
-
-        closeModal();
     }
 
     return (

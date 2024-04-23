@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../../../components/Breadcrumb";
-import Table from "../../../../components/Tables/TablesDisciplineEnseignants/Table";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../_redux/store";
@@ -8,11 +7,13 @@ import LoadingTable from "../../../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
 import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
-import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
 
 import { useNavigate } from 'react-router-dom';
-import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/discipline_enseignant_slice";
+import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/discipline_etudiant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
+import { apiGetAbsencesWithEtudiantsByFilter } from "../../../../api/discipline/api_discipline";
+import Table from "../../../../components/Tables/TablesDisciplineEtudiants/Table";
+import { setAnneeDisciplineEns } from "../../../../_redux/features/discipline_enseignant_slice";
 
 
 // a mdofier les differetns champs + le slice
@@ -21,14 +22,14 @@ const DisciplineDesEtudiants = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantDisciplineSlice);
+    const { data: { etudiants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.etudiantDisciplineSlice);
 
-    const [selectedEnseignant, setSelectedEnseignant] = useState<UserDiscipline | null>(null);
+    const [selectedEtudiant, setSelectedEtudiant] = useState<UserDiscipline | null>(null);
     const [isHourRemove, setHourRemove] = useState(false);
 
-    const handleEditHourEnseignant = (enseignant: UserDiscipline, isHourRemove: boolean) => {
+    const handleEditHourEtudiant = (etudiant: UserDiscipline, isHourRemove: boolean) => {
         console.log("handleEditHour");
-        setSelectedEnseignant(enseignant);
+        setSelectedEtudiant(etudiant);
         setHourRemove(isHourRemove);
     }
 
@@ -36,77 +37,88 @@ const DisciplineDesEtudiants = () => {
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentPlageDate: string[] = generateYearRange(currentYear, firstYear);
 
 
     const loadingSetting = useSelector((state: RootState) => state.dataSetting.loading);
 
-    const fetchEnseignants = async () => {
-        dispatch(setEnseignantsDisciplineLoading(true));
-
+    const fetchEtudiants = async () => {
+        dispatch(setEtudiantsDisciplineLoading(true));
+        const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
+        const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
         try {
-            const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
-                page: 1, semestre: currentSemestre, annee: currentYear
-            });
-            if (fetchedEnseignants) {
-                dispatch(setEnseignantDiscipline(fetchedEnseignants));
-                console.log(fetchedEnseignants);
+            let fetchedEtudiants;
+            const emptyEtudiants : EtudiantDisciplineListGetType={
+                etudiants: [],
+                currentPage: 0,
+                totalItems: 0,
+                totalPages: 0,
+                pageSize: 0
+            }
+            if(currentNiveauId){
+                fetchedEtudiants = await apiGetAbsencesWithEtudiantsByFilter({
+                    page: 1, semestre: currentSemestre, annee: currentYear, niveauId:currentNiveauId
+                });
+            }
+            
+            if (fetchedEtudiants) {
+                dispatch(setEtudiantDiscipline(fetchedEtudiants));
+                console.log(fetchedEtudiants);
 
-                dispatch(setErrorPageEnseignantDiscipline(null));
+                dispatch(setErrorPageEtudiantDiscipline(null));
             } else {
-                dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+                dispatch(setEtudiantDiscipline(emptyEtudiants));
+                dispatch(setErrorPageEtudiantDiscipline(t('message.erreur')));
             }
         } catch (error) {
-            dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+            dispatch(setErrorPageEtudiantDiscipline(t('message.erreur')));
         } finally {
-            dispatch(setEnseignantsDisciplineLoading(false));
+            dispatch(setEtudiantsDisciplineLoading(false));
         }
     };
 
     const handleRefresh = async () => {
-        await fetchEnseignants();
+        await fetchEtudiants();
     };
 
 
     useEffect(() => {
+        dispatch(setAnneeDisciplineEns(currentYear));
+        dispatch(setSemestreDisciplineEns(currentSemestre));
         const fetchData = async () => {
-            if (enseignants.length === 0) {
-                dispatch(setEnseignantsDisciplineLoading(true));
+            if (etudiants.length === 0) {
+                dispatch(setEtudiantsDisciplineLoading(true));
 
                 while (loadingSetting) {
                     await new Promise(resolve => setTimeout(resolve, 100)); // Attendre 100ms avant de vérifier à nouveau
                 }
-                fetchEnseignants();
+                fetchEtudiants();
             }
         };
 
         fetchData();
 
-    }, [enseignants.length, loadingSetting]);
+    }, [dispatch, t]);
 
 
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.discipline')} />
             {
-                pageIsLoading ?
-                    <LoadingTable /> :
-                    pageError ?
-                        <PageErreur onRefresh={handleRefresh} /> :
-                        enseignants.length === 0 ?
-                            <PageNoData
-                                titrePage={t('aucun.enseignant')}
-                                titreBouton={t('ajouter_votre_premier.enseignant')}
-                                showModalCreate={() => { navigate("/teachers/teacher-list") }}
-                                refreshFunction={handleRefresh}
-                            />
-                            :
+                // pageIsLoading ?
+                //     <LoadingTable /> :
+                //     pageError ?
+                //         <PageErreur onRefresh={handleRefresh} /> :
+                        
                             <div>
-                                <SectionRefresh refreshFunction={handleRefresh} />
+                                {/* <SectionRefresh refreshFunction={handleRefresh} />: */}
 
                                 <Table
-                                    data={enseignants}
-                                    onEdit={handleEditHourEnseignant} />
+                                    data={etudiants}
+                                    onEdit={handleEditHourEtudiant} />
 
                             </div>
 

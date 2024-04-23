@@ -29,11 +29,11 @@ const disciplineEnseignantSlice = createSlice({
         setEnseignantSelected(state, action: PayloadAction<UserDiscipline>) {
             state.selected.user = action.payload;
         },
-        setSemestreDisciplineEns(state, action: PayloadAction<Number>) {
+        setSemestreDisciplineEns(state, action: PayloadAction<number>) {
             state.selected.semestre = action.payload;
         },
         // Define a reducer to set the year
-        setAnneeDisciplineEns(state, action: PayloadAction<Number>) {
+        setAnneeDisciplineEns(state, action: PayloadAction<number>) {
             state.selected.annee = action.payload;
         },
         // Add other reducers if needed

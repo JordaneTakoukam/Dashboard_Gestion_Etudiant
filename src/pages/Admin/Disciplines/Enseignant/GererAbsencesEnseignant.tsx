@@ -55,14 +55,14 @@ const GererAbsencesEnseignant = () => {
 
             {selectedEnseignant &&
                 <>
-                    <SectionNomEtAction user={selectedEnseignant} />
+                    <SectionNomEtAction user={selectedEnseignant} isStudent={false}/>
                     <CardListAbsence listAbsence={selectedEnseignant.absences} onEdit={handleEditHourEnseignant} />
                 </>
             }
 
 
             {
-                <ModalCreateUpdateAbsence  user={enseignantCustomSelected} isHourRemove={isHourRemove} />
+                <ModalCreateUpdateAbsence isStudent={false} user={enseignantCustomSelected} isHourRemove={isHourRemove} />
             }
 
             {/* Boite de dialogue */}

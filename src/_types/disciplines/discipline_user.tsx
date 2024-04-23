@@ -76,6 +76,11 @@ interface CustomEtudiantSelect {
     absence: AbsenceType | undefined;
 }
 
+interface CustomUserSelect {
+    user: UserState | undefined;
+    absence: AbsenceType | undefined;
+}
+
 
 interface CreateAbsenceType {
     userId: string,

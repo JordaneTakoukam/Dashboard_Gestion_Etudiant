@@ -4,7 +4,7 @@ import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features
 import { Abscences } from "../../../pages/CommonPage/Abscences"
 
 
-const BodyTable = ({ data }: { data: Abscences[] }) => {
+const BodyTable = ({ data }: { data: AbsenceType[]|undefined }) => {
 
     const dispatch = useDispatch();
     function calculerDifferenceHeures(heureDebut:string, heureFin:string) {
@@ -21,11 +21,16 @@ const BodyTable = ({ data }: { data: Abscences[] }) => {
     
         // Calculer la différence en heures
         const differenceHeures = finHeure - debutHeure + (finMinute - debutMinute) / 60;
-    
-        return differenceHeures;
+        let formatHour;
+        if (Number.isInteger(differenceHeures)) {
+            formatHour = differenceHeures.toString();
+        } else {
+            formatHour = differenceHeures.toFixed(2);
+        }
+        return formatHour.toString();
     }
     return <tbody>
-        {data.map((item, index) => (
+        {data && data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
                 {/* index */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 pl-4 md:pl-5 lg:pl-6 xl:pl-5 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
@@ -34,18 +39,18 @@ const BodyTable = ({ data }: { data: Abscences[] }) => {
 
                 {/* date */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{item.date}</h5>
+                    <h5>{item.dateAbsence.toString().split('T')[0]}</h5>
                 </td>
 
                 {/* période */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.debutPeriode} - {item.finPeriode}</h5>
+                    <h5>{item.heureDebut} - {item.heureFin}</h5>
                 </td>
 
 
                 {/* total */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{calculerDifferenceHeures(item.debutPeriode, item.finPeriode)}</h5>
+                    <h5>{calculerDifferenceHeures(item.heureDebut, item.heureFin)}</h5>
                 </td>
             </tr>
         ))}

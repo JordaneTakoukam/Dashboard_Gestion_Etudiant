@@ -7,6 +7,7 @@ import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
+import { formatDate } from "../../../fonctions/fonction"
 
 interface BodyPeriodeEnseignementProps {
     data: PeriodeEnseignementType[];
@@ -42,12 +43,12 @@ const BodyTable = ({ data, onEdit, onAddEnseignement }: BodyPeriodeEnseignementP
 
                 {/* date début */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{item.dateDebut}</h5>
+                    <h5>{formatDate(item.dateDebut)}</h5>
                 </td>
 
                 {/* date fin */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
-                    <h5>{item.dateFin}</h5>
+                    <h5>{formatDate(item.dateFin)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}

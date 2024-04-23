@@ -2,11 +2,10 @@ import { useSelector } from "react-redux";
 import Breadcrumb from "../../components/Breadcrumb";
 import { RootState } from "../../_redux/store";
 import { config } from "../../config";
-import { Enseignant, enseignant, enseignants } from "../Admin/ListeEnseignants";
-import Table from "../../components/Tables/TableAbsences/Table";
 import { useState } from "react";
-import FormCreateUpdate from "../../components/Modals/ModalAbsence/FormCreateUpdate";
+import FormCreateUpdate from "../../components/Modals/ModalAbsence/FormCreateUpdateSignaler";
 import { useTranslation } from "react-i18next";
+import Table from "../../components/Tables/TableAbsences/Table";
 
 export interface Abscences{
     id?:number;
@@ -19,20 +18,25 @@ export interface Abscences{
 
 const Abscences = () => {
     const {t}=useTranslation();
-    // const [selectedUser, setSelectedUser] = useState<Etudiant | Enseignant | null>(null);
-    // const handleEditHourUser = (user: Etudiant | Enseignant | null) => {
-        // setSelectedUser(user);
-    // }
+    const [selectedUser, setSelectedUser] = useState<UserState | null>();
+
+    const handleEditHourUser = (user: UserState | null) => {
+        setSelectedUser(user);
+    }
+
     const userRole = useSelector((state: RootState) => state.user.role);
+    const currentUser = useSelector((state: RootState) => state.user);
     const roles = config.roles;
+
+    
     return (
         <>
-            {/* <Breadcrumb pageName={`Abscences ${roles.teacher === userRole ? "de l'enseignant" : roles.student === userRole ? "" : ""}`} /> */}
-            <Breadcrumb pageName={t('menu.absences')} />
-            {/* {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={etudiant} onEdit={handleEditHourUser}/>} */}
-            {/* {userRole===roles.enseignant && <Table data={enseignant} onEdit={handleEditHourUser}/>} */}
+            <Breadcrumb pageName={`Abscences ${roles.enseignant === userRole ? "de l'enseignant" : roles.etudiant === userRole ? "" : ""}`} />
+            {/* <Breadcrumb pageName={t('menu.absences')} /> */}
+            {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={currentUser.absences} onEdit={handleEditHourUser}/>} 
+            {userRole===roles.enseignant && <Table data={currentUser.absences} onEdit={handleEditHourUser}/>}
 
-            {/* <FormCreateUpdate user={selectedUser} isSignaled={true} isHourRemove={false} />  */}
+            <FormCreateUpdate user={currentUser} isSignaled={true} isHourRemove={false} />
         </>
     );
 };

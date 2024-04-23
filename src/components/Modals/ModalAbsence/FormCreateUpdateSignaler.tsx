@@ -7,20 +7,18 @@ import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
 import { apiCreateAbsence, apiDeleteAbsence } from '../../../api/discipline/api_discipline';
 import createToast from '../../../hooks/toastify';
-import { ajouterAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/discipline_enseignant_slice';
-import { nbTotalAbsences } from '../../../fonctions/fonction';
-import { ajouterAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/discipline_etudiant_slice';
+import { updateUserAbsences } from '../../../_redux/features/user_slice';
 
 
-function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }: { isStudent:boolean,user: CustomEnseignantSelect | CustomEtudiantSelect | CustomUserSelect| null, isSignaled?: boolean, isHourRemove: boolean }) {
+function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }: { isStudent?:boolean,user:UserState| null, isSignaled?: boolean, isHourRemove: boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
 
 
     const lang = useSelector((state: RootState) => state.setting.language);
-    const anneeAcademique = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante); // converti en string
-    const semestreCourant = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant); // converti en string
+    const anneeAcademique = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante)??2024; // converti en string
+    const semestreCourant = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant)??1; // converti en string
     const [date, setDate] = useState<string>('');
 
 
@@ -59,25 +57,18 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
     };
 
     useEffect(() => {
-        setDate("");
-        setDebutPeriode("");
-        setFinPeriode("");
-        setSemestre('1');
-        if (isHourRemove) {
-            if (user?.user) {
-                setModalTitle(t('form_delete.absence') + user?.user.nom + " " + user?.user.prenom);
-            } else {
-                setModalTitle(t('form_delete.absence'));
-            }
+        
+        if (user) {
+            setModalTitle(t('form_update.absence') + user.nom + " " + user?.prenom??"");
         } else {
-            if (user?.user) {
-                setModalTitle(t('form_update.absence') + user?.user.nom + " " + user?.user.prenom);
-            } else {
-                setModalTitle(t('form_update.absence'));
-            }
+            setModalTitle(t('form_update.absence'));
         }
         if (isSignaled) {
             setModalTitle(t('form_update.signaler'));
+            setDate("");
+            setDebutPeriode("");
+            setFinPeriode("");
+            setSemestre(semestreCourant.toString());
         }
 
 
@@ -88,7 +79,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
             setErrorSemestre("");
             setIsFirstRender(false);
         }
-    }, [isHourRemove, isSignaled, user, isFirstRender, t]);
+    }, [isFirstRender, t]);
 
     const closeModal = () => {
         setErrorDate("");
@@ -109,36 +100,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
 
     const handleCreateUpdate = async () => {
         if (isHourRemove) {
-            // supprimer
-            if (user?.user && user.absence) {
-
-                await apiDeleteAbsence(
-                    {
-                        userId: user?.user?._id,
-                        absenceId: user.absence?._id,
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        if (user?.user && user.absence) {
-                            if(isStudent){
-                                dispatch(retirerAbsenceEtudiant({
-                                    absenceId: user.absence?._id,
-                                }));
-                            }else{
-                                dispatch(retirerAbsenceEnseignant({
-                                    absenceId: user.absence?._id,
-                                }));
-                            }
-                        }
-                        closeModal();
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-                    }
-                }).catch((e) => {
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
-            }
+            
         }
         else {
             if (!date || !debutPeriode || !finPeriode || !semestre) {
@@ -163,10 +125,10 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                 return;
             }
 
-            if (user?.user) {
+            if (user) {
                 await apiCreateAbsence(
                     {
-                        userId: user?.user?._id,
+                        userId: user?._id,
                         semestre: parseInt(semestre),
                         annee: anneeAcademique,
                         dateAbsence: date,
@@ -176,18 +138,32 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        if(isStudent){
-                            dispatch(ajouterAbsenceEtudiant({ ...e.data }));
-
-                        }else{
-                            dispatch(ajouterAbsenceEnseignant({ ...e.data }));
+                        
+                        const newAbsences:AbsenceType[] = [];
+                        for (let i = 0; user.absences && i < user.absences.length; i++) {
+                            const abs = user.absences[i];
+                            // if(chapitre._id!==chap._id){
+                                newAbsences.push(abs)
+                            // }
                         }
+                        const absence:AbsenceType={
+                            _id: e.data._id,
+                            semestre: e.data.semestre,
+                            annee: e.data.annee,
+                            dateAbsence: e.data.dateAbsence,
+                            heureDebut: e.data.heureDebut,
+                            heureFin: e.data.heureFin
+                        }
+                        newAbsences.push(absence);
+                        
+                        dispatch(updateUserAbsences(newAbsences))
                         closeModal();
                     } else {
                         createToast(e.message[lang as keyof typeof e.message], '', 2);
                     }
                 }).catch((e) => {
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    console.log(e);
+                    // createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
             }
         }
@@ -247,22 +223,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                             {errorFinPeriode && <p className="text-red-500" >{errorFinPeriode}</p>}
 
                         </div>
-                        : <div>
-                            {
-                                user?.absence && <div>
-                                    <p className='pb-3'>{t('gestion_absence.semestre')} : {user?.absence?.semestre.toString()}</p>
-
-                                    <p className=' pb-3'>{t('gestion_absence.date')} : {lang === 'fr' ? new Date(user?.absence?.dateAbsence).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : new Date(user?.absence?.dateAbsence).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-
-                                    <p className=' pb-3'>{t('gestion_absence.nombre_heure_absence')} : <span className='text-meta-1 font-medium'>{nbTotalAbsences([user.absence])} {[user.absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </span></p>
-
-
-
-                                </div>
-                            }
-
-
-                        </div>
+                        : null
                 }
 
             </CustomDialogModal>

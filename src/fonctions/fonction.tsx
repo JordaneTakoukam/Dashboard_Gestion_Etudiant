@@ -179,54 +179,69 @@ export function calculateSeancesEffectuees (enseignement: MatiereEnseignement, p
 
 
 // calculer le nombre total d'heure d'absence a partir de la liste d'abscene
+export function formatDate(date:string):string{
+  const dateStr = date;
+  const dateObj = new Date(dateStr);
 
-export function nbTotalAbsences(listeAbsences: AbsenceType[]): string {
+  const year = dateObj.getFullYear();
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // +1 car les mois sont indexés à partir de 0
+  const day = dateObj.getDate().toString().padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
+}
+
+export function nbTotalAbsences(listeAbsences: AbsenceType[]|undefined): string {
   // Vérifier si la liste d'absences est vide
-  if (listeAbsences.length === 0) {
-    return '0';
-  }
-
-  // Initialiser la somme totale d'heures à 0
-  let totalHours = 0;
-
-  // Parcourir chaque absence dans la liste
-  listeAbsences.forEach(absence => {
-    // Extraire les heures de début et de fin de l'absence
-    const heureDebut = parseInt(absence.heureDebut.split(':')[0]);
-    const minuteDebut = parseInt(absence.heureDebut.split(':')[1]);
-    const heureFin = parseInt(absence.heureFin.split(':')[0]);
-    const minuteFin = parseInt(absence.heureFin.split(':')[1]);
-
-    // Calculer les heures et minutes de début et de fin en décimales
-    const heureDebutDecimal = heureDebut + minuteDebut / 60;
-    const heureFinDecimal = heureFin + minuteFin / 60;
-
-    // Calculer la différence d'heures entre l'heure de début et l'heure de fin
-    let differenceHeures = heureFinDecimal - heureDebutDecimal;
-
-    // Calculer la différence de minutes entre l'heure de début et l'heure de fin
-    // const differenceMinutes = minuteFin - minuteDebut;
-
-    // Si la différence de minutes est positive, ajouter une heure supplémentaire
-    // if (differenceMinutes > 0) {
-    //   totalHours += 1;
-    // }
-    // Si la différence de minutes est négative, ajuster les heures
-    if (minuteFin < minuteDebut) {
-        differenceHeures -= 1 / 60; // Retirer une heure
+  if(listeAbsences){
+    
+    if (listeAbsences.length === 0) {
+      return '0';
     }
-    // Ajouter la différence d'heures à la somme totale d'heures
-    totalHours += differenceHeures;
-  });
 
-  // Retourner la somme totale d'heures sous forme de chaîne
-  let formatHour;
-  if (Number.isInteger(totalHours)) {
-      formatHour = totalHours.toString();
-  } else {
-      formatHour = totalHours.toFixed(2);
+    // Initialiser la somme totale d'heures à 0
+    let totalHours = 0;
+
+    // Parcourir chaque absence dans la liste
+    listeAbsences.forEach(absence => {
+      // Extraire les heures de début et de fin de l'absence
+      const heureDebut = parseInt(absence.heureDebut.split(':')[0]);
+      const minuteDebut = parseInt(absence.heureDebut.split(':')[1]);
+      const heureFin = parseInt(absence.heureFin.split(':')[0]);
+      const minuteFin = parseInt(absence.heureFin.split(':')[1]);
+
+      // Calculer les heures et minutes de début et de fin en décimales
+      const heureDebutDecimal = heureDebut + minuteDebut / 60;
+      const heureFinDecimal = heureFin + minuteFin / 60;
+
+      // Calculer la différence d'heures entre l'heure de début et l'heure de fin
+      let differenceHeures = heureFinDecimal - heureDebutDecimal;
+
+      // Calculer la différence de minutes entre l'heure de début et l'heure de fin
+      // const differenceMinutes = minuteFin - minuteDebut;
+
+      // Si la différence de minutes est positive, ajouter une heure supplémentaire
+      // if (differenceMinutes > 0) {
+      //   totalHours += 1;
+      // }
+      // Si la différence de minutes est négative, ajuster les heures
+      if (minuteFin < minuteDebut) {
+          differenceHeures -= 1 / 60; // Retirer une heure
+      }
+      // Ajouter la différence d'heures à la somme totale d'heures
+      totalHours += differenceHeures;
+    });
+
+    // Retourner la somme totale d'heures sous forme de chaîne
+    let formatHour;
+    if (Number.isInteger(totalHours)) {
+        formatHour = totalHours.toString();
+    } else {
+        formatHour = totalHours.toFixed(2);
+    }
+    return formatHour.toString();
   }
-  return formatHour.toString();
+  return '0';
 }
 
 export function reduceWord(word: string, maxSize: number): string {

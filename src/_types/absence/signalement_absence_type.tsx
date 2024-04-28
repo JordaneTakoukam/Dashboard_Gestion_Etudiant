@@ -1,13 +1,15 @@
 interface SignalementAbsence {
-    _id?: string,
-    nom: string,
-    prenom: string,
-    userId: string,
-    motif: string,
-    description: string,
-    dateAbsence: string,
-    date_creation: string,
-
+    _id?: string;
+    nom: string;
+    prenom: string;
+    userId: string;
+    motif: string;
+    titre: string;
+    role: string;
+    description: string;
+    date_creation: string;
+    date_debut_absence: string;
+    date_fin_absence: string;
 }
 
 

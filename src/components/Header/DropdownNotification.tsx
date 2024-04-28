@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { RootState } from '../../_redux/store';
 
 const DropdownNotification = () => {
-  const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsenceEnseignant.data);
+  const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsence.data);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -72,7 +72,7 @@ const DropdownNotification = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute -right-27 mt-2.5 flex overflow-auto max-h-[500px] w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${dropdownOpen === true ? 'block' : 'hidden'
+        className={`absolute -right-27 mt-2.5 flex overflow-auto min-h-[150px] max-h-[500px] w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${dropdownOpen === true ? 'block' : 'hidden'
           }`}
       >
         <div className="px-4.5 py-3">
@@ -98,18 +98,33 @@ const DropdownNotification = () => {
                       <ul className="flex h-auto flex-col overflow-y-auto">
                         <li>
                           <Link
+                            onClick={() => {
+                              setDropdownOpen(false)
+                            }}
                             className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                            to="#"
+                            to={e.role === "enseignant" ? "/teachers/absence_reporting" : e.role === "etudiant" ? '/students/absence_reporting' : '#'}
                           >
-                            <p className="text-sm">
+                            <div className='text-sm'>
+                              <div className='flex gap-x-1 line-clamp-1'>
+                                <p className='text-meta-1 opacity-75 underline'>{e.motif}</p>
+                                {' - '}
+                                <span className=" text-black dark:text-white ">
+                                  {`${e.nom} ${e.prenom}`}
+                                </span>
+                              </div>
+                              <p className='line-clamp-1 text-[14px] font-medium'>{e.titre}</p>
+                              <p className='line-clamp-2 text-[13px]'>{e.description}</p>
+                              <p className="text-xs mt-2 items-end">{formattedDate}</p>
+
+                            </div>
+                            {/* <p className="text-sm">
                               <p className='text-meta-1 opacity-80'>{e.motif}</p>
                               <span className="text-black dark:text-white ">
                                 {`${e.nom} ${e.prenom}`}
                               </span>{' - '}
 
-                              {e.description}
-                            </p>
-                            <p className="text-xs">{formattedDate}</p>
+                              {e.titre}
+                            </p>  */}
                           </Link>
                         </li>
                       </ul>
@@ -118,11 +133,11 @@ const DropdownNotification = () => {
                 })
               }
 
-            </div>
+            </div >
         }
 
-      </div>
-    </li>
+      </div >
+    </li >
   );
 };
 

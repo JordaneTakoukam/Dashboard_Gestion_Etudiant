@@ -45,7 +45,7 @@
     "profil": "My profile"
   },
   "sub_menu": {
-    "absence_reporting":"Absence Reporting",
+    "absence_reporting": "Absence Reporting",
     "liste_etudiant": "Student List",
     "gestion_absences_enseignant": "Management of teacher absences",
     "gestion_absences_etudiant": "Management of student absences",
@@ -74,15 +74,15 @@
   },
   "tableau_de_bord": {
     "title": "Dashboard",
-    "current_semester":"Current semester",
+    "current_semester": "Current semester",
     "total_etudiants": "Total number of students",
     "total_enseignants": "Total number of teachers",
     "absences_etudiants": "Total student absences",
     "absences_enseignants": "Total teacher absences",
     "nombre_etudiant_section": "Number of students per section",
     "nombre_absence_section": "Number of absence hours per section",
-    "nb_etudiant":"Nb. of students",
-    "abs_etudiant":"Abs. of students",
+    "nb_etudiant": "Nb. of students",
+    "abs_etudiant": "Abs. of students",
     "progression": "Overall teachers' progression",
     "evenements_titre": "Upcoming events",
     "evenements_aucun": "No events at the moment",
@@ -455,8 +455,7 @@
     "region": "No region",
     "departement": "No department",
     "commune": "No commune"
-}
-,
+  },
   "gestion_absence": {
     "nom_et_prenom": "Name and surname",
     "semestre": "Semester",
@@ -473,5 +472,17 @@
     "entree": "entries",
     "precedent": "Previous",
     "suivant": "Next"
+  },
+  "liste": {
+    "signalement_absence_etudiants": "Student absences reports",
+    "signalement_absence_enseignants": "Teacher absences reports"
+  },
+  "header_table": {
+    "date_d_envoie": "Date sent",
+    "nom_et_prenom": "Name and surname",
+    "titre": "Title",
+    "description": "Description",
+    "duree_de_l_absence": "Duration of absence",
+    "detail": "Detail"
   }
 }

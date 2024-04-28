@@ -14,7 +14,7 @@ import EnseignantReducer from "./features/enseignant_slice.tsx";
 import EnseignanDisciplineReducer from "./features/absence/discipline_enseignant_slice.tsx";
 import EtudiantDisciplineReducer from "./features/absence/discipline_etudiant_slice.tsx";
 import EtudiantReducer from "./features/etudiant_slice.tsx";
-import SignalementAbsenceEnsReducer from "./features/absence/signalement_absence_enseignant.tsx";
+import SignalementAbsence from "./features/absence/signalement_absence.tsx";
 
 const store = configureStore({
   reducer: {
@@ -37,7 +37,7 @@ const store = configureStore({
     etudiantSlice: EtudiantReducer,
 
 
-    signalementAbsenceEnseignant: SignalementAbsenceEnsReducer,
+    signalementAbsence: SignalementAbsence,
 
   },
   preloadedState: {

@@ -72,15 +72,15 @@
   },
   "tableau_de_bord": {
     "title": "Tableau de bord",
-    "semestre_courant":"Semestre courant",
+    "semestre_courant": "Semestre courant",
     "total_etudiants": "Nombre total d'étudiants",
     "total_enseignants": "Nombre total d'enseignants",
     "absences_etudiants": "Absences total des étudiants",
     "absences_enseignants": "Absences total des enseignants",
     "nombre_etudiant_section": "Nombre d'étudiants par section",
     "nombre_absence_section": "Nombre d'heures d'absence par section",
-    "nb_etudiant":"Nb. d'étudiants",
-    "abs_etudiant":"Abs. des étudiants",
+    "nb_etudiant": "Nb. d'étudiants",
+    "abs_etudiant": "Abs. des étudiants",
     "progression": "Progression globale des enseignants",
     "evenements_titre": "Evènements à venir",
     "evenements_aucun": "Aucun événement pour le moment",
@@ -487,5 +487,17 @@
     "entree": "entrées",
     "precedent": "Précédent",
     "suivant": "Suivant"
+  },
+  "liste": {
+    "signalement_absence_etudiants": "Signalements d'absence des étudiants",
+    "signalement_absence_enseignants": "Signalements d'absence des enseignants"
+  },
+  "header_table": {
+    "date_d_envoie": "Date d'envoi",
+    "nom_et_prenom": "Nom et prénom",
+    "titre": "Titre",
+    "description": "Description",
+    "duree_de_l_absence": "Durée de l'absence",    "detail": "Détail"
+
   }
 }

@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../_redux/store";
-import { setShowModal } from "../../../../_redux/features/setting";
 import Breadcrumb from "../../../../components/Breadcrumb";
 import LoadingTable from "../../../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
-import io from 'socket.io-client';
-import { socket_url } from "../../../../config";
-import { addSignalementAbsenceEnseignant, setListSignalementAbsenceEnseignant, setSignalementAbsenceEnseignantError } from "../../../../_redux/features/absence/signalement_absence_enseignant";
+import TableSignalementAbsence from "../../../../components/Tables/TablesDisciplineEnseignants/Table_signalement_absence";
+import { r_enseig } from "../../../../config";
 
 
 
@@ -17,12 +14,13 @@ const AbsenceSignalerEnseignant = () => {
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsenceEnseignant.data);
+    const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsence.data);
+
+    const listAbsenceSignalerEnseignant = listAbsenceSignaler.filter((e) => e.role === r_enseig);
 
 
-
-    const pageIsLoading = useSelector((state: RootState) => state.signalementAbsenceEnseignant.pageIsLoading);
-    const pageError = useSelector((state: RootState) => state.signalementAbsenceEnseignant.pageError);
+    const pageIsLoading = useSelector((state: RootState) => state.signalementAbsence.pageIsLoading);
+    const pageError = useSelector((state: RootState) => state.signalementAbsence.pageError);
 
 
     const handleRefresh = async () => {
@@ -37,23 +35,6 @@ const AbsenceSignalerEnseignant = () => {
     }
 
 
-    useEffect(() => {
-        // Établit une connexion avec le serveur Socket.io
-        const socket = io(socket_url); // Remplace l'URL par celle de ton serveur
-
-        socket.on('message', (data: { message: SignalementAbsence }) => {
-
-            console.log(data.message);
-            dispatch(addSignalementAbsenceEnseignant(data.message));
-
-            // setMessages(prevMessages => [...prevMessages, data.message]);
-        });
-
-        // Nettoie la connexion lorsque le composant est démonté
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
 
     return (
         <>
@@ -71,22 +52,11 @@ const AbsenceSignalerEnseignant = () => {
                                 showModalCreate={() => { }}
                                 refreshFunction={handleRefresh} />
                             : <div>
-                                {
-                                    listAbsenceSignaler.map((e, index) => (
-                                        <li key={index}>{e.nom}</li>
-                                    ))
-                                }
+                                <TableSignalementAbsence listData={listAbsenceSignalerEnseignant} type="enseignant" />
 
                             </div>
-                // <Table
-                //     data={sections}
-                //     onCreate={handleAddSection}
-                //     onEdit={handleEditSection} />
-
             }
 
-            {/* <FormCreateUpdate section={selectedSection} />
-            <FormDelete section={selectedSection} /> */}
 
         </>
     );

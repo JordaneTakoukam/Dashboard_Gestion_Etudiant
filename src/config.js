@@ -20,5 +20,5 @@ export const r_enseig = import.meta.env.VITE_APP_ROLE_ENS || "non defini";
 export const r_del = import.meta.env.VITE_APP_ROLE_DEL || "non defini";
 export const r_etud = import.meta.env.VITE_APP_ROLE_ETU || "non defini";
 
-
+export const socket_url = import.meta.env.VITE_APP_SOCKET_URL || 'socket url non defini'
 

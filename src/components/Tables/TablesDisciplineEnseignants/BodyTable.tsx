@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux"
 import { nbTotalAbsences } from "../../../fonctions/fonction"
 import { useNavigate } from "react-router-dom"
-import { setEnseignantSelected } from "../../../_redux/features/discipline_enseignant_slice"
+import { setEnseignantSelected } from "../../../_redux/features/absence/discipline_enseignant_slice"
 import { MdOutlineManageAccounts } from "react-icons/md";
 
 

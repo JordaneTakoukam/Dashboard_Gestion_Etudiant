@@ -11,9 +11,10 @@ import progressionPeriodeEnseignementReducer from "./features/progession_periode
 import chapitreReducer from "./features/chapitre_slice.tsx";
 import AdminReducer from "./features/admin_slice.tsx";
 import EnseignantReducer from "./features/enseignant_slice.tsx";
-import EnseignanDisciplineReducer from "./features/discipline_enseignant_slice.tsx";
-import EtudiantDisciplineReducer from "./features/discipline_etudiant_slice.tsx";
+import EnseignanDisciplineReducer from "./features/absence/discipline_enseignant_slice.tsx";
+import EtudiantDisciplineReducer from "./features/absence/discipline_etudiant_slice.tsx";
 import EtudiantReducer from "./features/etudiant_slice.tsx";
+import SignalementAbsenceEnsReducer from "./features/absence/signalement_absence_enseignant.tsx";
 
 const store = configureStore({
   reducer: {
@@ -32,8 +33,11 @@ const store = configureStore({
     admin: AdminReducer,
     enseignantSlice: EnseignantReducer,
     enseignantDisciplineSlice: EnseignanDisciplineReducer,
-    etudiantDisciplineSlice:EtudiantDisciplineReducer,
+    etudiantDisciplineSlice: EtudiantDisciplineReducer,
     etudiantSlice: EtudiantReducer,
+
+
+    signalementAbsenceEnseignant: SignalementAbsenceEnsReducer,
 
   },
   preloadedState: {

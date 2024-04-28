@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
 import Pagination from "../../Pagination/Pagination";
-import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantsDisciplineLoadingOnTable, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/discipline_enseignant_slice";
+import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantsDisciplineLoadingOnTable, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_enseignant_slice";
 import { apiGetAbsencesWithEnseignantsByFilter, apiGetAllAbsencesWithEnseignantsByFilter } from "../../../api/discipline/api_discipline";
 import LoadingOnTable from "../common/LoadingOnTable";
 import * as XLSX from 'xlsx';

@@ -11,7 +11,7 @@ import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
 import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
 
 import { useNavigate } from 'react-router-dom';
-import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/discipline_enseignant_slice";
+import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/absence/discipline_enseignant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
 
 const DisciplineDesEnseignants = () => {

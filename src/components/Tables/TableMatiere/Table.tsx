@@ -42,6 +42,8 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement }: TableMa
     const [section, setSection] = useState<CommonSettingProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // const niveauxEnseignantIds = currentUser?.niveaux.map(inscription => inscription.niveau) ?? [];
 
@@ -336,7 +338,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement }: TableMa
                 if (selectNiveauId) {
                     let fetchedMatieres = null;
                     if (currentUser && currentUser.role === roles.enseignant) {
-                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id });
+                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre });
                     } else {
                         fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage });
                     }
@@ -378,8 +380,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement }: TableMa
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === currentUser.role || roles.superAdmin === currentUser.role && (<ButtonCreate
-                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
-                />)}
+                    onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.matiere')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}

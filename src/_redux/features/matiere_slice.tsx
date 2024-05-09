@@ -14,6 +14,7 @@ const initialState: MatiereInitialData = {
     },
     pageIsLoading: false,
     pageError: null,
+    selectedMatiere:undefined,
 };
 
 
@@ -22,6 +23,9 @@ const matiereSlice = createSlice({
     name: "matiereSlice",
     initialState,
     reducers: {
+        setMatiereSelected(state, action: PayloadAction<MatiereType>) {
+            state.selectedMatiere = action.payload;
+        },
         setMatiereLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
         },
@@ -63,11 +67,36 @@ const matiereSlice = createSlice({
             const { id } = action.payload;
             state.data.matieres = state.data.matieres.filter(e => e._id !== id);
         },
+
+        ajouterObjectif(state, action: PayloadAction<ObjectifType>) {
+            // Ajoute l'absence à la liste des absences de l'enseignant sélectionné
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.objectifs) {
+                matiere.objectifs.unshift(action.payload);
+            }
+        },
+        modifierObjectif(state, action: PayloadAction<ObjectifType>) {
+            // modifier un objectif
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.objectifs) {
+                matiere.objectifs = matiere.objectifs.filter(objectif => objectif._id !== action.payload._id);
+                matiere.objectifs.unshift(action.payload);
+            }
+        },
+        // Add an action to remove absence for an enseignant by ID
+        retirerObjectif(state, action: PayloadAction<{ objectifId: string }>) {
+            const { objectifId} = action.payload;
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.objectifs) {
+                matiere.objectifs = matiere.objectifs.filter(objectif => objectif._id !== objectifId);
+            }
+        }
     },
 });
 
 // Actions exportées
 export const {
+    setMatiereSelected,
     setMatiereLoading,
     setErrorPageMatiere,
     setMatieres,
@@ -75,7 +104,10 @@ export const {
     updateMatiere,
     deleteMatiere,
     updateChapitres,
-    updateEnseignements
+    updateEnseignements,
+    ajouterObjectif,
+    modifierObjectif,
+    retirerObjectif
 } = matiereSlice.actions;
 
 // Reducer exporté

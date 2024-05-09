@@ -32,6 +32,7 @@ import DisciplineDesEtudiants from '../pages/Admin/Disciplines/Etudiant/Discipli
 import AbsenceSignalerEnseignant from '../pages/Admin/Disciplines/Enseignant/AbsenceSignalerEnseignant';
 import AbsenceSignalerEtudiant from '../pages/Admin/Disciplines/Etudiant/AbsenceSignalerEtudiant';
 import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
+import Objectifs from '../pages/Admin/Objectifs';
 
 
 
@@ -101,6 +102,12 @@ const coreRoutes = [
     path: '/subjects/chapitres',
     title: 'Liste des chapitres',
     component: Chapitres,
+  },
+
+  {
+    path: '/subjects/objectifs/manage',
+    title: 'Liste des objectifs',
+    component: Objectifs,
   },
 
   {

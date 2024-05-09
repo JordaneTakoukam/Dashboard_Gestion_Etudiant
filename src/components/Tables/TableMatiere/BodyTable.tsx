@@ -7,6 +7,7 @@ import { useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
+import { setMatiereSelected } from "../../../_redux/features/matiere_slice"
 
 interface BodyMatiereProps {
     data: MatiereType[];
@@ -16,7 +17,7 @@ interface BodyMatiereProps {
 }
 
 const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatiereProps) => {
-    const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
+    // const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
     const handleAddChapitre = (matiere: MatiereType) => {
@@ -24,26 +25,26 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
         navigate("save/chapitres"); // Rediriger vers l'interface d'ajout de chapitres
     };
     const {t}=useTranslation();
-    const onMoreActionsClick = (actionName: string) => {
-        switch (actionName) {
-            case 'Ajouter un chapitre':
-                if (selectedMatiere) {
-                    onAddChap(selectedMatiere);
-                }
-                // dispatch(setShowModalChapitre())
-                break;
-            case 'Ajouter un objectif':
-                // Logic to add an objective                    
+    // const onMoreActionsClick = (actionName: string) => {
+    //     switch (actionName) {
+    //         case 'Ajouter un chapitre':
+    //             if (selectedMatiere) {
+    //                 onAddChap(selectedMatiere);
+    //             }
+    //             // dispatch(setShowModalChapitre())
+    //             break;
+    //         case 'Ajouter un objectif':
+    //             // Logic to add an objective                    
 
 
-                break;
-            case 'Ajouter une compétence':
-                // Logic to add a competency
-                break;
-            default:
-                console.error(`Unknown action: ${actionName}`);
-        }
-    };
+    //             break;
+    //         case 'Ajouter une compétence':
+    //             // Logic to add a competency
+    //             break;
+    //         default:
+    //             console.error(`Unknown action: ${actionName}`);
+    //     }
+    // };
 
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -118,6 +119,10 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
                             {
                                 "name": t('label.chapitres'),
                                 "handleClick": () => { onAddChap(item);dispatch(setShowModalChapitre(true)) }
+                            },
+                            {
+                                "name": t('label.objectifs'),
+                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
                             },
                             {
                                 "name": t('label.enseignements'),

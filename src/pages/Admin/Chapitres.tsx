@@ -51,7 +51,7 @@ const Chapitres = ({ matiereSelectionnee, returnWithMatiere, onEditMatiere }: Ch
 
             {!openObjectifs && <FormCreateUpdate chapitre={selectedChapitre} matiere={matiereSelectionnee}/>}
             {!openObjectifs && <FormDelete chapitre={selectedChapitre}  matiere={matiereSelectionnee}/>}
-            {openObjectifs && <Objectifs chapitreSelectionnee={selectedChapitre} returnWithChapitre={handleAddChapitre} onEditMatiere={onEditMatiere} onEditChapitre={handleUpdateChapitre} matiereCourant={matiereSelectionnee}/>}
+            {/* {openObjectifs && <Objectifs chapitreSelectionnee={selectedChapitre} returnWithChapitre={handleAddChapitre} onEditMatiere={onEditMatiere} onEditChapitre={handleUpdateChapitre} matiereCourant={matiereSelectionnee}/>} */}
 
         </>
     );

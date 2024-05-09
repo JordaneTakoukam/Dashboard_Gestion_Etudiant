@@ -6,11 +6,11 @@ const api = `${apiUrl}/matiere`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
+export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs }: MatiereType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres },
+            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,12 +26,12 @@ export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, pre
     }
 }
 
-export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres }: MatiereType): Promise<ReponseApiPros> {
+export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs }: MatiereType): Promise<ReponseApiPros> {
     
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres },
+            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export async function getMatieresByNiveauWithPagination({ niveauId, page }: { ni
         throw error;
     }
 }
-export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId }: { niveauId: string, enseignantId: string }): Promise<MatiereReturnGetType> {
+export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId, annee, semestre }: { niveauId: string, enseignantId: string, annee:number, semestre:number }): Promise<MatiereReturnGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getMatieresByEnseignantNiveau/${niveauId}`,
@@ -103,6 +103,8 @@ export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId }: 
                 },
                 params: {
                     enseignantId: enseignantId,
+                    annee:annee,
+                    semestre:semestre
                 },
             },
         );

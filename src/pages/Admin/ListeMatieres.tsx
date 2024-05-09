@@ -13,7 +13,6 @@ import createToast from "../../hooks/toastify";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redux/features/matiere_slice";
 import Enseignements from "./Enseignements";
 import { config } from "../../config";
-import { setSections, setCycles } from "../../_redux/features/data_setting_slice";
 import { setShowModalChapitre, setShowModalEnseignement } from "../../_redux/features/setting";
 
 const ListeDesMatieres = () => {
@@ -28,6 +27,7 @@ const ListeDesMatieres = () => {
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     // Utilisez useSelector pour accéder à l'état du reducer
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
@@ -58,7 +58,7 @@ const ListeDesMatieres = () => {
                 if (currentNiveauId) {
                     let fetchedMatieres=null;
                     if(currentUser && currentUser.role===roles.enseignant){
-                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id });
+                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre });
                     }else{
                         fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: 1 });
                     }

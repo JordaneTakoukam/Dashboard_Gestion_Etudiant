@@ -16,7 +16,6 @@ import LoadingOnTable from "../common/LoadingOnTable";
 import * as XLSX from 'xlsx';
 import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
-import { niveau } from "../../../pages/Admin/Niveaux";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];

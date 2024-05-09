@@ -6,6 +6,8 @@ interface ObjectifType {
     libelleFr: string;
     libelleEn: string;
     etat:number;//0 non terminé, 1 terminé
+    date_etat?:Date;
+    matiere:string;
 }
 
 interface ObjectifInitialData {

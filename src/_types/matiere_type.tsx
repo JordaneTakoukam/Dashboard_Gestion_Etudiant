@@ -14,6 +14,7 @@ interface MatiereType {
     evaluationAcquisEn: string;
     typesEnseignement?: EnseignementType[],
     chapitres?: ChapitreType[],
+    objectifs?: ObjectifType[],
 }
 
 interface MatiereInitialData {
@@ -26,6 +27,7 @@ interface MatiereInitialData {
     };
     pageIsLoading: boolean;
     pageError: string | null;
+    selectedMatiere:MatiereType|undefined;
 }
 
 interface ProgressionMatiereInitialData {

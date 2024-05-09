@@ -4,7 +4,6 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getUsersWithRole } from '../../../api/api_user';
 import { apiCreateMatiere, apiUpdateMatiere } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
 import { createMatiere, updateMatiere } from '../../../_redux/features/matiere_slice';
@@ -32,6 +31,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [enseignements, setEnseignements] = useState<EnseignementType[] | undefined>([]);
     const [chapitres, setChapitres] = useState<ChapitreType[] | undefined>([]);
+    const [objectifs, setObjectifs] = useState<ObjectifType[] | undefined>([]);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
@@ -144,6 +144,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             setCycle(currentCycle);
             setNiveau(currentNiveau);
             setChapitres(matiere.chapitres);
+            setObjectifs(matiere.objectifs);
             setEnseignements(matiere.typesEnseignement);
 
         } else {
@@ -161,6 +162,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             setCycle(undefined);
             setNiveau(undefined);
             setChapitres([]);
+            setObjectifs([]);
             setEnseignements([]);
 
         }
@@ -303,7 +305,8 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                         evaluationAcquisFr, 
                         evaluationAcquisEn,
                         typesEnseignement:enseignements,
-                        chapitres
+                        chapitres,
+                        objectifs
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -324,6 +327,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                 evaluationAcquisEn:e.data.evaluationAcquisEn,
                                 typesEnseignement:e.data.typesEnseignement,
                                 chapitres:e.data.chapitres,
+                                objectifs:e.data.objectifs
                                 
                             }
                             
@@ -356,6 +360,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                         evaluationAcquisEn,
                         typesEnseignement:matiere.typesEnseignement,
                         chapitres:matiere.chapitres,
+                        objectifs:matiere.objectifs,
                         _id:matiere._id,
                     }
                 ).then((e: ReponseApiPros) => {
@@ -378,6 +383,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                     evaluationAcquisEn:e.data.evaluationAcquisEn,
                                     typesEnseignement:matiere.typesEnseignement,
                                     chapitres:matiere.chapitres,
+                                    objectifs:matiere.objectifs,
 
                                 }
                             }));

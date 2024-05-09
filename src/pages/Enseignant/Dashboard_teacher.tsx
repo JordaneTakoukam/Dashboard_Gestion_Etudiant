@@ -11,7 +11,7 @@ import { getFirstTenEventsOfYear } from '../../api/api_evenement.tsx';
 import { getPeriodesAVenirByEnseignant } from '../../api/api_periode.tsx';
 import { apiGetNiveauxByEnseignant, apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx';
 import { apiGetTotalEtudiantByNiveaux, apiGetTotalEtudiantByYear } from '../../api/other_users/api_etudiant.tsx';
-import { getProgressionGlobalEnseignant } from '../../api/api_chapitre.tsx';
+import { getProgressionGlobalEnseignant } from '../../api/api_objectif.tsx';
 import { setMinimumUser, updateUserAbsences, updateUserNiveaux } from '../../_redux/features/user_slice.tsx';
 import { setSections, setCycles, setNiveaux } from '../../_redux/features/data_setting_slice.tsx';
 import { apiGetAbsencesByUserAndFilter } from '../../api/discipline/api_discipline.tsx';
@@ -46,7 +46,7 @@ const DashboardTeacher = () => {
                 //     setTotalEnseignant(totalEnseignants);
                 // }
 
-                const progressionGlobal = await getProgressionGlobalEnseignant(currentUser._id);
+                const progressionGlobal = await getProgressionGlobalEnseignant(currentUser._id, currentYear, currentSemester);
                 if (progressionGlobal !== null) {
                     setProgression(progressionGlobal);
                 }

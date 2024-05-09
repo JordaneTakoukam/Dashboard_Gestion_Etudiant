@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { apiGetNbAbsenceEtudiantsParSection, apiGetNbEtudiantsParSection, apiGetTotalEtudiantByYear } from "../../api/other_users/api_etudiant";
 import { apiGetTotalEnseignants } from "../../api/other_users/api_enseignant";
 import { getFirstTenEventsOfYear } from "../../api/api_evenement";
-import { getProgressionGlobalEnseignants } from "../../api/api_chapitre";
+import { getProgressionGlobalEnseignants } from "../../api/api_objectif";
 import { apiGetTotalHoursOfAbsenceByStudent, apiGetTotalHoursOfAbsenceByTeacher } from "../../api/discipline/api_discipline";
 
 const DashBoardAmin = () => {

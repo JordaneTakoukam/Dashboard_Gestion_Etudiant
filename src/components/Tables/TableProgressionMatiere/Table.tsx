@@ -30,17 +30,12 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const calculateProgress = (matiere : MatiereType | undefined) => {
         let totalObjectifs = 0;
         let objectifsAvecEtat1 = 0;
-        if(matiere && matiere.chapitres){
-            matiere.chapitres.forEach((chapitre) => {
-                if(chapitre.objectifs){
-                    totalObjectifs += chapitre.objectifs.length;
-                    chapitre.objectifs.forEach((objectif) => {
-                        if (objectif.etat === 1) {
-                            objectifsAvecEtat1++;
-                        }
-                    });
+        if(matiere && matiere.objectifs){
+            totalObjectifs = matiere.objectifs.length;
+            matiere.objectifs.forEach((objectif) => {
+                if (objectif.etat == 1) {
+                    objectifsAvecEtat1++;
                 }
-                
             });
         }
         

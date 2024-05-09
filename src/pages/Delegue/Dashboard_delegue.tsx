@@ -7,7 +7,7 @@ import { CardEvenement } from '../../components/CardDashboard/CardEvenement.tsx'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../_redux/store.tsx';
 import { useState, useEffect } from 'react';
-import { getProgressionGlobalEnseignantsNiveau } from '../../api/api_chapitre.tsx';
+import { getProgressionGlobalEnseignantsNiveau } from '../../api/api_objectif.tsx';
 import { getFirstTenEventsOfYear } from '../../api/api_evenement.tsx';
 import { getPeriodesAVenirByNiveau } from '../../api/api_periode.tsx';
 import { apiGetTotalEnseignants } from '../../api/other_users/api_enseignant.tsx';

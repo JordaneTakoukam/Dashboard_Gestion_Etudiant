@@ -35,6 +35,10 @@ const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant =
     returnWithPeriodeEnseignement && returnWithPeriodeEnseignement();
   };
 
+  const handleMatiere = () => {
+    navigate('subjects/subject-list');
+  };
+
   const handleDisciplneEnseignant = () => {
     navigate('/teachers/disciplines/');
   };
@@ -64,25 +68,28 @@ const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant =
 
           {isChapitre && (
             <li>
-              <Link to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} /</Link>
+              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} </Link>
+              <span className='ml-2'> /</span>
             </li>
           )}
 
           {isObjectif && (
-            <li>
-              <Link to="#" onClick={handleChapitreClick}>{t('sub_menu.chapitres')} / </Link>
+            <li className='flex'>
+              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
+              <span className='ml-2'> /</span>
             </li>
           )}
 
           {isEnseignement && (
             <li>
-              <Link to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} /</Link>
+              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} </Link>
+              <span className='ml-2'> /</span>
             </li>
           )}
 
           {isPeriodeEnseignement && (
             <li>
-              <Link to={"/subjects/periodes_enseignement"} onClick={handlePeriodeClick}>{t('sub_menu.periodes_enseignement')} /</Link>
+              <Link className='hover:underline' to={"/subjects/periodes_enseignement"} onClick={handlePeriodeClick}>{t('sub_menu.periodes_enseignement')} /</Link>
             </li>
           )}
 

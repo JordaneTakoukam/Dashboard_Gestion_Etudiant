@@ -45,14 +45,14 @@ const BodyTable = ({ data, onEdit, onAddObj }: BodyChapitreProps) => {
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
-                <SelectButton
+                {/* <SelectButton
                         listPage={[
                             {
                                 "name": t('label.objectifs'),
                                 "handleClick": () => { onAddObj(item) }
                             },
                         ]}
-                    />
+                    /> */}
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);

@@ -7,9 +7,9 @@ import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
 import { apiCreateAbsence, apiDeleteAbsence } from '../../../api/discipline/api_discipline';
 import createToast from '../../../hooks/toastify';
-import { ajouterAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/discipline_enseignant_slice';
+import { ajouterAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
 import { nbTotalAbsences } from '../../../fonctions/fonction';
-import { ajouterAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/discipline_etudiant_slice';
+import { ajouterAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
 
 
 function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }: { isStudent:boolean,user: CustomEnseignantSelect | CustomEtudiantSelect | CustomUserSelect| null, isSignaled?: boolean, isHourRemove: boolean }) {

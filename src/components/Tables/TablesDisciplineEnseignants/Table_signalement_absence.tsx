@@ -16,15 +16,21 @@ import LoadingOnTable from "../common/LoadingOnTable";
 import * as XLSX from 'xlsx';
 import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
-
-interface TableDisciplineProps {
-    data: UserDiscipline[];
-    onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void;
-}
+import { niveau } from "../../../pages/Admin/Niveaux";
+import HeaderTableSignalementAbsence from "./HeaderSignalemetAbsence";
+import BodyTableSignalementAbsence from "./BodyTableSignalementAbsence";
 
 
-const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
+const TableSignalementAbsence = ({ type, listData }: { type: string, listData: SignalementAbsence[] }) => {
+
+    // var listData: SignalementAbsence[] = [];
+
+    // if (type === "enseignant") {
+    //     listData = useSelector((state: RootState) => state.signalementAbsence.data);
+    // } else {
+    //     listData = useSelector((state: RootState) => state.signalementAbsence.data);
+    // }
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -44,8 +50,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const selectedSemestre = useSelector((state: RootState) => state.enseignantDisciplineSlice.selected.semestre)
-    const [selectSemestre, setSelectSemestre]=useState(currentSemestre);
-    const [selectedYear, setSelectYear]=useState(currentYear);
+    const [selectSemestre, setSelectSemestre] = useState(currentSemestre);
+    const [selectedYear, setSelectYear] = useState(currentYear);
 
 
     const listSemestre = ['1', '2']
@@ -77,26 +83,26 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
     // recherche
-    const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<UserDiscipline[]>(data);
+    // const [searchText, setSearchText] = useState<string>('');
+    // const [filteredData, setFilteredData] = useState<UserDiscipline[]>(data);
 
-    // Filtrer les matières en fonction de la langue
-    const filterEnseignantByContent = (enseignants: UserDiscipline[]) => {
-        if (searchText === '') {
-            const result: UserDiscipline[] = enseignants;
-            return result;
-        }
-        return enseignants.filter(enseignant => {
-            const prenom = enseignant?.prenom || "";
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
+    // // Filtrer les matières en fonction de la langue
+    // const filterEnseignantByContent = (enseignants: UserDiscipline[]) => {
+    //     if (searchText === '') {
+    //         const result: UserDiscipline[] = enseignants;
+    //         return result;
+    //     }
+    //     return enseignants.filter(enseignant => {
+    //         const prenom = enseignant?.prenom || "";
+    //         // Vérifie si le code ou le libellé contient le texte de recherche
+    //         return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
+    //     });
+    // };
 
-    useEffect(() => {
-        const result = filterEnseignantByContent(data);
-        setFilteredData(result);
-    }, [searchText, data]);
+    // useEffect(() => {
+    //     const result = filterEnseignantByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
 
 
 
@@ -127,55 +133,55 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const handlePageClick = (pageNumber: number) => { setCurrentPage(pageNumber); };
     // end --------- pagination
 
-    useEffect(() => {
-        if (annee && semestre) {
-            dispatch(setAnneeDisciplineEns(currentYear));
-            dispatch(setSemestreDisciplineEns(parseInt(semestre)));
-        }
+    // useEffect(() => {
+    //     if (annee && semestre) {
+    //         dispatch(setAnneeDisciplineEns(currentYear));
+    //         dispatch(setSemestreDisciplineEns(parseInt(semestre)));
+    //     }
 
 
 
-        if (isInitialMount) {
-            setIsInitialMount(false);
-            return;
-        }
+    //     if (isInitialMount) {
+    //         setIsInitialMount(false);
+    //         return;
+    //     }
 
 
-        const fetchEnseignantWithAbsences = async () => {
-            dispatch(setEnseignantsDisciplineLoadingOnTable(true));
+    //     const fetchEnseignantWithAbsences = async () => {
+    //         dispatch(setEnseignantsDisciplineLoadingOnTable(true));
 
-            try {
-                if (semestre) {
-                    const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
-                        page: currentPage, semestre: selectSemestre, annee: selectedYear
-                    });
-                    if (fetchedEnseignants) {
-                        dispatch(setEnseignantDiscipline(fetchedEnseignants));
+    //         try {
+    //             if (semestre) {
+    //                 const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
+    //                     page: currentPage, semestre: selectSemestre, annee: selectedYear
+    //                 });
+    //                 if (fetchedEnseignants) {
+    //                     dispatch(setEnseignantDiscipline(fetchedEnseignants));
 
-                        dispatch(setErrorPageEnseignantDiscipline(null));
-                    } else {
-                        dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
-                    }
-                }
-            } catch (error) {
-                dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
-            } finally {
-                dispatch(setEnseignantsDisciplineLoadingOnTable(false));
-            }
-        }
+    //                     dispatch(setErrorPageEnseignantDiscipline(null));
+    //                 } else {
+    //                     dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+    //         } finally {
+    //             dispatch(setEnseignantsDisciplineLoadingOnTable(false));
+    //         }
+    //     }
 
-        fetchEnseignantWithAbsences();
+    //     fetchEnseignantWithAbsences();
 
-    }, [data.length, annee, semestre, currentPage, t]);
+    // }, [data.length, annee, semestre, currentPage, t]);
 
     const fetchAllAbsEnseignant = async () => {
         try {
-            
-            
-            const fetchedEnseignants = await apiGetAllAbsencesWithEnseignantsByFilter({  annee:selectedYear, semestre:selectSemestre});
+
+
+            const fetchedEnseignants = await apiGetAllAbsencesWithEnseignantsByFilter({ annee: selectedYear, semestre: selectSemestre });
             return fetchedEnseignants.enseignants;
-            
-                // Réinitialisez les erreurs s'il y en a
+
+            // Réinitialisez les erreurs s'il y en a
         } catch (error) {
             dispatch(setErrorPageEtudiant(t('message.erreur')));
             createToast(t('message.erreur'), "", 2)
@@ -203,21 +209,21 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     };
 
-    const exportToExcel = ( filename: string,enseignants: UserDiscipline[] | undefined) => {
-        if(enseignants){
+    const exportToExcel = (filename: string, enseignants: UserDiscipline[] | undefined) => {
+        if (enseignants) {
             const wb = XLSX.utils.book_new();
-            
+
             // Créer une feuille de calcul
             const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'),'Absences(H)'],
+                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'), 'Absences(H)'],
                 ...enseignants.flatMap(enseignant => {
                     const rows = [];
-                    rows.push([enseignant.matricule, enseignant.nom, enseignant.prenom, enseignant.genre, enseignant.email, enseignant.date_naiss?enseignant.date_naiss?.split("T")[0]:"", enseignant.lieu_naiss??"" 
-                    , nbTotalAbsences(enseignant.absences)]);
+                    rows.push([enseignant.matricule, enseignant.nom, enseignant.prenom, enseignant.genre, enseignant.email, enseignant.date_naiss ? enseignant.date_naiss?.split("T")[0] : "", enseignant.lieu_naiss ?? ""
+                        , nbTotalAbsences(enseignant.absences)]);
                     return rows;
                 })
             ]);
-          
+
             // Ajouter la feuille de calcul au classeur
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
             // Générer un fichier Excel binaire
@@ -230,8 +236,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             link.download = filename;
             // Cliquez sur le lien pour télécharger le fichier Excel
             link.click();
-        }else{
-            
+        } else {
+
         }
     }
 
@@ -239,61 +245,18 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />
+                {/* <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} /> */}
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.enseignant')} </h1>
-                {/* version mobile */}
-                <div className="block lg:hidden">
-                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
-                    {isDropdownVisible && (
-                        <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<string>
-                                title={t('label.annee')}
-                                selectedItem={annee}
-                                items={listAnnee}
-                                defaultValue={annee}
-                                onSelect={handleAnneeSelect}
-                            />
-                            <CustomDropDown2<string>
-                                title={t('label.semestre')}
-                                selectedItem={semestre}
-                                items={listSemestre}
-                                defaultValue={semestre}
-                                onSelect={handleSemestreSelect}
-                            />
-                        </div>
-                    )}
-                </div>
-
-                {/* version desktop */}
-                <div className="hidden lg:block">
-                    <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
-                        <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-
-                            <CustomDropDown2<string>
-                                title={t('label.annee')}
-                                selectedItem={annee}
-                                items={listAnnee}
-                                defaultValue={annee}
-                                onSelect={handleAnneeSelect}
-                            />
-                            <CustomDropDown2<string>
-                                title={t('label.semestre')}
-                                selectedItem={semestre}
-                                items={listSemestre}
-                                defaultValue={semestre}
-                                onSelect={handleSemestreSelect}
-                            />
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2">
+                    <div className=""> </div>{type === "enseignant" ? t('liste.signalement_absence_enseignants') : t('liste.signalement_absence_etudiants')}
+                </h1>
 
 
-                        </div>
-                    </div>
-                </div>
 
 
 
@@ -301,12 +264,12 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8 relative min-h-[250px]">
                     <table className="w-full table-auto">
-                        <HeaderTable />
+                        <HeaderTableSignalementAbsence />
 
                         {
                             pageIsLoadingOnTable ?
                                 <LoadingOnTable /> :
-                                <BodyTable data={filteredData} />
+                                <BodyTableSignalementAbsence data={listData} />
 
                         }
                     </table>
@@ -314,7 +277,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
                 {/* Pagination */}
 
-                <Pagination
+                {/* <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -324,18 +287,14 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-                />
+                /> */}
             </div>
 
-            {/* bouton downlod Download */}
-            <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
 
-            </div>
 
         </div>
     );
 };
 
 
-export default Table;
+export default TableSignalementAbsence;

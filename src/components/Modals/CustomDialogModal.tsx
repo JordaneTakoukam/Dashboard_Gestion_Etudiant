@@ -11,11 +11,12 @@ interface CustomDialogModalProps {
     closeModal: () => void;
     children: React.ReactNode;
     unique?: boolean;
+    type?: string,
 }
 
 // model generale pour les boites de dialogue
 
-function CustomDialogModal({ title, handleConfirm, isModalOpen, isDelete, closeModal, children, unique }: CustomDialogModalProps) {
+function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, closeModal, children, unique }: CustomDialogModalProps) {
     const { t } = useTranslation();
     return (
         <div>

@@ -9,11 +9,11 @@ import { PageNoData } from "../../../../components/_Global/PageNoData";
 import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
 
 import { useNavigate } from 'react-router-dom';
-import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/discipline_etudiant_slice";
+import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/absence/discipline_etudiant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
 import { apiGetAbsencesWithEtudiantsByFilter } from "../../../../api/discipline/api_discipline";
 import Table from "../../../../components/Tables/TablesDisciplineEtudiants/Table";
-import { setAnneeDisciplineEns } from "../../../../_redux/features/discipline_enseignant_slice";
+import { setAnneeDisciplineEns } from "../../../../_redux/features/absence/discipline_enseignant_slice";
 
 
 // a mdofier les differetns champs + le slice

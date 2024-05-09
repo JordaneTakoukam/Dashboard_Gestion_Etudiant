@@ -10,8 +10,8 @@ import { NotFound, NotFoundIsAuth } from './pages/NotFound/NotFound.js';
 import DashBoardAmin from './pages/Admin/Dashboard_admin.js';
 import DashboardTeacher from './pages/Enseignant/Dashboard_teacher.js';
 import DashBoardStudent from './pages/Etudiant/Dashboard_student.js';
-import { useDispatch, useSelector } from 'react-redux';
-import { config } from './config.js';
+import { useDispatch } from 'react-redux';
+import { config, socket_url } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
@@ -24,7 +24,8 @@ import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from './_r
 import { apiGetAllSettings } from './api/settings/api_data_setting.js';
 import { setSaveDeviceType } from './_redux/features/setting.js';
 import ChoisirCompte from './pages/ChoisirCompte/ChoisirCompte.js';
-import { RootState } from './_redux/store.js';
+import { io } from 'socket.io-client';
+import { addSignalementAbsence } from './_redux/features/absence/signalement_absence.js';
 
 function App() {
 
@@ -72,57 +73,61 @@ function App() {
           const localUser = isAuth.value;
 
           if (localUser) {
-            const { 
-                userId, 
-                roles, 
-                role, 
-                nom, 
-                prenom, 
-                genre, 
-                email, 
-                photo_profil, 
-                contact, 
-                matricule, 
-                date_naiss, 
-                lieu_naiss, 
-                date_entree, 
-                abscences, 
-                niveaux, 
-                grade, 
-                categorie, 
-                fonction, 
-                service, 
-                commune 
+            const {
+              userId,
+              roles,
+              role,
+              nom,
+              prenom,
+              genre,
+              email,
+              photo_profil,
+              contact,
+              matricule,
+              date_naiss,
+              lieu_naiss,
+              date_entree,
+              abscences,
+              niveaux,
+              grade,
+              categorie,
+              fonction,
+              service,
+              commune
             } = localUser;
-        
+
             if (role !== "" && role !== null && role !== undefined) {
-                dispatch(setMinimumUser({
-                  _id: userId,
-                  roles: roles,
-                  role: role,
-                  nom: nom,
-                  prenom: prenom,
-                  genre: genre,
-                  email: email,
-                  photo_profil: photo_profil,
-                  contact: contact,
-                  matricule: matricule,
-                  date_naiss: date_naiss,
-                  lieu_naiss: lieu_naiss,
-                  date_entree: date_entree,
-                  abscence: abscences,
-                  niveaux: niveaux,
-                  grade: grade,
-                  categorie: categorie,
-                  fonction: fonction,
-                  service: service,
-                  commune: commune
-                }));
-        
-                setUserRole(role);
+              dispatch(setMinimumUser({
+                _id: userId,
+                roles: roles,
+                role: role,
+                nom: nom,
+                prenom: prenom,
+                genre: genre,
+                email: email,
+                photo_profil: photo_profil,
+                contact: contact,
+                matricule: matricule,
+                date_naiss: date_naiss,
+                lieu_naiss: lieu_naiss,
+                date_entree: date_entree,
+                abscence: abscences,
+                niveaux: niveaux,
+                grade: grade,
+                categorie: categorie,
+                fonction: fonction,
+                service: service,
+                commune: commune
+              }));
+
+              setUserRole(role);
             }
-        }
-        
+          }
+
+
+
+
+
 
         } else {
           if (isAuth.value != null)
@@ -135,6 +140,26 @@ function App() {
   }, [isAuth]);
 
 
+
+  useEffect(() => {
+
+    if (isAuth) {
+
+      // on lance l'ecoute sur les notification
+
+      // Établit une connexion avec le serveur Socket.io
+      const socket = io(socket_url);
+
+      socket.on('message', (data: { message: SignalementAbsence }) => {
+        dispatch(addSignalementAbsence(data.message));
+      });
+
+      // Nettoie la connexion lorsque le composant est démonté
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [])
   //
   //
   //
@@ -166,7 +191,7 @@ function App() {
     const fetchSettingsDataIfAuth = async () => {
       if (isAuth.status) {
         await fetchSettingsData();
-        
+
       } else {
       }
     };

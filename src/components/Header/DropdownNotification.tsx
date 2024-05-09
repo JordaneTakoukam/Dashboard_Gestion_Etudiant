@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { RootState } from '../../_redux/store';
 
 const DropdownNotification = () => {
+  const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsence.data);
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -41,9 +45,13 @@ const DropdownNotification = () => {
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
         {/* bing rouge */}
-        {/* <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
-          <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
-        </span> */}
+
+        {
+          listAbsenceSignaler.length > 0 &&
+          <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
+            <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+          </span>
+        }
 
         <svg
           className="fill-current duration-300 ease-in-out"
@@ -64,86 +72,72 @@ const DropdownNotification = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute -right-27 mt-2.5 flex h-50 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${dropdownOpen === true ? 'block' : 'hidden'
+        className={`absolute -right-27 mt-2.5 flex overflow-auto min-h-[150px] max-h-[500px] w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${dropdownOpen === true ? 'block' : 'hidden'
           }`}
       >
         <div className="px-4.5 py-3">
           <h5 className="text-sm font-medium text-bodydark2">Notifications</h5>
         </div>
-        {/* 
-        <ul className="flex h-auto flex-col overflow-y-auto">
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  Edit your information in a swipe
-                </span>{' '}
-                Sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim.
-              </p>
 
-              <p className="text-xs">12 May, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  It is a long established fact
-                </span>{' '}
-                that a reader will be distracted by the readable.
-              </p>
 
-              <p className="text-xs">24 Feb, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{' '}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
-              </p>
+        {
+          listAbsenceSignaler.length === 0 ?
+            <p className="text-sm mx-4 mt-8">
+              <span className="text-black dark:text-white">
+                Aucune notifications pour le moment !
+              </span>{' '}
+            </p> :
+            <div>
+              {
+                listAbsenceSignaler.map((e, index) => {
+                  const dateCreation = new Date(e.date_creation);
+                  const formattedDate = `${dateCreation.getDate()}/${dateCreation.getMonth() + 1}/${dateCreation.getFullYear()} ${dateCreation.getHours()}h:${dateCreation.getMinutes()}m`;
 
-              <p className="text-xs">04 Jan, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{' '}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
-              </p>
+                  return (
+                    <li key={index}>
+                      <ul className="flex h-auto flex-col overflow-y-auto">
+                        <li>
+                          <Link
+                            onClick={() => {
+                              setDropdownOpen(false)
+                            }}
+                            className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                            to={e.role === "enseignant" ? "/teachers/absence_reporting" : e.role === "etudiant" ? '/students/absence_reporting' : '#'}
+                          >
+                            <div className='text-sm'>
+                              <div className='flex gap-x-1 line-clamp-1'>
+                                <p className='text-meta-1 opacity-75 underline'>{e.motif}</p>
+                                {' - '}
+                                <span className=" text-black dark:text-white ">
+                                  {`${e.nom} ${e.prenom}`}
+                                </span>
+                              </div>
+                              <p className='line-clamp-1 text-[14px] font-medium'>{e.titre}</p>
+                              <p className='line-clamp-2 text-[13px]'>{e.description}</p>
+                              <p className="text-xs mt-2 items-end">{formattedDate}</p>
 
-              <p className="text-xs">01 Dec, 2024</p>
-            </Link>
-          </li>
-        </ul> */}
+                            </div>
+                            {/* <p className="text-sm">
+                              <p className='text-meta-1 opacity-80'>{e.motif}</p>
+                              <span className="text-black dark:text-white ">
+                                {`${e.nom} ${e.prenom}`}
+                              </span>{' - '}
 
-        <p className="text-sm mx-4 mt-8">
-          <span className="text-black dark:text-white">
-            Aucune notifications pour le moment !
-          </span>{' '}
-        </p>
-      </div>
-    </li>
+                              {e.titre}
+                            </p>  */}
+                          </Link>
+                        </li>
+                      </ul>
+                    </li>
+                  );
+                })
+              }
+
+            </div >
+        }
+
+      </div >
+    </li >
   );
 };
 

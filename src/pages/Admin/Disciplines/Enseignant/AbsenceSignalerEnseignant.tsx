@@ -1,35 +1,28 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../_redux/store";
-import { setShowModal } from "../../../../_redux/features/setting";
 import Breadcrumb from "../../../../components/Breadcrumb";
 import LoadingTable from "../../../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
+import TableSignalementAbsence from "../../../../components/Tables/TablesDisciplineEnseignants/Table_signalement_absence";
+import { r_enseig } from "../../../../config";
 
 
 
 const AbsenceSignalerEnseignant = () => {
+
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
-    const [selectedSection, setSelectedSection] = useState<CommonSettingProps | null>(null);
-    const handleEditSection = (section: CommonSettingProps) => {
-        setSelectedSection(section);
-    }
-    const sections = [];
-    const handleAddSection = () => {
-        setSelectedSection(null);
-    }
+    const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsence.data);
+
+    const listAbsenceSignalerEnseignant = listAbsenceSignaler.filter((e) => e.role === r_enseig);
 
 
-    const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
-    const handleCreate = () => {
-        handleAddSection();
-        dispatch(setShowModal())
-    }
+    const pageIsLoading = useSelector((state: RootState) => state.signalementAbsence.pageIsLoading);
+    const pageError = useSelector((state: RootState) => state.signalementAbsence.pageError);
+
+
     const handleRefresh = async () => {
         // dispatch(setLoadingDataSetting(true));
         // try {
@@ -40,6 +33,9 @@ const AbsenceSignalerEnseignant = () => {
         // } catch (error) { dispatch(setErrorDataSetting('une erreur est survenue')) }
         // finally { dispatch(setLoadingDataSetting(false)); }
     }
+
+
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.absence_reporting')} />
@@ -49,22 +45,18 @@ const AbsenceSignalerEnseignant = () => {
                     <LoadingTable /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
-                        sections.length === 0 ?
+                        listAbsenceSignaler.length === 0 ?
                             <PageNoData
                                 afficherBoutonCreer={false}
                                 titrePage={t('aucun.absence_signaler')}
-                                showModalCreate={handleCreate}
+                                showModalCreate={() => { }}
                                 refreshFunction={handleRefresh} />
-                            : <div>DATA</div>
-                // <Table
-                //     data={sections}
-                //     onCreate={handleAddSection}
-                //     onEdit={handleEditSection} />
+                            : <div>
+                                <TableSignalementAbsence listData={listAbsenceSignalerEnseignant} type="enseignant" />
 
+                            </div>
             }
 
-            {/* <FormCreateUpdate section={selectedSection} />
-            <FormDelete section={selectedSection} /> */}
 
         </>
     );

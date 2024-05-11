@@ -12,7 +12,7 @@ import { RootState } from "../../_redux/store";
 
 interface ChapitresProps {
     matiereSelectionnee?: MatiereType | null; 
-    onEditMatiere: (matiere : MatiereType) => void;
+    onEditMatiere?: (matiere : MatiereType) => void;
     returnWithMatiere?:()=>void;
     
 }

@@ -1,6 +1,4 @@
 import { useDispatch, useSelector } from "react-redux"
-import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalChapitre, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { useEffect, useState } from "react"
@@ -60,10 +58,16 @@ const BodyTable = ({ data}: BodyPeriodeEnseignementProps) => {
                 </tr>
                 <tr>
                     <td className="text-center">{periode.nombreSeance}</td>
+                    <td className="text-center">{periode.nbSeancesPratiquees}</td>
+                    <td className="text-center">{periode.nombreSeance-periode.nbSeancesPratiquees}</td>
+                    <td className="text-center">{(periode.nbSeancesPratiquees/(periode.nombreSeance) * 100).toFixed(2)}%</td>
+                </tr>
+                {/* <tr>
+                    <td className="text-center">{periode.nombreSeance}</td>
                     <td className="text-center">{calculateSeancesEffectuees(periode, periodes)}</td>
                     <td className="text-center">{periode.nombreSeance-calculateSeancesEffectuees(periode, periodes)}</td>
                     <td className="text-center">{(calculateSeancesEffectuees(periode, periodes)/(periode.nombreSeance) * 100).toFixed(2)}%</td>
-                </tr>
+                </tr> */}
             </React.Fragment>
         ))}
     </tbody>

@@ -15,7 +15,7 @@ interface TableChapitreProps {
     onCreate:()=>void;
     onEdit: (chapitre:ChapitreType) => void;
     onAddObj:(chapitre : ChapitreType)=>void;
-    onEditMatiere: (matiere : MatiereType) => void;
+    onEditMatiere?: (matiere : MatiereType) => void;
     matiere?: MatiereType | null;
 }
 
@@ -56,7 +56,7 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: Tab
     useEffect(() => {
         console.log(matieres)
         const mat = matieres.find(m=>m._id===matiere?._id);
-        if(mat){
+        if(mat && onEditMatiere){
             onEditMatiere(mat)
         }
         setFilteredData(mat?.chapitres);

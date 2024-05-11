@@ -38,7 +38,7 @@ const ProgressionMatiere = () => {
                     console.log(fetchedPeriodeEnseignements);
                     if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
                         dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
-                        console.log(periodes);
+                        // console.log(periodes);
                         
                     } else {
                         dispatch(setPeriodeEnseignements(emptyPeriodes));

@@ -112,7 +112,8 @@ export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { n
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const matieres: ProgressionPeriodeEnseignementReturnGetType = response.data.data;        
+        const matieres: ProgressionPeriodeEnseignementReturnGetType = response.data.data;   
+        console.log(matieres);
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);

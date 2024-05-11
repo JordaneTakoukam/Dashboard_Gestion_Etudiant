@@ -1,9 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
-import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
@@ -147,7 +143,9 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                 ...(periode?.enseignements || []).flatMap(enseignement => [
                     [enseignement.matiere.code+":"+(lang==='fr'?enseignement.matiere.libelleFr:enseignement.matiere.libelleEn)],
                     [t('label.nb_seance_periode'), t('label.nb_seance_pratique'), t('label.gap'), t('label.taux_presence')],
-                    [enseignement.nombreSeance, calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), enseignement.nombreSeance - calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), `${(( calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes)/ enseignement.nombreSeance) * 100).toFixed(2)}%`]
+                    [enseignement.nombreSeance, enseignement.nbSeancesPratiquees, enseignement.nombreSeance - enseignement.nbSeancesPratiquees, `${(( enseignement.nbSeancesPratiquees/ enseignement.nombreSeance) * 100).toFixed(2)}%`]
+                    // [enseignement.nombreSeance, calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), enseignement.nombreSeance - calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), `${(( calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes)/ enseignement.nombreSeance) * 100).toFixed(2)}%`]
+                    
                 ])
             ]);
           

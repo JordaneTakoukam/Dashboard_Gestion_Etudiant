@@ -117,7 +117,8 @@ function App() {
                 categorie: categorie,
                 fonction: fonction,
                 service: service,
-                commune: commune
+                commune: commune,
+                absences: []
               }));
 
               setUserRole(role);
@@ -148,16 +149,16 @@ function App() {
       // on lance l'ecoute sur les notification
 
       // Établit une connexion avec le serveur Socket.io
-      const socket = io(socket_url);
+      // const socket = io(socket_url);
 
-      socket.on('message', (data: { message: SignalementAbsence }) => {
-        dispatch(addSignalementAbsence(data.message));
-      });
+      // socket.on('message', (data: { message: SignalementAbsence }) => {
+      //   dispatch(addSignalementAbsence(data.message));
+      // });
 
       // Nettoie la connexion lorsque le composant est démonté
-      return () => {
-        socket.disconnect();
-      };
+      // return () => {
+      //   socket.disconnect();
+      // };
     }
   }, [])
   //

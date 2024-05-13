@@ -6,8 +6,7 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { apiCreateChapitre, apiUpdateChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
-import { createChapitre, updateChapitre } from '../../../_redux/features/chapitre_slice';
-import { updateChapitres, updateMatiere } from '../../../_redux/features/matiere_slice';
+import { ajouterChapitre, modifierChapitre } from '../../../_redux/features/matiere_slice';
 
 
 
@@ -167,64 +166,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                       
-                        dispatch(createChapitre({
-                            chapitre: {
-                                _id: e.data._id,
-                                code: e.data.code, 
-                                libelleFr: e.data.libelleFr, 
-                                libelleEn: e.data.libelleEn, 
-                                typesEnseignement:e.data.typesEnseignement, 
-                                matiere:e.data.matiere, 
-                                objectifs:e.data.objectifs,
-                            }
-                        }));
-
-                        const chapitre= {
-                            _id: e.data._id,
-                            code: e.data.code, 
-                            libelleFr: e.data.libelleFr, 
-                            libelleEn: e.data.libelleEn, 
-                            typesEnseignement:e.data.typesEnseignement, 
-                            matiere:e.data.matiere, 
-                            objectifs:e.data.objectifs,
-                        }
-                        
-                        if(matiere && matiere._id){
-                            var newChapitres:ChapitreType[] = [];
-                            for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
-                                const chapitre = matiere.chapitres[i];
-                                newChapitres.push(chapitre)
-                            }
-                            newChapitres.push(chapitre);
-                            dispatch(updateChapitres({
-                                id: matiere._id,
-                                chapitresData:newChapitres
-                            }));
-                            // dispatch(
-                            //     updateMatiere({
-                            //         id: matiere._id,
-                            //         matiereData: {
-                            //             _id: matiere._id,
-                            //             code:matiere.code,
-                            //             libelleFr:matiere.libelleFr,
-                            //             libelleEn:matiere.libelleEn,
-                            //             niveau:matiere.niveau, 
-                            //             prerequisFr:matiere.prerequisFr, 
-                            //             prerequisEn:matiere.prerequisEn, 
-                            //             approchePedFr:matiere.approchePedFr, 
-                            //             approchePedEn:matiere.approchePedEn, 
-                            //             evaluationAcquisFr:matiere.evaluationAcquisFr, 
-                            //             evaluationAcquisEn:matiere.evaluationAcquisEn,
-                            //             typesEnseignement:matiere.typesEnseignement,
-                            //             chapitres:newChapitres,
-    
-                            //         }
-                            //     }));
-                        }
-                        
-                        
+                        dispatch(ajouterChapitre({...e.data}))
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);    
                         closeModal();
 
                     } else {
@@ -250,49 +193,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
+                        dispatch(modifierChapitre({...e.data}))
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(
-                            updateChapitre({
-                                id: e.data._id,
-                                chapitreData: {
-                                    _id: e.data._id,
-                                    code: e.data.code, 
-                                    libelleFr: e.data.libelleFr, 
-                                    libelleEn: e.data.libelleEn, 
-                                    typesEnseignement:e.data.typesEnseignement, 
-                                    matiere:e.data.matiere, 
-                                    objectifs:e.data.objectifs,
-                                }
-                            }));
-                            const chapitre= {
-                                _id: e.data._id,
-                                code: e.data.code, 
-                                libelleFr: e.data.libelleFr, 
-                                libelleEn: e.data.libelleEn, 
-                                typesEnseignement:e.data.typesEnseignement, 
-                                matiere:e.data.matiere, 
-                                objectifs:e.data.objectifs,
-                            }
-                            
-                            if(matiere && matiere._id){
-                                const newChapitres:ChapitreType[] = [];
-                                
-                                for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
-                                    const chap = matiere.chapitres[i];
-                                    // if(chapitre._id!==chap._id){
-                                    newChapitres.push(chap)
-                                    // }
-                                }
-                                const index = newChapitres.findIndex(e => e._id === chapitre._id);
-                                if (index !== -1) {
-                                    newChapitres[index]=chapitre;
-                                }
-                                dispatch(updateChapitres({
-                                    id: matiere._id,
-                                    chapitresData:newChapitres
-                                }));
-                                
-                            }
                         closeModal();
                     } else {
                         createToast(e.message[lang as keyof typeof e.message], '', 2);

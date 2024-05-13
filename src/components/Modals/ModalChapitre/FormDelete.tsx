@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { apiDeleteChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
 import { deleteChapitre } from '../../../_redux/features/chapitre_slice';
-import { updateChapitres, updateMatiere } from '../../../_redux/features/matiere_slice';
+import { retirerChapitre, updateChapitres } from '../../../_redux/features/matiere_slice';
 
 
 
@@ -21,28 +21,10 @@ function ModalDelete({ chapitre, matiere }: { chapitre : ChapitreType|null, mati
         if(chapitre && chapitre._id){
             await apiDeleteChapitre(chapitre._id).then((e: ReponseApiPros) => {
                 if (e.success) {
-                    createToast(e.message[lang as keyof typeof e.message], '', 0);
-    
-                    if (chapitre._id) {
-                        dispatch(deleteChapitre({ id: chapitre._id }));
-                        if(matiere && matiere._id){
-                            var newChapitres:ChapitreType[] = [];
-                            for (let i = 0; matiere.chapitres && i < matiere.chapitres.length; i++) {
-                                
-                                const chap = matiere.chapitres[i];
-                                if(chap._id !== chapitre._id){
-                                    newChapitres.push(chap)
-                                }
-                                
-                            }
-    
-                            dispatch(updateChapitres({
-                                id: matiere._id,
-                                chapitresData:newChapitres
-                            }));
-                        }
+                    if(chapitre._id){
+                        dispatch(retirerChapitre({chapitreId:chapitre._id}))
                     }
-    
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();
                 } else {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);

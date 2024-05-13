@@ -3,7 +3,7 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import { updatePeriodeEnseignement } from '../../../_redux/features/periode_enseignement_slice';
+import { retirerEnseignement } from '../../../_redux/features/periode_enseignement_slice';
 import { apiUpdatePeriodeEnseignement } from '../../../api/api_periode_enseignement';
 import createToast from '../../../hooks/toastify';
 
@@ -42,22 +42,25 @@ function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : Mat
                 }
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
+                    if(enseignement && enseignement._id){
+                        dispatch(retirerEnseignement({enseignementId:enseignement._id}))
+                    }
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
-                    dispatch(
-                        updatePeriodeEnseignement({
-                            id: e.data._id,
-                            periodeData: {
-                                _id: e.data._id,
-                                annee: e.data.annee,
-                                semestre: e.data.semestre,
-                                niveau: e.data.niveau,
-                                periodeFr: e.data.periodeFr,
-                                periodeEn: e.data.periodeEn,
-                                dateDebut: e.data.dateDebut,
-                                dateFin: e.data.dateFin,
-                                enseignements: newEnseignements
-                            }
-                        }));
+                    // dispatch(
+                    //     updatePeriodeEnseignement({
+                    //         id: e.data._id,
+                    //         periodeData: {
+                    //             _id: e.data._id,
+                    //             annee: e.data.annee,
+                    //             semestre: e.data.semestre,
+                    //             niveau: e.data.niveau,
+                    //             periodeFr: e.data.periodeFr,
+                    //             periodeEn: e.data.periodeEn,
+                    //             dateDebut: e.data.dateDebut,
+                    //             dateFin: e.data.dateFin,
+                    //             enseignements: newEnseignements
+                    //         }
+                    //     }));
                     closeModal();
                 } else {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);

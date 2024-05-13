@@ -7,10 +7,9 @@ import { useTranslation } from "react-i18next";
 interface BodyChapitreProps {
     data: ChapitreType[] | undefined;
     onEdit: (chapitre: ChapitreType) => void;
-    onAddObj: (chapitre: ChapitreType) => void;
 }
 
-const BodyTable = ({ data, onEdit, onAddObj }: BodyChapitreProps) => {
+const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const {t}=useTranslation();

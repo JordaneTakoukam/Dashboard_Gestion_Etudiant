@@ -68,27 +68,76 @@ const matiereSlice = createSlice({
             state.data.matieres = state.data.matieres.filter(e => e._id !== id);
         },
 
+        //Gérer les chapitres de la matière
+        ajouterChapitre(state, action: PayloadAction<ChapitreType>) {
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.chapitres) {
+                matiere.chapitres.unshift(action.payload);
+            }
+        },
+        modifierChapitre(state, action: PayloadAction<ChapitreType>) {
+            
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.chapitres) {
+                matiere.chapitres = matiere.chapitres.filter(chapitre => chapitre._id !== action.payload._id);
+                matiere.chapitres.unshift(action.payload);
+            }
+        },
+        
+        retirerChapitre(state, action: PayloadAction<{ chapitreId: string }>) {
+            const { chapitreId} = action.payload;
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.chapitres) {
+                matiere.chapitres = matiere.chapitres.filter(chapitre => chapitre._id !== chapitreId);
+            }
+        },
+
+        //Gérer les objectifs de la matière
         ajouterObjectif(state, action: PayloadAction<ObjectifType>) {
-            // Ajoute l'absence à la liste des absences de l'enseignant sélectionné
             const matiere = state.selectedMatiere;
             if (matiere && matiere.objectifs) {
                 matiere.objectifs.unshift(action.payload);
             }
         },
         modifierObjectif(state, action: PayloadAction<ObjectifType>) {
-            // modifier un objectif
             const matiere = state.selectedMatiere;
             if (matiere && matiere.objectifs) {
                 matiere.objectifs = matiere.objectifs.filter(objectif => objectif._id !== action.payload._id);
                 matiere.objectifs.unshift(action.payload);
             }
         },
-        // Add an action to remove absence for an enseignant by ID
+        
         retirerObjectif(state, action: PayloadAction<{ objectifId: string }>) {
             const { objectifId} = action.payload;
             const matiere = state.selectedMatiere;
             if (matiere && matiere.objectifs) {
                 matiere.objectifs = matiere.objectifs.filter(objectif => objectif._id !== objectifId);
+            }
+        },
+
+        //Gérer les enseignements de la matières
+        ajouterEnseignement(state, action: PayloadAction<EnseignementType>) {
+            
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.typesEnseignement) {
+                matiere.typesEnseignement.unshift(action.payload);
+            }
+        },
+        modifierEnseignement(state, action: PayloadAction<MatiereType>) {
+            // modifier un enseignement
+            // const matiere = state.selectedMatiere;
+            // if (matiere && matiere.typesEnseignement) {
+            //     matiere.typesEnseignement = matiere.typesEnseignement.filter(enseignement => enseignement._id !== action.payload._id);
+            //     matiere.typesEnseignement.unshift(action.payload);
+            // }
+            state.selectedMatiere = action.payload;
+        },
+        
+        retirerEnseignement(state, action: PayloadAction<{ enseignementId: string }>) {
+            const { enseignementId} = action.payload;
+            const matiere = state.selectedMatiere;
+            if (matiere && matiere.typesEnseignement) {
+                matiere.typesEnseignement = matiere.typesEnseignement.filter(enseignement => enseignement._id !== enseignementId);
             }
         }
     },
@@ -105,9 +154,15 @@ export const {
     deleteMatiere,
     updateChapitres,
     updateEnseignements,
+    ajouterChapitre,
+    modifierChapitre,
+    retirerChapitre,
     ajouterObjectif,
     modifierObjectif,
-    retirerObjectif
+    retirerObjectif,
+    ajouterEnseignement,
+    modifierEnseignement,
+    retirerEnseignement
 } = matiereSlice.actions;
 
 // Reducer exporté

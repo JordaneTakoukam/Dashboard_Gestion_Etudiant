@@ -42,9 +42,7 @@ const ListeDesPeriodesEnseignement = () => {
                     const fetchedPeriodeEnseignements = await getPeriodesEnseignementWithPagination({ niveauId: currentNiveauId, page: 1, annee:currentYear, semestre:currentSemester });
                     console.log(fetchedPeriodeEnseignements);
                     if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
-                        dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
-                        console.log(periodes);
-                        
+                        dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));                        
                     } else {
                         dispatch(setPeriodeEnseignements(emptyPeriodes));
                     }
@@ -61,32 +59,22 @@ const ListeDesPeriodesEnseignement = () => {
     }, [currentNiveauId, dispatch, t]);
 
 
-    const handleEditSection = (periodeEnseignement: PeriodeEnseignementType) => {
-        setSelectedPeriodeEnseignement(periodeEnseignement);
-    }
 
     const handleEditPeriodeEnseignement = (periodeEnseignement : PeriodeEnseignementType) => {
         setSelectedPeriodeEnseignement(periodeEnseignement);
-        // setOpenEnseignement(false);
     }
 
     const handleAddPeriodeEnseignement = () => {
         setSelectedPeriodeEnseignement(null);
-        dispatch(setShowModalPeriode(false));
     }
 
-    const handleOpenEnseignementsPeriode = (periodeEnseignement: PeriodeEnseignementType) => {
-        setSelectedPeriodeEnseignement(periodeEnseignement);
-        // setOpenEnseignement(true);
-    };
     return (
         <>
-            {!openEnseignementsPeriode && <Breadcrumb pageName={t('sub_menu.periodes_enseignement')}/>}
-            {!openEnseignementsPeriode && <Table data={periodes} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement} onAddEnseignement={handleOpenEnseignementsPeriode}/>}
+            <Breadcrumb pageName={t('sub_menu.periodes_enseignement')}/>
+            <Table data={periodes} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement}/>
             
-            {!openEnseignementsPeriode && <FormCreateUpdate periodeEnseignement={selectedPeriodeEnseignement}/>}
-            {!openEnseignementsPeriode && <FormDelete periodeEnseignement={selectedPeriodeEnseignement}/>}
-            {openEnseignementsPeriode && <EnseignementsPeriode periodeSelectionnee={selectedPeriodeEnseignement} returnWithPeriodeEnseignement={handleAddPeriodeEnseignement} onEditPeriode={handleEditPeriodeEnseignement}/>}
+            <FormCreateUpdate periodeEnseignement={selectedPeriodeEnseignement}/>
+            <FormDelete periodeEnseignement={selectedPeriodeEnseignement}/>
         </>
     );
 };

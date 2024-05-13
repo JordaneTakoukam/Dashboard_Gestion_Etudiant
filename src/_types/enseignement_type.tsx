@@ -10,7 +10,7 @@ interface EnseignementType {
 interface MatiereEnseignement {
     _id?: string;
     matiere:MatiereType;
-    typeEnseignement:string;
+    // typeEnseignement:string;
     nombreSeance:number;
     nbSeancesPratiquees:number;
 }

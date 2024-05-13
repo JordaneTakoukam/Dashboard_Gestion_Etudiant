@@ -3,10 +3,10 @@ import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store";
 
-const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (chapitre: MatiereEnseignement) => void }) => {
+const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (enseignement: MatiereEnseignement) => void }) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
-    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
+    // const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
 
     return <tbody>
         {data?.map((item, index) => (
@@ -18,16 +18,16 @@ const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (ch
 
                 {/* matricule */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{item.matiere.code}</h5>
+                    <h5>{item.matiere?item.matiere.code:""}</h5>
                 </td>
 
                 {/* libelle */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
-                    <h5>{lang === 'fr' ? item.matiere.libelleFr : item.matiere.libelleEn}</h5>
+                    <h5>{item.matiere?lang === 'fr' ? item.matiere.libelleFr : item.matiere.libelleEn:""}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
+                {/* <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
                     <h5>{typesEnseignement.find(type=>type._id===item.typeEnseignement)?.code}</h5>
-                </td>
+                </td> */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.nombreSeance}</h5>
                 </td>

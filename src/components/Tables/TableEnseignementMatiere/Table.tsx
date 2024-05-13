@@ -14,12 +14,10 @@ interface TableEnseignementProps {
     data?: EnseignementType[];
     onCreate:()=>void;
     onEdit: (enseignement:EnseignementType) => void;
-    onEditMatiere: (matiere : MatiereType) => void;
-    matiere?: MatiereType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseignementProps) => {
+const Table = ({ data, onCreate, onEdit }: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -30,6 +28,7 @@ const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseigne
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -51,18 +50,18 @@ const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseigne
     //     }
     //    return [];
     // };
-    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
-    useEffect(() => {
-        console.log(matieres)
-        const mat = matieres.find(m=>m._id===matiere?._id);
-        if(mat){
-            onEditMatiere(mat)
-        }
-        setFilteredData(mat?.typesEnseignement);
-    },[matieres]);
-    useEffect(() => {
-        setFilteredData(data);
-    }, [dispatch]);
+    // const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    // useEffect(() => {
+    //     console.log(matieres)
+    //     const mat = matieres.find(m=>m._id===matiere?._id);
+    //     if(mat){
+    //         onEditMatiere(mat)
+    //     }
+    //     setFilteredData(mat?.typesEnseignement);
+    // },[matieres]);
+    // useEffect(() => {
+    //     setFilteredData(data);
+    // }, [dispatch]);
 
     return (
         <div>
@@ -80,8 +79,8 @@ const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseigne
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
-                {matiere && (<div>
-                    {matiere.code}:{lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}
+                {selectedMatiere && (<div>
+                    {selectedMatiere.code}:{lang === 'fr' ? selectedMatiere.libelleFr : selectedMatiere.libelleEn}
                 </div>)}
 
                 {/* DEBUT DU TABLE */}
@@ -91,7 +90,7 @@ const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseigne
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : filteredData?.length === 0 ?
+                                : data?.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -99,7 +98,7 @@ const Table = ({ data, onCreate, onEdit, matiere, onEditMatiere }: TableEnseigne
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit}/>
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
                         }
 
 

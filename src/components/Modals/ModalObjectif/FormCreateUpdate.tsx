@@ -6,7 +6,7 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { apiCreateObjectif, apiUpdateObjectif } from '../../../api/api_objectif';
-import { ajouterObjectif, modifierObjectif, retirerObjectif, updateMatiere } from '../../../_redux/features/matiere_slice';
+import { ajouterObjectif, modifierObjectif } from '../../../_redux/features/matiere_slice';
 
 
 

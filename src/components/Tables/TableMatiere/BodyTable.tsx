@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalChapitre, setShowModalDelete, setShowModalEnseignement } from "../../../_redux/features/setting"
+import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import { useState } from "react"
@@ -12,18 +12,13 @@ import { setMatiereSelected } from "../../../_redux/features/matiere_slice"
 interface BodyMatiereProps {
     data: MatiereType[];
     onEdit: (matiere: MatiereType) => void;
-    onAddChap: (matiere: MatiereType) => void;
-    onAddEnseignement:(matiere : MatiereType)=>void;
 }
 
-const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatiereProps) => {
+const BodyTable = ({ data, onEdit }: BodyMatiereProps) => {
     // const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
-    const handleAddChapitre = (matiere: MatiereType) => {
-        onAddChap(matiere); // Appeler la fonction onAddChap avec la matière sélectionnée
-        navigate("save/chapitres"); // Rediriger vers l'interface d'ajout de chapitres
-    };
+    
     const {t}=useTranslation();
     // const onMoreActionsClick = (actionName: string) => {
     //     switch (actionName) {
@@ -88,27 +83,27 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
                 {/* index */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 pl-4 md:pl-5 lg:pl-6 xl:pl-5 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
+                <td className="border-b border-[#eee] py-0  pl-4 md:pl-5 lg:pl-6 xl:pl-5 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
                     <h5 className="">{index + 1}</h5>
                 </td>
 
                 {/* code */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                <td className="border-b border-[#eee] py-0  px-4 dark:border-strokedark hidden md:table-cell">
                     <h5>{item.code}</h5>
                 </td>
 
                 {/* libelle */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+                <td className="border-b border-[#eee] py-0  px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5> {lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
 
                 {/* nombre de chapitre */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-0  px-4 dark:border-strokedark">
                     <h5>{nombreDeChapitres(item)}</h5>
                 </td>
 
                 {/* volume horaire */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
+                <td className="border-b border-[#eee] py-0  px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
                     <h5>{volumeHoraireGlobal(item)}</h5>
                 </td>
 
@@ -118,7 +113,7 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
                         listPage={[
                             {
                                 "name": t('label.chapitres'),
-                                "handleClick": () => { onAddChap(item);dispatch(setShowModalChapitre(true)) }
+                                "handleClick": () => { dispatch(setMatiereSelected(item));navigate('/subjects/chapitres/manage') }
                             },
                             {
                                 "name": t('label.objectifs'),
@@ -126,7 +121,7 @@ const BodyTable = ({ data, onEdit, onAddChap, onAddEnseignement }: BodyMatierePr
                             },
                             {
                                 "name": t('label.enseignements'),
-                                "handleClick": () => {onAddEnseignement(item); dispatch(setShowModalEnseignement(true))}
+                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/enseignements/manage')}
                             }
                         ]}
                     />

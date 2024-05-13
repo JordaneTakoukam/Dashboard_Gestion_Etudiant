@@ -1,27 +1,22 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableMatiere/Table";
-import { Niveau } from "./Niveaux";
 import FormDelete from "../../components/Modals/ModalMatiere/FormDelete";
 import FormCreateUpdate from "../../components/Modals/ModalMatiere/FormCreateUpdate";
-import Chapitres from "./Chapitres";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { getMatieresByEnseignantNiveau, getMatieresByNiveauWithPagination } from "../../api/api_matiere";
 import createToast from "../../hooks/toastify";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../_redux/features/matiere_slice";
-import Enseignements from "./Enseignements";
 import { config } from "../../config";
-import { setShowModalChapitre, setShowModalEnseignement } from "../../_redux/features/setting";
 
 const ListeDesMatieres = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     // const [openChapitres, setOpenChapitre] = useState(false);
     // const [openEnseignements, setOpenEnseignements] = useState(false);
-    const openChapitres = useSelector((state: RootState) => state.setting.showModal.openChapitre);
-    const openEnseignements = useSelector((state: RootState) => state.setting.showModal.openEnseignement);
+    
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType | null>(null);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
@@ -81,43 +76,23 @@ const ListeDesMatieres = () => {
         fetchMatieres();
     }, [dispatch, t, niveauxEns]);
 
-    const handleEditSection = (matiere: MatiereType) => {
-        setSelectedMatiere(matiere);
-    }
 
     const handleEditMatiere = (matiere: MatiereType) => {
         setSelectedMatiere(matiere);
-        // setOpenChapitre(false);
-        // setOpenEnseignements(false);
     }
 
     const handleAddMatiere = () => {
         setSelectedMatiere(null);
-        dispatch(setShowModalChapitre(false));
-        dispatch(setShowModalEnseignement(false));
     }
 
-    const handleOpenChapitres = (matiere: MatiereType) => {
-        setSelectedMatiere(matiere);
-        // setOpenChapitre(true);
-        // setOpenEnseignements(false);
-        
-    };
-
-    const handleOpenEnseignement = (matiere: MatiereType) => {
-        setSelectedMatiere(matiere);
-        // setOpenEnseignements(true);
-        // setOpenChapitre(false);
-    };
+    
     return (
         <>
-            {!openChapitres && !openEnseignements && <Breadcrumb pageName={t('sub_menu.liste_matiere')} />}
-            {!openChapitres && !openEnseignements && <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} onAddChap={handleOpenChapitres} onAddEnseignement={handleOpenEnseignement} />}
+            <Breadcrumb pageName={t('sub_menu.liste_matiere')} />
+            <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} />
 
-            {!openChapitres && !openEnseignements && <FormCreateUpdate matiere={selectedMatiere} />}
-            {!openChapitres && !openEnseignements && <FormDelete matiere={selectedMatiere} />}
-            {openChapitres && !openEnseignements && <Chapitres matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} onEditMatiere={handleEditMatiere}/>}
-            {openEnseignements && !openChapitres && <Enseignements matiereSelectionnee={selectedMatiere} returnWithMatiere={handleAddMatiere} onEditMatiere={handleEditMatiere}/>}
+            <FormCreateUpdate matiere={selectedMatiere} />
+            <FormDelete matiere={selectedMatiere} />
         </>
     );
 };

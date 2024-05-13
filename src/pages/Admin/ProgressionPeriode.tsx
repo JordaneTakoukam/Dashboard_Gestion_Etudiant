@@ -35,7 +35,7 @@ const ProgressionMatiere = () => {
                 } ;
                 if (currentNiveauId) {
                     const fetchedPeriodeEnseignements = await getPeriodesEnseignement({ niveauId: currentNiveauId, annee:currentYear, semestre:currentSemester });
-                    console.log(fetchedPeriodeEnseignements);
+                    // console.log(fetchedPeriodeEnseignements);
                     if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
                         dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));
                         // console.log(periodes);

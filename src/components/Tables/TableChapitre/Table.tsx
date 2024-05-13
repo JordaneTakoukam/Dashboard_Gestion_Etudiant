@@ -14,13 +14,10 @@ interface TableChapitreProps {
     data?: ChapitreType[];
     onCreate:()=>void;
     onEdit: (chapitre:ChapitreType) => void;
-    onAddObj:(chapitre : ChapitreType)=>void;
-    onEditMatiere?: (matiere : MatiereType) => void;
-    matiere?: MatiereType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: TableChapitreProps) => {
+const Table = ({ data, onCreate, onEdit}: TableChapitreProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -31,6 +28,7 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: Tab
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -52,15 +50,15 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: Tab
         }
        return [];
     };
-    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
-    useEffect(() => {
-        console.log(matieres)
-        const mat = matieres.find(m=>m._id===matiere?._id);
-        if(mat && onEditMatiere){
-            onEditMatiere(mat)
-        }
-        setFilteredData(mat?.chapitres);
-    },[matieres]);
+    // const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
+    // useEffect(() => {
+    //     console.log(matieres)
+    //     const mat = matieres.find(m=>m._id===matiere?._id);
+    //     if(mat && onEditMatiere){
+    //         onEditMatiere(mat)
+    //     }
+    //     setFilteredData(mat?.chapitres);
+    // },[matieres]);
 
     useEffect(() => {
         const result = filterChapitreByContent(data);
@@ -83,8 +81,8 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: Tab
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
-                {matiere && (<div>
-                    {matiere.code}:{lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}
+                {selectedMatiere && (<div>
+                    {selectedMatiere.code}:{lang === 'fr' ? selectedMatiere.libelleFr : selectedMatiere.libelleEn}
                 </div>)}
 
                 {/* DEBUT DU TABLE */}
@@ -96,13 +94,13 @@ const Table = ({ data, onCreate, onEdit, onAddObj, matiere, onEditMatiere }: Tab
                                 <LoadingTable />
                                 : filteredData?.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTable matiere={matiere}/>
+                                    <HeaderTable matiere={selectedMatiere}/>
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddObj={onAddObj}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit}/>
                         }
 
 

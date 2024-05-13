@@ -14,12 +14,10 @@ interface TableEnseignementProps {
     data?: MatiereEnseignement[];
     onCreate:()=>void;
     onEdit: (enseignement:MatiereEnseignement) => void;
-    onEditPeriode: (periodeEnseignement : PeriodeEnseignementType) => void;
-    periodeEnseignement?: PeriodeEnseignementType | null;
 }
 
 
-const Table = ({ data, onCreate, onEdit, periodeEnseignement, onEditPeriode}: TableEnseignementProps) => {
+const Table = ({ data, onCreate, onEdit}: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
@@ -30,6 +28,7 @@ const Table = ({ data, onCreate, onEdit, periodeEnseignement, onEditPeriode}: Ta
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const selectedPeriode = useSelector((state: RootState) => state.periodeEnseignementSlice.selectedPeriode);
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -53,14 +52,14 @@ const Table = ({ data, onCreate, onEdit, periodeEnseignement, onEditPeriode}: Ta
        return [];
     };
 
-    const { data: { periodes } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
-    useEffect(() => {
-        const per = periodes.find(p=>p._id===periodeEnseignement?._id);
-        if(per){
-            onEditPeriode(per)
-        }
-        setFilteredData(per?.enseignements);
-    },[periodes]);
+    // const { data: { periodes } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
+    // useEffect(() => {
+    //     const per = periodes.find(p=>p._id===periodeEnseignement?._id);
+    //     if(per){
+    //         onEditPeriode(per)
+    //     }
+    //     setFilteredData(per?.enseignements);
+    // },[periodes]);
 
     useEffect(() => {
         const result = filterEnseignementByContent(data);
@@ -83,8 +82,8 @@ const Table = ({ data, onCreate, onEdit, periodeEnseignement, onEditPeriode}: Ta
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
-                {periodeEnseignement && (<div>
-                    {lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn}
+                {selectedPeriode && (<div>
+                    {lang === 'fr' ? selectedPeriode.periodeFr : selectedPeriode.periodeEn}
                 </div>)}
 
                 {/* DEBUT DU TABLE */}

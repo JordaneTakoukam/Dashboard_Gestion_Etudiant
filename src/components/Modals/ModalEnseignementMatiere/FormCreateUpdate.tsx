@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { setEnseignantsLoading, setEnseignant, setErrorPageEnseignant } from '../../../_redux/features/enseignant_slice';
 import { apiGetEnseignantsByNomPrenom } from '../../../api/other_users/api_enseignant';
 import createToast from '../../../hooks/toastify';
-import { updateMatiere } from '../../../_redux/features/matiere_slice';
+import { ajouterEnseignement, modifierEnseignement } from '../../../_redux/features/matiere_slice';
 import { apiUpdateMatiere } from '../../../api/api_matiere';
 
 
@@ -140,31 +140,19 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
                     evaluationAcquisEn:matiere.evaluationAcquisEn,
                     typesEnseignement:newEnseignements,
                     chapitres:matiere.chapitres,
+                    objectifs:matiere.objectifs,
                     _id:matiere._id,
                 }
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
+                    console.log(e.data)
+                    // if(!enseignement){
+                    //     dispatch(ajouterEnseignement({...e.data}))
+                    // }else{
+                    dispatch(modifierEnseignement({...e.data}))
+                    // }
+                    
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
-                    dispatch(
-                        updateMatiere({
-                            id: e.data._id,
-                            matiereData: {
-                                _id: e.data._id,
-                                code:e.data.code,
-                                libelleFr:e.data.libelleFr,
-                                libelleEn:e.data.libelleEn,
-                                niveau:e.data.niveau, 
-                                prerequisFr:e.data.prerequisFr, 
-                                prerequisEn:e.data.prerequisEn, 
-                                approchePedFr:e.data.approchePedFr, 
-                                approchePedEn:e.data.approchePedEn, 
-                                evaluationAcquisFr:e.data.evaluationAcquisFr, 
-                                evaluationAcquisEn:e.data.evaluationAcquisEn,
-                                typesEnseignement:newEnseignements,
-                                chapitres:matiere.chapitres,
-
-                            }
-                        }));
                     closeModal();
                 } else {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);
@@ -213,16 +201,33 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
                 handleConfirm={handleCreateUpdate}
             >
                 <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
-                <select
+                {!enseignement && <select
                     value={typeEnseignement ? typeEnseignement.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
                     onChange={handleTypeEnseignementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                    {typesEnseignement.map(typeEnseignement => (
-                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{typeEnseignement.code}</option>
+                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement.typeEnseignement === type._id))
+                                    .map(typeEnseignement => (
+                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{typeEnseignement.code}</option>
                     ))}
-                </select>
+                </select>}
+                {enseignement && <select
+                    value={typeEnseignement ? typeEnseignement.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
+                    onChange={handleTypeEnseignementChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
+                    {enseignement.typeEnseignement && ( // Vérifie si une matière est déjà sélectionnée dans l'enseignement
+                        <option key={enseignement.typeEnseignement} value={typeEnseignement?.code??""}>
+                            {typeEnseignement?.code??""}
+                        </option>
+                    )}
+                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement.typeEnseignement === type._id))
+                                    .map(typeEnseignement => (
+                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{typeEnseignement.code}</option>
+                    ))}
+                </select>}
                 {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
                 <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
                 <select

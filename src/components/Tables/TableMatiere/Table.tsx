@@ -23,11 +23,9 @@ interface TableMatiereProps {
     data: MatiereType[];
     onCreate: () => void;
     onEdit: (matiere: MatiereType) => void;
-    onAddChap: (matiere: MatiereType) => void;
-    onAddEnseignement: (matiere: MatiereType) => void;
 }
 
-const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement }: TableMatiereProps) => {
+const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const currentUser: UserState = useSelector((state: RootState) => state.user);
@@ -486,7 +484,7 @@ const Table = ({ data, onCreate, onEdit, onAddChap, onAddEnseignement }: TableMa
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddChap={onAddChap} onAddEnseignement={onAddEnseignement} />
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} />
                         }
 
 

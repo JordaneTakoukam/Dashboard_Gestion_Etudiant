@@ -23,21 +23,15 @@ interface BreadcrumbProps {
 const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant = false, isDashboard = false, isChapitre = false, isObjectif = false, isEnseignement = false, isPeriodeEnseignement = false, returnWithMatiere, returnWithChapitre, returnWithPeriodeEnseignement }: BreadcrumbProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const handleChapitreClick = () => {
-    returnWithChapitre && returnWithChapitre();
-  };
 
-  const handleMatiereClick = () => {
-    returnWithMatiere && returnWithMatiere();
-  };
-
-  const handlePeriodeClick = () => {
-    returnWithPeriodeEnseignement && returnWithPeriodeEnseignement();
-  };
 
   const handleMatiere = () => {
     navigate('subjects/subject-list');
   };
+
+  const handlePeriodeEnseigenement = () => {
+    navigate('/subjects/periodes_enseignement');
+  }; 
 
   const handleDisciplneEnseignant = () => {
     navigate('/teachers/disciplines/');
@@ -67,8 +61,8 @@ const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant =
           </li>
 
           {isChapitre && (
-            <li>
-              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} </Link>
+            <li className='flex'>
+              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
               <span className='ml-2'> /</span>
             </li>
           )}
@@ -81,15 +75,16 @@ const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant =
           )}
 
           {isEnseignement && (
-            <li>
-              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiereClick}>{t('sub_menu.liste_matiere')} </Link>
+            <li className='flex'>
+              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
               <span className='ml-2'> /</span>
             </li>
           )}
 
           {isPeriodeEnseignement && (
             <li>
-              <Link className='hover:underline' to={"/subjects/periodes_enseignement"} onClick={handlePeriodeClick}>{t('sub_menu.periodes_enseignement')} /</Link>
+              <Link className='hover:underline' to={"/subjects/periodes_enseignement"} onClick={handlePeriodeEnseigenement}>{t('sub_menu.periodes_enseignement')}</Link>
+              <span className='ml-2'> /</span>
             </li>
           )}
 

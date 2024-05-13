@@ -68,14 +68,6 @@ export const settingSlice = createSlice({
             state.showModal.toDoSondage = !state.showModal.toDoSondage;
         },
 
-        setShowModalChapitre: (state, action:PayloadAction<boolean>) => {
-            state.showModal.openChapitre = action.payload;
-        },
-
-        setShowModalEnseignement: (state, action:PayloadAction<boolean>) => {
-            state.showModal.openEnseignement = action.payload;
-        },
-
         setShowModalPeriode: (state, action:PayloadAction<boolean>) => {
             state.showModal.openPeriode = action.payload;
         },
@@ -101,7 +93,7 @@ export const settingSlice = createSlice({
 export const {
     setShowModalDeleteCustom,
     setShowModalCustom,
-    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalChapitre,setShowModalEnseignement, setShowModalToDOSondage
+    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage
     , setSaveDeviceType,setShowRoleModal, setShowModalPeriode,
     setCurrentIndexUserRole,
 } = settingSlice.actions;

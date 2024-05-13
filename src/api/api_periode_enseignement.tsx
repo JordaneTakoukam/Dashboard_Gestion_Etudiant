@@ -70,7 +70,7 @@ export async function getPeriodesEnseignementWithPagination({ niveauId, page, an
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getPeriodesEnseignement/${niveauId}`,
+            `${api}/getPeriodesEnseignementWithPagination/${niveauId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

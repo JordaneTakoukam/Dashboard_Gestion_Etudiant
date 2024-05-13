@@ -22,6 +22,7 @@ interface PeriodeEnseignementInitialData {
     };
     pageIsLoading: boolean;
     pageError: string | null;
+    selectedPeriode:PeriodeEnseignementType|undefined;
 }
 
 interface ProgressionPeriodeEnseignementInitialData {

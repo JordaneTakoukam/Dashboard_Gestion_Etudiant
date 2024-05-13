@@ -33,6 +33,8 @@ import AbsenceSignalerEnseignant from '../pages/Admin/Disciplines/Enseignant/Abs
 import AbsenceSignalerEtudiant from '../pages/Admin/Disciplines/Etudiant/AbsenceSignalerEtudiant';
 import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
 import Objectifs from '../pages/Admin/Objectifs';
+import Enseignements from '../pages/Admin/Enseignements';
+import EnseignementsPeriode from '../pages/Admin/EnseignementsPeriode';
 
 
 
@@ -99,7 +101,7 @@ const coreRoutes = [
   },
 
   {
-    path: '/subjects/chapitres',
+    path: '/subjects/chapitres/manage',
     title: 'Liste des chapitres',
     component: Chapitres,
   },
@@ -108,6 +110,12 @@ const coreRoutes = [
     path: '/subjects/objectifs/manage',
     title: 'Liste des objectifs',
     component: Objectifs,
+  },
+
+  {
+    path: '/subjects/enseignements/manage',
+    title: 'Liste des enseignements',
+    component: Enseignements,
   },
 
   {
@@ -126,6 +134,12 @@ const coreRoutes = [
     path: '/subjects/periodes_enseignement',
     title: 'Periodes d\'enseignement',
     component: ListeDesPeriodesEnseignement,
+  },
+
+  {
+    path: '/subjects/periodes_enseignement/enseignements/manage',
+    title: 'Liste des enseignements d\'une periode d\'enseignement',
+    component: EnseignementsPeriode,
   },
   // salles de cours
   {

@@ -24,10 +24,9 @@ interface TablePeriodeEnseignementProps {
     data: PeriodeEnseignementType[];
     onCreate:()=>void;
     onEdit: (periodeEnseignement : PeriodeEnseignementType) => void;
-    onAddEnseignement:(periodeEnseignement : PeriodeEnseignementType)=>void;
 }
 
-const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseignementProps) => {
+const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -37,7 +36,6 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const typesEnseignement = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
@@ -156,7 +154,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
                         periode.enseignements.forEach(enseignement => {
                             rows.push([
                                 lang==='fr'?enseignement.matiere.libelleFr:enseignement.matiere.libelleEn,
-                                typesEnseignement.find(type=>type._id==enseignement.typeEnseignement)?.code,
+                                // typesEnseignement.find(type=>type._id==enseignement.typeEnseignement)?.code,
                                 enseignement.nombreSeance
                             ]);
                         });
@@ -461,7 +459,7 @@ const Table = ({ data, onCreate, onEdit, onAddEnseignement }: TablePeriodeEnseig
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddEnseignement={onAddEnseignement}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit}/>
                         }
 
                     </table>

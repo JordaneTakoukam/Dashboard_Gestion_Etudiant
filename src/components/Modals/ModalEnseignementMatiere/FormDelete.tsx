@@ -4,7 +4,7 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { updateMatiere } from '../../../_redux/features/matiere_slice';
+import { retirerEnseignement } from '../../../_redux/features/matiere_slice';
 import { apiUpdateMatiere } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
 
@@ -46,31 +46,15 @@ function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementTyp
                     evaluationAcquisEn:matiere.evaluationAcquisEn,
                     typesEnseignement:newEnseignements,
                     chapitres:matiere.chapitres,
+                    objectifs:matiere.objectifs,
                     _id:matiere._id,
                 }
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
+                    if(enseignement._id){
+                        dispatch(retirerEnseignement({enseignementId:enseignement._id}))
+                    }
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
-                    dispatch(
-                        updateMatiere({
-                            id: e.data._id,
-                            matiereData: {
-                                _id: e.data._id,
-                                code:e.data.code,
-                                libelleFr:e.data.libelleFr,
-                                libelleEn:e.data.libelleEn,
-                                niveau:e.data.niveau, 
-                                prerequisFr:e.data.prerequisFr, 
-                                prerequisEn:e.data.prerequisEn, 
-                                approchePedFr:e.data.approchePedFr, 
-                                approchePedEn:e.data.approchePedEn, 
-                                evaluationAcquisFr:e.data.evaluationAcquisFr, 
-                                evaluationAcquisEn:e.data.evaluationAcquisEn,
-                                typesEnseignement:newEnseignements,
-                                chapitres:matiere.chapitres,
-
-                            }
-                        }));
                     closeModal();
                 } else {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);

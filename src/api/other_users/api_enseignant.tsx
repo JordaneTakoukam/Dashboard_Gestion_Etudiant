@@ -64,6 +64,35 @@ export async function apiGetEnseignants({ grade, categorie, service, fonction }:
     }
 }
 
+export async function generateListEnseignant({ grade, categorie, service, fonction }: { grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListEnseignant`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    grade: grade,
+                    categorie: categorie,
+                    service: service,
+                    fonction: fonction
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 export async function apiGetEnseignantsByNomPrenom(): Promise<EnseignantListGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(

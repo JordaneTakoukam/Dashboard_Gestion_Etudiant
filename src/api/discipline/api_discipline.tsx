@@ -57,7 +57,7 @@ export async function apiGetAbsencesWithEnseignantsByFilter({ page, semestre, an
     }
 }
 
-export async function apiGetAllAbsencesWithEnseignantsByFilter({semestre, annee }: { page?: number, semestre?: Number, annee?: Number }): Promise<EnseignantDisciplineListGetType> {
+export async function apiGetAllAbsencesWithEnseignantsByFilter({semestre, annee }: { semestre?: Number, annee?: Number }): Promise<EnseignantDisciplineListGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getAllAbsencesWithEnseignantsByFilter`,
@@ -77,6 +77,33 @@ export async function apiGetAllAbsencesWithEnseignantsByFilter({semestre, annee 
         return enseignants;
     } catch (error) {
         // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateListAbsenceEnseignant({semestre, annee }: { semestre?: Number, annee?: Number}): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListAbsenceEnseignant`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    semestre: semestre,
+                    annee: annee
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
         throw error;
     }
 }
@@ -128,6 +155,33 @@ export async function apiGetAllAbsencesWithEtudiantsByFilter({semestre, annee, n
         return etudiants;
     } catch (error) {
         // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateListAbsenceEtudiant({semestre, annee, niveauId }: { semestre?: Number, annee?: Number, niveauId:string }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListAbsenceEtudiant/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    semestre: semestre,
+                    annee: annee
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
         throw error;
     }
 }

@@ -8,14 +8,15 @@ import BodyTable from "./BodyTable";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
 import Pagination from "../../Pagination/Pagination";
 import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantsDisciplineLoadingOnTable, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_enseignant_slice";
-import { apiGetAbsencesWithEnseignantsByFilter, apiGetAllAbsencesWithEnseignantsByFilter } from "../../../api/discipline/api_discipline";
+import { apiGetAbsencesWithEnseignantsByFilter, apiGetAllAbsencesWithEnseignantsByFilter, generateListAbsenceEnseignant } from "../../../api/discipline/api_discipline";
 import LoadingOnTable from "../common/LoadingOnTable";
 import * as XLSX from 'xlsx';
 import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
+import Download from "../common/Download";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -102,6 +103,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     const [isInitialMount, setIsInitialMount] = useState(true);
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.enseignantDisciplineSlice.pageIsLoadingOnTable);
+    const [isDownload, setIsDownload]=useState(false);
 
 
 
@@ -187,19 +189,35 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const handleDownloadSelect = async (selected: string) => {
         // setFormatToDownload(selected);
-        const mats = await fetchAllAbsEnseignant().then((absences) => {
-            let title = "liste_des_absences_enseignant";
-            if (lang !== 'fr') {
-                title = "abscences_teacher_list";
-            }
-            if (selected === 'PDF') {
+            try{
+                setIsDownload(true);
+                let title = "liste_des_absences_enseignant";
+                if (lang !== 'fr') {
+                    title = "abscences_teacher_list";
+                }
+                if(selected === 'PDF'){
+                    await generateListAbsenceEnseignant({  annee:selectedYear, semestre:selectSemestre}).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title);
+                        }
+                    })
+                    
+                }else{
+                    await fetchAllAbsEnseignant().then((absences) => {
+                        if (selected === 'CSV') {
 
-            } else if (selected === 'CSV') {
-
-            } else {
-                exportToExcel(title + ".xlsx", absences)
-            }
-        })
+                        } else {
+                            exportToExcel(title + ".xlsx", absences)
+                        }
+                
+                    })  
+                }
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
 
     };
 
@@ -329,7 +347,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
+            {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
 
             </div>
 

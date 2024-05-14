@@ -154,7 +154,6 @@ export async function generateListEvent(annee: number): Promise<Blob> {
 
         // Extraction de tous les objets de paramètres de la réponse
         const pdfBlob: Blob = response.data;
-        console.log(response);
 
         return pdfBlob;
     } catch (error) {

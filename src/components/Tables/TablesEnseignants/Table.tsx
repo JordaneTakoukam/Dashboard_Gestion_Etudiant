@@ -15,9 +15,11 @@ import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading, setEnseig
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
-import { apiGetEnseignants, apiGetEnseignantsWithPagination } from "../../../api/other_users/api_enseignant";
+import { apiGetEnseignants, apiGetEnseignantsWithPagination, generateListEnseignant } from "../../../api/other_users/api_enseignant";
 import Bouton from "../../ui/Bouton";
 import LoadingOnTable from "../common/LoadingOnTable";
+import { createPDF } from "../../../fonctions/fonction";
+import Download from "../common/Download";
 
 interface TableEnseignantProps {
     data: EnseignantType[];
@@ -91,19 +93,52 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        await fetchAllEnseignants().then((enseignants) => {
+        try{
+            setIsDownload(true);
             let title = "liste_des_enseignants_"
             if (lang !== 'fr') {
-                title = "subjects_list_"
+                title = "teachers_list_"
             }
-            if (selected === 'PDF') {
+            if(selected === 'PDF'){
+                let gradeId = undefined;
+                let categorieId = undefined;
+                let serviceId = undefined;
+                let fonctionId = undefined;
+                if (grade) {
+                    gradeId = grade._id;
+                }
+                if (categorie) {
+                    categorieId = categorie._id;
+                }
+                if (service) {
+                    serviceId = service._id;
+                }
+                if (fonction) {
+                    fonctionId = fonction._id;
+                }
+                
+                await generateListEnseignant({ grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId }).then((blob)=>{
+                    // Créer un objet URL pour le blob PDF
+                    if(blob){
+                        createPDF(blob, title);
+                    }
+                })
+                
+            }else{
+                await fetchAllEnseignants().then((enseignants) => {
+                    
+                    if (selected === 'CSV') {
 
-            } else if (selected === 'CSV') {
-
-            } else {
-                exportToExcel(title + ".xlsx", enseignants)
+                    } else {
+                        exportToExcel(title + ".xlsx", enseignants)
+                    }
+                })
             }
-        })
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }    
 
     };
 
@@ -230,6 +265,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const [isInitialMount, setIsInitialMount] = useState(true);
 
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.enseignantSlice.pageIsLoadingOnTable);
+    const [isDownload, setIsDownload]=useState(false);
     useEffect(() => {
         if (isInitialMount) {
             setIsInitialMount(false);
@@ -304,8 +340,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {roles.admin === userRole || roles.superAdmin === userRole && (
                     <ButtonCreate
-                        onClick={() => { onCreate(); dispatch(setShowModal()) }}
-                    />)}
+                        onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                    />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -452,7 +487,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
             </div>
 
         </div>

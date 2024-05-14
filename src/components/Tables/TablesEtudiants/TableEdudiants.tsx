@@ -17,9 +17,10 @@ import { setErrorPageEtudiant, setEtudiant, setEtudiantsLoading } from "../../..
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
-import { apiGetEtudiants, apiGetEtudiantsWithPagination } from "../../../api/other_users/api_etudiant";
-import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { apiGetEtudiants, apiGetEtudiantsWithPagination, generateListEtudiant } from "../../../api/other_users/api_etudiant";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import MyPDFComponent from "./MyPDFComponent";
+import Download from "../common/Download";
 
 interface TableEtudiantProps {
     data: EtudiantType[];
@@ -41,6 +42,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.etudiantSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = sections.length>0?useState<CommonSettingProps>(sections[0]):useState<CommonSettingProps>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -122,23 +124,39 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const etuds = await fetchAllEtudiants().then((etudiants)=>{
+        try{
+            setIsDownload(true);
             let title = "liste_des_etudiants_"+formatYear(selectedYear);
             if(lang !== 'fr'){
-                title = "subjects_list_"+formatYear(selectedYear);
+                title = "students_list_"+formatYear(selectedYear);
             }
             if(selected === 'PDF'){
-                if(etudiants){
-                    console.log("students")
-                    MyPDFComponent({students:etudiants})
+                if(selectNiveauId){
+                    await generateListEtudiant(selectedYear, selectNiveauId).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title);
+                        }
+                    })
                 }
-
-            }else if (selected === 'CSV'){
                 
             }else{
-                exportToExcel(title+".xlsx", etudiants)
+                await fetchAllEtudiants().then((etudiants)=>{
+                    
+                if (selected === 'CSV'){
+                    
+                }else{
+                    exportToExcel(title+".xlsx", etudiants)
+                }
+                    
+                })
             }
-        })
+        } catch (error) {
+            
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
         
     };
 
@@ -457,7 +475,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
 
             </div>
 

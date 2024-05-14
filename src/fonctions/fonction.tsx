@@ -13,8 +13,6 @@ export function capitalizeFirstLetter(text: string) {
 }
 
 
-
-
 export async function decrypt(encryptedValue: String) {
   const iv = encryptedValue.substr(0, 32);
   const ciphertext = encryptedValue.substr(32);
@@ -73,11 +71,11 @@ export function formatDateForInput(dateString: string) {
 }
 
 export function formatYear(year: number) {
-  return `${year}/${year + 1}`;
+  return `${year}-${year + 1}`;
 }
 
 export function extractYear(yearRange: string) {
-  const parts = yearRange.split('/');
+  const parts = yearRange.split('-');
   return parseInt(parts[0]);
 }
 
@@ -85,7 +83,7 @@ export function generateYearRange(currentYear: number, startYear: number) {
   const yearRange = [];
   for (let year = currentYear; year >= startYear; year--) {
     const nextYear = year + 1;
-    yearRange.push(`${year}/${nextYear}`);
+    yearRange.push(`${year}-${nextYear}`);
   }
   return yearRange;
 }
@@ -258,4 +256,16 @@ export function reduceWord(word: string, maxSize: number): string {
           return word;
       }
   }
+}
+
+export function createPDF(blob:Blob, title:string){
+    const url = URL.createObjectURL(blob);
+    // Télécharger le PDF
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = title+'.pdf';
+    document.body.appendChild(link);
+    link.click();
+    // Libérer l'URL de l'objet
+    URL.revokeObjectURL(url);
 }

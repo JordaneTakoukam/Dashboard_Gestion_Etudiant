@@ -6,6 +6,10 @@ const api = `${apiUrl}/evenement`;
 
 const token = localStorage.getItem(wstjqer);
 
+interface PDFResponse {
+    data: Blob; // Utilisez Blob pour gérer les données binaires (PDF)
+}
+
 export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
@@ -129,6 +133,30 @@ export async function getFirstTenEventsOfYear({ annee}: { annee: number}): Promi
         // Extraction de tous les objets de paramètres de la réponse
         const evenements: EvenementReturnGetType = response.data.data;
         return evenements;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateListEvent(annee: number): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListEvent/${annee}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+        console.log(response);
+
+        return pdfBlob;
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;

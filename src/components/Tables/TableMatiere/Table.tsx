@@ -18,6 +18,7 @@ import { getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveau
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
+import jsPDF from "jspdf";
 
 interface TableMatiereProps {
     data: MatiereType[];
@@ -126,12 +127,42 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const mats = await fetchAllMatieres().then((matieres) => {
+        const mats = await fetchAllMatieres().then(async (matieres) => {
             let title = "liste_des_matieres";
             if (lang !== 'fr') {
                 title = "subjects_list";
             }
             if (selected === 'PDF') {
+                const htmlContent = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Document</title>
+                        
+                    </head>
+                    <body>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                color:black;
+                            }
+                            h1 {
+                                color: blue;
+                            }
+                            
+                        </style>
+                        <h1>Exemple de contenu HTML</h1>
+                        <p>Ceci est un paragraphe dans un document HTML.</p>
+                        <p>Vous pouvez ajouter du texte, des images, des tableaux, etc.*************** ************* *******</p>
+                        
+                        
+                    </body>
+                    </html>
+                `;
+
+                generatePDF(title+".pdf", htmlContent);
 
             } else if (selected === 'CSV') {
 
@@ -141,6 +172,51 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         })
 
     };
+
+    const generatePDF = (filename: string, htmlContent: string) => {
+        const doc = new jsPDF({
+            orientation: "portrait", // Orientation du document
+            unit: "mm", // Unité de mesure
+            format: "a4", // Format du document
+        });
+    
+        // Ajouter le contenu HTML à partir de htmlContent
+        doc.html(htmlContent, {
+            callback: function(doc) {
+                // Ajouter le tableau avec autoTable
+                const headers = ['Libellé', 'Période', 'Personnel', 'Description/Observation'];
+                const data = [
+                    ['test', 'test', 'test', 'test'] // exemple de données, vous pouvez remplacer ceci par vos propres données
+                ];
+                const htmlContentHeight = doc.internal.pageSize.height;
+
+                // Ajouter une marge supplémentaire pour séparer le tableau du contenu HTML
+                const marginAfterHtmlContent = 10;
+
+                // Position Y pour le début du tableau
+                const tableStartY = htmlContentHeight + marginAfterHtmlContent;
+                // doc.autoTable({
+                //     head: [headers],
+                //     body: data,
+                //     startY: doc.internal.pageSize.height-20,
+                //     theme: 'grid',
+                //     headStyles:{fillColor: [255, 255, 255], textColor:[0,0,0], halign:'center', lineWidth:0.1, lineColor:0 },
+                //     bodyStyles:{fillColor: [255, 255, 255], textColor:[0,0,0], halign:'center', lineWidth:0.1, lineColor:0 }
+                //     // columnStyles: { 0: { halign: 'center', fillColor: [255, 255, 255] } },
+                // });
+    
+                // Save the PDF
+                doc.save(filename);
+            },
+            margin: [15, 15, 15, 15],
+            autoPaging: 'text',
+            x: 0,
+            y: 0,
+            width: 210, //target width in the PDF document
+            windowWidth: 650 //window width in CSS pixels
+        });
+    };
+    
 
     const exportToExcel = (filename: string, matieres: MatiereType[] | undefined) => {
         if (matieres) {

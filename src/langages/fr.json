@@ -92,6 +92,7 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "download":"Téléchargement en cours",
     "ajouter": "Ajouter",
     "roles": "Roles",
     "matricule": "Matricule",

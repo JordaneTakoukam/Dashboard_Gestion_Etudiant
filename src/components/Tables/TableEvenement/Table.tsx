@@ -15,13 +15,15 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import Pagination from "../../Pagination/Pagination";
 import { setEvenementLoading, setEvenements, setErrorPageEvenement } from "../../../_redux/features/evenement_slice";
-import { getAllEvenementsByYear, getEvenementsByYear } from "../../../api/api_evenement";
+import { generateListEvent, getAllEvenementsByYear, getEvenementsByYear } from "../../../api/api_evenement";
 import createToast from "../../../hooks/toastify";
-import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { PageErreur } from "../../_Global/PageErreur";
 import cheerio from 'cheerio';
-import { jsPDF } from "jspdf";
+import {jsPDF}  from "jspdf";
+import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import Download from "../common/Download";
 
 
 interface TableEvenementProps {
@@ -32,10 +34,10 @@ interface TableEvenementProps {
 }
 
 
-
 const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const { t } = useTranslation();
     const pageIsLoading = useSelector((state: RootState) => state.evenementSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const pageError = useSelector((state: RootState) => state.evenementSlice.pageError);
     const dispatch = useDispatch();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
@@ -79,74 +81,45 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        console.log(selected);
-        const event = await fetchAllEvenements(selectedYear).then((evenements)=>{
-
-            if(evenements){
-                let title = "calendrier_académique_"+formatYear(selectedYear);
-                if(lang !== 'fr'){
-                    title = "academic_calendar_"+formatYear(selectedYear);
-                }
-                if(selected === 'PDF'){
-                    generatePDF();
-                }else if (selected === 'CSV'){
-                    exportToCsv(title+".csv", evenements)
-                    // downloadCSV();
-                }else{
-                    exportToExcel(title+".xlsx", evenements)
-                }
+        
+        try {
+            let title = "calendrier_académique_"+formatYear(selectedYear);
+            if(lang !== 'fr'){
+                title = "academic_calendar_"+formatYear(selectedYear);
             }
-        });
+            setIsDownload(true);
+            if(selected === 'PDF'){
+                await generateListEvent(selectedYear).then((blob)=>{
+                    // Créer un objet URL pour le blob PDF
+                    if(blob){
+                        createPDF(blob, title);
+                    }
+                })
+                
+            }else{
+                await fetchAllEvenements(selectedYear).then((evenements)=>{
+
+                    if(evenements){
+                        if (selected === 'CSV'){
+                            exportToCsv(title+".csv", evenements)
+                            // downloadCSV();
+                        }else{
+                            exportToExcel(title+".xlsx", evenements)
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
         
         
         // methode pour download
     };
 
-    const generatePDF = async () => {
-        try {
-            const htmlString = await fillTemplate(); // Générer le HTML
-            console.log(htmlString);
-            const pdf = new jsPDF({
-                format: 'a4',
-                unit: 'px',
-                
-            });
 
-            pdf.html(htmlString, {
-                margin: [20, 20, 20, 20], // Marges du format A4
-                callback: () => {
-                    
-                    pdf.save('output.pdf');
-                    console.log('PDF généré avec succès');
-                }
-            });
-        } catch (error) {
-            console.error('Erreur lors de la génération du PDF :', error);
-        }
-    };
-    const fillTemplate = async () => {
-        try {
-            const templateHTML = await fetch('./calendrier.html');
-            const htmlString = await templateHTML.text();
-            const $ = cheerio.load(htmlString); // Charger le template HTML avec cheerio
-            const userTable = $('table');
-            const rowTemplate = $('.row_template');
-
-            for (const event of filteredData) {
-                const clonedRow = rowTemplate.clone();
-                clonedRow.find('#libelle').text(event.libelleFr);
-                clonedRow.find('#periode').text(event.periodeFr);
-                clonedRow.find('#personnel').text(event.personnelFr);
-                clonedRow.find('#description_observation').text(event.descriptionObservationFr);
-                userTable.append(clonedRow);
-            }
-
-            return $.html(); // Récupérer le HTML mis à jour
-        } catch (error) {
-            console.error('Erreur lors du remplissage du template :', error);
-            return '';
-        }
-    };
 
     const exportToExcel = (filename: string, evenements:EvenementType[]) => {
         try {
@@ -246,7 +219,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
             // Cliquez sur le lien pour télécharger le fichier Excel
             link.click();
         } catch (error) {
-            console.error('Erreur lors de l\'exportation vers Excel :', error);
+            createToast(t('message.erreur'), "", 2);
         }
     };
     
@@ -343,7 +316,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     };
 
     const fetchAllEvenements = async (annee: number) => {
-        dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
+        // dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
         try {
             const fetchedEvenements = await getAllEvenementsByYear({ annee: annee});
             // Mettez à jour l'état Redux avec les données récupérées
@@ -355,7 +328,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
             dispatch(setErrorPageEvenement(t('message.erreur')));
             createToast(t('message.erreur'), "", 2)
         } finally {
-            dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
+            // dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
         }
     };
 
@@ -476,8 +449,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
-
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
             </div>
 
         </div>

@@ -11,12 +11,13 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
-import { calculateSeancesEffectuees, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import { getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
+import { calculateSeancesEffectuees, createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { generateProgressionPeriodeEnseignement, getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../../_redux/features/progession_periode_slice";
 import * as XLSX from 'xlsx';
 import React from "react";
 import { getPeriodesByNiveau } from "../../../api/api_periode";
+import Download from "../common/Download";
 
 interface TablePeriodeEnseignementProps {
     data: PeriodeEnseignementType;
@@ -37,6 +38,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.progressionPeriodeEnseignementSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const [section, setSection] = useState<CommonSettingProps>();
     const [cycle, setCycle] = useState<CycleProps>();
@@ -106,30 +108,50 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
 
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        // const mats = await fetchAllPeriodes().then((periodes)=>{
+        try{
+            setIsDownload(true);
+
             let title = "progression_par_periode";
             if(lang !== 'fr'){
-                title = "period_progression";
+                title = "periodes_progression";
             }
             if(selected === 'PDF'){
-
-            }else if (selected === 'CSV'){
-
+                if(selectNiveauId){
+                    if(filteredPeriode){
+                        await generateProgressionPeriodeEnseignement({ periode: filteredPeriode}).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title);
+                            }
+                        })
+                    }
+                    
+                }
+                
             }else{
-                exportToExcel(title+".xlsx", filteredPeriode)
+                if (selected === 'CSV'){
+
+                }else{
+                    exportToExcel(title+".xlsx", filteredPeriode)
+                }
             }
-        // })
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
+        
         
     };
 
     const exportToExcel = async ( filename: string,periode: PeriodeEnseignementType | undefined) => {
-        let fetchedPeriodes = null;
-        if(niveau && niveau._id){
-            fetchedPeriodes = await getPeriodesByNiveau({ niveauId: niveau._id, annee: currentYear, semestre: currentSemester });
-        }
+        // let fetchedPeriodes = null;
+        // if(niveau && niveau._id){
+        //     fetchedPeriodes = await getPeriodesByNiveau({ niveauId: niveau._id, annee: currentYear, semestre: currentSemester });
+        // }
          
         
-        if(periodes && fetchedPeriodes && fetchedPeriodes.periodes){
+        // if(periodes && fetchedPeriodes && fetchedPeriodes.periodes){
             const wb = XLSX.utils.book_new();
 
             // Créer une feuille de calcul
@@ -161,9 +183,9 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
             link.download = filename;
             // Cliquez sur le lien pour télécharger le fichier Excel
             link.click();
-        }else{
+        // }else{
             
-        }
+        // }
         
     }
     
@@ -483,7 +505,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
 
             </div>
 

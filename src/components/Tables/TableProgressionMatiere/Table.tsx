@@ -9,11 +9,13 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_redux/features/progession_matiere_slice";
-import { getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
+import { generateProgressByEnseignant, generateProgressByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
 import * as XLSX from 'xlsx';
 import { config } from "../../../config";
+import Download from "../common/Download";
+import { createPDF } from "../../../fonctions/fonction";
 
 const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }) => {
     const {t}=useTranslation();
@@ -47,11 +49,13 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
     // let matiere:Matiere=listMatieres[0];
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<CommonSettingProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -171,8 +175,15 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
         try {
             
             if (selectNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId});
-                return fetchedMatieres.matieres;
+                let fetchedMatieres = null
+                if(currentUser && currentUser.role===roles.enseignant){
+                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemester });
+                }else{
+                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId});
+                }
+                if(fetchedMatieres){
+                    return fetchedMatieres.matieres;
+                }
             }
                 // Réinitialisez les erreurs s'il y en a
         } catch (error) {
@@ -184,19 +195,46 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const mats = await fetchAllMatieres().then((matieres)=>{
+
+        try{
+            setIsDownload(true);
             let title = "progression_par_matiere";
             if(lang !== 'fr'){
                 title = "subjects_progression";
             }
             if(selected === 'PDF'){
-
-            }else if (selected === 'CSV'){
-
+                if(selectNiveauId){
+                    if(currentUser && currentUser.role===roles.enseignant){
+                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemester } ).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title);
+                            }
+                        })
+                    }else{
+                        await generateProgressByNiveau({niveauId:selectNiveauId}).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title);
+                            }
+                        })
+                    }
+                }
+                
             }else{
-                exportToExcel(title+".xlsx", matieres)
+                await fetchAllMatieres().then((matieres)=>{
+                    if (selected === 'CSV'){
+
+                    }else{
+                        exportToExcel(title+".xlsx", matieres)
+                    }
+                })
             }
-        })
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
         
     };
 
@@ -299,7 +337,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                         
                         let fetchedMatieres = null
                         if(currentUser && currentUser.role===roles.enseignant){
-                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id });
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemester });
                         }else{
                             fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
                         }
@@ -498,7 +536,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
 
             </div>
 

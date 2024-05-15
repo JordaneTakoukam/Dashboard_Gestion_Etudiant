@@ -14,11 +14,13 @@ import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../../_redux/features/matiere_slice";
-import { getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
+import { generateListMatByEnseignantNiveau, generateListMatByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
 import jsPDF from "jspdf";
+import Download from "../common/Download";
+import { createPDF } from "../../../fonctions/fonction";
 
 interface TableMatiereProps {
     data: MatiereType[];
@@ -38,11 +40,13 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<CommonSettingProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // const niveauxEnseignantIds = currentUser?.niveaux.map(inscription => inscription.niveau) ?? [];
 
@@ -127,96 +131,49 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const mats = await fetchAllMatieres().then(async (matieres) => {
+        try{
+            setIsDownload(true);
             let title = "liste_des_matieres";
             if (lang !== 'fr') {
                 title = "subjects_list";
             }
-            if (selected === 'PDF') {
-                const htmlContent = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Document</title>
-                        
-                    </head>
-                    <body>
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                color:black;
+            if(selected === 'PDF'){
+                if(selectNiveauId){
+                    if(currentUser && currentUser.role===roles.enseignant){
+                        await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre } ).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title);
                             }
-                            h1 {
-                                color: blue;
+                        })
+                    }else{
+                        await generateListMatByNiveau({niveauId:selectNiveauId}).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title);
                             }
-                            
-                        </style>
-                        <h1>Exemple de contenu HTML</h1>
-                        <p>Ceci est un paragraphe dans un document HTML.</p>
-                        <p>Vous pouvez ajouter du texte, des images, des tableaux, etc.*************** ************* *******</p>
-                        
-                        
-                    </body>
-                    </html>
-                `;
+                        })
+                    }
+                }
+                
+            }else{
+                await fetchAllMatieres().then(async (matieres) => {
+                    
+                    if (selected === 'CSV') {
 
-                generatePDF(title+".pdf", htmlContent);
-
-            } else if (selected === 'CSV') {
-
-            } else {
-                exportToExcel(title + ".xlsx", matieres)
+                    } else {
+                        exportToExcel(title + ".xlsx", matieres)
+                    }
+                })
             }
-        })
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
 
     };
 
-    const generatePDF = (filename: string, htmlContent: string) => {
-        const doc = new jsPDF({
-            orientation: "portrait", // Orientation du document
-            unit: "mm", // Unité de mesure
-            format: "a4", // Format du document
-        });
-    
-        // Ajouter le contenu HTML à partir de htmlContent
-        doc.html(htmlContent, {
-            callback: function(doc) {
-                // Ajouter le tableau avec autoTable
-                const headers = ['Libellé', 'Période', 'Personnel', 'Description/Observation'];
-                const data = [
-                    ['test', 'test', 'test', 'test'] // exemple de données, vous pouvez remplacer ceci par vos propres données
-                ];
-                const htmlContentHeight = doc.internal.pageSize.height;
-
-                // Ajouter une marge supplémentaire pour séparer le tableau du contenu HTML
-                const marginAfterHtmlContent = 10;
-
-                // Position Y pour le début du tableau
-                const tableStartY = htmlContentHeight + marginAfterHtmlContent;
-                // doc.autoTable({
-                //     head: [headers],
-                //     body: data,
-                //     startY: doc.internal.pageSize.height-20,
-                //     theme: 'grid',
-                //     headStyles:{fillColor: [255, 255, 255], textColor:[0,0,0], halign:'center', lineWidth:0.1, lineColor:0 },
-                //     bodyStyles:{fillColor: [255, 255, 255], textColor:[0,0,0], halign:'center', lineWidth:0.1, lineColor:0 }
-                //     // columnStyles: { 0: { halign: 'center', fillColor: [255, 255, 255] } },
-                // });
-    
-                // Save the PDF
-                doc.save(filename);
-            },
-            margin: [15, 15, 15, 15],
-            autoPaging: 'text',
-            x: 0,
-            y: 0,
-            width: 210, //target width in the PDF document
-            windowWidth: 650 //window width in CSS pixels
-        });
-    };
-    
 
     const exportToExcel = (filename: string, matieres: MatiereType[] | undefined) => {
         if (matieres) {
@@ -253,21 +210,19 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                         (t('label.evaluation_acquis')) + ":" + (lang === 'fr' ? matiere.evaluationAcquisFr : matiere.evaluationAcquisEn),
                     ]);
                     let objectifs = "";
-                    if (matiere.chapitres) {
-                        matiere.chapitres.forEach(chapitre => {
-                            if (chapitre.objectifs) {
+                    
+                        if (matiere.objectifs) {
 
-                                chapitre.objectifs.forEach(objectif => {
-                                    if (objectifs.length > 0) {
-                                        objectifs = objectifs + "," + (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
-                                    } else {
-                                        objectifs = (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
-                                    }
+                            matiere.objectifs.forEach(objectif => {
+                                if (objectifs.length > 0) {
+                                    objectifs = objectifs + "," + (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
+                                } else {
+                                    objectifs = (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
+                                }
 
-                                })
-                            }
-                        });
-                    }
+                            })
+                        }
+                       
                     rows.push([
                         (t('label.competences_acquis')) + ":" + objectifs,
                     ]);
@@ -587,8 +542,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
-
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
             </div>
 
         </div>

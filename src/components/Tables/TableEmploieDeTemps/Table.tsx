@@ -12,11 +12,12 @@ import { setShowModal } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
-import { extractYear, formatYear, generateYearRange, premierElement } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange, premierElement } from "../../../fonctions/fonction";
 import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../../_redux/features/periode_slice";
-import { getPeriodesByNiveau } from "../../../api/api_periode";
+import { generateEmploisDuTemps, getPeriodesByNiveau } from "../../../api/api_periode";
 import createToast from "../../../hooks/toastify";
 import * as XLSX from 'xlsx';
+import Download from "../common/Download";
 
 
 interface TablePeriodeProps {
@@ -28,6 +29,7 @@ interface TablePeriodeProps {
 const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const {t}=useTranslation();
     const pageIsLoading = useSelector((state: RootState) => state.periodeSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const dispatch = useDispatch();
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
@@ -251,19 +253,36 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     
     const [formatToDownload, setFormatToDownload] = useState("");
-    const handleDownloadSelect = (selected: string) => {
+    const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        console.log(selected);
-        let title = "emploie_de_temps"+formatYear(selectedYear)+"_semestre_"+selectedSemestre;
-        if(lang !== 'fr'){
-            title = "timetable"+formatYear(selectedYear)+"_semester_"+selectedSemestre;;
-        }
-        if(selected === 'PDF'){
-
-        }else if (selected === 'CSV'){
-            // downloadCSV();
-        }else{
-            exportToExcel(title+".xlsx")
+        
+        try{
+            setIsDownload(true);
+            let title = "emploie_de_temps"+formatYear(selectedYear)+"_semestre_"+selectedSemestre;
+            if(lang !== 'fr'){
+                title = "timetable"+formatYear(selectedYear)+"_semester_"+selectedSemestre;;
+            }
+            if(selected === 'PDF'){
+                if(selectNiveauId){
+                    await generateEmploisDuTemps({ niveauId: selectNiveauId, annee: selectedYear, semestre: selectedSemestre }).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title);
+                        }
+                    })
+                }
+                
+            }else{
+                if (selected === 'CSV'){
+                    // downloadCSV();
+                }else{
+                    exportToExcel(title+".xlsx")
+                }
+            }
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
         }
     };
 
@@ -525,8 +544,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
-
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
             </div>
 
         </div>

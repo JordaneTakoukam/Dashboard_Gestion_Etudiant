@@ -119,6 +119,62 @@ export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId, an
     }
 }
 
+export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId, annee, semestre }: { niveauId: string, enseignantId: string, annee:number, semestre:number }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListMatByEnseignantNiveau/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    enseignantId: enseignantId,
+                    annee:annee,
+                    semestre:semestre
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateProgressByEnseignant({ niveauId, enseignantId, annee, semestre }: { niveauId: string, enseignantId: string, annee:number, semestre:number }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateProgressByEnseignant/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    enseignantId: enseignantId,
+                    annee:annee,
+                    semestre:semestre
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Promise<ProgressionMatiereReturnGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -135,6 +191,52 @@ export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Pr
         const matieres: ProgressionMatiereReturnGetType = response.data.data;
 
         return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateListMatByNiveau({ niveauId }: { niveauId: string}): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListMatByNiveau/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateProgressByNiveau({ niveauId }: { niveauId: string}): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateProgressByNiveau/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;

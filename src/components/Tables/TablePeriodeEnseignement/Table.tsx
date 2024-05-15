@@ -16,9 +16,10 @@ import { useTranslation } from "react-i18next";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import { setPeriodeEnseignementLoading, setPeriodeEnseignements, setErrorPagePeriodeEnseignement } from "../../../_redux/features/periode_enseignement_slice";
-import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import { getPeriodesEnseignement, getPeriodesEnseignementWithPagination } from "../../../api/api_periode_enseignement";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { generateListPeriodeEnseignement, getPeriodesEnseignement, getPeriodesEnseignementWithPagination } from "../../../api/api_periode_enseignement";
 import * as XLSX from 'xlsx';
+import Download from "../common/Download";
 
 interface TablePeriodeEnseignementProps {
     data: PeriodeEnseignementType[];
@@ -40,6 +41,7 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.periodeEnseignementSlice.pageIsLoading);
+    const [isDownload, setIsDownload]=useState(false);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -121,19 +123,36 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
-        const mats = await fetchAllPeriodes().then((periodes)=>{
+        try{
+            setIsDownload(true);
             let title = "liste_des_periodes";
             if(lang !== 'fr'){
-                title = "subjects_list";
+                title = "periods_list";
             }
             if(selected === 'PDF'){
-
-            }else if (selected === 'CSV'){
-
+                if(selectNiveauId){
+                    await generateListPeriodeEnseignement({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre }).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title);
+                        }
+                    })
+                }
+                
             }else{
-                exportToExcel(title+".xlsx", periodes)
+                await fetchAllPeriodes().then((periodes)=>{
+                    if (selected === 'CSV'){
+
+                    }else{
+                        exportToExcel(title+".xlsx", periodes)
+                    }
+                })
             }
-        })
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
         
     };
 
@@ -147,7 +166,7 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
                 ...periodes.flatMap(periode => {
                     const rows = [];
                     rows.push([(lang==='fr'?periode.periodeFr:periode.periodeEn)]);
-                    rows.push([t('label.matieres'), t('label.type_ens'), t('label.nb_seance_periode')]);
+                    rows.push([t('label.matieres'), t('label.nb_seance_periode')]);
                     // Vérifier si matiere.periodes est défini
                     if (periode.enseignements) {        
                         // Parcourir les periodes
@@ -484,7 +503,7 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />
+                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
 
             </div>
 

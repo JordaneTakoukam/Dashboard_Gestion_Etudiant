@@ -120,3 +120,56 @@ export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { n
         throw error;
     }
 }
+
+export async function generateListPeriodeEnseignement({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateListPeriodeEnseignement/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    annee: annee,
+                    semestre:semestre
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateProgressionPeriodeEnseignement({ periode }: { periode:PeriodeEnseignementType }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateProgressionPeriodeEnseignement`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    periode: periode
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}

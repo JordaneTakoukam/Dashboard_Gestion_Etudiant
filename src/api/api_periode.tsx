@@ -91,6 +91,33 @@ export async function getPeriodesByNiveau({ niveauId, annee, semestre }: { nivea
     }
 }
 
+export async function generateEmploisDuTemps({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateEmploisDuTemps/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params : {
+                    annee:annee,
+                    semestre : semestre
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 export async function getPeriodesAVenirByNiveau({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<PeriodeReturnGetType> {
     const nbElement=5;
     try {

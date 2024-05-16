@@ -35,6 +35,7 @@ import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbse
 import Objectifs from '../pages/Admin/Objectifs';
 import Enseignements from '../pages/Admin/Enseignements';
 import EnseignementsPeriode from '../pages/Admin/EnseignementsPeriode';
+import DepartementsAcademique from '../pages/Admin/DepartementsAcademique';
 
 
 
@@ -172,10 +173,16 @@ const coreRoutes = [
 
   // structuraction academique
   {
+    path: '/academic-levels/departements',
+    title: 'Département académique',
+    component: DepartementsAcademique,
+  },
+  {
     path: '/academic-levels/sections',
     title: 'Sections',
     component: Sections,
   },
+  
   {
     path: '/academic-levels/grades',
     title: 'Cycles',

@@ -552,6 +552,17 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                 <ul className="mt-4 mb-3 flex flex-col gap-2.5 pl-6">
                                                     <li>
                                                         <NavLink
+                                                            to="/academic-levels/departements"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.departementsAcademique')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
                                                             to="/academic-levels/sections"
                                                             className={({ isActive }) =>
                                                                 'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +

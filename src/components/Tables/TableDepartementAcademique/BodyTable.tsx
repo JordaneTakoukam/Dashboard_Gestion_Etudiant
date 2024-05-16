@@ -4,7 +4,7 @@ import { setShowModal, setShowModalDelete } from "../../../_redux/features/setti
 import { RootState } from "../../../_redux/store";
 
 
-const BodyTable = ({ data, onEdit }: { data: SectionProps[], onEdit: (section: SectionProps) => void }) => {
+const BodyTable = ({ data, onEdit }: { data: CommonSettingProps[], onEdit: (section: CommonSettingProps) => void }) => {
     const lang = useSelector((state: RootState) => state.setting.language);
 
     const dispatch = useDispatch();

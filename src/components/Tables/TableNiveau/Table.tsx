@@ -24,7 +24,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
 
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -44,7 +44,7 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
 
     // recuperer l'id de la section suite au click sur l'input select
 
-    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+    const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
@@ -178,12 +178,12 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>
@@ -204,12 +204,12 @@ const Table = ({ data, onCreate, onEdit }: TableNiveauProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>

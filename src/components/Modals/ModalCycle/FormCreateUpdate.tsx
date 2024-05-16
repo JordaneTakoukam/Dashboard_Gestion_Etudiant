@@ -20,7 +20,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
 
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");

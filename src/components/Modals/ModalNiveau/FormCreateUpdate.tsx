@@ -11,14 +11,14 @@ import createToast from '../../../hooks/toastify';
 
 function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections:SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
 
     const [errorCode, setErrorCode] = useState("");

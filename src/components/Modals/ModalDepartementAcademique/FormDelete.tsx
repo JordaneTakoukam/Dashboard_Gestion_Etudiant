@@ -3,41 +3,43 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import { apiDeleteSection } from '../../../api/settings/api_section';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import createToast from '../../../hooks/toastify';
+import { apiDeleteDepartementAcademique } from '../../../api/settings/api_departement_academique';
 
 
-
-function ModalDelete({ section }: { section: SectionProps | null }) {
-    const dispatch = useDispatch();
+function ModalDelete({ departementAcademique }: { departementAcademique: CommonSettingProps | null }) {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
-    const lang = useSelector((state: RootState) => state.setting.language);
-
     const closeModal = () => { dispatch(setShowModalDelete()); };
 
+    const lang = useSelector((state: RootState) => state.setting.language);
+
+
     const handleDelete = async () => {
-        if (section?._id != undefined) {
-            await apiDeleteSection(section._id).then((e: ReponseApiPros) => {
+
+        if (departementAcademique?._id != undefined) {
+            await apiDeleteDepartementAcademique(departementAcademique._id).then((e: ReponseApiPros) => {
                 if (e.success) {
-                    try { createToast(e.message[lang as keyof typeof e.message], '', 0); }
-                    catch (e) { throw e; }
-                    if (section._id) {
-                        dispatch(deleteSettingItem({ tableName: 'sections', itemId: section._id }));
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+
+                    if (departementAcademique._id) {
+                        dispatch(deleteSettingItem({ tableName: 'departementsAcademique', itemId: departementAcademique._id }));
                     }
 
                     closeModal();
                 } else {
-                    try { createToast(e.message[lang as keyof typeof e.message], '', 2); }
-                    catch (e) { throw e; }
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
                 }
             }).catch((e) => {
-                try { createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2); }
-                catch (e) { throw e; }
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+
             })
         }
+
     }
 
     return (
@@ -49,7 +51,7 @@ function ModalDelete({ section }: { section: SectionProps | null }) {
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression') + t('form_delete.section')} : {section ? (lang === 'fr' ? section.libelleFr : section.libelleEn) : ""}</h1>
+                <h1>{t('form_delete.suppression') + t('form_delete.departementAcademique')} : {departementAcademique ? (lang == "fr" ? departementAcademique.libelleFr : departementAcademique.libelleEn) : ""}</h1>
             </CustomDialogModal>
         </>
     );

@@ -18,7 +18,7 @@ import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../a
 function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const sallesCours: SalleDeCoursProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours) ?? [];
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
@@ -29,7 +29,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [jour, setJour] = useState<Jour>();
     const [heureDebut, setHeureDebut] = useState("");
     const [heureFin, setHeureFin] = useState("");
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [matiere, setMatiere] = useState<MatiereType>();

@@ -35,7 +35,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const [email, setEmail] = useState("");
     const [contact, setContact] = useState("");
     const [matricule, setMatricule] = useState("");
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [grade, setGrade] = useState<CommonSettingProps>();

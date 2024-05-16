@@ -56,7 +56,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [matiere, setMatiere] = useState<MatiereType>();
@@ -133,7 +133,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
 
     // recuperer l'id de la section suite au click sur l'input select
-    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+    const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
             if (selected?._id) {
                 setSelectIdSection(selected._id);
@@ -398,12 +398,12 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 
                                 onSelect={handleAnneeSelect}
                             /> */}
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 selectedItem={section}
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>
@@ -411,7 +411,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 items={filteredCycle}
                                 defaultValue={cycles[0]} // ou spécifie une valeur par défaut
                                 selectedItem={cycle}
-                                displayProperty={(cycle: CommonSettingProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
+                                displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
                             <CustomDropDown2<NiveauProps>
@@ -451,12 +451,12 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 
                                 onSelect={handleAnneeSelect}
                             /> */}
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 selectedItem={section}
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>

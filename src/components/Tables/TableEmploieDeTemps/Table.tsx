@@ -39,7 +39,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -215,7 +215,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     };
 
     // recuperer l'id de la section suite au click sur l'input select
-    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+    const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
             if (selected?._id) {
                 setSelectIdSection(selected._id);
@@ -434,12 +434,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 selectedItem={section}
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>
@@ -484,12 +484,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 onSelect={handleSemestreSelect}
                             />
                             
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
                                 selectedItem={section}
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>

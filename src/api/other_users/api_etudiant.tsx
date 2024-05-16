@@ -59,17 +59,21 @@ export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauI
     }
 }
 
-export async function generateListEtudiant(annee: number, niveauId:string): Promise<Blob> {
+export async function generateListEtudiant({annee, departement, section, cycle, niveau, langue }:{annee: number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateListEtudiant/${niveauId}`,
+            `${api}/generateListEtudiant/${annee}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
                 },
                 params: {
-                    annee:annee
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },

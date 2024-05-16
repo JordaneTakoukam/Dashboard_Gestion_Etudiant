@@ -12,7 +12,7 @@ import createToast from '../../../hooks/toastify';
 function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
@@ -35,7 +35,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const [email, setEmail] = useState("");
     const [contact, setContact] = useState("");
     const [matricule, setMatricule] = useState("");
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [grade, setGrade] = useState<CommonSettingProps>();

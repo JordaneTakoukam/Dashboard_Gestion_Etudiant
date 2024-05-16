@@ -34,8 +34,8 @@
                                 {
 
                                     id === 1 ?
-                                        <PiStudentFill />
-                                        : id === 2 ? <AiOutlineClockCircle />
+                                        <AiOutlineClockCircle />
+                                        : id === 2 ? <PiStudentFill />
                                             : id === 3 ? <GiTeacher />
                                                 : <div></div>
 
@@ -54,7 +54,7 @@
                 </div>
 
                 {/* valeurss */}
-                <div className='flex justify-center'>
+                <div className='flex justify-center h-[70px]'>
                     {
                         progressionValue == null ?
                         pageIsLoading ?

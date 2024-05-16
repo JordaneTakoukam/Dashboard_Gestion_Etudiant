@@ -38,10 +38,10 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
@@ -60,7 +60,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
 
-    const [filteredSection, setFilteredSection] = useState<CommonSettingProps[]>([]);
+    const [filteredSection, setFilteredSection] = useState<SectionProps[]>([]);
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
@@ -252,7 +252,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     }
 
     // recuperer l'id de la section suite au click sur l'input select
-    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+    const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
@@ -430,12 +430,12 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 
                                 onSelect={handleAnneeSelect}
                             /> */}
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={filteredSection}
                                 defaultValue={filteredSection[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>
@@ -469,12 +469,12 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 
                                 onSelect={handleAnneeSelect}
                             /> */}
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={filteredSection}
                                 defaultValue={filteredSection[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>

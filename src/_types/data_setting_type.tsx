@@ -18,6 +18,8 @@ interface CommuneProps extends CommonSettingProps {
     departement: string;
 }
 
+
+
 // Interface des propriétés spécifiques au niveau
 interface NiveauProps extends CommonSettingProps {
     cycle: string;
@@ -26,6 +28,11 @@ interface NiveauProps extends CommonSettingProps {
 // Interface des propriétés spécifiques au cycle
 interface CycleProps extends CommonSettingProps {
     section: string;
+}
+
+// Interface des propriétés spécifiques au section
+interface SectionProps extends CommonSettingProps {
+    departement: string;
 }
 
 //interface des propriétés de la salle de cours
@@ -43,8 +50,9 @@ interface DataSettingProps {
     categories: CommonSettingProps[];
     regions: CommonSettingProps[];
     departements: DepartementProps[];
+    departementsAcademique:CommonSettingProps[];
     communes: CommuneProps[];
-    sections: CommonSettingProps[];
+    sections: SectionProps[];
     cycles: CycleProps[];
     niveaux: NiveauProps[];
     salleDeCours: SalleDeCoursProps[];

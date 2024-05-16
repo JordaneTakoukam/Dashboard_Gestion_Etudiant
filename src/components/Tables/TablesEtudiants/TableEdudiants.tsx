@@ -19,7 +19,6 @@ import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
 import { apiGetEtudiants, apiGetEtudiantsWithPagination, generateListEtudiant } from "../../../api/other_users/api_etudiant";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import MyPDFComponent from "./MyPDFComponent";
 import Download from "../common/Download";
 
 interface TableEtudiantProps {
@@ -41,9 +40,11 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.etudiantSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
-    const [section, setSection] = sections.length>0?useState<CommonSettingProps>(sections[0]):useState<CommonSettingProps>();;
+    
+    const [section, setSection] = sections.length>0?useState<SectionProps>(sections[0]):useState<SectionProps>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
@@ -131,14 +132,17 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 title = "students_list_"+formatYear(selectedYear);
             }
             if(selected === 'PDF'){
-                if(selectNiveauId){
-                    await generateListEtudiant(selectedYear, selectNiveauId).then((blob)=>{
+                const departement=section && departements.find(dep=>dep._id===section.departement);
+                if(section && cycle && niveau && departement){
+                    
+                    await generateListEtudiant({annee:selectedYear, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);
                         }
                     })
                 }
+                
                 
             }else{
                 await fetchAllEtudiants().then((etudiants)=>{
@@ -200,7 +204,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     };
     
      // recuperer l'id de la section suite au click sur l'input select
-    const handleSectionSelect = (selected: CommonSettingProps | undefined) => {
+    const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
@@ -361,12 +365,12 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>
@@ -401,12 +405,12 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
                                 defaultValue={sections[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(section: CommonSettingProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
+                                displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
                             <CustomDropDown2<CycleProps>

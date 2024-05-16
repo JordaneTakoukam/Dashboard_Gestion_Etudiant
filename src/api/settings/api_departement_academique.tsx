@@ -1,16 +1,15 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../../config.js';
 
-
 const api = `${apiUrl}/setting`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateSection({ code, departement, libelleFr, libelleEn }: SectionProps): Promise<ReponseApiPros> {
+export async function apiCreateDepartementAcademique({ code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
-            `${api}/section/create`,
-            { code, departement, libelleFr, libelleEn },
+            `${api}/departement-academique/create`,
+            { code, libelleFr, libelleEn },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -21,16 +20,16 @@ export async function apiCreateSection({ code, departement, libelleFr, libelleEn
 
         return response.data;
     } catch (error) {
-        console.error('Error creating departement:', error);
+        console.error('Error creating departement academique:', error);
         throw error;
     }
 }
 
-export async function apiUpdateSection({ _id, code, libelleFr, libelleEn, departement }: SectionProps): Promise<ReponseApiPros> {
+export async function apiUpdateDepartementAcademique({ _id, code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
-            `${api}/section/update/${_id}`,
-            { code, libelleFr, libelleEn, departement },
+            `${api}/departement-academique/update/${_id}`,
+            { code, libelleFr, libelleEn },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,15 +40,15 @@ export async function apiUpdateSection({ _id, code, libelleFr, libelleEn, depart
 
         return response.data;
     } catch (error) {
-        console.error('Error updating departement:', error);
+        console.error('Error updating departement academique:', error);
         throw error;
     }
 }
 
-export async function apiDeleteSection(sectionId: string): Promise<ReponseApiPros> {
+export async function apiDeleteDepartementAcademique(departementacademiqueId: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
-            `${api}/section/delete/${sectionId}`,
+            `${api}/departement-academique/delete/${departementacademiqueId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +59,7 @@ export async function apiDeleteSection(sectionId: string): Promise<ReponseApiPro
 
         return response.data;
     } catch (error) {
-        console.error('Error deleting departement:', error);
+        console.error('Error deleting departement academique:', error);
         throw error;
     }
 }

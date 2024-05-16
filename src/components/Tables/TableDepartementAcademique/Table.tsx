@@ -8,24 +8,24 @@ import { useTranslation } from "react-i18next";
 import { setShowModal } from "../../../_redux/features/setting";
 import { RootState } from "../../../_redux/store";
 
-interface TableSectionProps {
-    data: SectionProps[];
+interface TableDepartementAcademiqueProps {
+    data: CommonSettingProps[];
     onCreate: () => void;
-    onEdit: (section: SectionProps) => void;
+    onEdit: (departementAcademique: CommonSettingProps) => void;
 }
 
-const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
+const Table = ({ data, onCreate, onEdit }: TableDepartementAcademiqueProps) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
-    // Filtrer les section en fonction de la langue
-    const filterSections = (sections: SectionProps[]) => {
-        if (sections) {
-            return sections.filter(section => {
-                const libelle = lang === 'fr' ? section.libelleFr : section.libelleEn;
+    // Filtrer les departementAcademique en fonction de la langue
+    const filterDepartementAcademiques = (departementAcademiques: CommonSettingProps[]) => {
+        if (departementAcademiques) {
+            return departementAcademiques.filter(departementAcademique => {
+                const libelle = lang === 'fr' ? departementAcademique.libelleFr : departementAcademique.libelleEn;
                 // Vérifie si le code ou le libellé contient le texte de recherche
-                return section.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
+                return departementAcademique.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
             });
         } else {
             return [];
@@ -36,18 +36,18 @@ const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
     const [searchText, setSearchText] = useState<string>('');
 
     // Régions filtrées en fonction du texte de recherche
-    const filteredSections = filterSections(data);
+    const filteredDepartementAcademiques = filterDepartementAcademiques(data);
 
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    title={t('boutton.nouvelle_section')}
+                    title={t('boutton.nouvelle_departementAcademique')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />
 
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.section')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.departementAcademique')} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -60,7 +60,7 @@ const Table = ({ data, onCreate, onEdit }: TableSectionProps) => {
 
 
                         {/* corp du tableau*/}
-                        <BodyTable data={filteredSections} onEdit={onEdit} />
+                        <BodyTable data={filteredDepartementAcademiques} onEdit={onEdit} />
 
                     </table>
                 </div>

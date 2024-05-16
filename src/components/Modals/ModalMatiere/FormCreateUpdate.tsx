@@ -12,7 +12,7 @@ import { createMatiere, updateMatiere } from '../../../_redux/features/matiere_s
 function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -26,7 +26,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const [evaluationAcquisEn, setEvaluationAcquisEn] = useState("");
     const [approchePedFr, setApprochePedFr] = useState("");
     const [approchePedEn, setApprochePedEn] = useState("");
-    const [section, setSection] = useState<CommonSettingProps>();
+    const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [enseignements, setEnseignements] = useState<EnseignementType[] | undefined>([]);

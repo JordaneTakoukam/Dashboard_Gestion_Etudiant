@@ -1,8 +1,5 @@
 import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
-import Table from "../../components/Tables/TableSection/Table";
-import FormCreateUpdate from "../../components/Modals/ModalSection/FormCreateUpdate";
-import FormDelete from "../../components/Modals/ModalSection/FormDelete";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
@@ -12,26 +9,29 @@ import { PageNoData } from "../../components/_Global/PageNoData";
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from "../../_redux/features/data_setting_slice";
 import { apiGetAllSettings } from "../../api/settings/api_data_setting";
 import { setShowModal } from "../../_redux/features/setting";
+import Table from "../../components/Tables/TableDepartementAcademique/Table";
+import FormCreateUpdate from "../../components/Modals/ModalDepartementAcademique/FormCreateUpdate";
+import FormDelete from "../../components/Modals/ModalDepartementAcademique/FormDelete";
 
 
-const Sections = () => {
+const DepartementsAcademique = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
-    const [selectedSection, setSelectedSection] = useState<SectionProps | null>(null);
-    const handleEditSection = (section: SectionProps) => {
-        setSelectedSection(section);
+    const [selecteddepartementAcademique, setSelecteddepartementAcademique] = useState<CommonSettingProps | null>(null);
+    const handleEditdepartementAcademique = (departementAcademique: CommonSettingProps) => {
+        setSelecteddepartementAcademique(departementAcademique);
     }
-    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections);
-    const handleAddSection = () => {
-        setSelectedSection(null);
+    const departementsAcademique = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique);
+    const handleAdddepartementAcademique = () => {
+        setSelecteddepartementAcademique(null);
     }
 
 
     const pageIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const handleCreate = () => {
-        handleAddSection();
+        handleAdddepartementAcademique();
         dispatch(setShowModal())
     }
     const handleRefresh = async () => {
@@ -46,31 +46,31 @@ const Sections = () => {
     }
     return (
         <>
-            <Breadcrumb pageName={t('sub_menu.sections')} />
+            <Breadcrumb pageName={t('sub_menu.departementsAcademique')} />
 
             {
                 pageIsLoading ?
                     <LoadingTable /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
-                        sections.length === 0 ?
+                        departementsAcademique.length === 0 ?
                             <PageNoData
-                                titrePage={t('aucun.section')}
-                                titreBouton={t('ajouter_votre_premier.section')}
+                                titrePage={t('aucun.departementAcademique')}
+                                titreBouton={t('ajouter_votre_premier.departementAcademique')}
                                 showModalCreate={handleCreate}
                                 refreshFunction={handleRefresh} />
                             : <Table
-                                data={sections}
-                                onCreate={handleAddSection}
-                                onEdit={handleEditSection} />
+                                data={departementsAcademique}
+                                onCreate={handleAdddepartementAcademique}
+                                onEdit={handleEditdepartementAcademique} />
 
             }
 
-            <FormCreateUpdate section={selectedSection} />
-            <FormDelete section={selectedSection} />
+            <FormCreateUpdate departementAcademique={selecteddepartementAcademique} />
+            <FormDelete departementAcademique={selecteddepartementAcademique} />
 
         </>
     );
 };
 
-export default Sections;
+export default DepartementsAcademique;

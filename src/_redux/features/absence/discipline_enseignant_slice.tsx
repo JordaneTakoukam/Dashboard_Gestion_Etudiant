@@ -57,6 +57,16 @@ const disciplineEnseignantSlice = createSlice({
                 enseignant.absences.unshift(action.payload);
             }
         },
+
+        modifierAbsenceEnseignant(state, action: PayloadAction<AbsenceType>) {
+    
+            const enseignant = state.selected.user;
+            console.log(enseignant)
+            if (enseignant && enseignant.absences) {
+                enseignant.absences = enseignant.absences.filter(absence => absence._id !== action.payload._id);
+                enseignant.absences.unshift(action.payload);
+            }
+        },
         // Add an action to remove absence for an enseignant by ID
         retirerAbsenceEnseignant(state, action: PayloadAction<{ absenceId: string }>) {
             const { absenceId } = action.payload;
@@ -80,6 +90,7 @@ export const {
     setSemestreDisciplineEns,
     setAnneeDisciplineEns,
     ajouterAbsenceEnseignant,
+    modifierAbsenceEnseignant,
     retirerAbsenceEnseignant
 } = disciplineEnseignantSlice.actions;
 

@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { RootState } from "../../../../_redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { MdDateRange, MdDeleteForever, MdExpandLess, MdExpandMore } from "react-icons/md";
-import { nbTotalAbsences } from "../../../../fonctions/fonction";
+import { MdClose, MdDateRange, MdDeleteForever, MdDone, MdExpandLess, MdExpandMore } from "react-icons/md";
+import { calculAbsence, nbTotalAbsences, nbTotalAbsencesJustifier, nbTotalAbsencesNonJustifier } from "../../../../fonctions/fonction";
 
 
 interface CardListAbsenceProps {
-    listAbsence: AbsenceType[];
-    onEdit: (absence: AbsenceType, isHourRemove: boolean) => void;
+    user: UserDiscipline;
+    onEdit: (absence: AbsenceType, isHourRemove: boolean, isJustify:boolean) => void;
 }
 
-const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }) => {
+const CardListAbsence: React.FC<CardListAbsenceProps> = ({ user, onEdit }) => {
     const { t } = useTranslation();
 
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -22,7 +22,7 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
     const groupAbsencesByMonthYear = () => {
         const groupedAbsences: { [monthYear: string]: { [date: string]: AbsenceType[] } } = {};
 
-        listAbsence.forEach((absence) => {
+        user.absences.forEach((absence) => {
             const monthYear = format(new Date(absence.dateAbsence), lang === "fr" ? "MMMM yyyy" : "MMMM yyyy");
             const date = format(new Date(absence.dateAbsence), lang === "fr" ? "dd MMMM yyyy" : "dd MMMM yyyy");
 
@@ -47,9 +47,37 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
     };
 
     const handleDeleteClick = (absence: AbsenceType, isHourRemove: boolean) => {
-        onEdit(absence, isHourRemove);
+        onEdit(absence, isHourRemove, false);
     };
 
+    const handleJustifierClick = (absence: AbsenceType, isJustify:boolean) => {
+        onEdit(absence, false, isJustify);
+    };
+
+    const [absenceStates, setAbsenceStates] = useState<{ [absenceId: string]: boolean }>({});
+
+    // Fonction pour déterminer l'état de chaque absence
+    const determineAbsenceStates = () => {
+        const states: { [absenceId: string]: boolean } = {};
+        user.absences.forEach((absence) => {
+            // Utilisez la valeur de la propriété 'etat' pour déterminer l'état de l'absence
+            states[absence._id] = absence.etat === 1;
+        });
+        return states;
+    };
+
+    // Mettre à jour l'état initial des absences
+    useEffect(() => {
+        setAbsenceStates(determineAbsenceStates());
+    }, [user.absences]);
+
+    // Fonction pour changer l'état d'une absence
+    const toggleAbsenceState = (absenceId: string) => {
+        setAbsenceStates(prevStates => ({
+            ...prevStates,
+            [absenceId]: !prevStates[absenceId]
+        }));
+    };
 
     const renderAbsenceList = () => {
         const groupedAbsences = groupAbsencesByMonthYear();
@@ -63,7 +91,9 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                         <MdDateRange />
                         <h3 className="font-semibold">{monthYear}</h3>
                         {showAllDates[monthYear] ? <MdExpandLess /> : <MdExpandMore />}
-                        <p className="pl-5">{nbTotalAbsences(Object.values(absencesByDate).flat())} {nbTotalAbsences(Object.values(absencesByDate).flat()) <= '1' ? t('menu.heure_d_absence') : t('menu.heures_d_absences')}</p>
+                        <p className="pl-5">{nbTotalAbsences(Object.values(absencesByDate).flat())} H (Total) </p>
+                        <p className="pl-5">{nbTotalAbsencesJustifier(Object.values(absencesByDate).flat())} H ({t('label.justifier')})  </p>
+                        <p className="pl-5">{nbTotalAbsencesNonJustifier(Object.values(absencesByDate).flat())} H ({t('label.non_justifier')}) </p>
                     </div>
 
                     {showAllDates[monthYear] && Object.entries(absencesByDate).map(([date, absences], idx) => (
@@ -76,7 +106,9 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                         flex px-5 items-center justify-start gap-x-1 mb-2 cursor-pointer hover:bg-form-strokedark hover:text-white  duration-300 p-2`} onClick={() => toggleDateGroup(date)}>
                                     <h3 className="font-semibold">{date}</h3>
                                     {showAllDates[date] ? <MdExpandLess /> : <MdExpandMore />}
-                                    <p className="pl-5">{nbTotalAbsences(absences)} {nbTotalAbsences(absences) <= '1' ? t('menu.heure_d_absence') : t('menu.heures_d_absences')}</p>
+                                    <p className="pl-5">{nbTotalAbsences(absences)} H (Total) </p>
+                                    <p className="pl-5">{nbTotalAbsencesJustifier(absences)} H ({t('label.justifier')})</p>
+                                    <p className="pl-5">{nbTotalAbsencesNonJustifier(absences)} H ({t('label.non_justifier')})</p>
 
                                 </div>
 
@@ -86,7 +118,9 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                                         <div className="flex flex-col  lg:flex-row justify-start lg:justify-between items-start lg:items-center w-full hover:bg-[#1111] duration-300 px-4 rounded-sm py-3 lg:py-1 mb-1">
                                             <p>{`${absence.heureDebut} - ${absence.heureFin}`}</p>
 
-                                            <p >{nbTotalAbsences([absence])} {[absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </p>
+                                            {/* <p >{nbTotalAbsences([absence])} {[absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </p> */}
+                                            <p >{calculAbsence(absence)+" H"}</p>
+                                            
                                             {absence?.dateCreation && (
                                                 <p className="text-sm">
                                                     ({t('gestion_absence.ajouter_le')} : {lang === "fr" ?
@@ -95,15 +129,27 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
                                                 </p>
                                             )}
 
-
-
+                                            {/* <button onClick={() => toggleAbsenceState(absence._id)}>
+                                                {absenceStates[absence._id] ? "Justifiée" : "Non justifiée"}
+                                            </button> */}
+                                            
+                                            <div className="flex">
                                             <button
-                                                className="text-meta-1 flex justify-center items-center hover:underline"
-                                                onClick={() => handleDeleteClick(absence, true)}
+                                                className={`mr-4 flex justify-center items-center hover:underline ${absence.etat == 0 ? 'text-red-500' : 'text-meta-3'}`}
+                                                onClick={() => handleJustifierClick(absence, true)}
                                             >
-                                                <MdDeleteForever className=" hover:underline grou" />
-                                                {t('Retirer')}
+                                                {absence.etat === 0 ? <MdClose className="hover:underline grou" /> : <MdDone className="hover:underline grou"/>}
+                                                {absence.etat === 0 ? t('label.non_justifier') : t('label.justifier')}
                                             </button>
+                                                <button
+                                                    className="text-meta-1 flex justify-center items-center hover:underline"
+                                                    onClick={() => handleDeleteClick(absence, true)}
+                                                >
+                                                    <MdDeleteForever className=" hover:underline grou" />
+                                                    {t('Retirer')}
+                                                </button>
+                                                
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -116,7 +162,7 @@ const CardListAbsence: React.FC<CardListAbsenceProps> = ({ listAbsence, onEdit }
 
     return (
         <>
-            {listAbsence.length === 0 ? (
+            {user.absences.length === 0 ? (
                 <div className={`
             flex items-center justify-center
                 my-4

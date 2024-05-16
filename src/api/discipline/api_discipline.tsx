@@ -81,7 +81,7 @@ export async function apiGetAllAbsencesWithEnseignantsByFilter({semestre, annee 
     }
 }
 
-export async function generateListAbsenceEnseignant({semestre, annee }: { semestre?: Number, annee?: Number}): Promise<Blob> {
+export async function generateListAbsenceEnseignant({langue, semestre, annee }: {langue:string, semestre?: Number, annee?: Number}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListAbsenceEnseignant`,
@@ -92,7 +92,8 @@ export async function generateListAbsenceEnseignant({semestre, annee }: { semest
                 },
                 params: {
                     semestre: semestre,
-                    annee: annee
+                    annee: annee,
+                    langue:langue
                 },
                 responseType: 'blob',
             },
@@ -159,18 +160,21 @@ export async function apiGetAllAbsencesWithEtudiantsByFilter({semestre, annee, n
     }
 }
 
-export async function generateListAbsenceEtudiant({semestre, annee, niveauId }: { semestre?: Number, annee?: Number, niveauId:string }): Promise<Blob> {
+export async function generateListAbsenceEtudiant({semestre, annee, departement, section, cycle, niveau, langue }: { semestre?: Number, annee?: Number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateListAbsenceEtudiant/${niveauId}`,
+            `${api}/generateListAbsenceEtudiant/${annee}/${semestre}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
                 },
                 params: {
-                    semestre: semestre,
-                    annee: annee
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },
@@ -271,3 +275,25 @@ export async function apiDeleteAbsence({ userId, absenceId }: DeleteAbsenceType)
         throw error;
     }
 }
+
+export async function apiJustifierAbsence({userId, ...absence }: UpdateAbsenceType): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${api}/update`,
+            { ...absence },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error creating section:', error);
+        throw error;
+    }
+}
+
+

@@ -51,6 +51,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const [section, setSection] = sections.length>0?useState<SectionProps>(sections[0]):useState<SectionProps>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -303,8 +304,9 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             }
 
             if(selected === 'PDF'){
-                if(selectNiveauId){
-                    await generateListAbsenceEtudiant({  annee:selectedYear, semestre:selectSemestre, niveauId:selectNiveauId}).then((blob)=>{
+                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+                if(section && cycle && niveau && departement){
+                    await generateListAbsenceEtudiant({  annee:selectedYear, semestre:selectSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);

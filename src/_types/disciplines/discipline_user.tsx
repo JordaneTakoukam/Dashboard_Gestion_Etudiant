@@ -89,6 +89,20 @@ interface CreateAbsenceType {
     dateAbsence: string,
     heureDebut: string,
     heureFin: string,
+    etat:number,
+    motif:string
+}
+
+interface UpdateAbsenceType {
+    _id:string,
+    userId: string,
+    semestre: Number,
+    annee: Number,
+    dateAbsence: string,
+    heureDebut: string,
+    heureFin: string,
+    etat:number,
+    motif:string
 }
 
 

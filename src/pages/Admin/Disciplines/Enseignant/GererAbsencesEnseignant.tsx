@@ -9,6 +9,7 @@ import SectionNomEtAction from "../Componants/SectionNomEtAction";
 import CardListAbsence from "../Componants/CardListAbsence";
 import ButtonCreate from "../../../../components/Tables/common/ButtonCreate";
 import { setShowModal } from "../../../../_redux/features/setting";
+import { set } from "date-fns";
 
 
 
@@ -18,21 +19,34 @@ const GererAbsencesEnseignant = () => {
     const dispatch = useDispatch();
     const selectedEnseignant = useSelector((state: RootState) => state.enseignantDisciplineSlice.selected.user);
     const [isHourRemove, setHourRemove] = useState(false);
+    const [isJustify, setJustify] = useState(false);
 
     const [enseignantCustomSelected, setEnseignantCustomSelected] = useState<CustomEnseignantSelect>({ absence: undefined, user: selectedEnseignant })
 
-    const handleEditHourEnseignant = (absence: AbsenceType, isHourRemove: boolean) => {
-        handleShowModal();
-        setHourRemove(isHourRemove);
+    const handleEditHourEnseignant = (absence: AbsenceType, isHourRemove: boolean, isJustify: boolean) => {
+        
+        if(isHourRemove){
+            setHourRemove(isHourRemove);
+            setJustify(false);
+        }
+
+        if(isJustify){
+            setJustify(isJustify);
+            setHourRemove(false);
+        }
+        
         if (selectedEnseignant) {
             // contien l'utilisateur et l'objet absence a supprimer
             setEnseignantCustomSelected({ absence: absence, user: selectedEnseignant })
         }
+
+        handleShowModal();
     }
 
     const handleAddHourEnseignant = () => {
         handleShowModal();
         setHourRemove(false);
+        setJustify(false)
         setEnseignantCustomSelected({ absence: undefined, user: selectedEnseignant })
     }
 
@@ -42,7 +56,7 @@ const GererAbsencesEnseignant = () => {
 
     useEffect(() => {
         if (selectedEnseignant === undefined) {
-            navigate('/teachers/disciplines/')
+            navigate('/students/disciplines/')
         }
     }, [selectedEnseignant])
     return (
@@ -55,14 +69,14 @@ const GererAbsencesEnseignant = () => {
 
             {selectedEnseignant &&
                 <>
-                    <SectionNomEtAction user={selectedEnseignant} isStudent={false}/>
-                    <CardListAbsence listAbsence={selectedEnseignant.absences} onEdit={handleEditHourEnseignant} />
+                    <SectionNomEtAction user={selectedEnseignant} isStudent={true}/>
+                    <CardListAbsence user={selectedEnseignant} onEdit={handleEditHourEnseignant} />
                 </>
             }
 
 
             {
-                <ModalCreateUpdateAbsence isStudent={false} user={enseignantCustomSelected} isHourRemove={isHourRemove} />
+                <ModalCreateUpdateAbsence isStudent={false} user={enseignantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
             }
 
             {/* Boite de dialogue */}

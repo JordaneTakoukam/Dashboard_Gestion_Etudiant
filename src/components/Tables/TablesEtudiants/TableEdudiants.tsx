@@ -35,12 +35,12 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentYear:number=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const firstYear:number=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
+    const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.etudiantSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     
@@ -125,6 +125,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     }
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
+        
         try{
             setIsDownload(true);
             let title = "liste_des_etudiants_"+formatYear(selectedYear);
@@ -132,7 +133,8 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 title = "students_list_"+formatYear(selectedYear);
             }
             if(selected === 'PDF'){
-                const departement=section && departements.find(dep=>dep._id===section.departement);
+                
+                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
                 if(section && cycle && niveau && departement){
                     
                     await generateListEtudiant({annee:selectedYear, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{

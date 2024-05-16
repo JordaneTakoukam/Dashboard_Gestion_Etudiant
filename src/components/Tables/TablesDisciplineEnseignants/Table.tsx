@@ -196,7 +196,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     title = "abscences_teacher_list";
                 }
                 if(selected === 'PDF'){
-                    await generateListAbsenceEnseignant({  annee:selectedYear, semestre:selectSemestre}).then((blob)=>{
+                    await generateListAbsenceEnseignant({ langue:lang, annee:selectedYear, semestre:selectSemestre}).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);

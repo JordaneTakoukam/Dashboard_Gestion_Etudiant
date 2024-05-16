@@ -64,7 +64,7 @@ export async function apiGetEnseignants({ grade, categorie, service, fonction }:
     }
 }
 
-export async function generateListEnseignant({ grade, categorie, service, fonction }: { grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<Blob> {
+export async function generateListEnseignant({ langue, annee, grade, categorie, service, fonction }: { langue:string, annee:number, grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListEnseignant`,
@@ -74,6 +74,8 @@ export async function generateListEnseignant({ grade, categorie, service, foncti
                     'token': token,
                 },
                 params: {
+                    langue:langue,
+                    annee:annee,
                     grade: grade,
                     categorie: categorie,
                     service: service,

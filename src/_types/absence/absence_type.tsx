@@ -8,6 +8,8 @@ interface AbsenceType {
     dateAbsence: Date,
     heureDebut: string,
     heureFin: string,
+    etat:number,
+    motif:string
 }
 
 // interface AbsenceInitialData {

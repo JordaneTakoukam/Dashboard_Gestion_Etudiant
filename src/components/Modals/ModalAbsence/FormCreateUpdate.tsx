@@ -5,14 +5,14 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
-import { apiCreateAbsence, apiDeleteAbsence } from '../../../api/discipline/api_discipline';
+import { apiCreateAbsence, apiDeleteAbsence, apiJustifierAbsence } from '../../../api/discipline/api_discipline';
 import createToast from '../../../hooks/toastify';
-import { ajouterAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
+import { ajouterAbsenceEnseignant, modifierAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
 import { nbTotalAbsences } from '../../../fonctions/fonction';
-import { ajouterAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
+import { ajouterAbsenceEtudiant, modifierAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
 
 
-function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }: { isStudent:boolean,user: CustomEnseignantSelect | CustomEtudiantSelect | CustomUserSelect| null, isSignaled?: boolean, isHourRemove: boolean }) {
+function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, isJustify }: { isStudent:boolean,user: CustomEnseignantSelect | CustomEtudiantSelect | CustomUserSelect| null, isSignaled?: boolean, isHourRemove: boolean, isJustify:boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -31,6 +31,8 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
     };
 
     const [debutPeriode, setDebutPeriode] = useState("");
+    const [motif, setMotif]=useState("");
+    const [etat, setEtat]=useState(1);
     const [finPeriode, setFinPeriode] = useState('');
     const [semestre, setSemestre] = useState<string>(semestreCourant.toString());
 
@@ -63,7 +65,22 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
         setDebutPeriode("");
         setFinPeriode("");
         setSemestre('1');
-        if (isHourRemove) {
+        
+        if(isJustify){
+            if (user?.user) {
+                setMotif(user.absence?.motif??"");
+                if(user.absence?.etat==0){
+                    setModalTitle(t('form_update.etat_absence_non_just') + user?.user.nom + " " + user?.user.prenom);
+                    setEtat(1);
+                }else{
+                    setModalTitle(t('form_update.etat_absence_just') + user?.user.nom + " " + user?.user.prenom);
+                    setEtat(0);
+                }
+                
+            } else {
+                setModalTitle("");
+            }
+        }else if (isHourRemove) {
             if (user?.user) {
                 setModalTitle(t('form_delete.absence') + user?.user.nom + " " + user?.user.prenom);
             } else {
@@ -88,7 +105,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
             setErrorSemestre("");
             setIsFirstRender(false);
         }
-    }, [isHourRemove, isSignaled, user, isFirstRender, t]);
+    }, [isHourRemove, isJustify, isSignaled, user, isFirstRender, t]);
 
     const closeModal = () => {
         setErrorDate("");
@@ -139,8 +156,39 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
             }
-        }
-        else {
+        }else if(isJustify){
+            if (user?.user && user.absence?._id) {
+                
+                await apiJustifierAbsence(
+                    {
+                        _id:user.absence?._id,
+                        userId: user?.user?._id,
+                        semestre: parseInt(semestre),
+                        annee: anneeAcademique,
+                        dateAbsence: date,
+                        heureDebut: debutPeriode,
+                        heureFin: finPeriode,
+                        etat:etat,
+                        motif:etat==1?motif:""
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);
+                        if(isStudent){
+                            dispatch(modifierAbsenceEtudiant({ ...e.data }));
+
+                        }else{
+                            dispatch(modifierAbsenceEnseignant({ ...e.data }));
+                        }
+                        closeModal();
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    }
+                }).catch((e) => {
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
+        }else {
             if (!date || !debutPeriode || !finPeriode || !semestre) {
                 if (!semestre) {
                     setErrorSemestre(t('error.semestre'));
@@ -172,6 +220,8 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                         dateAbsence: date,
                         heureDebut: debutPeriode,
                         heureFin: finPeriode,
+                        etat:0,
+                        motif:""
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -199,13 +249,13 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
             <CustomDialogModal
                 title={modalTitle} // Utilisation du titre dynamique
                 isModalOpen={isModalOpen}
-                isDelete={isHourRemove ? true : false}
+                isDelete={isHourRemove || isJustify ? true : false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
 
                 {
-                    !isHourRemove ?
+                    !isHourRemove && !isJustify ?
                         <div>
                             <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
                             <select
@@ -247,7 +297,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                             {errorFinPeriode && <p className="text-red-500" >{errorFinPeriode}</p>}
 
                         </div>
-                        : <div>
+                        :!isJustify && isHourRemove? <div>
                             {
                                 user?.absence && <div>
                                     <p className='pb-3'>{t('gestion_absence.semestre')} : {user?.absence?.semestre.toString()}</p>
@@ -262,6 +312,30 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                             }
 
 
+                            </div>
+                        :<div>
+                            {
+                                user?.absence && <div>
+                                    <p className='pb-3'>{t('gestion_absence.semestre')} : {user?.absence?.semestre.toString()}</p>
+
+                                    <p className=' pb-3'>{t('gestion_absence.date')} : {lang === 'fr' ? new Date(user?.absence?.dateAbsence).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : new Date(user?.absence?.dateAbsence).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+
+                                    <p className=' pb-3'>{t('label.heureDebut')} : {user.absence.heureDebut}</p>
+
+                                    <p className=' pb-3'>{t('label.heureFin')} : {user.absence.heureFin}</p>
+
+                                    <p className=' pb-3'>{t('gestion_absence.nombre_heure_absence')} : <span className='text-meta-1 font-medium'>{nbTotalAbsences([user.absence])} {[user.absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </span></p>
+                                    <input
+                                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="text"
+                                        value={motif}
+                                        
+                                        maxLength={100} // Limite à 100 caractères
+                                        placeholder={t('label.motif')}
+                                        onChange={(e) => { setMotif(e.target.value); }}
+                                    />
+                                </div>
+                            }
                         </div>
                 }
 

@@ -9,14 +9,16 @@ import { formatYear } from "../../../../fonctions/fonction";
 
 interface CardGestionUserProps {
     title: String,
-    value?: String,
+    value?: string,
+    heureJustifier?:string,
+    heureNonJustifier?:string,
     id: number,
     isStudent?:boolean
 }
 
 
 
-export const CardGestionUser = ({ title, value, id, isStudent}: CardGestionUserProps) => {
+export const CardGestionUserHeure = ({ title, value, heureJustifier,heureNonJustifier, id, isStudent}: CardGestionUserProps) => {
     const { t } = useTranslation();
     const { semestre, annee } = !isStudent?useSelector((state: RootState) => state.enseignantDisciplineSlice.selected):useSelector((state: RootState) => state.etudiantDisciplineSlice.selected)
     
@@ -44,16 +46,31 @@ export const CardGestionUser = ({ title, value, id, isStudent}: CardGestionUserP
                 </h3>
             </div>
 
-            
+
             <div className="flex items-start justify-center">
                 <h3 className={` mt-0  text-[13px] xl:text-[14px] text-start  font-semibold
                 ${id === 102 && value === '0' && 'text-meta-3'}
                 ${id === 102 && value !== '0' && 'text-[#fd0707f3]'}
                 `}>
-                    {value} <span className="pl-1">
-                        {id === 101 && semestre}
-                        {id === 102 && value && "H"}
-                    </span>
+                    {value+' H (Total)'} 
+                </h3>
+
+            </div>
+
+            <div className="flex items-start justify-center">
+                <h3 className={` mt-0  text-[13px] xl:text-[14px] text-start  font-semibold text-meta-3
+               
+                `}>
+                    {heureJustifier+' H ('+t('label.justifier')+')'} 
+                </h3>
+
+            </div>
+            <div className="flex items-start justify-center">
+                <h3 className={` mt-0  text-[13px] xl:text-[14px] text-start  font-semibold
+                ${id === 102 && heureNonJustifier === '0' && 'text-meta-3'}
+                ${id === 102 && heureNonJustifier !== '0' && 'text-[#fd0707f3]'}
+                `}>
+                    {heureNonJustifier+' H ('+t('label.non_justifier')+')'} 
                 </h3>
 
             </div>

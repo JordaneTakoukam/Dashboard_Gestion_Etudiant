@@ -93,6 +93,9 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "motif":"Saisir le motif de l'absence ici, pas plus de 100 caractères",
+    "justifier":"Justifier",
+    "non_justifier":"Non justifier",
     "download":"Téléchargement en cours",
     "ajouter": "Ajouter",
     "roles": "Roles",
@@ -343,6 +346,8 @@
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
+    "etat_absence_just":"Modifier l'état de l'absence justifier en non justifier pour l'étudiant : ",
+    "etat_absence_non_just":"Modifier l'état de l'absence non justifier en justifier pour l'étudiant : ",
     "roles": "Modifier le rôle de l'étudiant",
     "absence": "Ajouter une absence : ",
     "signaler": "Signaler mon absence",

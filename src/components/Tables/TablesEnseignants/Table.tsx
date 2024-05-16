@@ -37,7 +37,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-
+    const currentYear:number=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const grades = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
     const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
@@ -117,7 +117,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                     fonctionId = fonction._id;
                 }
                 
-                await generateListEnseignant({ grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId }).then((blob)=>{
+                await generateListEnseignant({langue:lang, annee:currentYear, grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId }).then((blob)=>{
                     // Créer un objet URL pour le blob PDF
                     if(blob){
                         createPDF(blob, title);

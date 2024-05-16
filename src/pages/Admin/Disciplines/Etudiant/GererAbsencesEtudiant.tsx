@@ -9,6 +9,7 @@ import SectionNomEtAction from "../Componants/SectionNomEtAction";
 import CardListAbsence from "../Componants/CardListAbsence";
 import ButtonCreate from "../../../../components/Tables/common/ButtonCreate";
 import { setShowModal } from "../../../../_redux/features/setting";
+import { set } from "date-fns";
 
 
 
@@ -18,21 +19,34 @@ const GererAbsencesEtudiant = () => {
     const dispatch = useDispatch();
     const selectedEtudiant = useSelector((state: RootState) => state.etudiantDisciplineSlice.selected.user);
     const [isHourRemove, setHourRemove] = useState(false);
+    const [isJustify, setJustify] = useState(false);
 
     const [etudiantCustomSelected, setEtudiantCustomSelected] = useState<CustomEtudiantSelect>({ absence: undefined, user: selectedEtudiant })
 
-    const handleEditHourEtudiant = (absence: AbsenceType, isHourRemove: boolean) => {
-        handleShowModal();
-        setHourRemove(isHourRemove);
+    const handleEditHourEtudiant = (absence: AbsenceType, isHourRemove: boolean, isJustify: boolean) => {
+        
+        if(isHourRemove){
+            setHourRemove(isHourRemove);
+            setJustify(false);
+        }
+
+        if(isJustify){
+            setJustify(isJustify);
+            setHourRemove(false);
+        }
+        
         if (selectedEtudiant) {
             // contien l'utilisateur et l'objet absence a supprimer
             setEtudiantCustomSelected({ absence: absence, user: selectedEtudiant })
         }
+
+        handleShowModal();
     }
 
     const handleAddHourEtudiant = () => {
         handleShowModal();
         setHourRemove(false);
+        setJustify(false)
         setEtudiantCustomSelected({ absence: undefined, user: selectedEtudiant })
     }
 
@@ -56,13 +70,13 @@ const GererAbsencesEtudiant = () => {
             {selectedEtudiant &&
                 <>
                     <SectionNomEtAction user={selectedEtudiant} isStudent={true}/>
-                    <CardListAbsence listAbsence={selectedEtudiant.absences} onEdit={handleEditHourEtudiant} />
+                    <CardListAbsence user={selectedEtudiant} onEdit={handleEditHourEtudiant} />
                 </>
             }
 
 
             {
-                <ModalCreateUpdateAbsence isStudent={true} user={etudiantCustomSelected} isHourRemove={isHourRemove} />
+                <ModalCreateUpdateAbsence isStudent={true} user={etudiantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
             }
 
             {/* Boite de dialogue */}

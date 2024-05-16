@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { nbTotalAbsences } from "../../../fonctions/fonction"
+import { nbTotalAbsences, nbTotalAbsencesJustifier, nbTotalAbsencesNonJustifier } from "../../../fonctions/fonction"
 import { useNavigate } from "react-router-dom"
 import { setEnseignantSelected } from "../../../_redux/features/absence/discipline_enseignant_slice"
 import { MdOutlineManageAccounts } from "react-icons/md";
@@ -40,13 +40,20 @@ const BodyTable = ({ data }: { data: UserDiscipline[] }) => {
                 </td>
 
                 {/* contact */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                {/* <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
                     <h5>{item.contact ? item.contact : ""}</h5>
-                </td>
+                </td> */}
 
                 {/* nombre d'heure d'absence */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{nbTotalAbsences(item.absences)}</h5>
+                </td>
+
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{nbTotalAbsencesJustifier(item.absences)}</h5>
+                </td>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{nbTotalAbsencesNonJustifier(item.absences)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}

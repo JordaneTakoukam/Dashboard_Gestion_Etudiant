@@ -93,6 +93,9 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "motif": "Enter the reason for absence here, no more than 100 characters",
+    "justifier":"To justify",
+    "non_justifier":"Not to justify",
     "download":"Download in progress",
     "ajouter": "Add",
     "roles": "Roles",
@@ -343,6 +346,8 @@
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
+    "etat_absence_just":"Change the status of the justified absence to unjustified for the student : ",
+    "etat_absence_non_just":"Change the status of the unjustified absence to justified for the student : ",
     "roles": "Modify the role of the student",
     "absence": "Add an absence:",
     "signaler": "Report my absence",

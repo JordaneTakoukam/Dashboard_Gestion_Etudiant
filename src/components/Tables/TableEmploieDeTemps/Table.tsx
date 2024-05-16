@@ -263,8 +263,8 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 title = "timetable"+formatYear(selectedYear)+"_semester_"+selectedSemestre;;
             }
             if(selected === 'PDF'){
-                if(selectNiveauId){
-                    await generateEmploisDuTemps({ niveauId: selectNiveauId, annee: selectedYear, semestre: selectedSemestre }).then((blob)=>{
+                if(section && cycle && niveau){
+                    await generateEmploisDuTemps({section : section, cycle:cycle, niveau:niveau, langue:lang, annee: selectedYear, semestre: selectedSemestre }).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);
@@ -324,6 +324,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         if(!selectSectionId){
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
+                setSection(sections[0]);
             }
         }else{
             setFilteredCycle([]);

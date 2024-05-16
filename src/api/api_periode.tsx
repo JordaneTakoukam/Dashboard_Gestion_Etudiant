@@ -91,18 +91,20 @@ export async function getPeriodesByNiveau({ niveauId, annee, semestre }: { nivea
     }
 }
 
-export async function generateEmploisDuTemps({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<Blob> {
+export async function generateEmploisDuTemps({ section, cycle, niveau, langue, annee, semestre }: {section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, annee:number, semestre:number }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateEmploisDuTemps/${niveauId}`,
+            `${api}/generateEmploisDuTemps/${annee}/${semestre}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
                 },
-                params : {
-                    annee:annee,
-                    semestre : semestre
+                params: {
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },

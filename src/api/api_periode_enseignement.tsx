@@ -121,18 +121,21 @@ export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { n
     }
 }
 
-export async function generateListPeriodeEnseignement({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number }): Promise<Blob> {
+export async function generateListPeriodeEnseignement({annee, semestre, departement, section, cycle, niveau, langue }: {annee:number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateListPeriodeEnseignement/${niveauId}`,
+            `${api}/generateListPeriodeEnseignement/${annee}/${semestre}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
                 },
                 params: {
-                    annee: annee,
-                    semestre:semestre
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },
@@ -148,7 +151,7 @@ export async function generateListPeriodeEnseignement({ niveauId, annee, semestr
     }
 }
 
-export async function generateProgressionPeriodeEnseignement({ periode }: { periode:PeriodeEnseignementType }): Promise<Blob> {
+export async function generateProgressionPeriodeEnseignement({ periode, departement, section, cycle, niveau, langue }: { periode:PeriodeEnseignementType, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateProgressionPeriodeEnseignement`,
@@ -158,7 +161,12 @@ export async function generateProgressionPeriodeEnseignement({ periode }: { peri
                     'token': token,
                 },
                 params: {
-                    periode: periode
+                    periode: periode,
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },

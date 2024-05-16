@@ -38,6 +38,7 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.periodeEnseignementSlice.pageIsLoading);
@@ -130,8 +131,9 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
                 title = "periods_list";
             }
             if(selected === 'PDF'){
-                if(selectNiveauId){
-                    await generateListPeriodeEnseignement({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre }).then((blob)=>{
+                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+                if(section && cycle && niveau && departement){
+                    await generateListPeriodeEnseignement({ annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang }).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);
@@ -282,9 +284,10 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
         if(!selectSectionId){
-            console.log("if");
+            
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
+                setSection(sections[0]);
             }
         }else{
             setFilteredCycle([]);

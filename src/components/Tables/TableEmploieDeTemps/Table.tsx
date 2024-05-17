@@ -430,13 +430,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                selectedItem={selectedSemestre}
-                                items={[1, 2]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -453,6 +447,15 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
+
                             <CustomDropDown2<NiveauProps>
                                 title={t('label.niveau')}
                                 items={filteredNiveaux}
@@ -479,13 +482,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                selectedItem={selectedSemestre}
-                                items={[1, 2]}
-                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
@@ -510,6 +507,14 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                 selectedItem={niveau}
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
+                            />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
                             />
                             
                         </div>

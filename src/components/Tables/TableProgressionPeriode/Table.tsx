@@ -371,13 +371,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                selectedItem={selectedSemestre}
-                                items={[1, 2]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -401,6 +395,13 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                                 selectedItem={niveau}
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
+                            />
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<PeriodeEnseignementType>
                                 title={t('label.periode')}
@@ -418,7 +419,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                        <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
                                 selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
@@ -426,13 +427,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                selectedItem={selectedSemestre}
-                                items={[1, 2]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -457,6 +452,15 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={currentSemester} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
+
                             <CustomDropDown2<PeriodeEnseignementType>
                                 title={t('label.periode')}
                                 selectedItem={periode}

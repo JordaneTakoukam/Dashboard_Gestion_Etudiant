@@ -49,7 +49,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
 
     // let matiere:Matiere=listMatieres[0];
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
+    const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en

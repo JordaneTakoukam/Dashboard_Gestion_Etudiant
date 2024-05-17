@@ -412,13 +412,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<string>
-                                title={t('label.semestre')}
-                                selectedItem={semestre}
-                                items={listSemestre}
-                                defaultValue={semestre}
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
@@ -442,6 +436,13 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
+                            />
+                            <CustomDropDown2<string>
+                                title={t('label.semestre')}
+                                selectedItem={semestre}
+                                items={listSemestre}
+                                defaultValue={semestre}
+                                onSelect={handleSemestreSelect}
                             />
                         </div>
                     )}
@@ -459,13 +460,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<string>
-                                title={t('label.semestre')}
-                                selectedItem={semestre}
-                                items={listSemestre}
-                                defaultValue={semestre}
-                                onSelect={handleSemestreSelect}
-                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
@@ -491,7 +486,13 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 onSelect={handleNiveauSelect}
                             />
 
-
+                            <CustomDropDown2<string>
+                                title={t('label.semestre')}
+                                selectedItem={semestre}
+                                items={listSemestre}
+                                defaultValue={semestre}
+                                onSelect={handleSemestreSelect}
+                            />
                         </div>
                     </div>
                 </div>

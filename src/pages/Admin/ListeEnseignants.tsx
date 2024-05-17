@@ -89,7 +89,7 @@ const ListeDesEnseignants = () => {
                             />
                             :
                             <div>
-                                <SectionRefresh refreshFunction={handleRefresh} />
+                                {/* <SectionRefresh refreshFunction={handleRefresh} /> */}
 
                                 <Table
                                     data={enseignants}

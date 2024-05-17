@@ -15,7 +15,7 @@ import LoadingTable from "../common/LoadingTable";
 import * as XLSX from 'xlsx';
 import { config } from "../../../config";
 import Download from "../common/Download";
-import { createPDF } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 
 const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }) => {
     const {t}=useTranslation();
@@ -50,6 +50,8 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     // let matiere:Matiere=listMatieres[0];
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 1;
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
@@ -66,6 +68,8 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
 
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
@@ -177,9 +181,9 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
             if (selectNiveauId) {
                 let fetchedMatieres = null
                 if(currentUser && currentUser.role===roles.enseignant){
-                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemester });
+                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
                 }else{
-                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId});
+                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre});
                 }
                 if(fetchedMatieres){
                     return fetchedMatieres.matieres;
@@ -203,21 +207,24 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                 title = "subjects_progression";
             }
             if(selected === 'PDF'){
-                if(selectNiveauId){
+                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+                if(selectNiveauId && section && cycle && niveau && departement){
                     if(currentUser && currentUser.role===roles.enseignant){
-                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemester } ).then((blob)=>{
+                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title);
                             }
                         })
                     }else{
-                        await generateProgressByNiveau({niveauId:selectNiveauId}).then((blob)=>{
-                            // Créer un objet URL pour le blob PDF
-                            if(blob){
-                                createPDF(blob, title);
-                            }
-                        })
+                        if(section && cycle && niveau && departement){
+                            await generateProgressByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
+                                // Créer un objet URL pour le blob PDF
+                                if(blob){
+                                    createPDF(blob, title);
+                                }
+                            })
+                        }
                     }
                 }
                 
@@ -271,12 +278,25 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
         
     }
 
+    const handleAnneeSelect = (selected: String | undefined) => {
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
+    };
+
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
+        }
+    };
+
     //fournir initialement les données à la page
     useEffect(() => {
         if(!selectSectionId){
             console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
+                setSection(sections[0]);
             }
         }else{
             setFilteredCycle([]);
@@ -337,9 +357,9 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                         
                         let fetchedMatieres = null
                         if(currentUser && currentUser.role===roles.enseignant){
-                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemester });
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
                         }else{
-                            fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
+                            fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
                         }
 
                         if(fetchedMatieres){
@@ -364,7 +384,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
         };
 
         fetchMatieres();
-    }, [dispatch, selectNiveauId, t]);
+    }, [dispatch, selectNiveauId, selectedSemestre, t]);
 
     useEffect(() => {
         if (matieres && matieres.length > 0) {
@@ -391,13 +411,14 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]">{t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
                                 onSelect={handleAnneeSelect}
-                            /> */}
+                            />
+
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -422,12 +443,13 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />                         
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
-                                items={["1", "2"]}
-                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
-                            /> */}
+                            />
                             <CustomDropDown2<MatiereType>
                                 title={t('label.matiere')}
                                 selectedItem={matiere}
@@ -444,13 +466,13 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
                                 onSelect={handleAnneeSelect}
-                            /> */}
+                            />
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 items={sections}
@@ -475,12 +497,13 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 displayProperty={(niveau: CommonSettingProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
-                                items={["1", "2"]}
-                                defaultValue={"1"} // ou spécifie une valeur par défaut
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
-                            /> */}
+                            />
                             <CustomDropDown2<MatiereType>
                                 title={t('label.matiere')}
                                 selectedItem={matiere}

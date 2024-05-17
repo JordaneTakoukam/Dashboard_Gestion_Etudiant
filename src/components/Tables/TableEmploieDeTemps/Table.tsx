@@ -214,6 +214,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         }
     };
 
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
+        }
+    };
+
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (roles.delegue !== currentUser.role && roles.etudiant !== currentUser.role) {
@@ -245,11 +251,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             }
         }
     };
-    const handleSemestreSelect = (selected: number | undefined) => {
-        if(selected){
-            setSelectedSemestre(selected);
-        }
-    };
+    
 
     
     const [formatToDownload, setFormatToDownload] = useState("");

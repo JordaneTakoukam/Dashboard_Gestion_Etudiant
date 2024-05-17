@@ -20,7 +20,7 @@ import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
 import jsPDF from "jspdf";
 import Download from "../common/Download";
-import { createPDF } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 
 interface TableMatiereProps {
     data: MatiereType[];
@@ -39,6 +39,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.matiereSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<SectionProps>();
@@ -46,6 +47,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const [niveau, setNiveau] = useState<NiveauProps>();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
     
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // const niveauxEnseignantIds = currentUser?.niveaux.map(inscription => inscription.niveau) ?? [];
@@ -56,6 +58,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemestre);
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
@@ -118,7 +122,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         try {
 
             if (selectNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId });
+                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
                 return fetchedMatieres.matieres;
             }
             // Réinitialisez les erreurs s'il y en a
@@ -129,6 +133,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
         }
     }
+
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
         try{
@@ -138,21 +143,24 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 title = "subjects_list";
             }
             if(selected === 'PDF'){
-                if(selectNiveauId){
+                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+                if(selectNiveauId && section && cycle && niveau && departement){
                     if(currentUser && currentUser.role===roles.enseignant){
-                        await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre } ).then((blob)=>{
+                        await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title);
                             }
                         })
                     }else{
-                        await generateListMatByNiveau({niveauId:selectNiveauId}).then((blob)=>{
-                            // Créer un objet URL pour le blob PDF
-                            if(blob){
-                                createPDF(blob, title);
-                            }
-                        })
+                        if(section && cycle && niveau && departement){
+                            await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
+                                // Créer un objet URL pour le blob PDF
+                                if(blob){
+                                    createPDF(blob, title);
+                                }
+                            })
+                        }
                     }
                 }
                 
@@ -251,6 +259,17 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
     }
 
+    const handleAnneeSelect = (selected: String | undefined) => {
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
+    };
+
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
+        }
+    };
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (selected?._id) {
@@ -332,6 +351,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
+                setSection(sections[0]);
             }
         } else {
             setFilteredCycle([]);
@@ -367,14 +387,13 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 if (selectNiveauId) {
                     let fetchedMatieres = null;
                     if (currentUser && currentUser.role === roles.enseignant) {
-                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre });
+                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
                     } else {
-                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage });
+                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
                     }
 
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
-                        console.log(fetchedMatieres)
                     } else {
 
                         dispatch(setMatieres(emptyMatieres));
@@ -391,7 +410,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             }
         }
         fetchMatieres();
-    }, [dispatch, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+    }, [dispatch, selectNiveauId, selectedYear, selectedSemestre, t]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<MatiereType[]>(data);
@@ -423,13 +442,14 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
                                 onSelect={handleAnneeSelect}
-                            /> */}
+                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
@@ -453,6 +473,14 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 defaultValue={filteredNiveaux[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
+                            />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
                             />
                         </div>
                     )}
@@ -462,13 +490,14 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 <div className="hidden lg:block">
                     <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
                         <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            {/* <CustomDropDown2<String>
+                            <CustomDropDown2<String>
                                 title={t('label.annee')}
-                                items={['2023-2024', '2022-2023', '2021-2022']}
-                                defaultValue={'2023-2024'} // ou spécifie une valeur par défaut
-                                
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
                                 onSelect={handleAnneeSelect}
-                            /> */}
+                            />
+                            
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
@@ -492,6 +521,14 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 defaultValue={filteredNiveaux[0]} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
+                            />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
                             />
                         </div>
                     </div>

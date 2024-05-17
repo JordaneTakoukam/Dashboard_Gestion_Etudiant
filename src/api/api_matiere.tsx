@@ -66,7 +66,7 @@ export async function apiDeleteMatiere(matiereId: string): Promise<ReponseApiPro
     }
 }
 
-export async function getMatieresByNiveauWithPagination({ niveauId, page }: { niveauId: string, page: number }): Promise<MatiereReturnGetType> {
+export async function getMatieresByNiveauWithPagination({ niveauId, page, annee, semestre }: { niveauId: string, page: number, annee:number, semestre:number }): Promise<MatiereReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -79,6 +79,8 @@ export async function getMatieresByNiveauWithPagination({ niveauId, page }: { ni
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    annee:annee,
+                    semestre:semestre
                 },
             },
         );
@@ -119,7 +121,7 @@ export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId, an
     }
 }
 
-export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId, annee, semestre }: { niveauId: string, enseignantId: string, annee:number, semestre:number }): Promise<Blob> {
+export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListMatByEnseignantNiveau/${niveauId}`,
@@ -131,7 +133,12 @@ export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId
                 params: {
                     enseignantId: enseignantId,
                     annee:annee,
-                    semestre:semestre
+                    semestre:semestre,
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },
@@ -147,7 +154,7 @@ export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId
     }
 }
 
-export async function generateProgressByEnseignant({ niveauId, enseignantId, annee, semestre }: { niveauId: string, enseignantId: string, annee:number, semestre:number }): Promise<Blob> {
+export async function generateProgressByEnseignant({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateProgressByEnseignant/${niveauId}`,
@@ -159,7 +166,12 @@ export async function generateProgressByEnseignant({ niveauId, enseignantId, ann
                 params: {
                     enseignantId: enseignantId,
                     annee:annee,
-                    semestre:semestre
+                    semestre:semestre,
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },
@@ -175,7 +187,7 @@ export async function generateProgressByEnseignant({ niveauId, enseignantId, ann
     }
 }
 
-export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Promise<ProgressionMatiereReturnGetType> {
+export async function getMatieresByNiveau({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number}): Promise<ProgressionMatiereReturnGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getMatieresByNiveau/${niveauId}`,
@@ -184,6 +196,10 @@ export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Pr
                     'Content-Type': 'application/json',
                     'token': token,
                 },
+                params:{
+                    annee:annee,
+                    semestre:semestre
+                }
             },
         );
 
@@ -197,14 +213,21 @@ export async function getMatieresByNiveau({ niveauId }: { niveauId: string}): Pr
     }
 }
 
-export async function generateListMatByNiveau({ niveauId }: { niveauId: string}): Promise<Blob> {
+export async function generateListMatByNiveau({ annee, semestre, departement, section, cycle, niveau, langue }: { annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateListMatByNiveau/${niveauId}`,
+            `${api}/generateListMatByNiveau/${annee}/${semestre}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
+                },
+                params:{
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },
@@ -220,14 +243,21 @@ export async function generateListMatByNiveau({ niveauId }: { niveauId: string})
     }
 }
 
-export async function generateProgressByNiveau({ niveauId }: { niveauId: string}): Promise<Blob> {
+export async function generateProgressByNiveau({ annee, semestre, departement, section, cycle, niveau, langue }: {  annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateProgressByNiveau/${niveauId}`,
+            `${api}/generateProgressByNiveau/${annee}/${semestre}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
+                },
+                params:{
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue
                 },
                 responseType: 'blob',
             },

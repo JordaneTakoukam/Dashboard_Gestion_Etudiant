@@ -55,7 +55,7 @@ const ListeDesMatieres = () => {
                     if(currentUser && currentUser.role===roles.enseignant){
                         fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre });
                     }else{
-                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: 1 });
+                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: 1,  annee: currentYear, semestre: currentSemestre });
                     }
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));

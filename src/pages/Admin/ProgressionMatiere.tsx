@@ -16,6 +16,7 @@ const ProgressionMatiere = () => {
     // Récupérer les données de l'état Redux
     const { data: { matieres } } = useSelector((state: RootState) => state.progressionMatiereSlice);
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
@@ -47,9 +48,9 @@ const ProgressionMatiere = () => {
                     if (currentNiveauId) {
                         let fetchedMatieres = null
                         if(currentUser && currentUser.role===roles.enseignant){
-                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id });
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee: currentYear, semestre: currentSemestre });
                         }else{
-                            fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId });
+                            fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: currentSemestre });
                         }
                         if(fetchedMatieres){
                             dispatch(setMatieres(fetchedMatieres));

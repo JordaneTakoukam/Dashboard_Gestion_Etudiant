@@ -33,8 +33,8 @@ const adminSlice = createSlice({
         },
 
 
-        updateAdmin(state, action: PayloadAction<{ newAdmin: AdminType }>) {
-            const { newAdmin } = action.payload;
+        updateAdmin(state, action: PayloadAction<AdminType>) {
+            const newAdmin  = action.payload;
 
             const index = state.data.list.findIndex(admin => admin._id === newAdmin._id);
 

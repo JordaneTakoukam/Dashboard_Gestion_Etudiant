@@ -23,7 +23,6 @@ interface UserState {
     abscence: string | null;
     absences:AbsenceType[];
     niveaux: InscriptionType[];
-    grade: string | null;
     categorie: string | null;
     fonction: string | null;
     service: string | null;

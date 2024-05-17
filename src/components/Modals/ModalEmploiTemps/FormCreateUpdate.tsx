@@ -154,7 +154,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 
                 if (niveau && niveau._id) {
                     
-                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id});
+                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id, annee:currentYear, semestre:currentSemester});
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
                     } else {

@@ -39,7 +39,6 @@ function ModalDeleteAdministrateur({ administrateur }: { administrateur: AdminTy
             createToast('Incorrect id', '', 2);
 
         }
-        closeModal();
     }
 
     return (

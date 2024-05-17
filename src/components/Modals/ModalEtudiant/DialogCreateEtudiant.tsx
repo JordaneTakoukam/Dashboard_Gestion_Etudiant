@@ -20,7 +20,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes) ?? [];
     const grades: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
-    const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
+    const categories: CategorieProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
     
 
@@ -71,6 +71,11 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             const currentRegion = currentDepartement && regions.find(region => region._id === "" + currentDepartement.region);
             currentRegion && filterDepartementByRegion(currentRegion._id);
             currentDepartement && filterCommuneByDepartement(currentDepartement._id)
+
+            const currentCategorie = categories.find(categorie => categorie._id === "" + etudiant.categorie);
+            
+            const currentGrade = currentCategorie && grades.find(grade => grade._id === "" + currentCategorie.grade);
+            currentGrade && filterCategorieByGrade(currentGrade._id);
             setNom(etudiant.nom);
             setPrenom(etudiant.prenom ? etudiant.prenom : ""); 
             setGenre(etudiant.genre);
@@ -82,8 +87,9 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
-            setGrade(etudiant.grade ? grades.find(grade=>grade._id===etudiant.grade) : undefined);
-            setCategorie(etudiant.categorie ? categories.find(categorie=>categorie._id===etudiant.categorie) : undefined);
+            setGrade(currentGrade);
+            // setCategorie(etudiant.categorie ? categories.find(categorie=>categorie._id===etudiant.categorie) : undefined);
+            setCategorie(currentCategorie);
             setFonction(etudiant.fonction ? fonctions.find(fonction=>fonction._id===etudiant.fonction) : undefined);
             setService(etudiant.service ? services.find(service=>service._id===etudiant.service) : undefined);
             setRegion(currentRegion);
@@ -150,6 +156,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[] | undefined>([]);
     const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[] | undefined>([]);
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[] | undefined>([]);
+    const [filteredCategorie, setFilteredCategorie] = useState<CategorieProps[] | undefined>([]);
 
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
@@ -169,6 +176,17 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             const result: NiveauProps[] = niveaux.filter(niveau => "" + niveau.cycle === cycleId);
 
             setFilteredNiveau(result);
+        }
+    };
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCategorieByGrade = (gradeId: string | undefined) => {
+        if (gradeId && gradeId !== '') {
+            // Filtrer les cycles en fonction de l'ID de la section
+            const result: CategorieProps[] = categories.filter(categorie => "" + categorie.grade === gradeId);
+
+            setFilteredCategorie(result);
+
         }
     };
 
@@ -265,7 +283,10 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
 
         if (selectedGrade) {
             setGrade(selectedGrade);
+            filterCategorieByGrade(selectedGrade._id);
         }
+
+        
     };
 
     const handleCategorieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -427,7 +448,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         date_entree:dateEntreeAdmin,
                         absences:[],
                         niveaux:[{niveau:niveau._id, annee:currentYear}],
-                        grade:grade?._id||null,
+                        // grade:grade?._id||null,
                         categorie:categorie?._id||null,
                         fonction:fonction?._id||null,
                         service:service?._id||null,
@@ -452,7 +473,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                                 date_entree:e.data.date_entree,
                                 absences:e.data.absences,
                                 niveaux:e.data.niveaux,
-                                grade:e.data.grade,
+                                // grade:e.data.grade,
                                 categorie:e.data.categorie,
                                 fonction:e.data.fonction,
                                 service:e.data.service,
@@ -488,7 +509,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         lieu_naiss:lieuNaiss,
                         date_entree:dateEntreeAdmin,
                         niveaux:[{niveau:niveau._id, annee:currentYear}],
-                        grade:grade?._id||null,
+                        // grade:grade?._id||null,
                         categorie:categorie?._id||null,
                         fonction:fonction?._id||null,
                         service:service?._id||null,
@@ -514,7 +535,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                                 date_entree:e.data.date_entree,
                                 absences:e.data.absences,
                                 niveaux:e.data.niveaux,
-                                grade:e.data.grade,
+                                // grade:e.data.grade,
                                 categorie:e.data.categorie,
                                 fonction:e.data.fonction,
                                 service:e.data.service,
@@ -674,7 +695,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
-                    {categories.map(categorie => (
+                    {filteredCategorie && filteredCategorie.map(categorie => (
                         <option key={categorie._id} value={(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}>{(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}</option>
                     ))}
                 </select>

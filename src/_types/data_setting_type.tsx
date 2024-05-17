@@ -35,6 +35,11 @@ interface SectionProps extends CommonSettingProps {
     departement: string;
 }
 
+// Interface des propriétés spécifiques au catégorie
+interface CategorieProps extends CommonSettingProps {
+    grade: string;
+}
+
 //interface des propriétés de la salle de cours
 interface SalleDeCoursProps extends CommonSettingProps {
     nbPlace: number;
@@ -47,7 +52,7 @@ interface DataSettingProps {
     services: CommonSettingProps[];
     fonctions: CommonSettingProps[];
     grades: CommonSettingProps[];
-    categories: CommonSettingProps[];
+    categories: CategorieProps[];
     regions: CommonSettingProps[];
     departements: DepartementProps[];
     departementsAcademique:CommonSettingProps[];

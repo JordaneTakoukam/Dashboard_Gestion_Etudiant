@@ -12,7 +12,6 @@ const initialState: UserState = {
     email: '',
     niveaux: [],
     absences:[],
-    grade: '',
     categorie: '',
     fonction: '',
     service: '',

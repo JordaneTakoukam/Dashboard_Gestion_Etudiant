@@ -87,9 +87,8 @@ function App() {
               date_naiss,
               lieu_naiss,
               date_entree,
-              abscences,
+              absences,
               niveaux,
-              grade,
               categorie,
               fonction,
               service,
@@ -111,14 +110,13 @@ function App() {
                 date_naiss: date_naiss,
                 lieu_naiss: lieu_naiss,
                 date_entree: date_entree,
-                abscence: abscences,
+                absences: absences,
                 niveaux: niveaux,
-                grade: grade,
                 categorie: categorie,
                 fonction: fonction,
                 service: service,
                 commune: commune,
-                absences: []
+                abscence: null,
               }));
 
               setUserRole(role);

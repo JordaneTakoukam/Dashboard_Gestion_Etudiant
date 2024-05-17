@@ -20,7 +20,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes) ?? [];
     const grades: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
-    const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
+    const categories: CategorieProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
 
 
@@ -39,7 +39,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [grade, setGrade] = useState<CommonSettingProps>();
-    const [categorie, setCategorie] = useState<CommonSettingProps>();
+    const [categorie, setCategorie] = useState<CategorieProps>();
     const [fonction, setFonction] = useState<CommonSettingProps>();
     const [service, setService] = useState<CommonSettingProps>();
     const [region, setRegion] = useState<CommonSettingProps>();
@@ -70,7 +70,12 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             const currentDepartement = currentCommune && departements.find(departement => departement._id === "" + currentCommune.departement);
             const currentRegion = currentDepartement && regions.find(region => region._id === "" + currentDepartement.region);
             currentRegion && filterDepartementByRegion(currentRegion._id);
-            currentDepartement && filterCommuneByDepartement(currentDepartement._id)
+            currentDepartement && filterCommuneByDepartement(currentDepartement._id);
+
+            const currentCategorie = categories.find(categorie => categorie._id === "" + enseignant.categorie);
+            const currentGrade = currentCategorie && grades.find(grade => grade._id === "" + currentCategorie.grade);
+            currentGrade && filterCategorieByGrade(currentGrade._id);
+
             setNom(enseignant.nom);
             setPrenom(enseignant.prenom ? enseignant.prenom : ""); setGenre(enseignant.genre);
             setDateNaiss(enseignant.date_naiss ? enseignant.date_naiss.split("T")[0] : "");
@@ -81,8 +86,8 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             // setSection(currentSection);
             // setCycle(currentCycle);
             // setNiveau(currentNiveau);
-            setGrade(enseignant.grade ? grades.find(grade => grade._id === enseignant.grade) : undefined);
-            setCategorie(enseignant.categorie ? categories.find(categorie => categorie._id === enseignant.categorie) : undefined);
+            setGrade(currentGrade);
+            setCategorie(currentCategorie);
             setFonction(enseignant.fonction ? fonctions.find(fonction => fonction._id === enseignant.fonction) : undefined);
             setService(enseignant.service ? services.find(service => service._id === enseignant.service) : undefined);
             setRegion(currentRegion);
@@ -149,6 +154,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[] | undefined>([]);
     const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[] | undefined>([]);
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[] | undefined>([]);
+    const [filteredCategorie, setFilteredCategorie] = useState<CategorieProps[] | undefined>([]);
 
     // filtrer les donnee a partir de l'id de la section selectionner
     // const filterCycleBySection = (sectionId: string | undefined) => {
@@ -264,6 +270,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
 
         if (selectedGrade) {
             setGrade(selectedGrade);
+            filterCategorieByGrade(selectedGrade._id);
         }
     };
 
@@ -322,6 +329,17 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             const result: CommuneProps[] = communes.filter(commune => "" + commune.departement === departementId);
 
             setFilteredCommune(result);
+        }
+    };
+
+    // filtrer les donnee a partir de l'id de la section selectionner
+    const filterCategorieByGrade = (gradeId: string | undefined) => {
+        if (gradeId && gradeId !== '') {
+            // Filtrer les cycles en fonction de l'ID de la section
+            const result: CategorieProps[] = categories.filter(categorie => "" + categorie.grade === gradeId);
+
+            setFilteredCategorie(result);
+
         }
     };
 
@@ -415,7 +433,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     date_entree: dateEntreeAdmin,
                     absences: [],
                     niveaux: [],
-                    grade: grade?._id || null,
+                    // grade: grade?._id || null,
                     categorie: categorie?._id || null,
                     fonction: fonction?._id || null,
                     service: service?._id || null,
@@ -426,7 +444,27 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     dispatch(createEnseignant({
 
-                        ...e.data
+                        enseignant: {
+                            _id: e.data._id,
+                            nom: e.data.nom,
+                            genre: e.data.genre,
+                            email: e.data.email,
+                            photo_profil: e.data.photo_profil,
+                            contact: e.data.contact,
+                            matricule: e.data.matricule,
+                            prenom: e.data.prenom,
+                            date_naiss: e.data.date_naiss,
+                            lieu_naiss: e.data.lieu_naiss,
+                            date_entree: e.data.date_entree,
+                            absences: e.data.absences,
+                            niveaux: e.data.niveaux,
+                            // grade: e.data.grade,
+                            categorie: e.data.categorie,
+                            fonction: e.data.fonction,
+                            service: e.data.service,
+                            commune: e.data.commune
+                        }
+
 
 
                     }));
@@ -458,7 +496,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     date_entree: dateEntreeAdmin,
                     absences: [],
                     niveaux: [],
-                    grade: grade?._id || null,
+                    // grade: grade?._id || null,
                     categorie: categorie?._id || null,
                     fonction: fonction?._id || null,
                     service: service?._id || null,
@@ -482,7 +520,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                                 date_entree: e.data.date_entree,
                                 absences: e.data.absences,
                                 niveaux: e.data.niveaux,
-                                grade: e.data.grade,
+                                // grade: e.data.grade,
                                 categorie: e.data.categorie,
                                 fonction: e.data.fonction,
                                 service: e.data.service,
@@ -641,7 +679,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
-                    {categories.map(categorie => (
+                    {filteredCategorie && filteredCategorie.map(categorie => (
                         <option key={categorie._id} value={(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}>{(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}</option>
                     ))}
                 </select>

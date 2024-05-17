@@ -2,7 +2,6 @@ interface EnseignantType extends EnseignantCreateType {
     _id?: string;
     status?: string;
     historique_connexion?: Date[];
-    photo_profil?: string | null;
     date_creation?: string | null;
 }
 
@@ -29,7 +28,6 @@ interface EnseignantCreateType {
 
     absences: AbsenceType[];
 
-    grade: string | null;
     categorie: string | null;
     fonction: string | null;
     service: string | null;
@@ -58,7 +56,7 @@ interface EnseignantInitialData {
     pageIsLoadingOnTable: boolean,
     selected: {
         grade: CommonSettingProps | undefined,
-        categorie: CommonSettingProps | undefined,
+        categorie: CategorieProps | undefined,
         service: CommonSettingProps | undefined,
         fonction: CommonSettingProps | undefined,
     }

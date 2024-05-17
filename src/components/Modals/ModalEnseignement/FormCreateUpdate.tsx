@@ -16,6 +16,8 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
     const dispatch = useDispatch();
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     // const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     
     const [matiere, setMatiere] = useState<MatiereType>();
@@ -46,7 +48,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                 
                 if (periodeEnseignement && periodeEnseignement.niveau) {
                     
-                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: periodeEnseignement.niveau});
+                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: periodeEnseignement.niveau, annee:currentYear, semestre:currentSemester});
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
                     } else {

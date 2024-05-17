@@ -317,6 +317,7 @@
     "evenement": "Show the list of events by:",
     "departement": "Filter the list of departments by:",
     "commune": "Filter the list of communes by:",
+    "categorie":"Filter the list of categories by :",
     "absence": "Filter my absences by:",
     "periodes_enseignement": "Filter teaching periods by:"
   },

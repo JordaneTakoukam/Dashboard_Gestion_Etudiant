@@ -50,7 +50,7 @@ const CalendrierAcademique = () => {
     return (
         <>
             <Breadcrumb pageName={t('menu.calendrier')} />
-            <SectionRefresh refreshFunction={() => fetchEvenements()} />
+            {/* <SectionRefresh refreshFunction={() => fetchEvenements()} /> */}
 
             {/* Affichez le tableau uniquement lorsque les données sont chargées avec succès */}
             <Table data={evenements} onCreate={handleAddEvenement} onEdit={handleEditEvenement} refresh={() => fetchEvenements()} />

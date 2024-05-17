@@ -10,6 +10,7 @@ const initialState: DataSettingSlice = {
         regions: [],
         departements: [],
         communes: [],
+        departementsAcademique:[],
         sections: [],
         cycles: [],
         niveaux: [],
@@ -46,7 +47,7 @@ const dataSettingSlice = createSlice({
         setDataSetting(state, action: PayloadAction<DataSettingProps>) {
             state.dataSetting = action.payload;
         },
-        setSections(state, action:PayloadAction<CommonSettingProps[]>){
+        setSections(state, action:PayloadAction<SectionProps[]>){
             state.dataSetting.sections = action.payload;
         },
         setCycles(state, action:PayloadAction<CycleProps[]>){
@@ -64,11 +65,11 @@ const dataSettingSlice = createSlice({
         //
         // create
         createSettingItem(state, action: PayloadAction<{
-            tableName: keyof DataSettingProps; newItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps
+            tableName: keyof DataSettingProps; newItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps | CategorieProps
         }>) {
             const { tableName, newItem } = action.payload;
 
-            const table = state.dataSetting[tableName] as (CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps)[];
+            const table = state.dataSetting[tableName] as (CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps | CategorieProps)[];
 
             (state.dataSetting[tableName] as any) = [...table, newItem];
         },
@@ -78,10 +79,10 @@ const dataSettingSlice = createSlice({
         //
         //
         // update 
-        updateSettingItem(state, action: PayloadAction<{ tableName: keyof DataSettingProps; updatedItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps }>) {
+        updateSettingItem(state, action: PayloadAction<{ tableName: keyof DataSettingProps; updatedItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps | CategorieProps }>) {
             const { tableName, updatedItem } = action.payload;
 
-            const table = state.dataSetting[tableName] as (CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps)[];
+            const table = state.dataSetting[tableName] as (CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps | CategorieProps)[];
 
             const index = table.findIndex(item => item._id === updatedItem._id);
             if (index !== -1) {

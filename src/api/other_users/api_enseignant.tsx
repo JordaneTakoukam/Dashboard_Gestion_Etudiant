@@ -160,11 +160,11 @@ export async function apiGetNiveauxByEnseignant({ enseignantId, annee, semestre 
 }
 
 // create
-export async function apiCreateEnseignant({ nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune }: EnseignantCreateType): Promise<ReponseApiPros> {
+export async function apiCreateEnseignant({ nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, categorie, fonction, service, commune }: EnseignantCreateType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create/create-enseignant`,
-            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune },
+            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, categorie, fonction, service, commune },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,11 +182,11 @@ export async function apiCreateEnseignant({ nom, genre, email, photo_profil, con
 
 
 // update 
-export async function apiUpdateEnseignant({ _id, nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune }: EnseignantType): Promise<ReponseApiPros> {
+export async function apiUpdateEnseignant({ _id, nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, categorie, fonction, service, commune }: EnseignantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, grade, categorie, fonction, service, commune },
+            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, categorie, fonction, service, commune },
             {
                 headers: {
                     'Content-Type': 'application/json',

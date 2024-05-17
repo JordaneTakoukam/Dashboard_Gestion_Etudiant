@@ -2,7 +2,6 @@ interface AdminType extends AdminCreateType {
     _id: string;
     status?: string;
     historique_connexion?: Date[];
-    photo_profil?: string | null;
     date_creation?: String | null;
 }
 
@@ -16,16 +15,14 @@ interface AdminCreateType {
     prenom: string | null;
     email: string;
     matricule: string | null;
+    photo_profil?: string | null;
 
     lieu_naiss: string | null;
     contact: string | null;
 
-    grade: string | null;
     categorie: string | null;
     fonction: string | null;
     service: string | null;
-    region: string | null;
-    departement: string | null;
     commune: string | null;
 }
 

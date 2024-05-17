@@ -46,7 +46,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     // state save
     const selectSave = useSelector((state: RootState) => state.enseignantSlice.selected);
     const [grade, setGrade] = useState<CommonSettingProps | undefined>(selectSave.grade);
-    const [categorie, setCatgeorie] = useState<CommonSettingProps | undefined>(selectSave.categorie);
+    const [categorie, setCatgeorie] = useState<CategorieProps | undefined>(selectSave.categorie);
     const [service, setService] = useState<CommonSettingProps | undefined>(selectSave.service);
     const [fonction, setFonction] = useState<CommonSettingProps | undefined>(selectSave.fonction);
 
@@ -55,11 +55,29 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         setIsDropdownVisible(!isDropdownVisible);
     };
 
+    const [filteredCategorie, setFilteredCategorie] = useState<CategorieProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
-
-
-
     const [formatToDownload, setFormatToDownload] = useState("");
+    
+    const filterCategorieByGrade = (gradeId: string | undefined) => {
+        if (gradeId && gradeId !== '') {
+            // Filtrer les départements en fonction de l'ID de la région
+            const result: CategorieProps[] = categories.filter(categorie => categorie.grade === gradeId);
+            if (result.length > 0) {
+                // setSelectIdC(result[0]._id);
+                // setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+                
+            }else{
+                // setSelectIdCycle(undefined);
+                // setCycle(undefined);
+            }
+            setFilteredCategorie(result);
+        }else{
+            setFilteredCategorie([])
+            // setSelectIdCycle(undefined);
+            // setCycle(undefined);
+        }
+    };
 
     const fetchAllEnseignants = async () => {
         try {
@@ -147,11 +165,13 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             const wb = XLSX.utils.book_new();
 
             // Créer une feuille de calcul
+            
             const ws = XLSX.utils.aoa_to_sheet([
                 [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'), t('label.grade'), t('label.categorie'), t('label.service'), t('label.fonction')],
                 ...enseignants.flatMap(enseignant => {
                     const rows = [];
-                    const gradeLib = lang === 'fr' ? grades.find(grade => grade._id === enseignant.grade)?.libelleFr || "" : grades.find(grade => grade._id === enseignant.grade)?.libelleEn || "";
+                    const currentCategorie = categories.find(categorie => categorie._id === enseignant.categorie);
+                    const gradeLib = lang === 'fr' ? grades.find(grade =>currentCategorie && (grade._id ===  currentCategorie.grade))?.libelleFr || "" : grades.find(grade => currentCategorie && (grade._id === currentCategorie.grade))?.libelleEn || "";
                     const categorieLib = lang === 'fr' ? categories.find(categorie => categorie._id === enseignant.categorie)?.libelleFr || "" : categories.find(categorie => categorie._id === enseignant.categorie)?.libelleEn || "";
                     const serviceLib = lang === 'fr' ? services.find(service => service._id === enseignant.service)?.libelleFr || "" : services.find(service => service._id === enseignant.service)?.libelleEn || "";
                     const fonctionLib = lang === 'fr' ? fonctions.find(fonction => fonction._id === enseignant.fonction)?.libelleFr || "" : fonctions.find(fonction => fonction._id === enseignant.fonction)?.libelleEn || "";
@@ -185,11 +205,12 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             dispatch(setSelectedEnseignant({ key: "grade", value: selected }))
             setCatgeorie(undefined);
             setService(undefined);
+            filterCategorieByGrade(selected._id);
             setFonction(undefined);
         }
     };
 
-    const handleCatgorieSelect = (selected: CommonSettingProps | undefined) => {
+    const handleCatgorieSelect = (selected: CategorieProps | undefined) => {
         if (selected?._id) {
             setGrade(undefined);
             setCatgeorie(selected);
@@ -369,12 +390,12 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                                 displayProperty={(grade: CommonSettingProps) => `${lang === 'fr' ? grade.libelleFr : grade.libelleEn}`}
                                 onSelect={handleGradeSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CategorieProps>
                                 title={t('label.categorie')}
                                 selectedItem={categorie}
-                                items={categories}
+                                items={filteredCategorie}
                                 defaultValue={categorie} // ou spécifie une valeur par défaut
-                                displayProperty={(categorie: CommonSettingProps) => `${lang === 'fr' ? categorie.libelleFr : categorie.libelleEn}`}
+                                displayProperty={(categorie: CategorieProps) => `${lang === 'fr' ? categorie.libelleFr : categorie.libelleEn}`}
                                 onSelect={handleCatgorieSelect}
                             />
                             <CustomDropDown2<CommonSettingProps>
@@ -410,12 +431,12 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                                 displayProperty={(grade: CommonSettingProps) => `${lang === 'fr' ? grade.libelleFr : grade.libelleEn}`}
                                 onSelect={handleGradeSelect}
                             />
-                            <CustomDropDown2<CommonSettingProps>
+                            <CustomDropDown2<CategorieProps>
                                 title={t('label.categorie')}
                                 selectedItem={categorie}
-                                items={categories}
+                                items={filteredCategorie}
                                 defaultValue={categorie} // ou spécifie une valeur par défaut
-                                displayProperty={(categorie: CommonSettingProps) => `${lang === 'fr' ? categorie.libelleFr : categorie.libelleEn}`}
+                                displayProperty={(categorie: CategorieProps) => `${lang === 'fr' ? categorie.libelleFr : categorie.libelleEn}`}
                                 onSelect={handleCatgorieSelect}
                             />
                             <CustomDropDown2<CommonSettingProps>

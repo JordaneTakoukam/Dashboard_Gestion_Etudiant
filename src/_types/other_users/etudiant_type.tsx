@@ -25,8 +25,6 @@ interface EtudiantCreateType {
     // service: string | null;
 
     absences?: AbsenceType[];
-
-    grade: string | null;
     categorie: string | null;
     fonction: string | null;
     service: string | null;

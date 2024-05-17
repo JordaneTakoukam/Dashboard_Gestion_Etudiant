@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableAdministrateur/Table";
 import { useTranslation } from "react-i18next";
-import { ModalCreateUpdateAdmin } from "../../components/Modals/ModalAdministrateur/ModalCreateUpdateAdministrateur";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { SectionRefresh } from "../../components/ui/SectionRefresh";
@@ -15,6 +14,7 @@ import { apiGetAdministrateurs } from "../../api/other_users/api_administrateur"
 import { setShowModal } from "../../_redux/features/setting";
 import { r_sup_ad } from "../../config";
 import { ModalNonAutoriser } from "../../components/Modals/_NonAutoriser/ModalNonAutoriser";
+import ModalCreateUpdateAdmin from "../../components/Modals/ModalAdministrateur/ModalCreateUpdateAdministrateur";
 
 
 const ListeDesAdministrateur = () => {
@@ -90,7 +90,7 @@ const ListeDesAdministrateur = () => {
                             />
                             :
                             <div>
-                                <SectionRefresh refreshFunction={handleRefresh} />
+                                {/* <SectionRefresh refreshFunction={handleRefresh} /> */}
                                 <Table
                                     data={administrateurs}
                                     onCreate={handleAddOrUpdate}

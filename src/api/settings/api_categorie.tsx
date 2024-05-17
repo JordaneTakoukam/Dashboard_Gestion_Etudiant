@@ -5,11 +5,11 @@ const api = `${apiUrl}/setting`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateCategorie({ code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+export async function apiCreateCategorie({ code, grade, libelleFr, libelleEn }: CategorieProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/categorie/create`,
-            { code, libelleFr, libelleEn },
+            { code, grade, libelleFr, libelleEn },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -25,11 +25,11 @@ export async function apiCreateCategorie({ code, libelleFr, libelleEn }: CommonS
     }
 }
 
-export async function apiUpdateCategorie({ _id, code, libelleFr, libelleEn }: CommonSettingProps): Promise<ReponseApiPros> {
+export async function apiUpdateCategorie({ _id, code, grade, libelleFr, libelleEn }: CategorieProps): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/categorie/update/${_id}`,
-            { code, libelleFr, libelleEn },
+            { code, grade, libelleFr, libelleEn },
             {
                 headers: {
                     'Content-Type': 'application/json',

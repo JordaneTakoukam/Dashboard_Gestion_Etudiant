@@ -317,6 +317,7 @@
     "evenement": "Afficher la liste des évènements suivant :",
     "departement": "Filtrer la liste des départements suivant :",
     "commune": "Filtrer la liste des communes suivant :",
+    "categorie":"Filtrer la liste des catégories suivant :",
     "absence": "Filtrer mes absences suivant : ",
     "periodes_enseignement": "Filtrer les périodes d'enseignement"
   },

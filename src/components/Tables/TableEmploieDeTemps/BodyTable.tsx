@@ -2,10 +2,9 @@ import { useDispatch } from "react-redux"
 import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModalUpdate } from "../../../_redux/features/setting"
-import { PeriodeCours } from "../../../pages/CommonPage/EmploiDeTemp"
 
 
-const BodyTable = ({ data }: { data: PeriodeCours[] }) => {
+const BodyTable = ({ data }: { data: PeriodeType[] }) => {
 
     const dispatch = useDispatch();
 

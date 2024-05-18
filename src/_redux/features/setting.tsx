@@ -9,6 +9,8 @@ interface SettingState {
         update: boolean,
         delete: boolean,
         open: boolean,
+        openPause:boolean,
+        openElement:boolean,
         addRole:boolean,
         openChapitre: boolean,
         openEnseignement:boolean,
@@ -26,6 +28,8 @@ const initialState: SettingState = {
         update: false,
         delete: false,
         open: false,
+        openPause:false,
+        openElement:false,
         addRole:false,
         openChapitre: false,
         openEnseignement:false,
@@ -58,6 +62,14 @@ export const settingSlice = createSlice({
 
         setShowModal: (state) => {
             state.showModal.open = !state.showModal.open;
+        },
+
+        setShowModalElement: (state) => {
+            state.showModal.openElement = !state.showModal.openElement;
+        },
+
+        setShowModalPause: (state) => {
+            state.showModal.openPause = !state.showModal.openPause;
         },
 
         setShowRoleModal: (state) => {
@@ -94,7 +106,7 @@ export const {
     setShowModalDeleteCustom,
     setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage
-    , setSaveDeviceType,setShowRoleModal, setShowModalPeriode,
+    , setSaveDeviceType,setShowRoleModal, setShowModalPeriode, setShowModalElement,setShowModalPause,
     setCurrentIndexUserRole,
 } = settingSlice.actions;
 

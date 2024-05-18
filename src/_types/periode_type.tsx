@@ -1,15 +1,16 @@
 // Définir le type de données pour la période de cours
 interface PeriodeType {
-    _id?: string;
+    _id?: string,
+    pause:boolean,
     jour:number,
     semestre:number,
     annee:number,
     niveau:string,
-    matiere:MatiereType,
-    typeEnseignement:string,
+    matiere?:MatiereType,
+    typeEnseignement?:string,
     heureDebut:string,
     heureFin:string,
-    salleCours:string,
+    salleCours?:string,
     enseignantPrincipal?:UserState,
     enseignantSuppleant?:UserState,
 }

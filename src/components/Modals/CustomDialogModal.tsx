@@ -8,6 +8,7 @@ interface CustomDialogModalProps {
     handleConfirm: () => void;
     isModalOpen: boolean;
     isDelete: boolean;
+    addElement?:boolean;
     closeModal: () => void;
     children: React.ReactNode;
     unique?: boolean;
@@ -16,7 +17,7 @@ interface CustomDialogModalProps {
 
 // model generale pour les boites de dialogue
 
-function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, closeModal, children, unique }: CustomDialogModalProps) {
+function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, addElement=false, closeModal, children, unique }: CustomDialogModalProps) {
     const { t } = useTranslation();
     return (
         <div>
@@ -63,7 +64,7 @@ function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, 
                                     {/* BODY DE LA BOITE DE DIALOGUE */}
                                     <div className='mt-5 md:mt-10'>{children}</div>
 
-                                    {
+                                    {!addElement && (
                                         unique ?
                                             <div className="flex justify-end gap-4.5 mt-8">
                                                 <button
@@ -90,6 +91,7 @@ function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, 
                                                     {!isDelete ? t('boutton.enregistrer') : t('boutton.oui')}
                                                 </button>
                                             </div>
+                                        )
                                     }
                                 </Dialog.Panel>
                             </Transition.Child>

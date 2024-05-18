@@ -5,7 +5,6 @@ import { Niveau } from "./Niveaux";
 import FormCreateUpdate from "../../components/Modals/ModalSondage/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalSondage/FormDelete";
 import { Rubrique } from "./Rubriques";
-import { Matiere } from "./ListeMatieres";
 import { Cycle } from "./Cycles";
 import FormSondage from "../../components/Modals/ModalSondage/FormSondage";
 
@@ -15,7 +14,6 @@ export interface Sondage {
     libelle: string;
     cycle: Cycle;
     rubriques : Rubrique[];
-    matiere:Matiere;
 }
 
 

@@ -36,7 +36,7 @@ const DashboardTeacher = () => {
     
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
-    const sections:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const sections:SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
 
     useEffect(() => {
         const fetchData = async () => {

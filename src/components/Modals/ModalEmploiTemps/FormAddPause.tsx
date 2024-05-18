@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, } from '../../../_redux/features/setting';
+import { setShowModal, setShowModalPause, } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
@@ -19,8 +19,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const sallesCours: SalleDeCoursProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours) ?? [];
-    const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -32,12 +30,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-    const [matiere, setMatiere] = useState<MatiereType>();
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
-    const [salleCours, setSalleCours] = useState<SalleDeCoursProps>();
-    const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
-    const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
 
     const [errorJour, setErrorJour] = useState("");
     const [errorHeureDebut, setErrorHeureDebut] = useState("");
@@ -45,14 +39,11 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [errorSection, setErrorSection] = useState("");
     const [errorCycle, setErrorCycle] = useState("");
     const [errorNiveau, setErrorNiveau] = useState("");
-    const [errorMatiere, setErrorMatiere] = useState("");
     const [errorSemestre, setErrorSemestre] = useState("");
-    const [errorSalle, setErrorSalle] = useState("");
-    const [errorTypeEnseignement, setErrorTypeEnseignement] = useState("");
     const [isFirstRender, setIsFirstRender] = useState(true);
 
 
-    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
+    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openPause);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[] | undefined>([]);
     const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[] | undefined>([]);
@@ -136,53 +127,11 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
     };
 
-    const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
-    const [matieresLoaded, setMatieresLoaded] = useState(false);
-
-    useEffect(() => {
-
-        const fetchMatieres = async () => {
-            dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                const matieresV: MatiereReturnGetType = {
-                    matieres: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
-                }
-                
-                if (niveau && niveau._id) {
-                    
-                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id, annee:currentYear, semestre:currentSemester});
-                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                        dispatch(setMatieres(fetchedMatieres));
-                    } else {
-
-                        dispatch(setMatieres(matieresV));
-                    }
-                } else {
-
-                    dispatch(setMatieres(matieresV));
-
-                } // Réinitialisez les erreurs s'il y en a
-            } catch (error) {
-                dispatch(setErrorPageMatiere(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2)
-            } finally {
-                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-            }
-        };
-
-        fetchMatieres();
-    }, [periodeCours,niveau, dispatch]);
-
-
 
     useEffect(() => {
 
         if (periodeCours) {
-            setModalTitle(t('form_update.enregistrer') + t('form_update.periode'));
+            setModalTitle(t('form_update.enregistrer') + t('form_update.pause'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
@@ -194,35 +143,19 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
-            const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
-            setMatiere(mat);
-
-            const salleCours = sallesCours.find(salle => salle._id === periodeCours.salleCours);
-            setSalleCours(salleCours);
-            const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
-                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
-                .map(objectId => typesEnseignement.find(type => type._id === objectId))
-                .filter(type => type !== undefined) as CommonSettingProps[];
-            listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
-            const typeEnseignement = typesEnseignementMat.find(typeEnseignement => typeEnseignement._id === periodeCours.typeEnseignement);
-            setTypeEnseignement(typeEnseignement);
+           
             setSemestre(periodeCours.semestre);
         } else {
-            setModalTitle(t('form_save.enregistrer') + t('form_save.periode'));
+            setModalTitle(t('form_save.enregistrer') + t('form_save.pause'));
             setJour(undefined);
             setHeureDebut("");
             setHeureFin("");
             setSection(undefined);
             setCycle(undefined);
             setNiveau(undefined);
-            setMatiere(undefined);
-            setSalleCours(undefined);
-            setTypeEnseignement(undefined);
             setSemestre(currentSemester);
             setFilteredCycle(undefined);
             setFilteredNiveau(undefined);
-            setTypesEnseignementMat([]);
-
         }
 
 
@@ -235,44 +168,12 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setErrorSection("");
             setErrorCycle("");
             setErrorNiveau("");
-            setErrorMatiere("");
             setErrorSemestre("");
-            setErrorSalle("");
-            setErrorTypeEnseignement("");
             setIsFirstRender(false);
         }
     }, [periodeCours, isFirstRender, t]);
-
-    useEffect(() => {
-
-        if (periodeCours) {
-            const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
-            setMatiere(mat);
-        }
-
-    }, [matieres]);
     
-    // Troisième useEffect pour gérer le changement de matière sélectionnée
-    useEffect(() => {
-        
-        if (matiere && matiere.typesEnseignement) {
-            const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
-                .map(type => type.typeEnseignement)
-                .map(objectId => typesEnseignement.find(type => type._id === objectId))
-                .filter(type => type !== undefined) as CommonSettingProps[];
-            setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
-
-            // Vérifier si le type d'enseignement de la période correspond à l'un des types d'enseignement de la matière
-            if (periodeCours) {
-                const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === periodeCours.typeEnseignement);
-                if (typeEnseignementPeriode) {
-                    setTypeEnseignement(typeEnseignementPeriode);
-                }
-            }
-
-        }
-    }, [matiere, typesEnseignement, periodeCours]);
-
+   
     const closeModal = () => {
         setErrorJour("");
         setErrorHeureDebut("");
@@ -280,11 +181,9 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         setErrorSection("");
         setErrorCycle("");
         setErrorNiveau("");
-        setErrorMatiere("");
         setErrorSemestre("");
-        setErrorSalle("");
         setIsFirstRender(true);
-        dispatch(setShowModal());
+        dispatch(setShowModalPause());
     };
 
     const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -301,42 +200,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
     };
 
-
-    const handleSalleCoursChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedSalleCoursLibelle = e.target.value;
-        const selectedSalleCours = sallesCours.find((salleCours) => salleCours.code === selectedSalleCoursLibelle);
-        if (selectedSalleCours) {
-            setSalleCours(selectedSalleCours);
-            setErrorSalle("");
-        }
-    };
-    const handleMatiereChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedMatiereLibelle = e.target.value;
-        const selectedMatiere = matieres.find((matiere) => lang === 'fr' ? matiere.libelleFr === selectedMatiereLibelle : matiere.libelleEn === selectedMatiereLibelle);
-        if (selectedMatiere && selectedMatiere.typesEnseignement) {
-            setMatiere(selectedMatiere);
-            setErrorMatiere("");
-            const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement
-                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
-                .map(objectId => typesEnseignement.find(type => type._id === objectId))
-                .filter(type => type !== undefined) as CommonSettingProps[];
-            if (listeTypesEnseignementDeMatiere) {
-                setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
-            }
-        }
-
-
-    };
-
-
-    const handleTypeEnseignementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCode = e.target.value;
-        const selectedTypeEnseignement = typesEnseignementMat.find(typeEnseignement => typeEnseignement.code === selectedCode);
-        if (selectedTypeEnseignement) {
-            setTypeEnseignement(selectedTypeEnseignement);
-            setErrorTypeEnseignement("");
-        }
-    };
 
     //verifier si l'heure de fin vient avant l'heure de début
     const verifierHeureFinApresDebut = (heureDebut: string, heureFin: string): boolean => {
@@ -385,8 +248,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     };
 
     const handleCreatePeriodeCours = async () => {
-        if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau || !matiere || !semestre 
-            || !typeEnseignement || !salleCours) {
+        if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau  || !semestre) {
             if (!jour) {
                 setErrorJour(t('error.jour'));
             }
@@ -407,20 +269,10 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 setErrorNiveau(t('error.niveau'));
             }
 
-            if (!matiere) {
-                setErrorMatiere(t('error.matiere'));
-            }
+          
 
             if (!semestre) {
                 setErrorSemestre(t('error.semestre'));
-            }
-
-            if (!typeEnseignement) {
-                setErrorTypeEnseignement(t('error.type_ens_periode'));
-            }
-
-            if (!salleCours) {
-                setErrorSalle(t('error.salle'));
             }
 
             return;
@@ -432,19 +284,16 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
         
         if (!periodeCours) {
-            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
+            if (niveau._id && jour.ordre) {
                 await apiCreatePeriode(
                     {
                         jour : jour.ordre,
                         semestre,
                         annee,
                         niveau:niveau._id,
-                        matiere : matiere,
-                        typeEnseignement : typeEnseignement._id,
                         heureDebut,
                         heureFin,
-                        salleCours:salleCours._id,
-                        pause:false
+                        pause:true
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -482,20 +331,17 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 })
             }
         }else{
-            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
+            if (niveau._id && jour.ordre) {
                 await apiUpdatePeriode(
                     {
                         jour : jour.ordre,
                         semestre,
                         annee,
                         niveau:niveau._id,
-                        matiere : matiere,
-                        typeEnseignement : typeEnseignement._id,
                         heureDebut,
                         heureFin,
-                        salleCours:salleCours._id,
                         _id:periodeCours._id,
-                        pause:false,
+                        pause:true,
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -541,25 +387,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
             >
-                {/* <div style={{ textAlign: 'right' }}>
-                    <button onClick={handleToggleDelete} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                        {isDeleting ? (
-                            <span>{t('label.confirm_sup')}</span>
-                        ) : (
-                            <FaTrash style={{ color: 'red', fontSize: '20px' }} />
-                        )}
-                        {isDeleting && (
-                            <button onClick={closeModal} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                {t('boutton.non')}
-                            </button>
-                        )}
-                        {isDeleting && (
-                            <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                {t('boutton.oui')}
-                            </button>
-                        )}
-                    </button>
-                </div> */}
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -645,42 +472,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     ))}
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
-                <label>{t('label.matiere')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={matiere ? lang === 'fr' ? matiere.libelleFr : matiere.libelleEn : t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}
-                    onChange={handleMatiereChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}</option>
-                    {matieres.map(matiere => (
-                        <option key={matiere._id} value={lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}>{lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}</option>
-                    ))}
-                </select>
-                {errorMatiere && <p className="text-red-500">{errorMatiere}</p>}
-                <label>{t('label.salle_cour')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={salleCours ? salleCours.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}
-                    onChange={handleSalleCoursChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}</option>
-                    {sallesCours.map(salleCours => (
-                        <option key={salleCours._id} value={salleCours.code}>{salleCours.code}</option>
-                    ))}
-                </select>
-                {errorSalle && <p className="text-red-500">{errorSalle}</p>}
-                <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={typeEnseignement ? typeEnseignement.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
-                    onChange={handleTypeEnseignementChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                    {typesEnseignementMat.map(typeEnseignement => (
-                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{typeEnseignement.code}</option>
-                    ))}
-                </select>
-                {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
             </CustomDialogModal>
 
         </>

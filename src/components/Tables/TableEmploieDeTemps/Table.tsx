@@ -8,7 +8,7 @@ import HeaderTable from "./HeaderTable";
 import { jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
-import { setShowModal } from "../../../_redux/features/setting";
+import { setShowModal, setShowModalElement } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
@@ -52,7 +52,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         }else{
             onCreate();
         }
-        dispatch(setShowModal());
+        dispatch(setShowModalElement());
         console.log("Ouverture du formulaire pour la période :", periode);
     };
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -112,7 +112,10 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         const codeSalleCours = sallesCours && sallesCours.find(salle => salle._id === coursJour.salleCours);
                         const enseignantPrincipal = coursJour.enseignantPrincipal;
                         const enseignantSuppleant = coursJour.enseignantSuppleant;
-                        jourCell.textContent = `${coursJour.matiere.code} (${codeTypeEns?codeTypeEns.code:""}) - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
+                        jourCell.textContent = t('label.pause');
+                        if(!coursJour.pause){
+                            jourCell.textContent = `${coursJour.matiere?coursJour.matiere.code:""} (${codeTypeEns?codeTypeEns.code:""}) - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
+                        }
                         if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
                             jourCell.style.cursor = 'pointer';
@@ -408,10 +411,10 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     return (
         <div>
-            {roles.admin === userRole || roles.superAdmin === userRole && <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+            {roles.admin === userRole || roles.superAdmin === userRole && <div className="flex justify-after items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.periode_cours')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                    onClick={() => { onCreate();dispatch(setShowModalElement()) }}
                 />
             </div>}
 

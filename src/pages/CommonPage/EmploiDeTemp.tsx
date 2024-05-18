@@ -9,6 +9,9 @@ import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../_redu
 import { RootState } from "../../_redux/store";
 import { getPeriodesByNiveau } from "../../api/api_periode";
 import { config } from "../../config";
+import FormGestionElement from "../../components/Modals/ModalEmploiTemps/FormGestionElement";
+import FormDeletePeriode from "../../components/Modals/ModalEmploiTemps/FormDeletePeriode";
+import FormAddPause from "../../components/Modals/ModalEmploiTemps/FormAddPause";
 
 
 
@@ -82,6 +85,9 @@ const EmploiDeTemp = () => {
             <Breadcrumb pageName={t('menu.emploi')} />
             <Table data={periodes} onCreate={handleAddPeriode} onEdit={handleEditPeriode} />
             <FormCreateUpdate periodeCours={selectedPeriode} />
+            <FormAddPause periodeCours={selectedPeriode}/>
+            <FormDeletePeriode periodeCours={selectedPeriode} />
+            <FormGestionElement periodeCours={selectedPeriode}/>
         </>
     );
 };

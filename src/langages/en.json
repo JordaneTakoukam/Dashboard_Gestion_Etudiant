@@ -93,6 +93,7 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "pause":"BREAK",
     "motif": "Enter the reason for absence here, no more than 100 characters",
     "justifier":"To justify",
     "non_justifier":"Not to justify",
@@ -323,6 +324,7 @@
   },
   "form_save": {
     "enregistrer": "Save",
+    "pause":"a break",
     "etudiant": "a new student",
     "enseignant": "a new teacher",
     "administrateur": "a new administrator",
@@ -349,6 +351,7 @@
   "form_update": {
     "etat_absence_just":"Change the status of the justified absence to unjustified for the student : ",
     "etat_absence_non_just":"Change the status of the unjustified absence to justified for the student : ",
+    "pause":"of the break",
     "roles": "Modify the role of the student",
     "absence": "Add an absence:",
     "signaler": "Report my absence",
@@ -379,6 +382,7 @@
   "form_delete": {
     "supprimer": "Delete",
     "suppression": "Deletion",
+    "pause":"of the break",
     "absence": "Delete an absence:",
     "etudiant": "of the student",
     "enseignant": "of the teacher",

@@ -120,8 +120,7 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
-                    onClick={() => { onCreate(); dispatch(setShowModal()) }}
-                />
+                    onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                />
                 <InputSearch
                     hintText={t('recherche.rechercher') + t('recherche.administrateur')}
                     onSubmit={(text) => setSearchText(text)}

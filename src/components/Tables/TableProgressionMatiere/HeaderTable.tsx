@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
-import { Matiere } from "../../../pages/Admin/ListeMatieres"
 
 const HeaderTable = ({matiere}:{matiere:MatiereType | undefined}) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en

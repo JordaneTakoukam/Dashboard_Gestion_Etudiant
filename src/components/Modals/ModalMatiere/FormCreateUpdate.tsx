@@ -269,10 +269,11 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
 
 
     const handleCreateUpdate = async () => {
-        if (!code || !libelleFr || !libelleEn || !section || !cycle || !niveau) {
-            if (!code) {
-                setErrorCode(t('error.code'));
-            }
+        // if (!code || !libelleFr || !libelleEn || !section || !cycle || !niveau) {
+        if (!libelleFr || !libelleEn || !section || !cycle || !niveau) {
+            // if (!code) {
+            //     setErrorCode(t('error.code'));
+            // }
             if (!libelleFr) {
                 setErrorLibelleFr(t('error._fr'));
             }
@@ -409,14 +410,14 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label>{/* <label className="text-red-500"> *</label> */}
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={code}
                     onChange={(e) => { setCode(e.target.value); setErrorCode("") }}
                 />
-                {errorCode && <p className="text-red-500" >{errorCode}</p>}
+                {/* {errorCode && <p className="text-red-500" >{errorCode}</p>} */}
                 <label>{t('label.libelle_fr')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"

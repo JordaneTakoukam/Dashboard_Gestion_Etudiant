@@ -56,7 +56,7 @@ const GererAbsencesEnseignant = () => {
 
     useEffect(() => {
         if (selectedEnseignant === undefined) {
-            navigate('/students/disciplines/')
+            navigate('/teachers/disciplines/')
         }
     }, [selectedEnseignant])
     return (
@@ -69,7 +69,7 @@ const GererAbsencesEnseignant = () => {
 
             {selectedEnseignant &&
                 <>
-                    <SectionNomEtAction user={selectedEnseignant} isStudent={true}/>
+                    <SectionNomEtAction user={selectedEnseignant} isStudent={false}/>
                     <CardListAbsence user={selectedEnseignant} onEdit={handleEditHourEnseignant} />
                 </>
             }

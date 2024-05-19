@@ -89,7 +89,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
             }
             setIsDownload(true);
             if(selected === 'PDF'){
-                await generateListEvent(selectedYear).then((blob)=>{
+                await generateListEvent({annee:selectedYear, langue:lang}).then((blob)=>{
                     // Créer un objet URL pour le blob PDF
                     if(blob){
                         createPDF(blob, title);

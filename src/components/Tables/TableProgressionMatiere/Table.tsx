@@ -204,7 +204,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
             setIsDownload(true);
             let title = "progression_par_matiere";
             if(lang !== 'fr'){
-                title = "subjects_progression";
+                title = "subject_progression";
             }
             if(selected === 'PDF'){
                 const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
@@ -254,7 +254,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                 [t('label.matieres'), t('label.progression')],
                 ...matieres.flatMap(matiere => {
                     const rows = [];
-                    rows.push([`${matiere.code} : ${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,calculateProgress(matiere)+" %"]);
+                    rows.push([`${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,calculateProgress(matiere)+" %"]);
                     return rows;
                 })
             ]);

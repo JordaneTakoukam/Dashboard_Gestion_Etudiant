@@ -66,6 +66,7 @@ interface DataSettingProps {
     anneeCourante: number;
     premiereAnnee: number;
     semestreCourant:number;
+    
     // roles:CommonSettingProps[];
     __v: number;
 }

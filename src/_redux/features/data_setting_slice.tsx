@@ -56,6 +56,12 @@ const dataSettingSlice = createSlice({
         setNiveaux(state, action:PayloadAction<NiveauProps[]>){
             state.dataSetting.niveaux = action.payload;
         },
+        setAnneeCourante(state, action:PayloadAction<number>){
+            state.dataSetting.anneeCourante = action.payload;
+        },
+        setSemestreCourant(state, action:PayloadAction<number>){
+            state.dataSetting.semestreCourant = action.payload;
+        },
 
 
         //
@@ -124,7 +130,9 @@ export const {
     deleteSettingItem,
     setSections,
     setCycles,
-    setNiveaux
+    setNiveaux,
+    setAnneeCourante,
+    setSemestreCourant
     //
 } = dataSettingSlice.actions;
 

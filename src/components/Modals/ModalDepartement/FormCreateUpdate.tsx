@@ -99,10 +99,11 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
     const handleCreateUpdate = async () => {
         // create
         if (!departement) {
-            if (!code || !libelleFr || !libelleEn || !region) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            // if (!code || !libelleFr || !libelleEn || !region) {
+            if (!libelleFr || !libelleEn || !region) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -155,10 +156,10 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
         //update
         else {
 
-            if (!code || !libelleFr || !libelleEn || !region) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn || !region) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -226,14 +227,14 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
             >
 
                 {/* input 1 */}
-                <Label text={t('label.code')} required />
+                <Label text={t('label.code')} />
                 <Input
                     value={code}
                     type='text'
                     setValue={(value) => { setCode(value); setErrorCode("") }}
                     hasBackground={true}
                 />
-                <ErrorMessage message={errorCode} />
+                {/* <ErrorMessage message={errorCode} /> */}
 
 
                 {/* input 2 */}

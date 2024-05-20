@@ -4,7 +4,7 @@ import { CardEvenement } from "../../components/CardDashboard/CardEvenement";
 import { ChartEtudiantSection, DataPair } from "../../components/Chart/ChartEtudiantParNiveau";
 import { ChartAbsenceEtudiantSection } from "../../components/Chart/ChartAbscenceEtudiant";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { useEffect, useState } from "react";
 import { apiGetNbAbsenceEtudiantsParSection, apiGetNbEtudiantsParSection, apiGetTotalEtudiantByYear } from "../../api/other_users/api_etudiant";
@@ -12,6 +12,8 @@ import { apiGetTotalEnseignants } from "../../api/other_users/api_enseignant";
 import { getFirstTenEventsOfYear } from "../../api/api_evenement";
 import { getProgressionGlobalEnseignants } from "../../api/api_objectif";
 import { apiGetTotalHoursOfAbsenceByStudent, apiGetTotalHoursOfAbsenceByTeacher } from "../../api/discipline/api_discipline";
+import { setShowModal } from "../../_redux/features/setting";
+import FormCreateUpdate from "../../components/Modals/ModalDashbord/FormCreateUpdate";
 
 const DashBoardAmin = () => {
     const style = 'text-[13px] xl:text-[14px]';
@@ -91,13 +93,18 @@ const DashBoardAmin = () => {
 
         fetchData();
     }, [currentSemester, currentYear]);
+    const dispatch = useDispatch();
+    
 
     return (
         <>
             <Breadcrumb pageName={t('tableau_de_bord.title')} isDashboard={true} />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 xl:grid-cols-4 2xl:gap-7.5">
+                <button onClick={() => { dispatch(setShowModal()) }}>
                 <CardDashboard title={t('tableau_de_bord.semestre_courant')} value={currentSemester.toString()} id={1} additionalStyle={style} />
+                </button>
+                
                 <CardDashboard title={t('tableau_de_bord.total_etudiants')} value={totalEtudiant.toString()} id={2} additionalStyle={style} />
                 <CardDashboard title={t('tableau_de_bord.absences_etudiants')} value={totalAbsenceEtudiant+' H'} id={1} additionalStyle={style} />
                 <CardDashboard title={t('tableau_de_bord.total_enseignants')} value={totalEnseignant.toString()} id={3} additionalStyle={style} />
@@ -129,6 +136,7 @@ const DashBoardAmin = () => {
                     </div>
                 </div>
             </div>
+            <FormCreateUpdate />
         </>
     );
 };

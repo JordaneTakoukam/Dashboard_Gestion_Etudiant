@@ -399,7 +399,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2]}
+                                items={[1, 2, 3]}
                                 defaultValue={currentSemester} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
@@ -456,7 +456,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2]}
+                                items={[1, 2, 3]}
                                 defaultValue={currentSemester} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />

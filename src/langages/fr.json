@@ -349,6 +349,7 @@
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
+    "annee_semestre":"Modifier l'année ou le semestre courant",
     "etat_absence_just":"Modifier l'état de l'absence justifier en non justifier pour l'étudiant : ",
     "etat_absence_non_just":"Modifier l'état de l'absence non justifier en justifier pour l'étudiant : ",
     "pause":"de la pause",

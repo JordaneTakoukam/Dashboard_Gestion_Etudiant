@@ -126,7 +126,7 @@ const Table = ({ data, onEdit }: TableProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2]}
+                                items={[1, 2, 3]}
                                 defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
@@ -150,7 +150,7 @@ const Table = ({ data, onEdit }: TableProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2]}
+                                items={[1, 2, 3]}
                                 defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />

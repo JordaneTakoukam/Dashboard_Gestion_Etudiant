@@ -94,7 +94,7 @@ const EmploiDeTemp = () => {
 
 
 export default EmploiDeTemp;
-export const semestres = [1, 2];
+export const semestres = [1, 2, 3];
 //const { t } = useTranslation();
 export const lundi: Jour = { ordre: 1, libelleFr: 'Lundi', libelleEn: "Monday" }
 export const mardi: Jour = { ordre: 2, libelleFr: "Mardi", libelleEn: "Tuesday" }

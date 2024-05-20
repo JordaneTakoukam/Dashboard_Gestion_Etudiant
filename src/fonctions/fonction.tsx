@@ -88,6 +88,27 @@ export function generateYearRange(currentYear: number, startYear: number) {
   return yearRange;
 }
 
+export function generateYearRange2(currentYear: number, startYear: number) {
+  const yearRange = [];
+  
+  // Ajouter les 5 années suivant l'année courante
+  let i=5;
+  while(i>0) {
+    const year = currentYear + i;
+    const nextYear = year + 1;
+    yearRange.push(`${year}-${nextYear}`);
+    i--;
+  }
+
+  // Ajouter les années comprises entre l'année courante et startYear
+  for (let year = currentYear; year >= startYear; year--) {
+    const nextYear = year + 1;
+    yearRange.push(`${year}-${nextYear}`);
+  }
+
+  return yearRange;
+}
+
 export function premierElement(value: String) {
   // Diviser la chaîne en fonction des espaces
   if (value) {

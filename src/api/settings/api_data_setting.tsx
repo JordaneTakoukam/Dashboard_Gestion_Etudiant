@@ -25,4 +25,51 @@ export async function apiGetAllSettings(): Promise<DataSettingProps> {
     }
 }
 
+export async function apiUpdateAnneeCourante({annee}:{annee:number}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${apiUrl}/setting/annee/updateAnneeCourante`, {annee},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const newAnnee = response.data;
+
+        return newAnnee;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiUpdateSemestreCourant({semestre}:{semestre:number}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${apiUrl}/setting/semestre/updateSemestreCourant`, {semestre},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    semestre:semestre,
+                }
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const newSemestre = response.data;
+
+        return newSemestre;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 

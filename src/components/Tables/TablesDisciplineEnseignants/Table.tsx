@@ -49,11 +49,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const [selectedYear, setSelectYear]=useState(currentYear);
 
 
-    const listSemestre = ['1', '2']
+    const listSemestre = [1, 2, 3]
     const listAnnee = generateYearRange(currentYear, firstYear);
 
     const [annee, setAnnee] = useState<string | undefined>(`${firstYear}/${firstYear + 1}`);
-    const [semestre, setSemestre] = useState<string | undefined>(selectedSemestre ? selectedSemestre.toString() : currentSemestre.toString());
+    const [semestre, setSemestre] = useState<number | undefined>(selectedSemestre ? selectedSemestre : currentSemestre);
 
     const handleAnneeSelect = (selected: string | undefined) => {
         if (selected) {
@@ -66,11 +66,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     };
 
-    const handleSemestreSelect = (selected: string | undefined) => {
+    const handleSemestreSelect = (selected: number | undefined) => {
         if (selected) {
-            setSelectSemestre(parseInt(selected))
+            setSelectSemestre(selected)
             setSemestre(selected);
-            dispatch(setSemestreDisciplineEns(parseInt(selected)));
+            dispatch(setSemestreDisciplineEns(selected));
         }
 
     };
@@ -132,7 +132,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     useEffect(() => {
         if (annee && semestre) {
             dispatch(setAnneeDisciplineEns(currentYear));
-            dispatch(setSemestreDisciplineEns(parseInt(semestre)));
+            dispatch(setSemestreDisciplineEns(semestre));
         }
 
 
@@ -277,7 +277,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<string>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
                                 items={listSemestre}
@@ -300,7 +300,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-                            <CustomDropDown2<string>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
                                 items={listSemestre}

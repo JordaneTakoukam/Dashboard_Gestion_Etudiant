@@ -57,11 +57,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const [niveau, setNiveau] = useState<NiveauProps>();
 
 
-    const listSemestre = ['1', '2']
+    const listSemestre = [1, 2, 3]
     const listAnnee = generateYearRange(currentYear, firstYear);
 
     const [annee, setAnnee] = useState<string | undefined>(`${firstYear}/${firstYear + 1}`);
-    const [semestre, setSemestre] = useState<string | undefined>(selectedSemestre ? selectedSemestre.toString() : currentSemestre.toString());
+    const [semestre, setSemestre] = useState<number | undefined>(selectedSemestre ? selectedSemestre : currentSemestre);
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
@@ -125,11 +125,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     };
 
-    const handleSemestreSelect = (selected: string | undefined) => {
+    const handleSemestreSelect = (selected: number | undefined) => {
         if (selected) {
-            setSelectSemestre(parseInt(selected))
+            setSelectSemestre(selected)
             setSemestre(selected);
-            dispatch(setSemestreDisciplineEns(parseInt(selected)));
+            dispatch(setSemestreDisciplineEns(selected));
         }
 
     };
@@ -437,7 +437,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            <CustomDropDown2<string>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
                                 items={listSemestre}
@@ -486,7 +486,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 onSelect={handleNiveauSelect}
                             />
 
-                            <CustomDropDown2<string>
+                            <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
                                 items={listSemestre}

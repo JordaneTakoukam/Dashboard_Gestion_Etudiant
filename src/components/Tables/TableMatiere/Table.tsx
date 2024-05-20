@@ -48,7 +48,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
-    
+    const [filteredSemestre, setFilteredSemestre]=useState([]);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // const niveauxEnseignantIds = currentUser?.niveaux.map(inscription => inscription.niveau) ?? [];
 
@@ -478,7 +478,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2]}
+                                items={[1, 2, 3]}
                                 defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
@@ -526,7 +526,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2]}
+                                items={[1, 2, 3]}
                                 defaultValue={1} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />

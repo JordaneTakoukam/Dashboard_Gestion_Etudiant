@@ -349,6 +349,7 @@
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
+    "annee_semestre":"Modify the current year or semester",
     "etat_absence_just":"Change the status of the justified absence to unjustified for the student : ",
     "etat_absence_non_just":"Change the status of the unjustified absence to justified for the student : ",
     "pause":"of the break",

@@ -5,6 +5,29 @@ import { apiUrl, wstjqer } from '../../config.js';
 const api = `${apiUrl}/absence`;
 const token = localStorage.getItem(wstjqer);
 
+export async function apiGetAbsencesSignaler({ userId, niveauxId, role }: { userId: string, niveauxId?:string[], role:string }): Promise<SignalementAbsence[]> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getAbsencesSignaler/${userId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    niveauxId:niveauxId,
+                    role:role
+                },
+            },
+        );
+        const absences = response.data.data.absences;
+
+        return absences;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 
 export async function apiGetAbsencesByUserAndFilter({ userId, semestre, annee }: { userId: string, semestre: Number, annee: Number }): Promise<AbsenceType[]> {
     try {

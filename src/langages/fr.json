@@ -93,6 +93,8 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "notif_abs_debut":"Absence signalé pour le cours prévu ",
+    "notif_abs_milieu":" de ",
     "pause":"PAUSE",
     "motif":"Saisir le motif de l'absence ici, pas plus de 100 caractères",
     "justifier":"Justifier",

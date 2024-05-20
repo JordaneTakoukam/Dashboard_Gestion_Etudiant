@@ -10,7 +10,7 @@ import { NotFound, NotFoundIsAuth } from './pages/NotFound/NotFound.js';
 import DashBoardAmin from './pages/Admin/Dashboard_admin.js';
 import DashboardTeacher from './pages/Enseignant/Dashboard_teacher.js';
 import DashBoardStudent from './pages/Etudiant/Dashboard_student.js';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { config, socket_url } from './config.js';
 import InitialPage from './pages/InitialPage/InitialPage.js';
 import Layout from './layout/Layout.js';
@@ -25,7 +25,13 @@ import { apiGetAllSettings } from './api/settings/api_data_setting.js';
 import { setSaveDeviceType } from './_redux/features/setting.js';
 import ChoisirCompte from './pages/ChoisirCompte/ChoisirCompte.js';
 import { io } from 'socket.io-client';
-import { addSignalementAbsence } from './_redux/features/absence/signalement_absence.js';
+import { addSignalementAbsence, setNewAbsence, setSignalementAbsences } from './_redux/features/absence/signalement_absence.js';
+import { apiGetAbsencesSignaler } from './api/discipline/api_discipline.js';
+import { t } from 'i18next';
+import { setEtudiantDiscipline, setErrorPageEtudiantDiscipline, setEtudiantsDisciplineLoading } from './_redux/features/absence/discipline_etudiant_slice.js';
+import { RootState } from './_redux/store.js';
+import { apiGetNiveauxByEnseignant } from './api/other_users/api_enseignant.js';
+import { niveau } from './pages/Admin/Niveaux.js';
 
 function App() {
 
@@ -41,8 +47,12 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   // recuperer les info en local storage
   var isAuth = isUserAuthenticated();
+  const [userLog, setUserLog]=useState<UserState>();
 
   const sommesRoutesDelegateStudent = [...routeStudent, ...routeDelegate];
+  const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+  const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+
 
 
   // au lencement de la page
@@ -54,16 +64,33 @@ function App() {
     }
   }, [checkIfMobileOrTablet]);
 
+// recuperer les settings 
+const fetchSettingsData = async () => {
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
+  dispatch(setLoadingDataSetting(true));
+  try {
+    const settingsData = await apiGetAllSettings();
+    dispatch(setDataSetting(settingsData));
+    dispatch(setErrorDataSetting(null))
+  } catch (error) {
+    dispatch(setErrorDataSetting('une erreur est survenue'))
+  } finally {
+    dispatch(setLoadingDataSetting(false));
+
+  }
+};
+  useEffect(() => {
+
+    const fetchSettingsDataIfAuth = async () => {
+      if (isAuth.status) {
+        await fetchSettingsData();
+
+      } else {
+      }
+    };
+
+    fetchSettingsDataIfAuth();
+  }, []);
 
   // recuperer les info du token si le user est connecter
   useEffect(() => {
@@ -118,14 +145,31 @@ function App() {
                 commune: commune,
                 abscence: null,
               }));
-
+              setUserLog({
+                _id: userId,
+                roles: roles,
+                role: role,
+                nom: nom,
+                prenom: prenom,
+                genre: genre,
+                email: email,
+                photo_profil: photo_profil,
+                contact: contact,
+                matricule: matricule,
+                date_naiss: date_naiss,
+                lieu_naiss: lieu_naiss,
+                date_entree: date_entree,
+                absences: absences,
+                niveaux: niveaux,
+                categorie: categorie,
+                fonction: fonction,
+                service: service,
+                commune: commune,
+                abscence: null,
+              })
               setUserRole(role);
             }
           }
-
-
-
-
 
 
         } else {
@@ -138,65 +182,102 @@ function App() {
     handleAuthentication();
   }, [isAuth]);
 
+  const fetchAbsencesSignaler = async (user:UserState, niveaux:string[]|undefined) => {
+    try {
+      const emptySignalement : SignalementAbsence[]=[]
+      const fetchedAbsences = await apiGetAbsencesSignaler({
+         userId:user._id, niveauxId:niveaux, role:user.role
+      });
+      
+      
+          if (fetchedAbsences) {
+            dispatch(setNewAbsence(true));
+            dispatch(setSignalementAbsences(fetchedAbsences));
+          } else {
+              dispatch(setSignalementAbsences(emptySignalement));
+          }
+      } catch (error) {
+          
+      } 
+  }
 
-
-  useEffect(() => {
+  const fetchNiveauEnseignant = async (user:UserState) => {
+    
+    return await apiGetNiveauxByEnseignant({ enseignantId: user._id, annee: currentYear, semestre: currentSemester });
+  }
+  useEffect( () => {
 
     if (isAuth) {
+        if(userLog && currentSemester && currentYear){
+          let niveauxId = userLog.niveaux.map(inscription => inscription.niveau) ?? [];
+          
+          // Établit une connexion avec le serveur Socket.io
+          const socket = io(socket_url);          
+          
+          socket.on('message', (data: { message: SignalementAbsence }) => {
+            if ((userLog.role === config.roles.admin) || userLog.role === config.roles.superAdmin) {
+              dispatch(addSignalementAbsence(data.message));
+              dispatch(setNewAbsence(true));
+            }
 
-      // on lance l'ecoute sur les notification
+            if ((data.message.role === config.roles.etudiant) || (data.message.role === config.roles.delegue)) {
+              // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
+              if ((userLog._id !== data.message.user._id) && (userLog.role === config.roles.delegue) && (niveauxId.includes(data.message.niveau))) {
+                //  
+                dispatch(addSignalementAbsence(data.message));
+                dispatch(setNewAbsence(true));
+              }
 
-      // Établit une connexion avec le serveur Socket.io
-      const socket = io(socket_url);
+              if((userLog._id !== data.message.user._id) && userLog.role===config.roles.enseignant){
+                fetchNiveauEnseignant(userLog).then(niveaux=>{
+                  if(niveaux){
+                    niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
+                  }
+                  if(niveauxId.includes(data.message.niveau)){
+                    dispatch(addSignalementAbsence(data.message));
+                    dispatch(setNewAbsence(true));
+                  }
+                })
+              }
+            }
 
-      socket.on('message', (data: { message: SignalementAbsence }) => {
-        dispatch(addSignalementAbsence(data.message));
-      });
+            if ((data.message.role === config.roles.enseignant)) {
+              // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
+              if ((userLog._id !== data.message.user._id) && (userLog.role === config.roles.delegue || userLog.role === config.roles.enseignant) && (niveauxId.includes(data.message.niveau))) {
+                dispatch(addSignalementAbsence(data.message));
+                dispatch(setNewAbsence(true));
+              }
+            }
+  
+          });
+          if(userLog.role===config.roles.admin){
+            fetchAbsencesSignaler(userLog, undefined);
+          }else if(userLog.role===config.roles.enseignant){
+            
+              fetchNiveauEnseignant(userLog).then(niveaux=>{
+                if(niveaux){
+                  niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
+                }
+                fetchAbsencesSignaler(userLog, niveauxId);
+              })
+            
+            
+          }else{
+            fetchAbsencesSignaler(userLog, niveauxId);
+          }
+          
+          
 
-      // Nettoie la connexion lorsque le composant est démonté
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [])
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  // recuperer les settings 
-  const fetchSettingsData = async () => {
+          // Nettoie la connexion lorsque le composant est démonté
+          return () => {
+            socket.disconnect();
+          };
 
-    dispatch(setLoadingDataSetting(true));
-    try {
-      const settingsData = await apiGetAllSettings();
-      dispatch(setDataSetting(settingsData));
-      dispatch(setErrorDataSetting(null))
-    } catch (error) {
-      dispatch(setErrorDataSetting('une erreur est survenue'))
-    } finally {
-      dispatch(setLoadingDataSetting(false));
-
-    }
-  };
-
-  useEffect(() => {
-
-    const fetchSettingsDataIfAuth = async () => {
-      if (isAuth.status) {
-        await fetchSettingsData();
-
-      } else {
       }
-    };
+    }
+  }, [userRole, currentSemester, currentYear])
+  
 
-    fetchSettingsDataIfAuth();
-  }, []);
 
 
 

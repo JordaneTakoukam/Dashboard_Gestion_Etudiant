@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RootState } from '../../_redux/store';
+import { useTranslation } from 'react-i18next';
+import { jours } from '../../pages/CommonPage/EmploiDeTemp';
+import { setNewAbsence } from '../../_redux/features/absence/signalement_absence';
 
 const DropdownNotification = () => {
   const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsence.data);
+  const newAbsence = useSelector((state: RootState) => state.signalementAbsence.newAbsence);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+  const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -36,18 +41,21 @@ const DropdownNotification = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  const {t}=useTranslation();
+  const dispatch =useDispatch();
+
   return (
     <li className="relative">
       <Link
         ref={trigger}
-        onClick={() => setDropdownOpen(!dropdownOpen)}
+        onClick={() => {setDropdownOpen(!dropdownOpen); dispatch(setNewAbsence(false))}}
         to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
         {/* bing rouge */}
 
         {
-          listAbsenceSignaler.length > 0 &&
+          newAbsence &&
           <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
             <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
           </span>
@@ -84,7 +92,7 @@ const DropdownNotification = () => {
           listAbsenceSignaler.length === 0 ?
             <p className="text-sm mx-4 mt-8">
               <span className="text-black dark:text-white">
-                Aucune notifications pour le moment !
+               {t('tableau_de_bord.aucune_alerte')}
               </span>{' '}
             </p> :
             <div>
@@ -105,18 +113,22 @@ const DropdownNotification = () => {
                             to={e.role === "enseignant" ? "/teachers/absence_reporting" : e.role === "etudiant" ? '/students/absence_reporting' : '#'}
                           >
                             <div className='text-sm'>
-                              <div className='flex gap-x-1 line-clamp-1'>
-                                <p className='text-meta-1 opacity-75 underline'>{e.motif}</p>
+                              <div className='flex gap-x-1'>
+                                {/* <p className='text-meta-1 opacity-75 underline'>{e.motif}</p> */}
                                 {' - '}
-                                <span className=" text-black dark:text-white ">
-                                  {`${e.nom} ${e.prenom}`}
+                                <span className="text-black dark:text-white">
+                                  {`${e.user?.nom??""} ${e.user?.prenom??""}`}
                                 </span>
                               </div>
-                              <p className='line-clamp-1 text-[14px] font-medium'>{e.titre}</p>
-                              <p className='line-clamp-2 text-[13px]'>{e.description}</p>
-                              <p className="text-xs mt-2 items-end">{formattedDate}</p>
-
+                              <p className='text-[14px] font-medium'>
+                                {t('label.notif_abs_debut')}
+                                {lang === 'fr' ? jours.find(jour => jour.ordre === e.jour_absence)?.libelleFr : jours.find(jour => jour.ordre === e.jour_absence)?.libelleEn}
+                                {t('label.notif_abs_milieu')}{e.heure_debut_absence + "-" + e.heure_fin_absence}
+                              </p>
+                              {/* <p className='line-clamp-2 text-[13px]'>{e.description}</p>
+                              <p className="text-xs mt-2 items-end">{formattedDate}</p> */}
                             </div>
+
                             {/* <p className="text-sm">
                               <p className='text-meta-1 opacity-80'>{e.motif}</p>
                               <span className="text-black dark:text-white ">

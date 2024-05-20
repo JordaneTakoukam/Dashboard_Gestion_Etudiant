@@ -1,15 +1,17 @@
 interface SignalementAbsence {
     _id?: string;
-    nom: string;
-    prenom: string;
-    userId: string;
-    motif: string;
-    titre: string;
+    user: UserState;
+
     role: string;
-    description: string;
-    date_creation: string;
-    date_debut_absence: string;
-    date_fin_absence: string;
+    heure_debut_absence: string;
+    heure_fin_absence: string;
+    jour_absence: number;
+    date_absence_signaler: string;
+    semestre: number;
+    annee: number;
+    niveau: string;
+    date_creation: string;
+
 }
 
 
@@ -25,6 +27,7 @@ interface SignalementAbsence {
 
 interface SignalementAbsenceInitial {
     data: SignalementAbsence[];
+    newAbsence:boolean;
     pageIsLoading: boolean,
     pageError: string | null;
     pageIsLoadingOnTable: boolean,

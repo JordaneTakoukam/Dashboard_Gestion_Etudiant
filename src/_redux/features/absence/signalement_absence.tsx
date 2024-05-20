@@ -7,6 +7,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // Define the initial state
 const initialState: SignalementAbsenceInitial = {
     data: [],
+    newAbsence:false,
     pageIsLoading: false,
     pageError: null,
     pageIsLoadingOnTable: false,
@@ -27,12 +28,26 @@ const signalementAbsenceSlice = createSlice({
             state.data.unshift(action.payload);
         },
 
+        setSignalementAbsences(state, action: PayloadAction<SignalementAbsence[]>) {
+            if(state.data.length===0){
+                state.data = action.payload;
+            }else{
+                for(const absence of action.payload){
+                    state.data.push(absence);
+                }
+            }
+        },
+
 
         setSignalementAbsenceLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
         },
         setSignalementAbsenceError(state, action: PayloadAction<string | null>) {
             state.pageError = action.payload;
+        },
+
+        setNewAbsence(state, action: PayloadAction<boolean>) {
+            state.newAbsence = action.payload;
         },
     },
 });
@@ -42,7 +57,9 @@ export const {
     setListSignalementAbsence,
     addSignalementAbsence,
     setSignalementAbsenceLoading,
-    setSignalementAbsenceError
+    setSignalementAbsenceError,
+    setNewAbsence,
+    setSignalementAbsences
 } = signalementAbsenceSlice.actions;
 
 ;

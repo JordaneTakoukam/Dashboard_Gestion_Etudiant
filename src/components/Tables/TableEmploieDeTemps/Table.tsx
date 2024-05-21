@@ -8,7 +8,7 @@ import HeaderTable from "./HeaderTable";
 import { jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
-import { setShowModal, setShowModalElement } from "../../../_redux/features/setting";
+import { setShowModal, setShowModalElement, setShowModalSignalerAbsence } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
@@ -46,17 +46,25 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const userNiveaux = useSelector((state: RootState) => state.user.niveaux);
 
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
             onEdit(periode);
         }else{
             onCreate();
         }
-        dispatch(setShowModalElement());
-        console.log("Ouverture du formulaire pour la période :", periode);
+        if(userRole===roles.admin || userRole===roles.superAdmin){
+            dispatch(setShowModalElement());
+        }else{
+            if(periode){
+                dispatch(setShowModalSignalerAbsence());
+            }
+        }
+        
+        
     };
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
+    
 
     
     
@@ -91,11 +99,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                     row.className = classNames;
                 const horaireCell = row.insertCell();
                 horaireCell.textContent = horaire;
+                horaireCell.style.width = '90px'
                 jours.forEach((jour) => {
                     const jourCell = row.insertCell();
                     const coursJour = periodes.find((cours) => cours.jour == jour.ordre); // Modifier cette ligne
                     jourCell.style.textAlign='center';
-                    if (roles.admin === userRole  || roles.superAdmin === userRole) {
+                    // if (roles.admin === userRole  || roles.superAdmin === userRole) {
                         jourCell.onmouseover = () => {
                             jourCell.style.backgroundColor = '#afeeee';
                         };
@@ -103,7 +112,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         jourCell.onmouseout = () => {
                             jourCell.style.backgroundColor = '';
                         };
-                    }
+                    // }
                     
                     if (coursJour) {
                         
@@ -114,17 +123,19 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         const enseignantSuppleant = coursJour.enseignantSuppleant;
                         jourCell.textContent = t('label.pause');
                         if(!coursJour.pause){
-                            jourCell.textContent = `${coursJour.matiere?coursJour.matiere.code:""} (${codeTypeEns?codeTypeEns.code:""}) - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
+                            jourCell.textContent = `${coursJour.matiere?lang==='fr'?coursJour.matiere.libelleFr:coursJour.matiere.libelleEn:""} - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
                         }
-                        if (roles.admin === userRole || roles.superAdmin === userRole) {
+                        // if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
                             jourCell.style.cursor = 'pointer';
-                        }
+                            jourCell.style.width='100px'
+                        // }
                     }else{
-                        if (roles.admin === userRole || roles.superAdmin === userRole) {
+                        // if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode();
                             jourCell.style.cursor = 'pointer';
-                        }
+                            jourCell.style.width='100px'
+                        // }
                     }
                 });
             });

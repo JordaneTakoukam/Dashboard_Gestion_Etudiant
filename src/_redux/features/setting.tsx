@@ -9,6 +9,7 @@ interface SettingState {
         update: boolean,
         delete: boolean,
         open: boolean,
+        openSignalerAbsence:boolean,
         openPause:boolean,
         openElement:boolean,
         addRole:boolean,
@@ -28,6 +29,7 @@ const initialState: SettingState = {
         update: false,
         delete: false,
         open: false,
+        openSignalerAbsence:false,
         openPause:false,
         openElement:false,
         addRole:false,
@@ -62,6 +64,10 @@ export const settingSlice = createSlice({
 
         setShowModal: (state) => {
             state.showModal.open = !state.showModal.open;
+        },
+
+        setShowModalSignalerAbsence: (state) => {
+            state.showModal.openSignalerAbsence = !state.showModal.openSignalerAbsence;
         },
 
         setShowModalElement: (state) => {
@@ -107,7 +113,7 @@ export const {
     setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage
     , setSaveDeviceType,setShowRoleModal, setShowModalPeriode, setShowModalElement,setShowModalPause,
-    setCurrentIndexUserRole,
+    setCurrentIndexUserRole,setShowModalSignalerAbsence
 } = settingSlice.actions;
 
 // export const changeLanguage = createAction<string>('setting/changeLanguage');

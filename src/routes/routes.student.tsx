@@ -1,4 +1,6 @@
+import GererAbsencesEnseignant from '../pages/Admin/Disciplines/Enseignant/GererAbsencesEnseignant';
 import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
+import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import Abscences from '../pages/CommonPage/Abscences';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
@@ -18,9 +20,21 @@ const coreRoutes = [
 
   // abscence 
   {
-    path: '/student/abscences',
+    path: '/student/absences',
     title: 'Abscences',
     component: Abscences,
+  },
+
+  {
+    path: '/students/disciplines/manage',
+    title: 'Disciplines des étudiants',
+    component: GererAbsencesEtudiant,
+  },
+
+  {
+    path: '/teachers/disciplines/manage',
+    title: 'Disciplines des étudiants',
+    component: GererAbsencesEnseignant,
   },
 
   // emploi de temps
@@ -34,6 +48,12 @@ const coreRoutes = [
   // emploi de temps
   {
     path: '/student/schedule',
+    title: 'Emploi de temps',
+    component: EmploiDeTemp,
+  },
+
+  {
+    path: '/student/absences/schedule',
     title: 'Emploi de temps',
     component: EmploiDeTemp,
   },

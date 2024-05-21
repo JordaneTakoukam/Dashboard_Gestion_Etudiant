@@ -5,7 +5,7 @@ import { apiUrl, wstjqer } from '../../config.js';
 const api = `${apiUrl}/absence`;
 const token = localStorage.getItem(wstjqer);
 
-export async function apiGetAbsencesSignaler({ userId, niveauxId, role }: { userId: string, niveauxId?:string[], role:string }): Promise<SignalementAbsence[]> {
+export async function apiGetAbsencesSignaler({ userId, niveauxId, role, annee, semestre }: { userId: string, niveauxId?:string[], role:string, annee:number, semestre:number }): Promise<SignalementAbsence[]> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getAbsencesSignaler/${userId}`,
@@ -16,7 +16,9 @@ export async function apiGetAbsencesSignaler({ userId, niveauxId, role }: { user
                 },
                 params: {
                     niveauxId:niveauxId,
-                    role:role
+                    role:role,
+                    annee:annee,
+                    semestre: semestre,
                 },
             },
         );
@@ -28,6 +30,29 @@ export async function apiGetAbsencesSignaler({ userId, niveauxId, role }: { user
         throw error;
     }
 }
+
+export async function apiSignalerAbsence({user,enseignant,role,heure_debut_absence,heure_fin_absence,jour_absence,semestre,annee,niveau}: SignalementAbsence): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/signaler`,
+            { user, enseignant, role, heure_debut_absence, heure_fin_absence, jour_absence,semestre,annee,niveau },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        // console.error('Error creating section : ', error);
+        throw error;
+    }
+}
+
+
+
 
 export async function apiGetAbsencesByUserAndFilter({ userId, semestre, annee }: { userId: string, semestre: Number, annee: Number }): Promise<AbsenceType[]> {
     try {

@@ -1,16 +1,16 @@
 interface SignalementAbsence {
     _id?: string;
     user: UserState;
-
+    enseignant?:UserState;
     role: string;
     heure_debut_absence: string;
     heure_fin_absence: string;
     jour_absence: number;
-    date_absence_signaler: string;
+    date_absence_signaler?: string;
     semestre: number;
     annee: number;
     niveau: string;
-    date_creation: string;
+    date_creation?: string;
 
 }
 

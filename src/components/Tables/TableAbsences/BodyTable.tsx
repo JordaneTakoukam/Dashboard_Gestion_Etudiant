@@ -1,7 +1,4 @@
-import { useDispatch, useSelector } from "react-redux"
-import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModalDelete, setShowModalUpdate } from "../../../_redux/features/setting"
-import { Abscences } from "../../../pages/CommonPage/Abscences"
+import { useDispatch } from "react-redux"
 
 
 const BodyTable = ({ data }: { data: AbsenceType[]|undefined }) => {

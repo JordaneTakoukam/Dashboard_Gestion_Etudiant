@@ -16,26 +16,31 @@ import { useTranslation } from "react-i18next";
 import { extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
 import { apiGetAbsencesByUserAndFilter } from "../../../api/discipline/api_discipline";
 import { updateUserAbsences } from "../../../_redux/features/user_slice";
+import { useNavigate } from "react-router-dom";
 
 
 
 interface TableProps {
-    data: AbsenceType[];
+    data: UserState;
+    absences:AbsenceType[];
     onEdit: (user: UserState | null) => void;
+    handleAbsencesChange:(absences:AbsenceType[])=>void;
+
 }
 
-const Table = ({ data, onEdit }: TableProps) => {
+const Table = ({ data, absences, onEdit, handleAbsencesChange }: TableProps) => {
     const { t } = useTranslation();
-    const pageIsLoading = false;
+    const [pageIsLoading, setPageIsLoading] = useState(false);
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
+    
 
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -62,23 +67,35 @@ const Table = ({ data, onEdit }: TableProps) => {
         console.log(selected);
         // methode pour download
     };
-    const currentUser = useSelector((state: RootState) => state.user);
+    // const currentUser = useSelector((state: RootState) => state.user);
     useEffect(() => {
+        
         const fetchData = async () => {
+            setPageIsLoading(true);
             try {
                 
-                const absences = await apiGetAbsencesByUserAndFilter({ userId: currentUser._id, annee: selectedYear, semestre: selectedSemestre });
-                if(absences){
-                    dispatch(updateUserAbsences(absences));
+                const abs = await apiGetAbsencesByUserAndFilter({ userId: data._id, annee: selectedYear, semestre: selectedSemestre });
+                
+                if(abs){
+                    // console.log(absences)
+                    handleAbsencesChange(abs);
+                    
+                    dispatch(updateUserAbsences(abs));
+                }else{
+                    handleAbsencesChange([]);
                 }
                 
             } catch (error) {
                 console.error("Error fetching data:", error);
+            }finally{
+                setPageIsLoading(false);
             }
         };
-
-        fetchData();
-    }, [dispatch, selectedSemestre, selectedYear, currentUser.absences, t]);
+        // if(data._id){
+            fetchData();
+        // }
+        
+    }, [dispatch, selectedSemestre, selectedYear, t]);
 
 
     // variable pour la pagination
@@ -87,22 +104,23 @@ const Table = ({ data, onEdit }: TableProps) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data && data.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = data && data.absences.slice(indexOfFirstItem, indexOfLastItem);
     
 
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-
+    const navigate = useNavigate();
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.signaler_absence')}
-                    onClick={() => { onEdit(currentUser); dispatch(setShowModal()) }}
+                    
+                    onClick={() => { data.role===config.roles.enseignant?navigate('/teacher/schedule'):navigate('/student/schedule') }}
                 />
-                <h5>{t('label.total_heure_absence')} : {nbTotalAbsences(data)} {t('label.heure')}(s)</h5>
+                <h5>{t('label.total_heure_absence')} : {nbTotalAbsences(absences)} {t('label.heure')}(s)</h5>
                 {/* <InputSearch hintText="Rechercher une matière" onSubmit={() => { }} /> */}
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -171,7 +189,7 @@ const Table = ({ data, onEdit }: TableProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : data && data.length === 0 ?
+                                :absences && absences.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -179,7 +197,7 @@ const Table = ({ data, onEdit }: TableProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={absences} />
                         }
                     </table>}
                 </div>

@@ -12,6 +12,7 @@ import { config } from "../../config";
 import FormGestionElement from "../../components/Modals/ModalEmploiTemps/FormGestionElement";
 import FormDeletePeriode from "../../components/Modals/ModalEmploiTemps/FormDeletePeriode";
 import FormAddPause from "../../components/Modals/ModalEmploiTemps/FormAddPause";
+import FormCreateUpdateAbsenceSignaler from "../../components/Modals/ModalAbsence/FormCreateUpdateAbsenceSignaler";
 
 
 
@@ -88,6 +89,7 @@ const EmploiDeTemp = () => {
             <FormAddPause periodeCours={selectedPeriode}/>
             <FormDeletePeriode periodeCours={selectedPeriode} />
             <FormGestionElement periodeCours={selectedPeriode}/>
+            <FormCreateUpdateAbsenceSignaler periodeCours={selectedPeriode}/>
         </>
     );
 };

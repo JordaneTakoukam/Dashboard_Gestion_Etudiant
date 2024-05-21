@@ -1,4 +1,5 @@
 import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
+import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
 import ListeDesMatieres from '../pages/Admin/ListeMatieres';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import Abscences from '../pages/CommonPage/Abscences';
@@ -19,9 +20,15 @@ const coreRoutes = [
   },
   // abscence 
   {
-    path: '/teacher/abscences',
+    path: '/teacher/absences',
     title: 'Abscences enseignant',
     component: Abscences,
+  },
+
+  {
+    path: '/students/disciplines/manage',
+    title: 'Disciplines des étudiants',
+    component: GererAbsencesEtudiant,
   },
 
   // // emploi de temps
@@ -43,9 +50,16 @@ const coreRoutes = [
     component: ProgressionMatiere,
   },
 
+
   // emploi de temps
   {
     path: '/teacher/schedule',
+    title: 'Emploi de temps',
+    component: EmploiDeTemp,
+  },
+
+  {
+    path: 'teacher/absences/schedule',
     title: 'Emploi de temps',
     component: EmploiDeTemp,
   },

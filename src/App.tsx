@@ -137,7 +137,7 @@ const fetchSettingsData = async () => {
                 date_naiss: date_naiss,
                 lieu_naiss: lieu_naiss,
                 date_entree: date_entree,
-                absences: absences,
+                absences: [],
                 niveaux: niveaux,
                 categorie: categorie,
                 fonction: fonction,
@@ -186,11 +186,11 @@ const fetchSettingsData = async () => {
     try {
       const emptySignalement : SignalementAbsence[]=[]
       const fetchedAbsences = await apiGetAbsencesSignaler({
-         userId:user._id, niveauxId:niveaux, role:user.role
+         userId:user._id, niveauxId:niveaux, role:user.role, annee:currentYear, semestre:currentSemester
       });
       
       
-          if (fetchedAbsences) {
+          if (fetchedAbsences && fetchedAbsences.length>0) {
             dispatch(setNewAbsence(true));
             dispatch(setSignalementAbsences(fetchedAbsences));
           } else {
@@ -233,7 +233,7 @@ const fetchSettingsData = async () => {
                   if(niveaux){
                     niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
                   }
-                  if(niveauxId.includes(data.message.niveau)){
+                  if((userLog._id===data.message.enseignant?._id) && niveauxId.includes(data.message.niveau)){
                     dispatch(addSignalementAbsence(data.message));
                     dispatch(setNewAbsence(true));
                   }

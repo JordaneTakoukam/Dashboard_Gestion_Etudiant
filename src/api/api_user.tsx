@@ -29,3 +29,30 @@ export async function getUsersWithRole({ role }: { role: string }): Promise<User
 }
 
 
+
+
+// RECUPERER LES INFO DUUSER
+
+export async function getCurrentUserData({ userId }: { userId: string }): Promise<UserState> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getCurrentUser/?userId=${userId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const data: UserState = response.data.data;
+        return data;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+
+

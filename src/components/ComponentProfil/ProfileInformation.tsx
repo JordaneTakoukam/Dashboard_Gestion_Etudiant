@@ -48,6 +48,9 @@ function LabelInput({ title, required }: LabelInputProps) {
 
 
 function ProfileInformation() {
+    const userState: UserState = useSelector((state: RootState) => state.user);
+
+
     const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
     const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
     const communes: CommuneProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.communes) ?? [];
@@ -56,15 +59,14 @@ function ProfileInformation() {
     const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
     const { t } = useTranslation();
-    const userState:UserState = useSelector((state: RootState) => state.user);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[] | undefined>([]);
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[] | undefined>([]);
     // filtrer les donnee a partir de l'id de la region selectionner
-    
+
     useEffect(() => {
-        
+
         const currentCommune = communes.find(commune => commune._id === "" + userState.commune);
         const currentDepartement = currentCommune && departements.find(departement => departement._id === "" + currentCommune.departement);
         const currentRegion = currentDepartement && regions.find(region => region._id === "" + currentDepartement.region);
@@ -78,15 +80,15 @@ function ProfileInformation() {
         setEmail(userState.email);
         setContact(userState.contact ? userState.contact : "");
         setMatricule(userState.matricule ? userState.matricule : "");
-        setGrade(userState.grade ? grades.find(grade=>grade._id===userState.grade) : undefined);
-        setCategorie(userState.categorie ? categories.find(categorie=>categorie._id===userState.categorie) : undefined);
-        setFonction(userState.fonction ? fonctions.find(fonction=>fonction._id===userState.fonction) : undefined);
-        setService(userState.service ? services.find(service=>service._id===userState.service) : undefined);
+        setGrade(userState.grade ? grades.find(grade => grade._id === userState.grade) : undefined);
+        setCategorie(userState.categorie ? categories.find(categorie => categorie._id === userState.categorie) : undefined);
+        setFonction(userState.fonction ? fonctions.find(fonction => fonction._id === userState.fonction) : undefined);
+        setService(userState.service ? services.find(service => service._id === userState.service) : undefined);
         setRegion(currentRegion);
         setDepartement(currentDepartement);
         setCommune(currentCommune);
         setDateEntreeAdmin(userState.date_entree ? userState.date_entree : "");
-        setPhotoProfil(userState.photo_profil??"");
+        setPhotoProfil(userState.photo_profil ?? "");
     }, [userState]);
     const [matricule, setMatricule] = useState("");
     const [nom, setNom] = useState("");
@@ -104,13 +106,13 @@ function ProfileInformation() {
     const [departement, setDepartement] = useState<DepartementProps>();
     const [commune, setCommune] = useState<CommuneProps>();
     const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
-    const [photoProfil, setPhotoProfil]=useState("");
+    const [photoProfil, setPhotoProfil] = useState("");
 
     // erreur
     const [errorNom, setErrorNom] = useState("");
     const [errorEmail, setErrorEmail] = useState("");
     const [errorGenre, setErrorGenre] = useState("");
-   
+
 
     const validateEmail = () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -140,7 +142,7 @@ function ProfileInformation() {
             setFonction(selectedFonction);
         }
     };
-    
+
     const handleGradeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedGradeLibelle = e.target.value;
         var selectedGrade = null;
@@ -301,23 +303,23 @@ function ProfileInformation() {
 
         await apiUpdateEtudiant(
             {
-                _id:userState._id,
+                _id: userState._id,
                 nom,
                 genre,
                 email,
-                photo_profil:photoProfil,
+                photo_profil: photoProfil,
                 contact,
                 matricule,
                 prenom,
-                date_naiss:dateNaiss,
-                lieu_naiss:lieuNaiss,
-                date_entree:dateEntreeAdmin,
-                niveaux:userState.niveaux,
-                grade:grade?._id||null,
-                categorie:categorie?._id||null,
-                fonction:fonction?._id||null,
-                service:service?._id||null,
-                commune:commune?._id||null
+                date_naiss: dateNaiss,
+                lieu_naiss: lieuNaiss,
+                date_entree: dateEntreeAdmin,
+                niveaux: userState.niveaux,
+                grade: grade?._id || null,
+                categorie: categorie?._id || null,
+                fonction: fonction?._id || null,
+                service: service?._id || null,
+                commune: commune?._id || null
             }
         ).then((e: ReponseApiPros) => {
             if (e.success) {
@@ -542,13 +544,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={grade ? (lang==='fr'?grade.libelleFr:grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
+                                    value={grade ? (lang === 'fr' ? grade.libelleFr : grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
                                     onChange={handleGradeChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
                                     {grades.map(grade => (
-                                        <option key={grade._id} value={(lang==='fr'?grade.libelleFr:grade.libelleEn)}>{(lang==='fr'?grade.libelleFr:grade.libelleEn)}</option>
+                                        <option key={grade._id} value={(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}>{(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -559,13 +561,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={categorie ? (lang==='fr'?categorie.libelleFr:categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
+                                    value={categorie ? (lang === 'fr' ? categorie.libelleFr : categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
                                     onChange={handleCategorieChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
                                     {categories.map(categorie => (
-                                        <option key={categorie._id} value={(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}>{(lang==='fr'?categorie.libelleFr:categorie.libelleEn)}</option>
+                                        <option key={categorie._id} value={(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}>{(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -579,13 +581,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={fonction ? (lang==='fr'?fonction.libelleFr:fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
+                                    value={fonction ? (lang === 'fr' ? fonction.libelleFr : fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
                                     onChange={handleFonctionChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
                                     {fonctions.map(fonction => (
-                                        <option key={fonction._id} value={(lang==='fr'?fonction.libelleFr:fonction.libelleEn)}>{(lang==='fr'?fonction.libelleFr:fonction.libelleEn)}</option>
+                                        <option key={fonction._id} value={(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}>{(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -596,13 +598,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={service ? (lang==='fr'?service.libelleFr:service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
+                                    value={service ? (lang === 'fr' ? service.libelleFr : service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
                                     onChange={handleServiceChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
                                     {services.map(service => (
-                                        <option key={service._id} value={(lang==='fr'?service.libelleFr:service.libelleEn)}>{(lang==='fr'?service.libelleFr:service.libelleEn)}</option>
+                                        <option key={service._id} value={(lang === 'fr' ? service.libelleFr : service.libelleEn)}>{(lang === 'fr' ? service.libelleFr : service.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -616,13 +618,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={region ? (lang==='fr'?region.libelleFr:region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
+                                    value={region ? (lang === 'fr' ? region.libelleFr : region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
                                     onChange={handleRegionChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
                                     {regions.map(region => (
-                                        <option key={region._id} value={(lang==='fr'?region.libelleFr:region.libelleEn)}>{(lang==='fr'?region.libelleFr:region.libelleEn)}</option>
+                                        <option key={region._id} value={(lang === 'fr' ? region.libelleFr : region.libelleEn)}>{(lang === 'fr' ? region.libelleFr : region.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -633,13 +635,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={departement ? (lang==='fr'?departement.libelleFr:departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
+                                    value={departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
                                     onChange={handleDepartementChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
                                     {filteredDepartement && filteredDepartement.map(departement => (
-                                        <option key={departement._id} value={(lang==='fr'?departement.libelleFr:departement.libelleEn)}>{(lang==='fr'?departement.libelleFr:departement.libelleEn)}</option>
+                                        <option key={departement._id} value={(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}>{(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>
@@ -650,13 +652,13 @@ function ProfileInformation() {
 
                             <div className="relative">
                                 <select
-                                    value={commune ? (lang==='fr'?commune.libelleFr:commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
+                                    value={commune ? (lang === 'fr' ? commune.libelleFr : commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
                                     onChange={handleCommuneChange}
                                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                 >
                                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
                                     {filteredCommune && filteredCommune.map(commune => (
-                                        <option key={commune._id} value={(lang==='fr'?commune.libelleFr:commune.libelleEn)}>{(lang==='fr'?commune.libelleFr:commune.libelleEn)}</option>
+                                        <option key={commune._id} value={(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}>{(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}</option>
                                     ))}
                                 </select>
                             </div>

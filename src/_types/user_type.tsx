@@ -1,3 +1,12 @@
+interface MinUserState {
+    _id: string;
+    roles: string[];
+    role: string;
+}
+
+
+
+
 interface UserState {
     _id: string;
 
@@ -21,17 +30,18 @@ interface UserState {
 
     // son tous des objectId
     abscence: string | null;
-    absences:AbsenceType[];
+    absences: AbsenceType[];
     niveaux: InscriptionType[];
     categorie: string | null;
     fonction: string | null;
     service: string | null;
     commune: string | null;
+    grade: string | null;
 }
 
-interface InscriptionType{
-    niveau:string,
-    annee:number
+interface InscriptionType {
+    niveau: string,
+    annee: number
 }
 
 // interface Absence {

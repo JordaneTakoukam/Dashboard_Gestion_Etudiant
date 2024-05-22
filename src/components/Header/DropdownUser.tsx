@@ -8,7 +8,7 @@ import ImageStudent from './../../images/user/student.png';
 import { logoutFunction } from '../../api/auth/logout';
 import { useSelector } from 'react-redux';
 import { RootState } from "./../../_redux/store";
-import { config } from '../../config';
+import { config, serveurUrl } from '../../config';
 import { BiLogOutCircle } from "react-icons/bi";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
@@ -80,15 +80,20 @@ const DropdownUser = () => {
             </span>
         }
 
-        <span className={`rounded-full ${user.role === roles.enseignant ? 'h-9 w-9' : 'h-10 w-10 '}`}>
-          <img src={
-            user.role === roles.superAdmin ? ImageAdmin :
-              user.role === roles.admin ? ImageAdmin :
-                user.role === roles.enseignant ? ImageTeacher :
-                  user.role === roles.delegue ? ImageDelegate :
-                    ImageStudent
-          } alt="User" />
-        </span>
+        <div className="h-10 w-10 rounded-full overflow-hidden">
+          {
+            userState.photo_profil !== null && userState.photo_profil !== '' ?
+              <img className="w-full h-full object-cover" src={serveurUrl + userState.photo_profil} alt={userState.nom} />
+              :
+              <img src={
+                user.role === roles.superAdmin ? ImageAdmin :
+                  user.role === roles.admin ? ImageAdmin :
+                    user.role === roles.enseignant ? ImageTeacher :
+                      user.role === roles.delegue ? ImageDelegate :
+                        ImageStudent
+              } alt="User" />
+          }
+        </div>
 
         <svg
           className={`hidden fill-current sm:block ${dropdownOpen ? 'rotate-180' : ''

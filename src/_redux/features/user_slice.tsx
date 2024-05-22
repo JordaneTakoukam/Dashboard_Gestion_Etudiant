@@ -9,9 +9,10 @@ const initialState: UserState = {
     date_creation: null,
     nom: '',
     prenom: '',
+    grade: '',
     email: '',
     niveaux: [],
-    absences:[],
+    absences: [],
     categorie: '',
     fonction: '',
     service: '',
@@ -37,9 +38,10 @@ export const userSlice = createSlice({
             return { ...state, ...action.payload };
         },
         // Définir l'utilisateur avec des propriétés minimales
-        setMinimumUser: (state, action: PayloadAction<UserState>) => {
+        setMinimumUser: (state, action: PayloadAction<MinUserState>) => {
             return { ...state, ...action.payload };
         },
+
         // Mettre à jour l'utilisateur avec de nouvelles propriétés
         updateUser: (state, action: PayloadAction<Partial<UpdateUserPayload>>) => {
             return { ...state, ...action.payload };
@@ -58,7 +60,7 @@ export const userSlice = createSlice({
 });
 
 // Exporter les actions
-export const { setUser, setMinimumUser, updateUserNiveaux,updateUserAbsences, updateUser } = userSlice.actions;
+export const { setUser, setMinimumUser, updateUserNiveaux, updateUserAbsences, updateUser } = userSlice.actions;
 
 // Exporter le reducer
 export default userSlice.reducer;

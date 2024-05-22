@@ -13,17 +13,26 @@ interface BreadcrumbProps {
   returnWithChapitre?: () => void;
   returnWithPeriodeEnseignement?: () => void;
 
-  //
   isGestionEnseignant?: boolean;
   isGestionEtudiant?: boolean;
 }
 
-
-
-const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant = false, isDashboard = false, isChapitre = false, isObjectif = false, isEnseignement = false, isPeriodeEnseignement = false, returnWithMatiere, returnWithChapitre, returnWithPeriodeEnseignement }: BreadcrumbProps) => {
+const Breadcrumb = ({
+  pageName,
+  isGestionEnseignant = false,
+  isGestionEtudiant = false,
+  isDashboard = false,
+  isChapitre = false,
+  isObjectif = false,
+  isEnseignement = false,
+  isPeriodeEnseignement = false,
+  returnWithMatiere,
+  returnWithChapitre,
+  returnWithPeriodeEnseignement,
+}: BreadcrumbProps) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   const handleMatiere = () => {
     navigate('subjects/subject-list');
@@ -31,87 +40,84 @@ const Breadcrumb = ({ pageName, isGestionEnseignant = false, isGestionEtudiant =
 
   const handlePeriodeEnseigenement = () => {
     navigate('/subjects/periodes_enseignement');
-  }; 
+  };
 
   const handleDisciplneEnseignant = () => {
     navigate('/teachers/disciplines/');
   };
 
-
   const handleDisciplneEtudiant = () => {
     navigate('/students/disciplines/');
   };
 
-
- 
-
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="text-[18px] md:text-[20px] font-semibold text-black dark:text-white">
-        {pageName}
-      </h2>
+      <h2 className="text-[18px] md:text-[20px] font-semibold text-black dark:text-white">{pageName}</h2>
 
       <nav>
-        <ol className="text-[14.5px]  md:text-[15px]  flex items-center gap-2">
+        <ol className="text-[14.5px] md:text-[15px] flex items-center gap-2">
           <li>
-            <li className='flex'>
-              <Link className='hover:underline' to={"/"} >{t('tableau_de_bord.title')}</Link>
+            <span className='flex'>
+              <Link className='hover:underline' to={"/"}>{t('tableau_de_bord.title')}</Link>
               <span className='ml-2'> /</span>
-            </li>
+            </span>
           </li>
 
           {isChapitre && (
-            <li className='flex'>
-              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
-              <span className='ml-2'> /</span>
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
             </li>
           )}
 
           {isObjectif && (
-            <li className='flex'>
-              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
-              <span className='ml-2'> /</span>
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
             </li>
           )}
 
           {isEnseignement && (
-            <li className='flex'>
-              <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
-              <span className='ml-2'> /</span>
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline' to={"/subjects/subject-list"} onClick={handleMatiere}>{t('sub_menu.liste_matiere')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
             </li>
           )}
 
           {isPeriodeEnseignement && (
             <li>
-              <Link className='hover:underline' to={"/subjects/periodes_enseignement"} onClick={handlePeriodeEnseigenement}>{t('sub_menu.periodes_enseignement')}</Link>
-              <span className='ml-2'> /</span>
+              <span className='flex'>
+                <Link className='hover:underline' to={"/subjects/periodes_enseignement"} onClick={handlePeriodeEnseigenement}>{t('sub_menu.periodes_enseignement')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
             </li>
           )}
 
-          {
-            isGestionEnseignant &&
-            <li className='flex'>
-              <Link className='hover:underline ' to={"/teachers/disciplines"} onClick={handleDisciplneEnseignant}>{t('sub_menu.discipline')}</Link>
-              <span className='ml-2'> /</span>
+          {isGestionEnseignant && (
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline ' to={"/teachers/disciplines"} onClick={handleDisciplneEnseignant}>{t('sub_menu.discipline')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
             </li>
-          }
+          )}
 
-          {
-            isGestionEtudiant &&
-            <li className='flex'>
-              <Link className='hover:underline ' to={"/students/disciplines"} onClick={handleDisciplneEtudiant}>{t('sub_menu.discipline')}</Link>
-              <span className='ml-2'> /</span>
+          {isGestionEtudiant && (
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline ' to={"/students/disciplines"} onClick={handleDisciplneEtudiant}>{t('sub_menu.discipline')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
             </li>
-          }
-          {
-            isDashboard == false && (
-              <li className="text-primary">{reduceWord(pageName, 15)}</li>
+          )}
 
-            )
-          }
-
-
-
+          {!isDashboard && <li className="text-primary">{reduceWord(pageName, 15)}</li>}
         </ol>
       </nav>
     </div>

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { apiUrl, wstjqer } from '../../config.js';
+import { apiUrl, wstjqer } from '../../../config';
 
 
 const api = `${apiUrl}/user`;
@@ -8,11 +8,10 @@ const token = localStorage.getItem(wstjqer);
 
 
 
-export async function apiSavePhotoProfil({ formData, userId }: { formData: FormData, userId: string }): Promise<ReponseApiPros> {
+export async function apiDeletePhotoProfil({ userId }: { userId: string }): Promise<ReponseApiPros> {
     try {
-        const response: AxiosResponse<any> = await axios.post(
-            `${api}/save-photo-profile?userId=${userId}`,
-            formData,
+        const response: AxiosResponse<any> = await axios.delete(
+            `${api}/delete-photo-profile?userId=${userId}`,
             {
                 headers: {
                     'content-type': 'multipart/form-data',

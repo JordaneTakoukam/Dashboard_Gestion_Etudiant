@@ -8,9 +8,11 @@ import { RootState } from "../../_redux/store";
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import createToast from '../../hooks/toastify';
-import { apiSavePhotoProfil } from '../../api/other_users/api_save_profile_image';
+import { apiSavePhotoProfil } from '../../api/other_users/photo_profile/api_save_profile_image';
 import { setUser } from '../../_redux/features/user_slice';
-import { MdDelete } from 'react-icons/md';
+import { MdDelete, MdEdit } from 'react-icons/md';
+import CustomModal from '../Modals/CustomDialogModal';
+import { apiDeletePhotoProfil } from '../../api/other_users/photo_profile/api_delete_profile_image';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -23,6 +25,8 @@ export function PickPhoto() {
   const lang = useSelector((state: RootState) => state.setting.language);
   const user = { username: userState.nom, role: userState.role, photo: userState.photo_profil };
 
+  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [updatePhoto, setUpdatePhoto] = useState<boolean>(false);
 
   const [file, setFile] = useState<File | null>(null);
 
@@ -49,58 +53,7 @@ export function PickPhoto() {
     }
   };
 
-  const handleDeletePhoto = async () => {
-    if (file) {
-      const formData = new FormData();
-      formData.append('image_profil', file);
 
-      setLoading(true);
-      try {
-
-        await apiSavePhotoProfil({ formData: formData, userId: userState?._id })
-          .then((reponse) => {
-            setLoading(false);
-            setFile(null);
-            dispatch(setUser({ ...userState, photo_profil: reponse.data }));
-            createToast(lang === 'fr' ? 'Photo de profil mise à jour' : 'Profile picture updated', '', 0)
-          });
-
-      } catch (e) {
-        createToast('Une erreur est survenue', '', 2);
-        setLoading(false);
-      }
-
-    }
-    else {
-      createToast('erreur', '', 1)
-    }
-  }
-  const handleUpdatePhoto = async () => {
-    if (file) {
-      const formData = new FormData();
-      formData.append('image_profil', file);
-
-      setLoading(true);
-      try {
-
-        await apiSavePhotoProfil({ formData: formData, userId: userState?._id })
-          .then((reponse) => {
-            setLoading(false);
-            setFile(null);
-            dispatch(setUser({ ...userState, photo_profil: reponse.data }));
-            createToast(lang === 'fr' ? 'Photo de profil mise à jour' : 'Profile picture updated', '', 0)
-          });
-
-      } catch (e) {
-        createToast('Une erreur est survenue', '', 2);
-        setLoading(false);
-      }
-
-    }
-    else {
-      createToast('erreur', '', 1)
-    }
-  }
 
   const handleSubmit = async () => {
     if (file) {
@@ -115,12 +68,19 @@ export function PickPhoto() {
             setLoading(false);
             setFile(null);
             dispatch(setUser({ ...userState, photo_profil: reponse.data }));
-            createToast(lang === 'fr' ? 'Photo de profil mise à jour' : 'Profile picture updated', '', 0)
-          });
+            createToast(lang === 'fr' ? reponse.message.fr : reponse.message.en, '', 0);
+            setUpdatePhoto(false)
+          }).catch((e) => {
+            createToast(lang === 'fr' ? e.message.fr : e.message.en, '', 2);
+            setLoading(false);
+
+          })
 
       } catch (e) {
         createToast('Une erreur est survenue', '', 2);
         setLoading(false);
+        setLoading(false);
+
       }
 
     }
@@ -158,12 +118,25 @@ export function PickPhoto() {
                 {t('label.editer_photo')}
               </span>
 
-              <div className='-mt-2 space-x-2'>
-                <button className='text-meta-1 flex items-center justify-center gap-x-1 '>
-                  <MdDelete />
-                  Supprimer</button>
+              {
+                userState.photo_profil !== '' && <div className='-mt-2 flex space-x-2'>
+                  <button
+                    onClick={() => setUpdatePhoto(true)}
+                    className='hover:text-primary flex items-center justify-center gap-x-1 '>
+                    <MdEdit />
+                    {lang === 'fr' ? "Modifier" : "Update"}
+                  </button>
+                  <button
+                    onClick={() => setOpenModalDelete(true)}
+                    className='text-meta-1 flex items-center justify-center gap-x-1 hover:text-opacity-80 '>
+                    <MdDelete />
 
-              </div>
+                    {lang === 'fr' ? "Supprimer" : "Delete"}
+
+                  </button>
+
+                </div>
+              }
             </div>
 
           </div>
@@ -172,12 +145,15 @@ export function PickPhoto() {
           {!error && <div className="text-red-500">{error}</div>}
 
           {
-            loading ?
-              <div className=' my-20'>
-                <div className={`flex items-center justify-center bg-transparent`}>
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
+
+
+            !updatePhoto && user.photo !== '' ?
+              <div className='w-full flex justify-center items-center'>
+                <div className="h-30 lg:h-40 w-30 lg:w-40 rounded-full overflow-hidden">
+                  <img className="w-full h-full object-cover" src={serveurUrl + userState.photo_profil} alt={userState.nom} />
                 </div>
-              </div> :
+              </div>
+              :
 
 
               !file ?
@@ -239,25 +215,86 @@ export function PickPhoto() {
 
                 </div>
           }
-
-          {file && <div className="flex justify-end gap-4.5 pt-5 ">
+          {updatePhoto || file ? <div className="flex justify-end gap-4.5 pt-5 ">
             <button
-              onClick={() => { setFile(null); setLoading(false) }}
+              onClick={() => { setUpdatePhoto(false); setFile(null); setLoading(false) }}
               className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-sm"
             >
               {t('boutton.annuler')}
             </button>
-            <button
-              onClick={() => handleSubmit()}
 
-              className="text-sm flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+
+            <button
+              className={`${loading && 'opacity-50'} flex justify-center rounded bg-primary
+               py-2 px-4 lg:px-10 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm`}
+              onClick={loading ? () => { alert('Patientez la fin du chargement !') } : handleSubmit}
             >
-              {t('boutton.sauvegarder')}
+              {loading && <div className={`flex items-center justify-center bg-transparent pr-2`}>
+                <div className="h-5 w-5  animate-spin rounded-full border-2 border-solid border-white border-t-transparent"></div>
+              </div>}
+              {loading ? <p>Loading...</p> : t('boutton.sauvegarder')}
             </button>
-          </div>}
+          </div> : <div></div>}
         </div>
       </div>
-    </div>
+
+
+
+
+
+      {/* Modal confirmation delete  photo de profil*/}
+      <CustomModal
+        isLoading={loading}
+        title={'Confirmation'}
+        isModalOpen={openModalDelete}
+        isDelete={true}
+        closeModal={() => setOpenModalDelete(false)}
+        handleConfirm={async () => {
+          if (userState.photo_profil !== '') {
+            setLoading(true);
+            try {
+              setLoading(true);
+
+              await apiDeletePhotoProfil({ userId: userState?._id })
+                .then((reponse) => {
+                  setFile(null);
+                  dispatch(setUser({ ...userState, photo_profil: '' }));
+                  createToast(lang === 'fr' ? reponse.message.fr : reponse.message.en, '', 0);
+
+                  setLoading(false);
+                  setUpdatePhoto(false);
+                  setFile(null);
+                  setOpenModalDelete(false);
+
+                }).catch((e) => {
+                  createToast(lang === 'fr' ? e.message.fr : e.message.en, '', 2)
+                  setLoading(false);
+                  setUpdatePhoto(false);
+                  setFile(null);
+                })
+
+            } catch (e) {
+              createToast('Une erreur est survenue', '', 2);
+              setLoading(false);
+              setUpdatePhoto(false);
+              setFile(null);
+            }
+          } else {
+            createToast(lang === 'fr' ? 'Aucune image trouver' : 'No image detected', '', 1)
+
+          }
+
+
+        }}
+      >
+        {/* <div>id = {batiment?._id}</div> */}
+        <p>{lang === 'fr' ? 'Confirmer la suppression de la photo de profil' : 'Confirm deletion of profile photo'}</p>
+        {/* <h1>{t('form_delete.suppression') + t('form_delete.departement')} : {departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : ""}</h1> */}
+      </CustomModal>
+
+
+      {/* modal update photo */}
+    </div >
   )
 }
 

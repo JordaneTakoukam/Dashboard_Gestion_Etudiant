@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import LogoPng from "./../../images/logo/logo.png";
 import { config } from '../../config';
 import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
 import React from 'react';
@@ -17,6 +16,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { FaRegCopyright } from "react-icons/fa6";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
+import LogoNavbar from './LogoNavbar';
 
 
 
@@ -69,16 +69,10 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         >
             {/* <!-- SIDEBAR HEADER --> */}
             <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:pb-5  lg:pt-9 ">
-                <NavLink to="/" className={`flex`}>
-
-                    <div className="md:h-[60px] md:w-[60px] h-25 w-25 ml-2">
-                        <img src={LogoPng} alt="logo" />
-                    </div>
-                    <h1 className='font-extrabold pt-2 ml-4 text-white text-[15px] lg:text-[20px] mt-2'>{config.nameApp}</h1>
-
-                </NavLink>
-
+                <LogoNavbar />
                 {/* Bouton pour fermer la sidebar */}
+
+
                 <button
                     ref={trigger}
                     onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -348,7 +342,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 'group relative flex items-center  pb-2 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && ' text-secondary')
                                                             }
-                                                            
+
                                                         >
                                                             {t('sub_menu.liste_matiere')}
 
@@ -373,7 +367,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && 'text-secondary')
                                                             }
-                                                            
+
                                                         >
                                                             {t('sub_menu.periodes_enseignement')}
                                                         </NavLink>

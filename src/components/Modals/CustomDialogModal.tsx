@@ -7,17 +7,16 @@ interface CustomDialogModalProps {
     title: string;
     handleConfirm: () => void;
     isModalOpen: boolean;
-    isDelete: boolean;
-    addElement?:boolean;
+    isDelete?: boolean;
     closeModal: () => void;
     children: React.ReactNode;
-    unique?: boolean;
-    type?: string,
+    isLoading?: boolean;
+    isUnique?: boolean;
 }
 
 // model generale pour les boites de dialogue
 
-function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, addElement=false, closeModal, children, unique }: CustomDialogModalProps) {
+function CustomModal({ isUnique, isLoading, title, handleConfirm, isModalOpen, isDelete, closeModal, children }: CustomDialogModalProps) {
     const { t } = useTranslation();
     return (
         <div>
@@ -64,34 +63,45 @@ function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, 
                                     {/* BODY DE LA BOITE DE DIALOGUE */}
                                     <div className='mt-5 md:mt-10'>{children}</div>
 
-                                    {!addElement && (
-                                        unique ?
-                                            <div className="flex justify-end gap-4.5 mt-8">
+                                    {
+                                        isUnique ?
+                                            <div className='flex items-end justify-end w-full mt-10'>
+
                                                 <button
-                                                    className="flex justify-center rounded bg-meta-1 py-2 px-8 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm"
-                                                    onClick={handleConfirm}
+
+                                                    className={
+                                                        `
+                                            flex justify-center rounded bg-primary py-2 px-6 lg:px-12 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm`}
+                                                    onClick={closeModal}
                                                 >
-                                                    {t('boutton.daccord')}
+                                                    {"D'accord"}
                                                 </button>
                                             </div>
-                                            :
 
-                                            <div className="flex justify-end gap-4.5 mt-8">
+                                            : <div className="flex justify-end gap-4.5 mt-8">
                                                 <button
-                                                    className="flex justify-center rounded border border-stroke py-1 lg:py-2 px-10 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm"
+                                                    className={`
+                                        ${isDelete ? '  px-6 lg:px-16' : " px-6 lg:px-10 "}
+                                        flex justify-center rounded border border-stroke py-1 lg:py-2  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm`}
                                                     type="submit"
                                                     onClick={closeModal}
                                                 >
                                                     {!isDelete ? t('boutton.annuler') : t('boutton.non')}
                                                 </button>
+                                                
                                                 <button
-                                                    className={`flex justify-center hover:bg-opacity-70 rounded ${isDelete ? ' bg-[#de1717f9] px-10' : 'bg-primary '} py-2 px-8 font-medium text-gray  text-[12px] lg:text-sm`}
-                                                    onClick={handleConfirm}
+                                                    className={
+                                                        `
+                                            ${isLoading && 'opacity-50'}
+                                            flex justify-center rounded ${isDelete ? ' bg-meta-1' : "bg-primary "} py-2 px-6 lg:px-10 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm`}
+                                                    onClick={isLoading ? () => { alert('Patientez la fin du chargement !') } : handleConfirm}
                                                 >
-                                                    {!isDelete ? t('boutton.enregistrer') : t('boutton.oui')}
+                                                    {isLoading && <div className={`flex items-center justify-center bg-transparent pr-2`}>
+                                                        <div className="h-5 w-5  animate-spin rounded-full border-2 border-solid border-white border-t-transparent"></div>
+                                                    </div>}
+                                                    {isLoading ? <p>Loading...</p> : !isDelete ? t('boutton.enregistrer') : t('boutton.supprimer')}
                                                 </button>
                                             </div>
-                                        )
                                     }
                                 </Dialog.Panel>
                             </Transition.Child>
@@ -103,4 +113,4 @@ function CustomDialogModal({ type, title, handleConfirm, isModalOpen, isDelete, 
     );
 }
 
-export default CustomDialogModal;
+export default CustomModal;

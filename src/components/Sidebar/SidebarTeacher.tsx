@@ -15,6 +15,7 @@ import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
 import React from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
+import LogoNavbar from './LogoNavbar';
 
 
 interface SidebarProps {
@@ -23,7 +24,7 @@ interface SidebarProps {
 }
 
 const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const location = useLocation();
     const { pathname } = location;
     const trigger = useRef<any>(null);
@@ -68,14 +69,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         >
             {/* <!-- SIDEBAR HEADER --> */}
             <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:pb-5  lg:pt-9 ">
-                <NavLink to="/" className={`flex`}>
-
-                    <div className="md:h-[60px] md:w-[60px] h-25 w-25 ml-2">
-                        <img src={LogoPng} alt="logo" />
-                    </div>
-                    <h1 className='font-extrabold pt-2 ml-4 text-white text-[15px] lg:text-[20px] mt-2'>{config.nameApp}</h1>
-
-                </NavLink>
+                <LogoNavbar />
 
                 {/* Bouton pour fermer la sidebar */}
                 <button

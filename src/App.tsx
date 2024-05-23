@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import SignIn from './pages/Authentication/SignIn.js';
 import { ToastContainer } from 'react-toastify';
 import routeAdmin from './routes/routes.admin.js'
@@ -18,7 +18,6 @@ import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
 import ResetPassword from './pages/Authentication/ResetPassword.js';
 import { isUserAuthenticated } from './middlewares/auth_middleware.js';
 import { setMinimumUser, setUser } from './_redux/features/user_slice.js';
-import createToast from './hooks/toastify.js';
 import Loading from './components/ui/loading.js';
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from './_redux/features/data_setting_slice.js';
 import { apiGetAllSettings } from './api/settings/api_data_setting.js';
@@ -45,7 +44,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   // recuperer les info en local storage
 
-  const [isAuth, setIsAuth] = useState<{ value: any; status: boolean }>({ value: null, status: false });
+  const [isAuth, setIsAuth] = useState<{ value: any; status: boolean }>({ value: 'default', status: false });
 
   const [userLog, setUserLog] = useState<UserState>();
 
@@ -83,43 +82,42 @@ function App() {
   useEffect(() => {
 
     const handleAuthentication = async () => {
+      if (isAuth.status) {
+        const localUser = isAuth.value;
 
-      if (isAuth != null) {
-        if (isAuth.status) {
-          const localUser = isAuth.value;
+        if (localUser) {
+          const { userId, roles, role } = localUser;
 
-          if (localUser) {
-            const { userId, roles, role } = localUser;
+          if (role !== "" && role !== null && role !== undefined) {
+            dispatch(setMinimumUser({ _id: userId, roles: roles, role: role }));
+            setUserRole(role);
 
-            if (role !== "" && role !== null && role !== undefined) {
-              dispatch(setMinimumUser({ _id: userId, roles: roles, role: role }));
-              setUserRole(role);
-
-              // recuperer les data du user en bd
-              try {
-                await getCurrentUserData({ userId: userId }).then((e: UserState) => {
-                  dispatch(setUser(e));
-                  setUserLog(e);
-
-                  setLoading(false);
-
-                })
-              } catch (e) {
+            // recuperer les data du user en bd
+            try {
+              await getCurrentUserData({ userId: userId }).then((e: UserState) => {
+                dispatch(setUser(e));
+                setUserLog(e);
                 setLoading(false);
-
-              }
-
+              }).catch((e) => {
+                setLoading(false);
+              })
+            } catch (e) {
+              setLoading(false);
             }
           }
-
-
-        } else {
-          if (isAuth.value != null)
-            createToast(isAuth.value, "", 1);
         }
+
+      } else {
+        // console.log('isAuth.value  = null');
+
+        setLoading(false);
+        // setIsAuth({ value: '', status: false });
       }
 
-    };
+      // if (isAuth.value != null)
+      //   createToast(isAuth.value, "", 1);
+
+    }
 
     handleAuthentication();
   }, [isAuth]);
@@ -138,7 +136,6 @@ function App() {
         dispatch(setErrorDataSetting('une erreur est survenue'))
       } finally {
         dispatch(setLoadingDataSetting(false));
-
       }
     };
 
@@ -171,7 +168,6 @@ function App() {
         dispatch(setSignalementAbsences(emptySignalement));
       }
     } catch (error) {
-
     }
   }
 
@@ -263,7 +259,7 @@ function App() {
       <ToastContainer />
 
       {
-        isAuth.value && <Routes>
+        isAuth.value !== 'default' && <Routes>
           {/* Redirect to /auth/signup if not authenticated */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/reset-password" element={<ResetPassword />} />

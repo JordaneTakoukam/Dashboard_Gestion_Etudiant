@@ -10,7 +10,7 @@ const token = localStorage.getItem(wstjqer);
 // 
 //
 // get
-export async function apiGetEtudiantsWithPagination({ page, annee, niveauId }: { page: number, annee:number, niveauId:string }): Promise<EtudiantListGetType> {
+export async function apiGetEtudiantsWithPagination({ page, annee, niveauId }: { page: number, annee: number, niveauId: string }): Promise<EtudiantListGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -23,7 +23,7 @@ export async function apiGetEtudiantsWithPagination({ page, annee, niveauId }: {
                 params: {
                     page: page,
                     pageSize: pageSize,
-                    annee:annee
+                    annee: annee
                 },
             },
         );
@@ -36,7 +36,7 @@ export async function apiGetEtudiantsWithPagination({ page, annee, niveauId }: {
     }
 }
 
-export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauId:string }): Promise<EtudiantListGetType> {
+export async function apiGetEtudiants({ annee, niveauId }: { annee: number, niveauId: string }): Promise<EtudiantListGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getAllEtudiantsByLevelAndYear/${niveauId}`,
@@ -46,7 +46,7 @@ export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauI
                     'token': token,
                 },
                 params: {
-                    annee:annee
+                    annee: annee
                 },
             },
         );
@@ -59,7 +59,7 @@ export async function apiGetEtudiants({annee, niveauId }: {annee:number, niveauI
     }
 }
 
-export async function generateListEtudiant({annee, departement, section, cycle, niveau, langue }:{annee: number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string}): Promise<Blob> {
+export async function generateListEtudiant({ annee, departement, section, cycle, niveau, langue }: { annee: number, departement: CommonSettingProps, section: SectionProps, cycle: CycleProps, niveau: NiveauProps, langue: string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListEtudiant/${annee}`,
@@ -69,11 +69,11 @@ export async function generateListEtudiant({annee, departement, section, cycle, 
                     'token': token,
                 },
                 params: {
-                    departement:departement,
-                    section:section,
-                    cycle:cycle,
-                    niveau:niveau,
-                    langue:langue
+                    departement: departement,
+                    section: section,
+                    cycle: cycle,
+                    niveau: niveau,
+                    langue: langue
                 },
                 responseType: 'blob',
             },
@@ -89,7 +89,7 @@ export async function generateListEtudiant({annee, departement, section, cycle, 
     }
 }
 
-export async function apiGetTotalEtudiantByYear({annee}: {annee:number}): Promise<number> {
+export async function apiGetTotalEtudiantByYear({ annee }: { annee: number }): Promise<number> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getTotalEtudiantsByYear`,
@@ -99,7 +99,7 @@ export async function apiGetTotalEtudiantByYear({annee}: {annee:number}): Promis
                     'token': token,
                 },
                 params: {
-                    annee:annee
+                    annee: annee
                 },
             },
         );
@@ -111,7 +111,7 @@ export async function apiGetTotalEtudiantByYear({annee}: {annee:number}): Promis
     }
 }
 
-export async function apiGetTotalEtudiantByNiveaux({niveaux, annee}: {niveaux:InscriptionType[], annee:number}): Promise<number> {
+export async function apiGetTotalEtudiantByNiveaux({ niveaux, annee }: { niveaux: InscriptionType[], annee: number }): Promise<number> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getTotalEtudiantsByNiveau`,
@@ -121,8 +121,8 @@ export async function apiGetTotalEtudiantByNiveaux({niveaux, annee}: {niveaux:In
                     'token': token,
                 },
                 params: {
-                    niveaux:niveaux,
-                    annee:annee
+                    niveaux: niveaux,
+                    annee: annee
                 },
             },
         );
@@ -158,7 +158,7 @@ export async function apiGetNbEtudiantsParSection({ annee }: { annee: number }):
     }
 }
 
-export async function apiGetNbAbsenceEtudiantsParSection({ annee, semestre }: { annee: number, semestre:number }): Promise<{ [section: string]: number }> {
+export async function apiGetNbAbsenceEtudiantsParSection({ annee, semestre }: { annee: number, semestre: number }): Promise<{ [section: string]: number }> {
     try {
         const response: AxiosResponse<{ data: { [section: string]: number } }> = await axios.get(
             `${api}/getNbAbsencesParSection`,
@@ -169,7 +169,7 @@ export async function apiGetNbAbsenceEtudiantsParSection({ annee, semestre }: { 
                 },
                 params: {
                     annee: annee,
-                    semestre:semestre
+                    semestre: semestre
                 },
             },
         );
@@ -183,11 +183,11 @@ export async function apiGetNbAbsenceEtudiantsParSection({ annee, semestre }: { 
 }
 
 // create
-export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,categorie,fonction,service,commune}: EtudiantType): Promise<ReponseApiPros> {
+export async function apiCreateEtudiant({ nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, categorie, fonction, service, commune }: EtudiantType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create/create-etudiant`,
-            { nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,absences,niveaux,categorie,fonction,service,commune },
+            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, absences, niveaux, categorie, fonction, service, commune },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,12 +206,12 @@ export async function apiCreateEtudiant({nom,genre,email,photo_profil,contact,ma
 //
 //
 // update 
-export async function apiUpdateEtudiant({_id,nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,categorie,fonction,service,commune,roles}: EtudiantType): Promise<ReponseApiPros> {
-    
+export async function apiUpdateEtudiant({ _id, nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, grade, date_entree, niveaux, categorie, fonction, service, commune, roles }: EtudiantType): Promise<ReponseApiPros> {
+
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            {nom,genre,email,photo_profil,contact,matricule,prenom,date_naiss,lieu_naiss,date_entree,niveaux,categorie,fonction,service,commune,roles },
+            { nom, genre, email, photo_profil, contact, grade, matricule, prenom, date_naiss, lieu_naiss, date_entree, niveaux, categorie, fonction, service, commune, roles },
             {
                 headers: {
                     'Content-Type': 'application/json',

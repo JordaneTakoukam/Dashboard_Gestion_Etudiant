@@ -287,9 +287,7 @@ export function PickPhoto() {
 
         }}
       >
-        {/* <div>id = {batiment?._id}</div> */}
         <p>{lang === 'fr' ? 'Confirmer la suppression de la photo de profil' : 'Confirm deletion of profile photo'}</p>
-        {/* <h1>{t('form_delete.suppression') + t('form_delete.departement')} : {departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : ""}</h1> */}
       </CustomModal>
 
 

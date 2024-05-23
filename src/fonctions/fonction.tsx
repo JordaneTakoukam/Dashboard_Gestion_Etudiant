@@ -440,3 +440,14 @@ export function createPDF(blob:Blob, title:string){
     // Libérer l'URL de l'objet
     URL.revokeObjectURL(url);
 }
+
+
+
+export function compareDates(date1: string, date2: string): boolean {
+  // Supprimez les parties de temps pour assurer une comparaison précise des dates
+  const trimmedDate1 = date1.split('T')[0];
+  const trimmedDate2 = date2.split('T')[0];
+
+  // Comparez les deux dates
+  return trimmedDate1 === trimmedDate2;
+}

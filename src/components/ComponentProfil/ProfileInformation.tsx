@@ -10,8 +10,10 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { apiUpdateEtudiant } from "../../api/other_users/api_etudiant";
-import { setMinimumUser, updateUser } from "../../_redux/features/user_slice";
+import { setMinimumUser, setUser, updateUser } from "../../_redux/features/user_slice";
 import createToast from "../../hooks/toastify";
+import CustomModal from "../Modals/CustomDialogModal";
+import { compareDates } from "../../fonctions/fonction";
 
 interface Props {
     icone: ReactNode; // Type de la variable icone
@@ -47,7 +49,11 @@ function LabelInput({ title, required }: LabelInputProps) {
 
 
 
+
 function ProfileInformation() {
+    const [haveChanged, setHaveChanged] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [openModalConfirm, setOpenModalConfirm] = useState<boolean>(false);
     const userState: UserState = useSelector((state: RootState) => state.user);
 
 
@@ -63,7 +69,13 @@ function ProfileInformation() {
     const dispatch = useDispatch();
     const [filteredDepartement, setFilteredDepartement] = useState<DepartementProps[] | undefined>([]);
     const [filteredCommune, setFilteredCommune] = useState<CommuneProps[] | undefined>([]);
+
     // filtrer les donnee a partir de l'id de la region selectionner
+
+
+
+
+
 
     useEffect(() => {
 
@@ -89,7 +101,13 @@ function ProfileInformation() {
         setCommune(currentCommune);
         setDateEntreeAdmin(userState.date_entree ? userState.date_entree : "");
         setPhotoProfil(userState.photo_profil ?? "");
-    }, [userState]);
+    }, [userState, regions,
+        departements,
+        communes,
+        grades,
+        fonctions,
+        categories,
+        services]);
     const [matricule, setMatricule] = useState("");
     const [nom, setNom] = useState("");
     const [prenom, setPrenom] = useState("");
@@ -112,6 +130,51 @@ function ProfileInformation() {
     const [errorNom, setErrorNom] = useState("");
     const [errorEmail, setErrorEmail] = useState("");
     const [errorGenre, setErrorGenre] = useState("");
+
+
+
+    // verifier que au moins un element de l'app a ete modifier avant de pouvoir faire un update
+    // Vérifier si au moins un champ a été modifié avant de pouvoir effectuer une mise à jour
+    useEffect(() => {
+        const isDateEntree = userState.date_entree !== null && compareDates(userState.date_entree, dateEntreeAdmin);
+        const isDateNaissModified = userState.date_naiss !== null && compareDates(userState.date_naiss, dateNaiss);
+
+        const isModified =
+            userState.matricule !== matricule ||
+            !isDateEntree ||
+            userState.nom !== nom ||
+            userState.prenom !== prenom ||
+            userState.contact !== contact ||
+            userState.email !== email ||
+            userState.genre !== genre ||
+            userState.lieu_naiss !== lieuNaiss ||
+            !isDateNaissModified ||
+            userState.grade && userState.grade != grade?._id ||
+            userState.categorie && userState.categorie != categorie?._id ||
+            userState.fonction && userState.fonction != fonction?._id ||
+            userState.service && userState.service != service?._id ||
+            userState.region && userState.region != region?._id ||
+            userState.departement && userState.departement != departement?._id ||
+            userState.commune && userState.commune != commune?._id
+            ;
+        if (isModified) {
+            setHaveChanged(true)
+        }
+        else {
+            setHaveChanged(false);
+        }
+    }, [matricule, dateEntreeAdmin, nom, prenom, email, contact, genre, dateNaiss, lieuNaiss,
+        grade, categorie, fonction, service, region, departement, commune,
+
+        regions,
+        departements,
+        communes,
+        grades,
+        fonctions,
+        categories,
+        services
+    ]);
+
 
 
     const validateEmail = () => {
@@ -301,6 +364,8 @@ function ProfileInformation() {
             return;
         }
 
+        setLoading(true);
+
         await apiUpdateEtudiant(
             {
                 _id: userState._id,
@@ -324,37 +389,23 @@ function ProfileInformation() {
         ).then((e: ReponseApiPros) => {
             if (e.success) {
                 createToast(e.message[lang as keyof typeof e.message], '', 0);
-                dispatch(setMinimumUser({
-                    _id: e.data._id,
-                    nom: e.data.nom,
-                    genre: e.data.genre,
-                    email: e.data.email,
-                    photo_profil: e.data.photo_profil,
-                    contact: e.data.contact,
-                    matricule: e.data.matricule,
-                    prenom: e.data.matricule,
-                    date_naiss: e.data.date_naiss,
-                    lieu_naiss: e.data.lieu_naiss,
-                    date_entree: e.data.date_entree,
-                    niveaux: e.data.niveaux,
-                    grade: e.data.grade,
-                    categorie: e.data.categorie,
-                    fonction: e.data.fonction,
-                    service: e.data.service,
-                    commune: e.data.commune,
-                    roles: e.data.role,
-                    role: userState.role,
-                    abscence: userState.abscence
-                }));
+                const userData: UserState = e.data;
+                dispatch(setUser({ ...userData }));
+                setOpenModalConfirm(false);
+                setLoading(false);
+                setHaveChanged(false);
 
             } else {
                 createToast(e.message[lang as keyof typeof e.message], '', 2);
+                setLoading(false);
 
             }
         }).catch((e) => {
-            console.log(e);
             createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            setLoading(false);
         })
+
+
 
 
     }
@@ -363,9 +414,10 @@ function ProfileInformation() {
     return (
         <div className="col-span-5 xl:col-span-3 ">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
-                <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                    <h3 className="font-medium text-black dark:text-white">
+                <div className="border-b border-stroke py-4 px-7 dark:border-strokedark felx">
+                    <h3 className="font-medium text-black dark:text-white flex">
                         {t('label.info_pers')}
+                        {/* <h1 className="text-bold text-meta-1 ml-10">{haveChanged ? 'true' : 'false'}</h1> */}
                     </h3>
                 </div>
                 <div className="px-7 py-7 lg:py-[30px] ">
@@ -671,20 +723,50 @@ function ProfileInformation() {
 
 
                     {/* bouton valider !! */}
-                    <div className="flex justify-end gap-4.5 pt-0 ">
+                    <div className="flex justify-center pt-0 gap-2.5  ">
                         <button
                             className="text-sm mt-8 flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                            onClick={handleUpdateProfil} >
+                            onClick={() => {
+                                if (haveChanged) {
+                                    setOpenModalConfirm(true)
+                                } else {
+                                    createToast(lang === 'fr' ? "Aucune information n'a changé." : "No information has changed.", '', 1);
+                                }
+
+                            }
+
+
+                            } >
                             {t('boutton.mettre_a_jour_info')}
                         </button>
+
+
                     </div>
                 </div>
             </div>
 
-        </div>
+
+
+
+            <CustomModal
+                isLoading={loading}
+                title={'Confirmation'}
+                isModalOpen={openModalConfirm}
+                isDelete={false}
+                closeModal={() => { setOpenModalConfirm(false) }}
+                handleConfirm={handleUpdateProfil}
+            >
+                <p>{lang === 'fr' ? 'Confirmer la modification' : 'Confirm the modification'}</p>
+            </CustomModal>
+
+        </div >
     )
 }
 
 
 
 export default ProfileInformation
+
+
+
+

@@ -11,7 +11,7 @@ interface EtudiantCreateType {
     genre: string;
     date_entree: string | null;
     date_naiss: string | null;
-    roles?:string[];
+    roles?: string[];
 
     nom: string;
     prenom: string | null;
@@ -30,13 +30,13 @@ interface EtudiantCreateType {
     service: string | null;
 
     commune: string | null;
-
+    grade: string | null;
     niveaux: InscriptionType[];
 }
 
-interface InscriptionType{
-    niveau:string,
-    annee:number
+interface InscriptionType {
+    niveau: string,
+    annee: number
 }
 
 

@@ -51,6 +51,10 @@ function LabelInput({ title, required }: LabelInputProps) {
 
 
 function ProfileInformation() {
+
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
+    const dataUserIsLoading = useSelector((state: RootState) => state.user.nom);
+
     const [haveChanged, setHaveChanged] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [openModalConfirm, setOpenModalConfirm] = useState<boolean>(false);
@@ -421,327 +425,349 @@ function ProfileInformation() {
                     </h3>
                 </div>
                 <div className="px-7 py-7 lg:py-[30px] ">
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                    {
+                        dataUserIsLoading === '' ?
+                            <div className="w-full flex justify-center my-10">
+                                <div className=" my-10 h-10 w-10 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
 
-                        {/* matricule */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.matricule')} />
+                            </div> :
+                            <>
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
 
-                            <div className="relative">
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="text"
-                                    value={matricule}
-                                    onChange={(e) => setMatricule(e.target.value)}
-                                />
+                                    {/* matricule */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.matricule')} />
+
+                                        <div className="relative">
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="text"
+                                                value={matricule}
+                                                onChange={(e) => setMatricule(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* Date entrée admin */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.date_entree_admin')} />
+
+                                        <div className="relative">
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="date"
+                                                value={dateEntreeAdmin}
+                                                onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                    {/* NOM */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.nom')} required={true} />
+
+                                        <div className="relative">
+                                            <IconeInput icone={<GoPerson />} />
+
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="text"
+                                                value={nom}
+                                                onChange={(e) => { setNom(e.target.value); setErrorNom("") }} // Suppression du setNom("") dans onChange
+                                            />
+                                        </div>
+                                        {errorNom && <p className="text-red-500 pt-2 text-sm " >{errorNom}</p>}
+                                    </div>
+
+
+
+                                    {/* PRENOM */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.prenom')} />
+
+                                        <div className="relative">
+                                            <IconeInput icone={<GoPerson />} />
+
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="text"
+                                                value={prenom}
+                                                onChange={(e) => setPrenom(e.target.value)} // Suppression du setNom("") dans onChange
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                    {/* Contact */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.contact')} />
+                                        <div className="relative">
+                                            <IconeInput icone={<MdOutlinePhone />} />
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="phone"
+                                                value={contact}
+                                                onChange={(e) => { setContact(e.target.value); }}
+                                            />
+                                        </div>
+                                    </div>
+
+
+
+                                    {/* E-mail */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.email')} required={true} />
+
+                                        <div className="relative">
+                                            <IconeInput icone={<MdOutlineMail />} />
+
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => { setEmail(e.target.value); setErrorEmail("") }}
+                                            />
+                                        </div>
+                                        {errorEmail && <p className="text-red-500 pt-2 text-sm " >{errorEmail}</p>}
+                                    </div>
+                                </div>
+
+                                {/* genre */}
+                                <div className="w-full mb-5.5">
+                                    <LabelInput title={t('label.genre')} required={true} />
+
+                                    <div className="relative">
+                                        {/* <IconeInput icone={<MdOutlineMail />} /> */}
+                                        <div className="">
+                                            <input
+                                                className='radio-label-space'
+                                                type="radio"
+                                                id={t('label.homme')}
+                                                name="genre"
+                                                value={t('label.homme')}
+                                                checked={genre === "M"}
+                                                onChange={() => { setGenre("M"); setErrorGenre("") }}
+                                            />
+                                            <label htmlFor={t('label.homme')} className='radio-intern-space font-semibold'>{t('label.homme')}</label>
+
+                                            <input
+                                                className='radio-label-space'
+                                                type="radio"
+                                                id={t('label.femme')}
+                                                name="genre"
+                                                value={t('label.femme')}
+                                                checked={genre === "F"}
+                                                onChange={() => { setGenre("F"); setErrorGenre("") }}
+                                            />
+                                            <label className="font-semibold" htmlFor={t('label.femme')}>{t('label.femme')}</label>
+                                        </div>
+                                    </div>
+                                    {errorGenre && <p className="text-red-500 pt-2 text-sm " >{errorGenre}</p>}
+                                </div>
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                    {/* Date de naissance */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.date_naiss')} />
+
+                                        <div className="relative">
+                                            <IconeInput icone={<FaBirthdayCake />} />
+                                            <  input
+                                                className=" py-3 pl-13  w-full rounded border border-stroke bg-gray pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="date"
+                                                value={dateNaiss}
+                                                onChange={(e) => setDateNaiss(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+
+
+                                    {/* lieu de naissance */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.lieu_naiss')} />
+
+                                        <div className="relative">
+                                            <IconeInput icone={<RiMapPin2Fill />} />
+
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="text"
+                                                value={lieuNaiss}
+                                                onChange={(e) => { setLieuNaiss(e.target.value); }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                    }
+
+                    {
+                        settingIsLoading ?
+                            <div className="w-full flex justify-center my-10">
+                                <div className=" my-10 h-10 w-10 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
+
                             </div>
-                        </div>
-                        {/* Date entrée admin */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.date_entree_admin')} />
+                            :
+                            <>
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
 
-                            <div className="relative">
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="date"
-                                    value={dateEntreeAdmin}
-                                    onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                                    {/* Grade */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.grade')} />
 
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                        {/* NOM */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.nom')} required={true} />
+                                        <div className="relative">
+                                            <select
+                                                value={grade ? (lang === 'fr' ? grade.libelleFr : grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
+                                                onChange={handleGradeChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
+                                                {grades.map(grade => (
+                                                    <option key={grade._id} value={(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}>{(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {/* Catégorie */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.categorie')} />
 
-                            <div className="relative">
-                                <IconeInput icone={<GoPerson />} />
+                                        <div className="relative">
+                                            <select
+                                                value={categorie ? (lang === 'fr' ? categorie.libelleFr : categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
+                                                onChange={handleCategorieChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
+                                                {categories.map(categorie => (
+                                                    <option key={categorie._id} value={(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}>{(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
 
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="text"
-                                    value={nom}
-                                    onChange={(e) => { setNom(e.target.value); setErrorNom("") }} // Suppression du setNom("") dans onChange
-                                />
-                            </div>
-                            {errorNom && <p className="text-red-500 pt-2 text-sm " >{errorNom}</p>}
-                        </div>
+                                    {/* Fonction */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.fonction')} />
 
+                                        <div className="relative">
+                                            <select
+                                                value={fonction ? (lang === 'fr' ? fonction.libelleFr : fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
+                                                onChange={handleFonctionChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
+                                                {fonctions.map(fonction => (
+                                                    <option key={fonction._id} value={(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}>{(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {/* Service */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.service')} />
 
+                                        <div className="relative">
+                                            <select
+                                                value={service ? (lang === 'fr' ? service.libelleFr : service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
+                                                onChange={handleServiceChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
+                                                {services.map(service => (
+                                                    <option key={service._id} value={(lang === 'fr' ? service.libelleFr : service.libelleEn)}>{(lang === 'fr' ? service.libelleFr : service.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
 
-                        {/* PRENOM */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.prenom')} />
+                                    {/* Région */}
+                                    <div className="w-full sm:w-1/3">
+                                        <LabelInput title={t('label.region')} />
 
-                            <div className="relative">
-                                <IconeInput icone={<GoPerson />} />
+                                        <div className="relative">
+                                            <select
+                                                value={region ? (lang === 'fr' ? region.libelleFr : region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
+                                                onChange={handleRegionChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
+                                                {regions.map(region => (
+                                                    <option key={region._id} value={(lang === 'fr' ? region.libelleFr : region.libelleEn)}>{(lang === 'fr' ? region.libelleFr : region.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {/* Département */}
+                                    <div className="w-full sm:w-1/3">
+                                        <LabelInput title={t('label.departement')} />
 
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="text"
-                                    value={prenom}
-                                    onChange={(e) => setPrenom(e.target.value)} // Suppression du setNom("") dans onChange
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                        {/* Contact */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.contact')} />
-                            <div className="relative">
-                                <IconeInput icone={<MdOutlinePhone />} />
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="phone"
-                                    value={contact}
-                                    onChange={(e) => { setContact(e.target.value); }}
-                                />
-                            </div>
-                        </div>
+                                        <div className="relative">
+                                            <select
+                                                value={departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
+                                                onChange={handleDepartementChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
+                                                {filteredDepartement && filteredDepartement.map(departement => (
+                                                    <option key={departement._id} value={(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}>{(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {/* Commune */}
+                                    <div className="w-full sm:w-1/3">
+                                        <LabelInput title={t('label.commune')} />
 
-
-
-                        {/* E-mail */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.email')} required={true} />
-
-                            <div className="relative">
-                                <IconeInput icone={<MdOutlineMail />} />
-
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => { setEmail(e.target.value); setErrorEmail("") }}
-                                />
-                            </div>
-                            {errorEmail && <p className="text-red-500 pt-2 text-sm " >{errorEmail}</p>}
-                        </div>
-                    </div>
-
-                    {/* genre */}
-                    <div className="w-full mb-5.5">
-                        <LabelInput title={t('label.genre')} required={true} />
-
-                        <div className="relative">
-                            {/* <IconeInput icone={<MdOutlineMail />} /> */}
-                            <div className="">
-                                <input
-                                    className='radio-label-space'
-                                    type="radio"
-                                    id={t('label.homme')}
-                                    name="genre"
-                                    value={t('label.homme')}
-                                    checked={genre === "M"}
-                                    onChange={() => { setGenre("M"); setErrorGenre("") }}
-                                />
-                                <label htmlFor={t('label.homme')} className='radio-intern-space font-semibold'>{t('label.homme')}</label>
-
-                                <input
-                                    className='radio-label-space'
-                                    type="radio"
-                                    id={t('label.femme')}
-                                    name="genre"
-                                    value={t('label.femme')}
-                                    checked={genre === "F"}
-                                    onChange={() => { setGenre("F"); setErrorGenre("") }}
-                                />
-                                <label className="font-semibold" htmlFor={t('label.femme')}>{t('label.femme')}</label>
-                            </div>
-                        </div>
-                        {errorGenre && <p className="text-red-500 pt-2 text-sm " >{errorGenre}</p>}
-                    </div>
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                        {/* Date de naissance */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.date_naiss')} />
-
-                            <div className="relative">
-                                <IconeInput icone={<FaBirthdayCake />} />
-                                <  input
-                                    className=" py-3 pl-13  w-full rounded border border-stroke bg-gray pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="date"
-                                    value={dateNaiss}
-                                    onChange={(e) => setDateNaiss(e.target.value)}
-                                />
-                            </div>
-                        </div>
+                                        <div className="relative">
+                                            <select
+                                                value={commune ? (lang === 'fr' ? commune.libelleFr : commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
+                                                onChange={handleCommuneChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
+                                                {filteredCommune && filteredCommune.map(commune => (
+                                                    <option key={commune._id} value={(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}>{(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
 
 
 
-                        {/* lieu de naissance */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.lieu_naiss')} />
+                                {/* bouton valider !! */}
+                                <div className="flex justify-center pt-0 gap-2.5  ">
+                                    <button
+                                        className="text-sm mt-8 flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+                                        onClick={() => {
+                                            if (haveChanged) {
+                                                setOpenModalConfirm(true)
+                                            } else {
+                                                createToast(lang === 'fr' ? "Aucune information n'a changé." : "No information has changed.", '', 1);
+                                            }
 
-                            <div className="relative">
-                                <IconeInput icone={<RiMapPin2Fill />} />
+                                        }
 
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                    type="text"
-                                    value={lieuNaiss}
-                                    onChange={(e) => { setLieuNaiss(e.target.value); }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
 
-                        {/* Grade */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.grade')} />
+                                        } >
+                                        {t('boutton.mettre_a_jour_info')}
+                                    </button>
 
-                            <div className="relative">
-                                <select
-                                    value={grade ? (lang === 'fr' ? grade.libelleFr : grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
-                                    onChange={handleGradeChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}</option>
-                                    {grades.map(grade => (
-                                        <option key={grade._id} value={(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}>{(lang === 'fr' ? grade.libelleFr : grade.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        {/* Catégorie */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.categorie')} />
 
-                            <div className="relative">
-                                <select
-                                    value={categorie ? (lang === 'fr' ? categorie.libelleFr : categorie.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}
-                                    onChange={handleCategorieChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.categorie')}</option>
-                                    {categories.map(categorie => (
-                                        <option key={categorie._id} value={(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}>{(lang === 'fr' ? categorie.libelleFr : categorie.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                </div>
+                            </>
 
-                        {/* Fonction */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.fonction')} />
-
-                            <div className="relative">
-                                <select
-                                    value={fonction ? (lang === 'fr' ? fonction.libelleFr : fonction.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}
-                                    onChange={handleFonctionChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.fonction')}</option>
-                                    {fonctions.map(fonction => (
-                                        <option key={fonction._id} value={(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}>{(lang === 'fr' ? fonction.libelleFr : fonction.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        {/* Service */}
-                        <div className="w-full sm:w-1/2">
-                            <LabelInput title={t('label.service')} />
-
-                            <div className="relative">
-                                <select
-                                    value={service ? (lang === 'fr' ? service.libelleFr : service.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}
-                                    onChange={handleServiceChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.service')}</option>
-                                    {services.map(service => (
-                                        <option key={service._id} value={(lang === 'fr' ? service.libelleFr : service.libelleEn)}>{(lang === 'fr' ? service.libelleFr : service.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-
-                        {/* Région */}
-                        <div className="w-full sm:w-1/3">
-                            <LabelInput title={t('label.region')} />
-
-                            <div className="relative">
-                                <select
-                                    value={region ? (lang === 'fr' ? region.libelleFr : region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}
-                                    onChange={handleRegionChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}</option>
-                                    {regions.map(region => (
-                                        <option key={region._id} value={(lang === 'fr' ? region.libelleFr : region.libelleEn)}>{(lang === 'fr' ? region.libelleFr : region.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        {/* Département */}
-                        <div className="w-full sm:w-1/3">
-                            <LabelInput title={t('label.departement')} />
-
-                            <div className="relative">
-                                <select
-                                    value={departement ? (lang === 'fr' ? departement.libelleFr : departement.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}
-                                    onChange={handleDepartementChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.departement')}</option>
-                                    {filteredDepartement && filteredDepartement.map(departement => (
-                                        <option key={departement._id} value={(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}>{(lang === 'fr' ? departement.libelleFr : departement.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        {/* Commune */}
-                        <div className="w-full sm:w-1/3">
-                            <LabelInput title={t('label.commune')} />
-
-                            <div className="relative">
-                                <select
-                                    value={commune ? (lang === 'fr' ? commune.libelleFr : commune.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}
-                                    onChange={handleCommuneChange}
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                >
-                                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.commune')}</option>
-                                    {filteredCommune && filteredCommune.map(commune => (
-                                        <option key={commune._id} value={(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}>{(lang === 'fr' ? commune.libelleFr : commune.libelleEn)}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                    }
 
 
 
 
-
-
-                    {/* bouton valider !! */}
-                    <div className="flex justify-center pt-0 gap-2.5  ">
-                        <button
-                            className="text-sm mt-8 flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                            onClick={() => {
-                                if (haveChanged) {
-                                    setOpenModalConfirm(true)
-                                } else {
-                                    createToast(lang === 'fr' ? "Aucune information n'a changé." : "No information has changed.", '', 1);
-                                }
-
-                            }
-
-
-                            } >
-                            {t('boutton.mettre_a_jour_info')}
-                        </button>
-
-
-                    </div>
                 </div>
             </div>
 

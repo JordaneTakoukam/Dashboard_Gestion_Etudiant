@@ -429,7 +429,6 @@ function ProfileInformation() {
                         dataUserIsLoading === '' ?
                             <div className="w-full flex justify-center my-10">
                                 <div className=" my-10 h-10 w-10 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
-
                             </div> :
                             <>
                                 <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">

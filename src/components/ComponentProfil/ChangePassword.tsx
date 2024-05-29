@@ -6,17 +6,27 @@ import { useState } from "react";
 import { apiUpdatePassword } from "../../api/auth/api_reset_password";
 import createToast from "../../hooks/toastify";
 import { validatePassword } from "../../fonctions/fonction";
+import { ErrorInput, LabelInput } from "../../pages/Authentication/componants/Label";
+import Input from "../ui/input";
+import { apiVerifierMotDePasse } from "../../api/auth/api_verifier-password";
+import ButtonLoading from "../ui/ButtonLoading";
+import ButtonOutline from "../ui/ButtonOutline";
 
 export function ChangePassword() {
-    const {t}=useTranslation();
-    const userState:UserState = useSelector((state: RootState) => state.user);
+    const { t } = useTranslation();
+    const userState: UserState = useSelector((state: RootState) => state.user);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const [currentPassword, setCurrentPassord]=useState('');
-    const [newPassword, setNewPassord]=useState('');
-    const [confirmPassword, setConfirmPassord]=useState('');
-    const [errorCurrentPassword, setErrorCurrentPassword]=useState('')
-    const [errorNewPassword, setErrorNewPassword]=useState('')
-    const [errorConfirmPassword, setErrorConfirmPassword]=useState('')
+    const [currentPassword, setCurrentPassord] = useState('');
+    const [newPassword, setNewPassord] = useState('');
+    const [confirmPassword, setConfirmPassord] = useState('');
+    const [errorCurrentPassword, setErrorCurrentPassword] = useState('')
+    const [errorNewPassword, setErrorNewPassword] = useState('')
+    const [errorConfirmPassword, setErrorConfirmPassword] = useState('')
+
+    const [loadingVerifyPwd, setLoadingVerifyPwd] = useState<boolean>(false);
+    const [loadingUpdatePwd, setLoadingUpdatePwd] = useState<boolean>(false);
+
+    const [passwordIsVerify, setIsPasswordIsVerify] = useState<boolean>(false);
 
     const handleClean = async () => {
         setNewPassord('');
@@ -28,15 +38,16 @@ export function ChangePassword() {
     }
 
     const handleUpdate = async () => {
-        if(!currentPassword && !newPassword && !confirmPassword){
-            if(!currentPassword){
+
+        if (!currentPassword && !newPassword && !confirmPassword) {
+            if (!currentPassword) {
                 setErrorCurrentPassword(t('error.current_pass'))
             }
-            if(!newPassword){
+            if (!newPassword) {
                 setErrorNewPassword(t('error.new_pass'))
             }
 
-            if(!confirmPassword){
+            if (!confirmPassword) {
                 setErrorConfirmPassword(t('error.confirm_pass_field'))
             }
             return;
@@ -48,24 +59,67 @@ export function ChangePassword() {
             return;
         }
 
-        if(confirmPassword!==newPassword){
+        if (confirmPassword !== newPassword) {
             setErrorConfirmPassword(t('error.confirm_pass'));
             return;
         }
 
-        await apiUpdatePassword({userId:userState._id, newPassword:newPassword}).then((e: ReponseApiPros) => {
+        setLoadingUpdatePwd(true);
+        await apiUpdatePassword({ userId: userState._id, newPassword: newPassword }).then((e: ReponseApiPros) => {
             if (e.success) {
                 createToast(e.message[lang as keyof typeof e.message], '', 0);
+                setLoadingVerifyPwd(false);
+                setIsPasswordIsVerify(false);
                 handleClean();
 
             } else {
+                setLoadingVerifyPwd(false);
                 createToast(e.message[lang as keyof typeof e.message], '', 2);
             }
         }).catch((e) => {
+            setLoadingVerifyPwd(false);
             createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
         })
     }
+
+    const handleVerifierPassword = async () => {
+        if (!currentPassword) {
+            if (!currentPassword) {
+                setErrorCurrentPassword(t('error.current_pass'))
+            }
+
+            return;
+        }
+
+        if (currentPassword.trim().length < 8) {
+            return setErrorCurrentPassword(t("toast.mot_de_passe_min_longueur"));
+        }
+
+
+        setLoadingVerifyPwd(true);
+
+        await apiVerifierMotDePasse({ userId: userState._id, motDePasse: currentPassword }).then((e: ReponseApiPros) => {
+            setLoadingVerifyPwd(false);
+
+            if (e.success) {
+                handleClean();
+                createToast(e.message[lang as keyof typeof e.message], '', 0);
+                setIsPasswordIsVerify(true);
+                // setIsPasswordIsVerify(e.data)
+
+            } else {
+                setIsPasswordIsVerify(false);
+                createToast(e.message[lang as keyof typeof e.message], '', 2);
+            }
+        }).catch((e) => {
+            setLoadingVerifyPwd(false);
+            setIsPasswordIsVerify(false);
+            createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+        })
+    }
+
+
+
     return (
         <div className="col-span-5 xl:col-span-3 mt-4">
 
@@ -76,92 +130,84 @@ export function ChangePassword() {
                     </h3>
                 </div>
                 <div className="p-7">
-                    <form action="#">
 
-                        <div className="mb-5.5">
-                            <label
-                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                            >
-                                {t('label.actuel_pass')}<label className="text-red-500"> *</label>
-                            </label>
-                            <div className="relative">
-                                <span className="absolute left-4.5 top-4">
-                                    <div className='text-[18px]'>
-                                        <RiLockPasswordLine />
-                                    </div>
-                                </span>
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+
+                    {/* ------ input et bouton pour verifier le mot de passe  */}
+                    {
+                        !passwordIsVerify &&
+                        <>
+                            <div className="mb-5.5 w-full ">
+                                <LabelInput title={t('label.actuel_pass')} required={true} />
+                                <Input
                                     type="password"
+                                    placeholder="********"
                                     value={currentPassword}
-                                    onChange={(e) =>{setCurrentPassord(e.target.value); setErrorCurrentPassword("");} }
-                                    placeholder="********"
+                                    setValue={(value: string) => { setCurrentPassord(value); setErrorCurrentPassword(""); }}
                                 />
-                                {errorCurrentPassword && <p className="text-red-500">{errorCurrentPassword}</p>}
+                                {errorCurrentPassword && <ErrorInput title={errorCurrentPassword} />}
                             </div>
-                        </div>
-                        <div className="mb-5.5">
-                            <label
-                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                            >
-                                {t('label.nouveau_pass')}<label className="text-red-500"> *</label>
-                            </label>
-                            <div className="relative">
-                                <span className="absolute left-4.5 top-4">
-                                    <div className='text-[18px]'>
-                                        <RiLockPasswordLine />
-                                    </div>
-                                </span>
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+
+
+                            {/* verifier le mot de passe */}
+                            <div className="flex justify-end gap-4.5 pt-5 ">
+                                <ButtonOutline
+                                    title={t('boutton.annuler')}
+                                    handle={() => { setLoadingVerifyPwd(false); setCurrentPassord('') }} />
+
+                                <ButtonLoading
+                                    title={t('message.verifier')}
+                                    loading={loadingVerifyPwd}
+                                    handle={handleVerifierPassword} />
+                            </div></>
+                    }
+
+
+                    {/* ------ input et bouton pour mettre a jour le mot de passe */}
+
+                    {
+                        passwordIsVerify &&
+                        <>
+                            <div className="mb-5.5 w-full ">
+                                <LabelInput title={t('label.nouveau_pass')} required={true} />
+                                <Input
                                     type="password"
+                                    placeholder="********"
                                     value={newPassword}
-                                    onChange={(e) =>{setNewPassord(e.target.value); setErrorNewPassword("");} }
-                                    placeholder="********"
+                                    setValue={(value: string) => { setNewPassord(value); setErrorNewPassword(""); }}
                                 />
-                                {errorNewPassword && <p className="text-red-500">{errorNewPassword}</p>}
+                                {errorNewPassword && <ErrorInput title={errorNewPassword} />}
                             </div>
-                        </div>
-                        <div className="mb-5.5">
-                            <label
-                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                            >
-                                {t('label.confirm_pass')}<label className="text-red-500"> *</label>
-                            </label>
-                            <div className="relative">
-                                <span className="absolute left-4.5 top-4">
-                                    <div className='text-[18px]'>
-                                        <RiLockPasswordLine />
-                                    </div>
-                                </span>
-                                <input
-                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+
+                            <div className="mb-5.5 w-full ">
+                                <LabelInput title={t('label.confirm_pass')} required={true} />
+                                <Input
                                     type="password"
-                                    value={confirmPassword}
-                                    onChange={(e) =>{setConfirmPassord(e.target.value); setErrorConfirmPassword("");} }
                                     placeholder="********"
+                                    value={confirmPassword}
+                                    setValue={(value: string) => { setConfirmPassord(value); setErrorConfirmPassword(""); }}
                                 />
-                                {errorConfirmPassword && <p className="text-red-500">{errorConfirmPassword}</p>}
+                                {errorConfirmPassword && <ErrorInput title={errorConfirmPassword} />}
                             </div>
-                        </div>
 
 
 
-                        <div className="flex justify-end gap-4.5 mt-8 ">
-                            <button
-                                className=" text-sm flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white hover:border-body duration-300 "
-                                onClick={handleClean}
-                            >
-                               {t('boutton.effacer_champs')}
-                            </button>
-                            <button
-                                className="text-sm flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1 hover:bg-opacity-70 duration-300 "
-                                onClick={handleUpdate}
-                            >
-                                {t('boutton.modifier_mot_de_passe')}
-                            </button>
-                        </div>
-                    </form>
+
+                            {/* verifier le mot de passe */}
+                            <div className="flex justify-end gap-4.5 pt-5 ">
+                                <ButtonOutline
+                                    title={t('boutton.annuler')}
+                                    handle={() => { setLoadingVerifyPwd(false); handleClean(); }} />
+
+                                <ButtonLoading
+                                    title={t('boutton.modifier_mot_de_passe')}
+                                    loading={loadingUpdatePwd}
+                                    handle={handleUpdate} />
+                            </div>
+                        </>
+                    }
+
+
+
                 </div>
             </div>
         </div>

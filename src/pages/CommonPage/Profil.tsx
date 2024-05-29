@@ -5,7 +5,7 @@ import { PickPhoto } from "../../components/ComponentProfil/PickPhoto";
 import ProfileInformation from "../../components/ComponentProfil/ProfileInformation";
 
 const MonProfil = () => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     return (
         <>
             <Breadcrumb pageName={t("sub_menu.profil")} />
@@ -24,7 +24,7 @@ const MonProfil = () => {
             </div>
 
 
-       
+
 
         </>
     );

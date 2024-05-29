@@ -12,6 +12,8 @@ import createToast from '../../../hooks/toastify';
 import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
 import { formatYear } from '../../../fonctions/fonction';
 import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../api/api_periode';
+import AutoCompleteSearch from '../../ui/AutoComplete';
+import { apiSearchEnseignant } from '../../../api/other_users/api_enseignant';
 
 
 
@@ -56,6 +58,30 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[] | undefined>([]);
     const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[] | undefined>([]);
+
+    const [searchString, setSearchString] = useState('');
+    const [results, setResults] = useState<EnseignantType[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState<EnseignantType>();
+
+    useEffect(() => {
+        setResults([]);
+        if (searchString && searchString.trim().length > 0 ) {
+            setIsLoading(true);
+            apiSearchEnseignant({searchString:searchString}).then((result)=>{
+                setResults(result.enseignants);
+                setIsLoading(false);
+            })
+        } 
+    }, [searchString]);
+
+    
+
+    const handleSelectTeacher = (teacher:EnseignantType) => {
+        setSelectedTeacher(teacher);
+        setSearchString(`${teacher.nom} ${teacher.prenom}`);
+        setResults([]);
+    };
 
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
@@ -657,18 +683,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     ))}
                 </select>
                 {errorMatiere && <p className="text-red-500">{errorMatiere}</p>}
-                <label>{t('label.salle_cour')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={salleCours ? salleCours.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}
-                    onChange={handleSalleCoursChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}</option>
-                    {sallesCours.map(salleCours => (
-                        <option key={salleCours._id} value={salleCours.code}>{salleCours.code}</option>
-                    ))}
-                </select>
-                {errorSalle && <p className="text-red-500">{errorSalle}</p>}
                 <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
                 <select
                     value={typeEnseignement ? typeEnseignement.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
@@ -681,6 +695,42 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     ))}
                 </select>
                 {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
+                <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
+                <div>
+                    <input
+                        type="text"
+                        value={searchString}
+                        onChange={(e) => setSearchString(e.target.value)}
+                        placeholder={t('recherche.rechercher')+t('recherche.enseignant')}
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    />
+                    {isLoading && <p>Loading...</p>}
+                    {results.length > 0 && (
+                        <ul className="border mt-2">
+                            {results.map((enseignant) => (
+                                <li 
+                                    key={enseignant._id} 
+                                    className="p-2 border-b cursor-pointer"
+                                    onClick={() => handleSelectTeacher(enseignant)}
+                                >
+                                    {enseignant.nom} {enseignant.prenom}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+                <label>{t('label.salle_cour')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={salleCours ? salleCours.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}
+                    onChange={handleSalleCoursChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}</option>
+                    {sallesCours.map(salleCours => (
+                        <option key={salleCours._id} value={salleCours.code}>{salleCours.code}</option>
+                    ))}
+                </select>
+                {errorSalle && <p className="text-red-500">{errorSalle}</p>}
             </CustomDialogModal>
 
         </>

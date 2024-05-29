@@ -12,10 +12,11 @@ import { createEvenement, updateEvenement } from '../../../_redux/features/evene
 
 function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) {  
     const etats: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? []; 
+    const promotions: PromotionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions) ?? []; 
     const lang = useSelector((state: RootState) => state.setting.language);
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const [annee, setAnnee] = useState(currentYear);
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
@@ -25,6 +26,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
     const [dateDebut, setDateDebut] = useState("");
     const [dateFin, setDateFin] = useState("");
     const [etat, setEtat] = useState<CommonSettingProps>();
+    const [promotion, setPromotion] = useState<PromotionProps>();
     const [personnelFr, setPersonnelFr] = useState("");
     const [personnelEn, setPersonnelEn] = useState("");
     const [descriptionObservationFr, setDescriptionObservationFr] = useState("");
@@ -39,6 +41,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
     const [errorDateDebut, setErrorDateDebut] = useState("");
     const [errorDateFin, setErrorDateFin] = useState("");
     const [errorEtat, setErrorEtat] = useState("");
+    const [errorPromotion, setErrorPromotion] = useState("");
     const [isFirstRender, setIsFirstRender] = useState(true);
     
 
@@ -49,6 +52,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
         if (evenement) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.evenement'));
             const currentEtat = etats.find(etat => etat._id === ""+evenement.etat);
+            const currentPromotion = promotions.find(promotion => promotion._id === ""+evenement.promotion);
             setAnnee(evenement.annee);
             setCode(evenement.code);
             setLibelleFr(evenement.libelleFr);
@@ -58,6 +62,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
             setDateDebut(formatDateForInput(evenement.dateDebut));
             setDateFin(formatDateForInput(evenement.dateFin));
             setEtat(currentEtat);
+            setPromotion(currentPromotion);
             setPersonnelFr(evenement.personnelFr?evenement.personnelFr:"");
             setPersonnelEn(evenement.personnelEn?evenement.personnelEn:"");
             setDescriptionObservationFr(evenement.descriptionObservationFr?evenement.descriptionObservationFr:"");
@@ -73,6 +78,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
             setDateDebut("");
             setDateFin("");
             setEtat(undefined);
+            setPromotion(undefined)
             setPersonnelFr("");
             setPersonnelEn("");
             setDescriptionObservationFr("");
@@ -89,6 +95,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
             setErrorDateDebut("");
             setErrorDateFin("");
             setErrorEtat("");
+            setErrorPromotion("");
             setIsFirstRender(false);
         }
     }, [evenement, isFirstRender, t]);
@@ -102,6 +109,22 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
         setErrorDateDebut("");
         setErrorDateFin("");
         setErrorEtat("");
+        setErrorPromotion("");
+        setIsFirstRender(true);
+
+        // setLibelleFr("");
+        // setLibelleEn("");
+        // let subCode = code.substring(2);
+        // if(parseInt(subCode)<9){
+        //     subCode = "EV00"+(parseInt(subCode)+1);
+        // }else{
+        //     subCode = "EV0"+(parseInt(subCode)+1);
+        // }
+        // setCode(subCode);
+        // setPeriodeFr("");
+        // setPeriodeEn("")
+        // setDateDebut("");
+        // setDateFin("");
         dispatch(setShowModal()); 
     };
 
@@ -124,20 +147,40 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
             setErrorEtat("");
         }
     };
+
+    const handlePromotionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedPromotionLibelle = e.target.value;
+        var selectedPromotion = null;
+
+        if (lang === 'fr') {
+            selectedPromotion = promotions.find(promotion => promotion.libelleFr === selectedPromotionLibelle);
+
+        }
+        else {
+            selectedPromotion = promotions.find(promotion => promotion.libelleEn === selectedPromotionLibelle);
+
+        }
+
+
+        if (selectedPromotion) {
+            setPromotion(selectedPromotion);
+            setErrorPromotion("");
+        }
+    };
     
     
     
 
     const handleCreateUpdate = async () => {
-        if (!code || !libelleFr || !periodeFr || !periodeEn || !dateDebut || !dateFin || !etat) {
+        if (!code || !libelleFr || !periodeFr || !periodeEn || !dateDebut || !dateFin || !etat || !promotion) {
             if (!code) {
                 setErrorCode(t('error.code'));
             }
             if (!libelleFr) {
-                setErrorLibelleFr(t('error.libelle_fr'));
+                setErrorLibelleFr(t('error.phase_activite_fr'));
             }
             if (!libelleEn) {
-                setErrorLibelleEn(t('error.libelle_en'));
+                setErrorLibelleEn(t('error.phase_activite_en'));
             }
             if (!periodeFr) {
                 setErrorPeriodeFr(t('error.periode_fr'));
@@ -155,10 +198,14 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                 setErrorEtat(t('error.etat'));
             }
 
+            if (!promotion) {
+                setErrorPromotion(t('error.promotion'));
+            }
+
             return;
         }
         if(!evenement){
-            if (etat._id) {
+            if (etat._id && promotion._id) {
                 await apiCreateEvenement(
                     {
                         code, 
@@ -169,6 +216,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                         periodeFr, 
                         periodeEn, 
                         etat : etat._id, 
+                        promotion:promotion._id,
                         personnelFr, 
                         personnelEn, 
                         descriptionObservationFr, 
@@ -190,6 +238,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                                 periodeFr: e.data.periodeFr,
                                 periodeEn: e.data.periodeEn,
                                 etat: e.data.etat,
+                                promotion:e.data.promotion,
                                 personnelFr: e.data.personnelFr,
                                 personnelEn: e.data.personnelEn,
                                 descriptionObservationFr: e.data.descriptionObservationFr,
@@ -206,12 +255,12 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
 
                     }
                 }).catch((e) => {
-                    console.log(e);
+                    
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
             }
         }else{
-            if (etat._id) {
+            if (etat._id && promotion._id) {
                 await apiUpdateEvenement(
                     {
                         code, 
@@ -222,6 +271,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                         periodeFr, 
                         periodeEn, 
                         etat : etat._id, 
+                        promotion:promotion._id,
                         personnelFr, 
                         personnelEn, 
                         descriptionObservationFr, 
@@ -245,6 +295,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                                     periodeFr: e.data.periodeFr,
                                     periodeEn: e.data.periodeEn,
                                     etat: e.data.etat,
+                                    promotion:e.data.promotion,
                                     personnelFr: e.data.personnelFr,
                                     personnelEn: e.data.personnelEn,
                                     descriptionObservationFr: e.data.descriptionObservationFr,
@@ -280,15 +331,27 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                     value={formatYear(annee)}
                     onChange={(e) => {setAnnee(parseInt(e.target.value)); setErrorCode("")}}
                 />
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.promotion')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={promotion ? (lang === 'fr' ? promotion.libelleFr : promotion.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.promotion')}
+                    onChange={handlePromotionChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.promotion')}</option>
+                    {promotions.map(promotion => (
+                        <option key={promotion._id} value={lang === 'fr' ? promotion.libelleFr : promotion.libelleEn}>{lang === 'fr' ? promotion.libelleFr : promotion.libelleEn}</option>
+                    ))}
+                </select>
+                {errorPromotion && <p className="text-red-500" >{errorPromotion}</p>}
+                <label>{t('label.code')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={code}
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
-                {errorCode && <p className="text-red-500" >{errorCode}</p>}
-                <label>{t('label.libelle_fr')}</label><label className="text-red-500"> *</label>
+                {/* {errorCode && <p className="text-red-500" >{errorCode}</p>} */}
+                <label>{t('label.phase_activite_fr')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -296,7 +359,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                     onChange={(e) =>{setLibelleFr(e.target.value); setErrorLibelleFr("");} }
                 />
                 {errorLibelleFr && <p className="text-red-500">{errorLibelleFr}</p>}
-                <label>{t('label.libelle_en')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.phase_activite_en')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"

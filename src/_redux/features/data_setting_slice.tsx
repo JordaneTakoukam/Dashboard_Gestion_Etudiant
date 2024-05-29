@@ -11,6 +11,7 @@ const initialState: DataSettingSlice = {
         departements: [],
         communes: [],
         departementsAcademique:[],
+        promotions:[],
         sections: [],
         cycles: [],
         niveaux: [],

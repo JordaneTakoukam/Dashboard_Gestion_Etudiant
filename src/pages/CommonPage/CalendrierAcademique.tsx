@@ -15,18 +15,31 @@ const CalendrierAcademique = () => {
     const dispatch = useDispatch();
     const [selectedEvenement, setSelectedEvenement] = useState<EvenementType | null>(null);
 
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+    const promotions = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions);
     // Utilisez useSelector pour accéder à l'état du reducer
     const { data: { evenements } } = useSelector((state: RootState) => state.evenementSlice);
 
     const fetchEvenements = async () => {
         dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
         try {
-            const fetchedEvenements = await getEvenementsByYear({ annee: currentYear, page: 1 });
-            // Mettez à jour l'état Redux avec les données récupérées
-            dispatch(setEvenements(fetchedEvenements));
+            const emptyCalendrier:EvenementReturnGetType={
+                evenements: [],
+                currentPage: 0,
+                totalItems: 0,
+                totalPages: 0,
+                pageSize: 0
+            }
+            if(promotions && promotions.length>0 && promotions[0]._id){
+                const fetchedEvenements = await getEvenementsByYear({ annee: currentYear, page: 1, promotion:promotions[0]._id});
+                // Mettez à jour l'état Redux avec les données récupérées
+                dispatch(setEvenements(fetchedEvenements));
 
-            dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+                dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+            }else{
+                setEvenements(emptyCalendrier);
+            }
+            
         } catch (error) {
             dispatch(setErrorPageEvenement(t('message.erreur')));
         } finally {
@@ -34,10 +47,10 @@ const CalendrierAcademique = () => {
         }
     };
     useEffect(() => {
-        if (evenements.length === 0) {
+        // if (evenements.length === 0) {
             fetchEvenements();
-        }
-    }, [currentYear, dispatch]);
+        // }
+    }, [currentYear, promotions, dispatch]);
 
     const handleEditEvenement = (evenement: EvenementType) => {
         setSelectedEvenement(evenement);

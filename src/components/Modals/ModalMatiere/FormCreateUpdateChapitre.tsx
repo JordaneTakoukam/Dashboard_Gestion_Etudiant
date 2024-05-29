@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalChapitre } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
@@ -49,7 +48,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
         setErrorCode("");
         setErrorLibelle("");
         setIsFirstRender(true);
-        dispatch(setShowModalChapitre());
+        // dispatch(setShowModalChapitre());
     };
 
     const handleAddTypeEnseignement = () => {

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { signInApi } from "../../../api/auth/api_signin";
 import Input from "../../../components/ui/input";
 import ButtonCustom from "../../../components/ui/button";
-import Loading from "../../../components/ui/loading";
 import createToast from "../../../hooks/toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
@@ -14,6 +13,7 @@ import { setUser } from "../../../_redux/features/user_slice";
 import { useNavigate } from 'react-router-dom';
 
 function RightSectionSigin() {
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -22,7 +22,6 @@ function RightSectionSigin() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const [loading, setLoading] = useState(false);
 
     // error
@@ -40,7 +39,6 @@ function RightSectionSigin() {
             setError2(t(notValidEmail));
         }
 
-
         notValidPassword = validatePassword(password);
         if (notValidPassword) {
             setError3(t(notValidPassword));
@@ -55,11 +53,10 @@ function RightSectionSigin() {
                 if (signUpResult.success) {
                     if (signUpResult.message !== null && signUpResult.message !== undefined) {
                         createToast((signUpResult.message as any)[lang], '', 0)
-
                     }
                 } else {
                     if (signUpResult.message !== null && signUpResult.message !== undefined) {
-                        createToast((signUpResult.message as any)[lang], '', 1)
+                        createToast((signUpResult.message as any)[lang], '', 2)
                     }
                 }
 
@@ -79,20 +76,15 @@ function RightSectionSigin() {
                     setLoading(false)
                 }
 
-            } catch (e) {
+            } catch (e: any) {
+                setLoading(false);
+                try {
+                    createToast((e.message as any)[lang], '', 2)
 
-                console.log('erreur catch ' + e);
-                setLoading(false)
-
+                } catch (e) {
+                }
             }
-
-
-
-            setLoading(false)
         }
-
-
-
     }
 
 
@@ -108,7 +100,7 @@ function RightSectionSigin() {
         <div>
             <div className="w-full h-full border-stroke dark:border-strokedark xl:border-l-2 overflow-auto mt-[2%]">
                 <div className='card shadow-8 mx-6 lg:mx-[100px] m-0 lg:my-0'>
-                    <div className="flex flex-col items-center justify-center w-full p-2 sm:p-12.5 px-5 py-8 xl:px-10">
+                    <div className="flex flex-col items-center justify-start w-full p-2 sm:p-12.5 px-5 py-8 xl:px-10">
                         {/* titre */}
                         <h1 className="mb-8 text-lg lg:text-2xl font-bold text-black dark:text-white ">
                             {t('boutton.se_connecter')}
@@ -148,25 +140,22 @@ function RightSectionSigin() {
                             <div className="mt-5 w-full">
 
                                 {
-                                    loading ? <Loading />
 
-                                        :
-                                        <ButtonCustom
-                                            title={t('boutton.se_connecter')}
-                                            onClick={handleSubmit}
-                                            next={true}
-                                        />
+                                    <ButtonCustom
+                                        loading={loading}
+                                        title={t('boutton.se_connecter')}
+                                        onClick={handleSubmit}
+                                        next={true}
+                                    />
                                 }
                             </div>
 
                             <div className="mt-6 text-center text-[15px] flex justify-end items-end w-full">
-                                <Link to="/reset-password" className="text-primary font-medium">
+                                <Link to="/reset-password" className="text-primary font-medium hover:underline">
                                     {t('boutton.oublie_pass')}
-
                                 </Link>
                             </div>
                             {/*  rediriger vers se connecter */}
-
 
                         </div>
 

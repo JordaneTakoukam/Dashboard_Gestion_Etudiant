@@ -24,7 +24,7 @@ const SignIn = () => {
           <div className="mt-8 mb-10">
             <LanguageToogle />
           </div>
-          
+
           <MobileHead />
           <RightSectionSigin />
         </div>

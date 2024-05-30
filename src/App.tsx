@@ -29,6 +29,7 @@ import { apiGetAbsencesSignaler } from './api/discipline/api_discipline.js';
 import { RootState } from './_redux/store.js';
 import { apiGetNiveauxByEnseignant } from './api/other_users/api_enseignant.js';
 import { getCurrentUserData } from './api/api_user.js';
+import VerificationCode from './pages/Authentication/verification_code.js';
 
 function App() {
 
@@ -264,6 +265,8 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/choose-account" element={<ChoisirCompte />} />
+          <Route path="/verification-code/:id" element={<VerificationCode />} />
+
 
           {/* Menu de gauche pour les differents roles  */}
           <Route element={isAuth.value !== null && isAuth.status ?

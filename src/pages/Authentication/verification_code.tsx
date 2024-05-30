@@ -1,21 +1,19 @@
 import LanguageToogle from "../../components/ui/language_toggle";
 import LeftSectionAuth from "./componants/LeftSectionAuth";
 import MobileHead from "./componants/MobileHead";
-import RightSectionResetPassword from "./componants/RightResetPassword";
+import { RightSectionVerificationCode } from "./componants/RightSectionVerificationCode";
 
-
-const ResetPassword = () => {
+const VerificationCode = () => {
 
     return (
         <>
-            <div className='flex bg-white h-screen'>
+            <div className='flex flex-col lg:flex-row bg-white h-screen'>
                 {/* gauche */}
                 <div className='hidden lg:block bg-black w-1/2'>
                     <LeftSectionAuth />
                 </div>
 
 
-                {/* uniquement sur mobile : haut */}
 
 
                 <div className='bg-white h-screen w-full lg:w-1/2 overflow-auto'>
@@ -25,11 +23,11 @@ const ResetPassword = () => {
                     </div>
 
                     <MobileHead />
-                    <RightSectionResetPassword />
+                    <RightSectionVerificationCode />
                 </div>
             </div >
         </>
     );
 };
 
-export default ResetPassword;
+export default VerificationCode;

@@ -40,9 +40,11 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const [isDownload, setIsDownload]=useState(false);
     const pageError = useSelector((state: RootState) => state.evenementSlice.pageError);
     const dispatch = useDispatch();
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? [];
+    const promotions = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions) ?? [];
+    const [promotion, setPromotion] = useState<PromotionProps>();
     
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -61,8 +63,12 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
         if (selected) {
             setSelectedYear(extractYear(selected.toString()));
         }
+    };
 
-        console.log(selectedYear)
+    const handlePromotionSelect = (selected: PromotionProps | undefined) => {
+        if (selected?._id) {
+            setPromotion(selected);
+        }
     };
     const [searchText, setSearchText] = useState<string>('');
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -145,7 +151,12 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                             // Rechercher l'état correspondant dans la liste des états
                             const etat = etats.find(etat => etat._id === item[header]);
                             // Si l'état est trouvé, utiliser son libellé, sinon utiliser l'identifiant ObjectId
-                            filteredItem[header] = etat ? etat.libelleFr : item[header];
+                            filteredItem[header] = etat ? lang==='fr'?etat.libelleFr:etat.libelleEn : item[header];
+                        }else if (header === 'promotion') {
+                            // Rechercher l'état correspondant dans la liste des états
+                            const promotion = promotions.find(promotion => promotion._id === item[header]);
+                            // Si l'état est trouvé, utiliser son libellé, sinon utiliser l'identifiant ObjectId
+                            filteredItem[header] = promotion ? lang==='fr'?promotion.libelleFr:promotion.libelleEn : item[header];
                         } else if (header === 'dateDebut' || header === 'dateFin') {
                             // Séparer la date de l'heure et ne garder que la partie date
                             const datePart = item[header].split('T')[0];
@@ -189,6 +200,9 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                             break;
                         case 'etat':
                             renamedItem[t('label.etat')] = item[key];
+                            break;
+                        case 'promotion':
+                            renamedItem[t('label.promotion')] = item[key];
                             break;
                         case 'annee':
                             renamedItem[t('label.annee')] = item[key];
@@ -301,12 +315,24 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const fetchEvenements = async (annee: number, page: number) => {
         dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
         try {
-            const fetchedEvenements = await getEvenementsByYear({ annee: annee, page: page });
-            // Mettez à jour l'état Redux avec les données récupérées
-            dispatch(setEvenements(fetchedEvenements));
-            // console.log(fetchedEvenements.evenements[0].etat);
-
-            dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+            const emptyCalendrier:EvenementReturnGetType={
+                evenements: [],
+                currentPage: 0,
+                totalItems: 0,
+                totalPages: 0,
+                pageSize: 0
+            }
+            if(promotion && promotion._id){
+                const fetchedEvenements = await getEvenementsByYear({ annee: annee, promotion:promotion?._id, page: page });
+                // Mettez à jour l'état Redux avec les données récupérées
+                dispatch(setEvenements(fetchedEvenements));
+                // console.log(fetchedEvenements.evenements[0].etat);
+    
+                dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
+            }else{
+                dispatch(setEvenements(emptyCalendrier));
+            }
+           
         } catch (error) {
             dispatch(setErrorPageEvenement(t('message.erreur')));
             createToast(t('message.erreur'), "", 2)
@@ -338,7 +364,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     useEffect(() => {
         const annee = selectedYear; // Remplacez par l'année souhaitée
         fetchEvenements(annee, currentPage);
-    }, [currentPage, selectedYear]); // Déclencher l'effet lorsque currentPage change
+    }, [currentPage, selectedYear, promotion]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<EvenementType[]>(data);
@@ -380,6 +406,15 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
                                 onSelect={handleAnneeSelect}
                             />
+
+                            <CustomDropDown2<PromotionProps>
+                                title={t('label.promotion')}
+                                selectedItem={promotion}
+                                items={promotions}
+                                defaultValue={promotions[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(promotion: PromotionProps) => `${lang === 'fr' ? promotion.libelleFr : promotion.libelleEn}`}
+                                onSelect={handlePromotionSelect}
+                            />
                         </div>
                     )}
                 </div>
@@ -395,6 +430,15 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                                 defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
 
                                 onSelect={handleAnneeSelect}
+                            />
+
+                            <CustomDropDown2<PromotionProps>
+                                title={t('label.promotion')}
+                                selectedItem={promotion}
+                                items={promotions}
+                                defaultValue={promotions[0]} // ou spécifie une valeur par défaut
+                                displayProperty={(promotion: PromotionProps) => `${lang === 'fr' ? promotion.libelleFr : promotion.libelleEn}`}
+                                onSelect={handlePromotionSelect}
                             />
                         </div>
                     </div>
@@ -432,7 +476,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
                 {/* Pagination */}
 
-                <Pagination
+                {filteredData && filteredData.length>0 &&<Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -443,7 +487,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
 
-                />
+                />}
 
             </div>
 

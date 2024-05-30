@@ -44,7 +44,7 @@ const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement
                 <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
                     {/* numero */}
                     <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                        <h5>{item.code}</h5>
+                        <h5>{index+1}</h5>
                     </td>
 
                     {/* libelle */}

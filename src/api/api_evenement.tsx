@@ -10,11 +10,11 @@ interface PDFResponse {
     data: Blob; // Utilisez Blob pour gérer les données binaires (PDF)
 }
 
-export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
+export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, promotion, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee },
+            { code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat,promotion, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,11 +30,11 @@ export async function apiCreateEvenement({ code, libelleFr, libelleEn, dateDebut
     }
 }
 
-export async function apiUpdateEvenement({ _id, code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
+export async function apiUpdateEvenement({ _id, code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat,promotion,  personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee }: EvenementType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee },
+            { code, libelleFr, libelleEn, dateDebut, dateFin, periodeFr, periodeEn, etat, promotion, personnelFr, personnelEn, descriptionObservationFr, descriptionObservationEn, annee },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export async function apiDeleteEvenement(evenementId: string): Promise<ReponseAp
     }
 }
 
-export async function getEvenementsByYear({ annee, page }: { annee: number, page: number }): Promise<EvenementReturnGetType> {
+export async function getEvenementsByYear({ annee, promotion, page }: { annee: number,promotion:string, page: number }): Promise<EvenementReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -80,6 +80,7 @@ export async function getEvenementsByYear({ annee, page }: { annee: number, page
                     'token': token,
                 },
                 params: {
+                    promotion:promotion,
                     page: page,
                     pageSize: pageSize,
                 },

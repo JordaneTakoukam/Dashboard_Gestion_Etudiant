@@ -9,6 +9,10 @@ interface CommonSettingProps {
 }
 
 // Interface des propriétés spécifiques au département
+interface PromotionProps extends CommonSettingProps {
+    annee: number;
+}
+// Interface des propriétés spécifiques au département
 interface DepartementProps extends CommonSettingProps {
     region: string;
 }
@@ -56,6 +60,7 @@ interface DataSettingProps {
     regions: CommonSettingProps[];
     departements: DepartementProps[];
     departementsAcademique:CommonSettingProps[];
+    promotions:PromotionProps[];
     communes: CommuneProps[];
     sections: SectionProps[];
     cycles: CycleProps[];

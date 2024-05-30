@@ -64,6 +64,27 @@ export async function apiGetEnseignants({ grade, categorie, service, fonction }:
     }
 }
 
+export async function apiSearchEnseignant({ searchString }: {  searchString: string }): Promise<EnseignantListGetType> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchEnseignant/${searchString}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const enseignants: EnseignantListGetType = response.data.data;
+
+        return enseignants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 export async function generateListEnseignant({ langue, annee, grade, categorie, service, fonction }: { langue:string, annee:number, grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(

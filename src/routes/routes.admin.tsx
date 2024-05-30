@@ -36,6 +36,7 @@ import Objectifs from '../pages/Admin/Objectifs';
 import Enseignements from '../pages/Admin/Enseignements';
 import EnseignementsPeriode from '../pages/Admin/EnseignementsPeriode';
 import DepartementsAcademique from '../pages/Admin/DepartementsAcademique';
+import Promotions from '../pages/Admin/Promotions';
 
 
 
@@ -192,6 +193,11 @@ const coreRoutes = [
     path: '/academic-levels/levels',
     title: 'Niveaux',
     component: Niveaux,
+  },
+  {
+    path: '/academic-levels/promotions',
+    title: 'Promotions',
+    component: Promotions,
   },
 
   // emploi de temps

@@ -10,6 +10,7 @@ interface EvenementType {
     periodeFr: string;
     periodeEn: string;
     etat: string;
+    promotion:string;
     personnelFr: string;
     personnelEn: string;
     descriptionObservationFr: string,

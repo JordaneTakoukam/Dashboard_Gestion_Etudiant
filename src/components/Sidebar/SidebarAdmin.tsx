@@ -588,6 +588,17 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             {t('sub_menu.niveaux')}
                                                         </NavLink>
                                                     </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/academic-levels/promotions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.promotions')}
+                                                        </NavLink>
+                                                    </li>
                                                 </ul>
                                             </div>
                                             {/* <!-- Dropdown Menu End --> */}

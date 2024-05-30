@@ -112,7 +112,7 @@ function RightSectionResetPassword() {
                     {
                         successSend ?
                             <div className="py-[180px]  text-center">
-                                <h1 className="">{lang === 'en' ? 'Please wait: ' : 'Patientez dans : '} {count} sec ...</h1>
+                                <h1 className="">{lang === 'en' ? 'Please. ' : 'Patientez. '} {count} sec ...</h1>
                             </div>
 
                             : <div className="p-2  w-full   sm:p-8.5 px-5 xl:px-10">

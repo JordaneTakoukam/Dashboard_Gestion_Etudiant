@@ -62,7 +62,7 @@ const DashboardDelegate = () => {
                 //     setTotalEnseignant(totalEnseignants);
                 // }
                 if(currentNiveauId){
-                    const progressionGlobal = await getProgressionGlobalEnseignantsNiveau(currentNiveauId);
+                    const progressionGlobal = await getProgressionGlobalEnseignantsNiveau({niveauId:currentNiveauId, annee:currentYear, semestre:currentSemester});
                     if (progressionGlobal !== null) {
                         setProgression(progressionGlobal);
                     }

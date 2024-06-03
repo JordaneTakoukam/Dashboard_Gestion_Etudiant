@@ -7,11 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { apiCreateChapitre, apiUpdateChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
 import { ajouterChapitre, modifierChapitre } from '../../../_redux/features/matiere_slice';
+import { createChapitre, updateChapitre } from '../../../_redux/features/chapitre_slice';
+import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
+import { formatYear } from '../../../fonctions/fonction';
 
 
 
 function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | null, matiere : MatiereType |undefined|null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
@@ -21,12 +26,15 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
     const [typesEnseignementState, setTypesEnseignementState] = useState<CommonSettingProps[]>([]); // État local pour les types d'enseignement
     const [objectifs, setObjectifs] = useState<ObjectifType[]>([]); // État local pour les objectifs
     const [enseignementState, setEnseignementState] = useState<EnseignementType[]>([]); // État local pour les types d'enseignement
+    const [semestre, setSemestre] = useState(currentSemester);
+    const [annee, setAnnee] = useState(currentYear);
     
     const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
     const [errorTypesEnseignement, setErrorTypesEnseignement] = useState("");
+    const [errorSemestre, setErrorSemestre] = useState("");
    
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
@@ -34,7 +42,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
 
     useEffect(() => {
         const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
-                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
+                .map(type => type) // Obtenir une liste d'objectIds
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
         listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
@@ -43,7 +51,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
    
     useEffect(() => {
         const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
-                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
+                .map(type => type) // Obtenir une liste d'objectIds
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
         listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
@@ -56,7 +64,9 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             setLibelleEn(chapitre.libelleEn);
             // setTypesEnseignementState(chapitre.typesEnseignement);
             setEnseignementState(chapitre.typesEnseignement);
-            setObjectifs(chapitre.objectifs);
+            setAnnee(chapitre.annee);
+            setSemestre(chapitre.semestre);
+            // setObjectifs(chapitre.objectifs);
             
         }else{
             setModalTitle(t('form_save.enregistrer')+t('form_save.chapitre'));
@@ -64,7 +74,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             setLibelleFr("");
             setLibelleEn("");
             setTypesEnseignementState([]);
-            
+            setAnnee(currentYear);
+            setSemestre(currentSemester);
             setEnseignementState([]);
             handleAddTypeEnseignement();
             setObjectifs([]);
@@ -74,6 +85,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             setErrorLibelleFr("");
             setErrorLibelleEn("");
             setErrorTypesEnseignement("");
+            setErrorSemestre("");
             setIsFirstRender(false);
             setTypesEnseignementState([]);
             setObjectifs([]);
@@ -86,10 +98,16 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
         setErrorLibelleFr("");
         setErrorLibelleEn("");
         setErrorTypesEnseignement("");
+        setErrorSemestre("");
         setIsFirstRender(true);
         dispatch(setShowModal());
     };
 
+    const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSemestre(parseInt(event.target.value));
+        setErrorSemestre("");
+    };
+    
     const handleAddTypeEnseignement = () => {
         // Vérifier s'il existe un type d'enseignement à ajouter
         if (typesEnseignement.length > 0) {
@@ -136,9 +154,9 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
 
     const handleCreateUpdate = async () => {
         // Vérifier si tous les champs requis sont remplis
-        if (!code || !libelleFr || !libelleEn || !enseignementState[0].volumeHoraire) {
-            if (!code) {
-                setErrorCode(t('error.code'));
+        if (!semestre || !libelleFr || !libelleEn || !enseignementState[0].volumeHoraire) {
+            if (!semestre) {
+                setErrorSemestre(t('error.semestre'));
             }
             if (!libelleFr) {
                 setErrorLibelleFr(t('error.libelle_fr'));
@@ -157,16 +175,32 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             if (matiere && matiere._id) {
                 await apiCreateChapitre(
                     {
+                        annee:annee,
+                        semestre:semestre,
                         code, 
                         libelleFr, 
                         libelleEn, 
                         typesEnseignement:enseignementState, 
                         matiere:matiere._id, 
-                        objectifs:[],
+                        // objectifs:[],
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
-                        dispatch(ajouterChapitre({...e.data}))
+                        dispatch(createChapitre({
+                            
+                            chapitre: {
+                                _id: e.data._id,
+                                annee: e.data.annee,
+                                semestre: e.data.semestre,
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                matiere: e.data.matiere,
+                                typesEnseignement: e.data.typesEnseignement,
+                            }
+                            
+                        }));
+                        // dispatch(ajouterChapitre({...e.data}))
                         createToast(e.message[lang as keyof typeof e.message], '', 0);    
                         closeModal();
 
@@ -183,17 +217,33 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             if (matiere && matiere._id) {
                 await apiUpdateChapitre(
                     {
+                        annee:annee,
+                        semestre:semestre,
                         code, 
                         libelleFr, 
                         libelleEn, 
                         typesEnseignement:enseignementState, 
                         matiere:matiere._id, 
-                        objectifs:chapitre.objectifs,
+                        // objectifs:chapitre.objectifs,
                         _id:chapitre._id
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
-                        dispatch(modifierChapitre({...e.data}))
+                        dispatch(
+                            updateChapitre({
+                                id: e.data._id,
+                                chapitreData: {
+                                    _id: e.data._id,
+                                    annee:e.data.annee,
+                                    semestre:e.data.semestre,
+                                    code:e.data.code,
+                                    libelleFr:e.data.libelleFr,
+                                    libelleEn:e.data.libelleEn,
+                                    matiere:e.data.matiere,
+                                    typesEnseignement: e.data.typesEnseignement,
+                                }
+                            }));
+                        // dispatch(modifierChapitre({...e.data}))
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         closeModal();
                     } else {
@@ -215,15 +265,35 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={formatYear(annee)}
+                    readOnly
+                    onChange={(e) => { setAnnee(parseInt(e.target.value)); }}
+                />
+                <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={semestre}
+                    onChange={handleSemestreChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.semestre')}</option>
+                    {semestres.map((semestre, index) => (
+                        <option key={index} value={semestre}>{semestre}</option>
+                    ))}
+
+                </select>
+                {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
+                <label>{t('label.code')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={code}
                     onChange={(e) => { setCode(e.target.value); setErrorCode("") }}
                 />
-                {errorCode && <p className="text-red-500">{errorCode}</p>}
+                {/* {errorCode && <p className="text-red-500">{errorCode}</p>} */}
                 <label>{t('label.libelle_fr')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"

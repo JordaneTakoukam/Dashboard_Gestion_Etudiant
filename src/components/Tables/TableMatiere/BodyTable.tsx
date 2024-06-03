@@ -120,7 +120,7 @@ const BodyTable = ({ data, onEdit }: BodyMatiereProps) => {
                                 "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
                             },
                             {
-                                "name": t('label.enseignements'),
+                                "name": t('label.types_ens'),
                                 "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/enseignements/manage')}
                             }
                         ]}

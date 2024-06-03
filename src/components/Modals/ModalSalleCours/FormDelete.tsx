@@ -28,7 +28,7 @@ function ModalDelete({ salleDeCours }: { salleDeCours : SalleDeCoursProps|null})
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (salleDeCours._id) {
-                        dispatch(deleteSettingItem({ tableName: 'salleDeCours', itemId: salleDeCours._id }));
+                        dispatch(deleteSettingItem({ tableName: 'sallesDeCours', itemId: salleDeCours._id }));
                     }
 
                     closeModal();

@@ -2,18 +2,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setShowModal, } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Jour, jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { FaTrash } from 'react-icons/fa6';
 import { useTranslation } from 'react-i18next';
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from '../../../_redux/features/matiere_slice';
-import { getMatieresByNiveau } from '../../../api/api_matiere';
+import { apiSearchMatiere, getMatieresByNiveau } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
 import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
 import { formatYear } from '../../../fonctions/fonction';
 import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../api/api_periode';
-import AutoCompleteSearch from '../../ui/AutoComplete';
 import { apiSearchEnseignant } from '../../../api/other_users/api_enseignant';
+import SearchInput from '../../ui/SearchInput';
 
 
 
@@ -21,9 +21,9 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const sallesCours: SalleDeCoursProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours) ?? [];
+    const sallesCours: SalleDeCoursProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sallesDeCours) ?? [];
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const { t } = useTranslation();
@@ -34,7 +34,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-    const [matiere, setMatiere] = useState<MatiereType>();
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
     const [salleCours, setSalleCours] = useState<SalleDeCoursProps>();
@@ -48,6 +47,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [errorCycle, setErrorCycle] = useState("");
     const [errorNiveau, setErrorNiveau] = useState("");
     const [errorMatiere, setErrorMatiere] = useState("");
+    const [errorEnseignant, setErrorEnseignant] = useState("");
     const [errorSemestre, setErrorSemestre] = useState("");
     const [errorSalle, setErrorSalle] = useState("");
     const [errorTypeEnseignement, setErrorTypeEnseignement] = useState("");
@@ -59,28 +59,163 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[] | undefined>([]);
     const [filteredNiveau, setFilteredNiveau] = useState<NiveauProps[] | undefined>([]);
 
-    const [searchString, setSearchString] = useState('');
-    const [results, setResults] = useState<EnseignantType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedTeacher, setSelectedTeacher] = useState<EnseignantType>();
+    const [resultsEnsPrincipal, setResultsEnsPrincipal] = useState<EnseignantType[]>([]);
+    const [resultsEnsSuppleant, setResultsEnsSuppleant] = useState<EnseignantType[]>([]);
+    const [resultsMatiere, setResultsMatiere] = useState<MatiereType[]>([]);
+    const [isLoadingEnsPrincipal, setIsLoadingEnsPrincipal] = useState(false);
+    const [isLoadingEnsSuppleant, setIsLoadingEnsSuppleant] = useState(false);
+    const [isLoadingMatiere, setIsLoadingMatiere] = useState(false);
+    const [queryEnsPrincipal, setQueryEnsPrincipal] = useState('');
+    const [queryEnsSuppleant, setQueryEnsSuppleant] = useState('');
+    const [queryMatiere, setQueryMatiere] = useState('');
+    const latestQueryEnsPrincipal = useRef('');
+    const latestQueryEnsSuppleant = useRef('');
+    const latestQueryMatiere = useRef('');
+    const [selectedEnsPrincipal, setSelectedEnsPrincipal] = useState<UserState | EnseignantType>();
+    const [selectedEnsSuppleant, setSelectedEnsSuppleant] = useState<UserState | EnseignantType>();
+    const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
 
-    useEffect(() => {
-        setResults([]);
-        if (searchString && searchString.trim().length > 0 ) {
-            setIsLoading(true);
-            apiSearchEnseignant({searchString:searchString}).then((result)=>{
-                setResults(result.enseignants);
-                setIsLoading(false);
-            })
-        } 
-    }, [searchString]);
+    //Rechercher un enseignant principal
+    const handleSearchEnsPrincipal = async (queryEnsPrincipal: string) => {
+        setIsLoadingEnsPrincipal(true);
+        latestQueryEnsPrincipal.current = queryEnsPrincipal;
+    
+        try {
+          if (queryEnsPrincipal === '') {
+            setSelectedEnsPrincipal(undefined);
+            setQueryEnsPrincipal("");
+            setResultsEnsPrincipal([]);
+          } else if (queryEnsPrincipal.trim().length > 0) {
+            const result = await apiSearchEnseignant({ searchString: queryEnsPrincipal });
+            // Vérifiez si la requête actuelle correspond toujours à la dernière requête
+            if (latestQueryEnsPrincipal.current === queryEnsPrincipal) {
+              setResultsEnsPrincipal(result.enseignants);
+            }
+          } else {
+            setSelectedEnsPrincipal(undefined);
+            setQueryEnsPrincipal("");
+            setResultsEnsPrincipal([]);
+          }
+        } catch (error) {
+          console.error('Error fetching search resultsEnsPrincipal:', error);
+        } finally {
+          if (latestQueryEnsPrincipal.current === queryEnsPrincipal) {
+            setIsLoadingEnsPrincipal(false);
+          }
+        }
+    };
+
+    //Rechercher un enseignant suppleant
+    const handleSearchEnsSuppleant = async (queryEnsSuppleant: string) => {
+        setIsLoadingEnsSuppleant(true);
+        latestQueryEnsSuppleant.current = queryEnsSuppleant;
+    
+        try {
+          if (queryEnsSuppleant === '') {
+            setSelectedEnsSuppleant(undefined);
+            setQueryEnsSuppleant("");
+            setResultsEnsSuppleant([]);
+          } else if (queryEnsSuppleant.trim().length > 0) {
+            const result = await apiSearchEnseignant({ searchString: queryEnsSuppleant });
+            // Vérifiez si la requête actuelle correspond toujours à la dernière requête
+            if (latestQueryEnsSuppleant.current === queryEnsSuppleant) {
+              setResultsEnsSuppleant(result.enseignants);
+            }
+          } else {
+            setSelectedEnsSuppleant(undefined);
+            setQueryEnsSuppleant("");
+            setResultsEnsSuppleant([]);
+          }
+        } catch (error) {
+          console.error('Error fetching search resultsEnsSuppleant:', error);
+        } finally {
+          if (latestQueryEnsSuppleant.current === queryEnsSuppleant) {
+            setIsLoadingEnsSuppleant(false);
+          }
+        }
+    };
+
+    //Rechercher une matiere
+    const handleSearchMatiere = async (queryMatiere: string) => {
+        setIsLoadingMatiere(true);
+        latestQueryMatiere.current = queryMatiere;
+      
+        try {
+          if (queryMatiere === '') {
+            setSelectedMatiere(undefined);
+            setQueryMatiere("");
+            setResultsMatiere([]);
+          } else if (queryMatiere.trim().length > 0) {
+            const result = await apiSearchMatiere({ langue:lang, searchString: queryMatiere });
+            // Vérifiez si la requête actuelle correspond toujours à la dernière requête
+            if (latestQueryMatiere.current === queryMatiere) {
+              setResultsMatiere(result.matieres);
+            }
+          } else {
+            setSelectedMatiere(undefined);
+            setQueryMatiere("");
+            setResultsMatiere([]);
+          }
+        } catch (error) {
+          console.error('Error fetching search resultsMatiere:', error);
+        } finally {
+          if (latestQueryMatiere.current === queryMatiere) {
+            setIsLoadingMatiere(false);
+          }
+        }
+    };
+
+
+
+    //Gestion de la perte de curseur par le search input de l'enseignant principal
+    const handleBlurEnsPrincipal = () => {
+        setTimeout(() => {
+        setResultsEnsPrincipal([]);
+        }, 200); // Délai pour permettre l'exécution de l'événement de clic
+    };
+
+    //Gestion de la perte de curseur par le search input de l'enseignant suppleant
+    const handleBlurEnsSuppleant = () => {
+        setTimeout(() => {
+        setResultsEnsSuppleant([]);
+        }, 200); // Délai pour permettre l'exécution de l'événement de clic
+    };
+
+    //Gestion de la perte de curseur par le search input de la matiere
+    const handleBlurMatiere = () => {
+        setTimeout(() => {
+        setResultsMatiere([]);
+        }, 200); // Délai pour permettre l'exécution de l'événement de clic
+    };
 
     
 
-    const handleSelectTeacher = (teacher:EnseignantType) => {
-        setSelectedTeacher(teacher);
-        setSearchString(`${teacher.nom} ${teacher.prenom}`);
-        setResults([]);
+    const handleSelectEnsPrincipal = (ensPrincipal:EnseignantType) => {
+        setSelectedEnsPrincipal(ensPrincipal);
+        setQueryEnsPrincipal(`${ensPrincipal.nom} ${ensPrincipal?.prenom??""}`.trim());
+        setResultsEnsPrincipal([]);
+    };
+
+    const handleSelectEnsSuppleant = (ensSuppleant:EnseignantType) => {
+        setSelectedEnsSuppleant(ensSuppleant);
+        setQueryEnsSuppleant(`${ensSuppleant.nom} ${ensSuppleant?.prenom??""}`.trim());
+        setResultsEnsSuppleant([]);
+    };
+
+    const handleSelectMatiere = (matiere:MatiereType) => {
+        setSelectedMatiere(matiere);
+        
+        setQueryMatiere(`${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`.trim());
+        if(matiere && matiere.typesEnseignement){
+            const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
+                .map(type => type) // Obtenir une liste d'objectIds
+                .map(objectId => typesEnseignement.find(type => type._id === objectId))
+                .filter(type => type !== undefined) as CommonSettingProps[];
+            if (listeTypesEnseignementDeMatiere) {
+                setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+            }
+        }
+        setResultsMatiere([]);
     };
 
     // filtrer les donnee a partir de l'id de la section selectionner
@@ -165,43 +300,43 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
     const [matieresLoaded, setMatieresLoaded] = useState(false);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const fetchMatieres = async () => {
-            dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                const matieresV: MatiereReturnGetType = {
-                    matieres: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
-                }
+    //     const fetchMatieres = async () => {
+    //         dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
+    //         try {
+    //             const matieresV: MatiereReturnGetType = {
+    //                 matieres: [],
+    //                 currentPage: 0,
+    //                 totalItems: 0,
+    //                 totalPages: 0,
+    //                 pageSize: 0
+    //             }
                 
-                if (niveau && niveau._id) {
+    //             if (niveau && niveau._id) {
                     
-                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id, annee:currentYear, semestre:currentSemester});
-                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                        dispatch(setMatieres(fetchedMatieres));
-                    } else {
+    //                 const fetchedMatieres = await getMatieresByNiveau({ niveauId: niveau._id, annee:currentYear, semestre:currentSemester});
+    //                 if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+    //                     dispatch(setMatieres(fetchedMatieres));
+    //                 } else {
 
-                        dispatch(setMatieres(matieresV));
-                    }
-                } else {
+    //                     dispatch(setMatieres(matieresV));
+    //                 }
+    //             } else {
 
-                    dispatch(setMatieres(matieresV));
+    //                 dispatch(setMatieres(matieresV));
 
-                } // Réinitialisez les erreurs s'il y en a
-            } catch (error) {
-                dispatch(setErrorPageMatiere(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2)
-            } finally {
-                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-            }
-        };
+    //             } // Réinitialisez les erreurs s'il y en a
+    //         } catch (error) {
+    //             dispatch(setErrorPageMatiere(t('message.erreur')));
+    //             createToast(t('message.erreur'), "", 2)
+    //         } finally {
+    //             dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+    //         }
+    //     };
 
-        fetchMatieres();
-    }, [periodeCours,niveau, dispatch]);
+    //     fetchMatieres();
+    // }, [periodeCours,niveau, dispatch]);
 
 
 
@@ -220,19 +355,27 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
-            const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
-            setMatiere(mat);
-
+            // const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
+            // setMatiere(mat);
+            setSelectedMatiere(periodeCours.matiere);
+            lang==='fr'?setQueryMatiere(periodeCours.matiere?.libelleFr??""):setQueryMatiere(periodeCours.matiere?.libelleEn??"")
+            setSelectedEnsPrincipal(periodeCours.enseignantPrincipal);
+            setQueryEnsPrincipal(`${periodeCours.enseignantPrincipal?.nom??""} ${periodeCours.enseignantPrincipal?.prenom??""}`.trim());
+            setSelectedEnsSuppleant(periodeCours.enseignantSuppleant);
+            setQueryEnsSuppleant(`${periodeCours.enseignantSuppleant?.nom??""} ${periodeCours.enseignantSuppleant?.prenom??""}`.trim());
+            
             const salleCours = sallesCours.find(salle => salle._id === periodeCours.salleCours);
             setSalleCours(salleCours);
-            const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
-                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
+            const listeTypesEnseignementDeMatiere = periodeCours.matiere && periodeCours.matiere.typesEnseignement && periodeCours.matiere.typesEnseignement
+                .map(type => type) // Obtenir une liste d'objectIds
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
+                
             listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
             const typeEnseignement = typesEnseignementMat.find(typeEnseignement => typeEnseignement._id === periodeCours.typeEnseignement);
             setTypeEnseignement(typeEnseignement);
             setSemestre(periodeCours.semestre);
+            setAnnee(periodeCours.annee);
         } else {
             setModalTitle(t('form_save.enregistrer') + t('form_save.periode'));
             setJour(undefined);
@@ -241,10 +384,17 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setSection(undefined);
             setCycle(undefined);
             setNiveau(undefined);
-            setMatiere(undefined);
+            // setMatiere(undefined);
+            setSelectedMatiere(undefined);
+            setQueryMatiere("");
+            setSelectedEnsPrincipal(undefined);
+            setQueryEnsPrincipal("");
+            setSelectedEnsSuppleant(undefined);
+            setQueryEnsSuppleant("");
             setSalleCours(undefined);
             setTypeEnseignement(undefined);
             setSemestre(currentSemester);
+            setAnnee(currentYear);
             setFilteredCycle(undefined);
             setFilteredNiveau(undefined);
             setTypesEnseignementMat([]);
@@ -265,25 +415,26 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setErrorSemestre("");
             setErrorSalle("");
             setErrorTypeEnseignement("");
+            setErrorEnseignant("");
             setIsFirstRender(false);
         }
-    }, [periodeCours, isFirstRender, t]);
+    }, [periodeCours, isFirstRender, currentYear,t]);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (periodeCours) {
-            const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
-            setMatiere(mat);
-        }
+    //     if (periodeCours) {
+    //         const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
+    //         setMatiere(mat);
+    //     }
 
-    }, [matieres]);
+    // }, [matieres]);
     
     // Troisième useEffect pour gérer le changement de matière sélectionnée
     useEffect(() => {
         
-        if (matiere && matiere.typesEnseignement) {
-            const listeTypesEnseignementDeMatiere = matiere.typesEnseignement
-                .map(type => type.typeEnseignement)
+        if (selectedMatiere && selectedMatiere.typesEnseignement) {
+            const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement
+                .map(type => type)
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
             setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
@@ -297,7 +448,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             }
 
         }
-    }, [matiere, typesEnseignement, periodeCours]);
+    }, [selectedMatiere, typesEnseignement, periodeCours]);
 
     const closeModal = () => {
         setErrorJour("");
@@ -309,6 +460,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         setErrorMatiere("");
         setErrorSemestre("");
         setErrorSalle("");
+        setErrorEnseignant("");
         setIsFirstRender(true);
         dispatch(setShowModal());
     };
@@ -330,29 +482,29 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
     const handleSalleCoursChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSalleCoursLibelle = e.target.value;
-        const selectedSalleCours = sallesCours.find((salleCours) => salleCours.code === selectedSalleCoursLibelle);
+        const selectedSalleCours = lang==='fr'?sallesCours.find((salleCours) => salleCours.libelleFr === selectedSalleCoursLibelle):sallesCours.find((salleCours) => salleCours.libelleEn === selectedSalleCoursLibelle);
         if (selectedSalleCours) {
             setSalleCours(selectedSalleCours);
             setErrorSalle("");
         }
     };
-    const handleMatiereChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedMatiereLibelle = e.target.value;
-        const selectedMatiere = matieres.find((matiere) => lang === 'fr' ? matiere.libelleFr === selectedMatiereLibelle : matiere.libelleEn === selectedMatiereLibelle);
-        if (selectedMatiere && selectedMatiere.typesEnseignement) {
-            setMatiere(selectedMatiere);
-            setErrorMatiere("");
-            const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement
-                .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
-                .map(objectId => typesEnseignement.find(type => type._id === objectId))
-                .filter(type => type !== undefined) as CommonSettingProps[];
-            if (listeTypesEnseignementDeMatiere) {
-                setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
-            }
-        }
+    // const handleMatiereChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedMatiereLibelle = e.target.value;
+    //     const selectedMatiere = matieres.find((matiere) => lang === 'fr' ? matiere.libelleFr === selectedMatiereLibelle : matiere.libelleEn === selectedMatiereLibelle);
+    //     if (selectedMatiere && selectedMatiere.typesEnseignement) {
+    //         setMatiere(selectedMatiere);
+    //         setErrorMatiere("");
+    //         const listeTypesEnseignementDeMatiere = selectedMatiere.typesEnseignement
+    //             .map(type => type.typeEnseignement) // Obtenir une liste d'objectIds
+    //             .map(objectId => typesEnseignement.find(type => type._id === objectId))
+    //             .filter(type => type !== undefined) as CommonSettingProps[];
+    //         if (listeTypesEnseignementDeMatiere) {
+    //             setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
+    //         }
+    //     }
 
 
-    };
+    // };
 
 
     const handleTypeEnseignementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -411,7 +563,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     };
 
     const handleCreatePeriodeCours = async () => {
-        if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau || !matiere || !semestre 
+        
+        if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau || !selectedMatiere || !selectedEnsPrincipal || !semestre 
             || !typeEnseignement || !salleCours) {
             if (!jour) {
                 setErrorJour(t('error.jour'));
@@ -433,9 +586,10 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 setErrorNiveau(t('error.niveau'));
             }
 
-            if (!matiere) {
+            if (!selectedMatiere) {
                 setErrorMatiere(t('error.matiere'));
             }
+
 
             if (!semestre) {
                 setErrorSemestre(t('error.semestre'));
@@ -443,6 +597,10 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
             if (!typeEnseignement) {
                 setErrorTypeEnseignement(t('error.type_ens_periode'));
+            }
+
+            if (!selectedEnsPrincipal) {
+                setErrorEnseignant(t('error.enseignant'));
             }
 
             if (!salleCours) {
@@ -458,15 +616,17 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
         
         if (!periodeCours) {
-            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
+            if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
                 await apiCreatePeriode(
                     {
                         jour : jour.ordre,
                         semestre,
                         annee,
                         niveau:niveau._id,
-                        matiere : matiere,
+                        matiere : selectedMatiere,
                         typeEnseignement : typeEnseignement._id,
+                        enseignantPrincipal:selectedEnsPrincipal, 
+                        enseignantSuppleant:selectedEnsSuppleant,
                         heureDebut,
                         heureFin,
                         salleCours:salleCours._id,
@@ -508,15 +668,17 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 })
             }
         }else{
-            if (matiere && typeEnseignement._id && niveau._id && salleCours._id && jour.ordre) {
+            if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal  && niveau._id && salleCours._id && jour.ordre) {
                 await apiUpdatePeriode(
                     {
                         jour : jour.ordre,
                         semestre,
                         annee,
                         niveau:niveau._id,
-                        matiere : matiere,
+                        matiere : selectedMatiere,
                         typeEnseignement : typeEnseignement._id,
+                        enseignantPrincipal:selectedEnsPrincipal, 
+                        enseignantSuppleant:selectedEnsSuppleant,
                         heureDebut,
                         heureFin,
                         salleCours:salleCours._id,
@@ -567,25 +729,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
             >
-                {/* <div style={{ textAlign: 'right' }}>
-                    <button onClick={handleToggleDelete} style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                        {isDeleting ? (
-                            <span>{t('label.confirm_sup')}</span>
-                        ) : (
-                            <FaTrash style={{ color: 'red', fontSize: '20px' }} />
-                        )}
-                        {isDeleting && (
-                            <button onClick={closeModal} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                {t('boutton.non')}
-                            </button>
-                        )}
-                        {isDeleting && (
-                            <button onClick={handleDelete} style={{ marginLeft: '5px', backgroundColor: 'transparent', border: 'none', cursor: 'pointer' }}>
-                                {t('boutton.oui')}
-                            </button>
-                        )}
-                    </button>
-                </div> */}
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -672,16 +815,31 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
                 <label>{t('label.matiere')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={matiere ? lang === 'fr' ? matiere.libelleFr : matiere.libelleEn : t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}
-                    onChange={handleMatiereChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}</option>
-                    {matieres.map(matiere => (
-                        <option key={matiere._id} value={lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}>{lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}</option>
-                    ))}
-                </select>
+                <div >
+                    <SearchInput 
+                        onSearch={handleSearchMatiere} 
+                        placeHolder={t('recherche.rechercher')+t('recherche.matiere')}
+                        style="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        query={queryMatiere}
+                        setQuery={setQueryMatiere}
+                        onBlur={handleBlurMatiere}
+                    />
+                    {isLoadingMatiere ? (
+                        <p>{t('label.recherche')}</p>
+                    ) : resultsMatiere.length>0 && (
+                        <ul className="border mt-2">
+                            {resultsMatiere.map((matiere) => (
+                                <li 
+                                    key={matiere._id} 
+                                    className="p-2 border-b cursor-pointer"
+                                    onClick={() => handleSelectMatiere(matiere)}
+                                >
+                                    {lang==='fr'?matiere.libelleFr:matiere.libelleEn}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
                 {errorMatiere && <p className="text-red-500">{errorMatiere}</p>}
                 <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
                 <select
@@ -696,22 +854,51 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 </select>
                 {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
                 <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
-                <div>
-                    <input
-                        type="text"
-                        value={searchString}
-                        onChange={(e) => setSearchString(e.target.value)}
-                        placeholder={t('recherche.rechercher')+t('recherche.enseignant')}
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                <div >
+                    <SearchInput 
+                        onSearch={handleSearchEnsPrincipal} 
+                        placeHolder={t('recherche.rechercher')+t('recherche.enseignant')}
+                        style="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        query={queryEnsPrincipal}
+                        setQuery={setQueryEnsPrincipal}
+                        onBlur={handleBlurEnsPrincipal}
                     />
-                    {isLoading && <p>Loading...</p>}
-                    {results.length > 0 && (
+                    {isLoadingEnsPrincipal ? (
+                        <p>{t('label.recherche')}</p>
+                    ) : resultsEnsPrincipal.length>0 && (
                         <ul className="border mt-2">
-                            {results.map((enseignant) => (
+                            {resultsEnsPrincipal.map((enseignant) => (
                                 <li 
                                     key={enseignant._id} 
                                     className="p-2 border-b cursor-pointer"
-                                    onClick={() => handleSelectTeacher(enseignant)}
+                                    onClick={() => handleSelectEnsPrincipal(enseignant)}
+                                >
+                                    {enseignant.nom} {enseignant.prenom}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+                {errorEnseignant && <p className="text-red-500">{errorEnseignant}</p>}
+                <label>{t('label.enseignant_sup')}</label>
+                <div >
+                    <SearchInput 
+                        onSearch={handleSearchEnsSuppleant} 
+                        placeHolder={t('recherche.rechercher')+t('recherche.enseignant')}
+                        style="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        query={queryEnsSuppleant}
+                        setQuery={setQueryEnsSuppleant}
+                        onBlur={handleBlurEnsSuppleant}
+                    />
+                    {isLoadingEnsSuppleant ? (
+                        <p>{t('label.recherche')}</p>
+                    ) : resultsEnsSuppleant.length>0 && (
+                        <ul className="border mt-2">
+                            {resultsEnsSuppleant.map((enseignant) => (
+                                <li 
+                                    key={enseignant._id} 
+                                    className="p-2 border-b cursor-pointer"
+                                    onClick={() => handleSelectEnsSuppleant(enseignant)}
                                 >
                                     {enseignant.nom} {enseignant.prenom}
                                 </li>
@@ -721,13 +908,13 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 </div>
                 <label>{t('label.salle_cour')}</label><label className="text-red-500"> *</label>
                 <select
-                    value={salleCours ? salleCours.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}
+                    value={salleCours ? lang==='fr'?salleCours.libelleFr:salleCours.libelleEn : t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}
                     onChange={handleSalleCoursChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.salle')}</option>
                     {sallesCours.map(salleCours => (
-                        <option key={salleCours._id} value={salleCours.code}>{salleCours.code}</option>
+                        <option key={salleCours._id} value={lang==='fr'?salleCours.libelleFr:salleCours.libelleEn}>{lang==='fr'?salleCours.libelleFr:salleCours.libelleEn}</option>
                     ))}
                 </select>
                 {errorSalle && <p className="text-red-500">{errorSalle}</p>}

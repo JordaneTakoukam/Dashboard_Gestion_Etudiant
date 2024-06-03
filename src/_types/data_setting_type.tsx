@@ -65,7 +65,7 @@ interface DataSettingProps {
     sections: SectionProps[];
     cycles: CycleProps[];
     niveaux: NiveauProps[];
-    salleDeCours: SalleDeCoursProps[];
+    sallesDeCours: SalleDeCoursProps[];
     typesEnseignement: CommonSettingProps[];
     etatsEvenement: CommonSettingProps[];
     anneeCourante: number;

@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 const Enseignements = () => {
     const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
-    const [selectedEnseignement, setSelectedEnseignement] = useState<EnseignementType | null>(null);
-    const handleEditEnseignement = (enseignement: EnseignementType) => {
+    const [selectedEnseignement, setSelectedEnseignement] = useState<string | null>(null);
+    const handleEditEnseignement = (enseignement: string) => {
         setSelectedEnseignement(enseignement);
     }
     const {t}=useTranslation();
@@ -29,7 +29,7 @@ const Enseignements = () => {
     
     return (
         <>
-            <Breadcrumb pageName={t('sub_menu.enseignements')} isEnseignement={true} />
+            <Breadcrumb pageName={t('sub_menu.type_ens')} isEnseignement={true} />
             <Table data={selectedMatiere?.typesEnseignement}  onCreate={handleAddEnseignement} onEdit={handleEditEnseignement} />
 
             <FormCreateUpdate enseignement={selectedEnseignement} matiere={selectedMatiere}/>

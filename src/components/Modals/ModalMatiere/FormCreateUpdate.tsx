@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiCreateMatiere, apiUpdateMatiere } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
-import { createMatiere, updateMatiere } from '../../../_redux/features/matiere_slice';
+import { createMatiere, setPage, updateMatiere } from '../../../_redux/features/matiere_slice';
 
 
 function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
@@ -29,7 +29,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-    const [enseignements, setEnseignements] = useState<EnseignementType[] | undefined>([]);
+    const [enseignements, setEnseignements] = useState<string[] | undefined>([]);
     const [chapitres, setChapitres] = useState<ChapitreType[] | undefined>([]);
     const [objectifs, setObjectifs] = useState<ObjectifType[] | undefined>([]);
 
@@ -126,11 +126,11 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
         
         if (matiere) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.matiere'));
-            const currentNiveau = niveaux.find(niveau => niveau._id === "" + matiere.niveau);
-            const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
-            const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
-            currentSection && filterCycleBySection(currentSection._id);
-            currentCycle && filterNiveauByCycle(currentCycle._id);
+            // const currentNiveau = niveaux.find(niveau => niveau._id === "" + matiere.niveau);
+            // const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
+            // const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
+            // currentSection && filterCycleBySection(currentSection._id);
+            // currentCycle && filterNiveauByCycle(currentCycle._id);
             setCode(matiere.code);
             setLibelleFr(matiere.libelleFr);
             setLibelleEn(matiere.libelleEn);
@@ -140,9 +140,9 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             setEvaluationAcquisEn(matiere.evaluationAcquisEn ? matiere.evaluationAcquisEn : "");
             setApprochePedFr(matiere.approchePedFr ? matiere.approchePedFr : "");
             setApprochePedEn(matiere.approchePedEn ? matiere.approchePedEn : "");
-            setSection(currentSection);
-            setCycle(currentCycle);
-            setNiveau(currentNiveau);
+            // setSection(currentSection);
+            // setCycle(currentCycle);
+            // setNiveau(currentNiveau);
             setChapitres(matiere.chapitres);
             setObjectifs(matiere.objectifs);
             setEnseignements(matiere.typesEnseignement);
@@ -158,9 +158,9 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             setEvaluationAcquisEn("");
             setApprochePedFr("");
             setApprochePedEn("");
-            setSection(undefined);
-            setCycle(undefined);
-            setNiveau(undefined);
+            // setSection(undefined);
+            // setCycle(undefined);
+            // setNiveau(undefined);
             setChapitres([]);
             setObjectifs([]);
             setEnseignements([]);
@@ -260,7 +260,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             // Assurez-vous de retourner le résultat du test d'inclusion
             return enseignant.nom.toLowerCase().includes(saisieUtilisateur.toLowerCase());
         });
-        if(enseignantsFiltres.length>0 && enseignements && enseignements[0].typeEnseignement){
+        if(enseignantsFiltres.length>0 && enseignements && enseignements[0]){
             setErrorTypeEns("");
         }
         // Mettre à jour les enseignants suggérés avec les résultats filtrés
@@ -270,7 +270,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
 
     const handleCreateUpdate = async () => {
         // if (!code || !libelleFr || !libelleEn || !section || !cycle || !niveau) {
-        if (!libelleFr || !libelleEn || !section || !cycle || !niveau) {
+        if (!libelleFr || !libelleEn ) {
             // if (!code) {
             //     setErrorCode(t('error.code'));
             // }
@@ -280,25 +280,25 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             if (!libelleEn) {
                 setErrorLibelleEn(t('error._en'));
             }
-            if (!section) {
-                setErrorSection(t('error.section'));
-            }
-            if (!cycle) {
-                setErrorCycle(t('error.cycle'));
-            }
-            if (!niveau) {
-                setErrorNiveau(t('error.niveau'));
-            }
+            // if (!section) {
+            //     setErrorSection(t('error.section'));
+            // }
+            // if (!cycle) {
+            //     setErrorCycle(t('error.cycle'));
+            // }
+            // if (!niveau) {
+            //     setErrorNiveau(t('error.niveau'));
+            // }
             return;
         }
         if (!matiere) {
-            if (niveau && niveau._id) {
+            // if (niveau && niveau._id) {
                 await apiCreateMatiere(
                     {
                         code,
                         libelleFr,
                         libelleEn,
-                        niveau:niveau._id, 
+                        // niveau:niveau._id, 
                         prerequisFr, 
                         prerequisEn, 
                         approchePedFr, 
@@ -319,7 +319,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                 code:e.data.code,
                                 libelleFr:e.data.libelleFr,
                                 libelleEn:e.data.libelleEn,
-                                niveau:e.data.niveau, 
+                                // niveau:e.data.niveau, 
                                 prerequisFr:e.data.prerequisFr, 
                                 prerequisEn:e.data.prerequisEn, 
                                 approchePedFr:e.data.approchePedFr, 
@@ -333,7 +333,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                             }
                             
                         }));
-
+                        // dispatch(setPage());
                         closeModal();
 
                     } else {
@@ -344,15 +344,15 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
-            }
+            // }
         }else{
-            if (niveau && niveau._id) {
+            // if (niveau && niveau._id) {
                 await apiUpdateMatiere(
                     {
                         code,
                         libelleFr,
                         libelleEn,
-                        niveau:niveau._id, 
+                        // niveau:niveau._id, 
                         prerequisFr, 
                         prerequisEn, 
                         approchePedFr, 
@@ -375,7 +375,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                     code:e.data.code,
                                     libelleFr:e.data.libelleFr,
                                     libelleEn:e.data.libelleEn,
-                                    niveau:e.data.niveau, 
+                                    // niveau:e.data.niveau, 
                                     prerequisFr:e.data.prerequisFr, 
                                     prerequisEn:e.data.prerequisEn, 
                                     approchePedFr:e.data.approchePedFr, 
@@ -395,7 +395,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
                 })
-            }
+            // }
         }
 
     }
@@ -476,7 +476,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                     value={evaluationAcquisEn}
                     onChange={(e) => { setEvaluationAcquisEn(e.target.value); }}
                 />
-                <label>{t('label.section')}</label><label className="text-red-500"> *</label>
+                {/* <label>{t('label.section')}</label><label className="text-red-500"> *</label>
                 <select
                     value={section ? (lang === 'fr' ? section.libelleFr : section.libelleEn) : 'Sélectionnez une section'}
                     onChange={handleSectionChange}
@@ -511,7 +511,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                         <option key={niveau._id} value={lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}>{lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}</option>
                     ))}
                 </select>
-                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
+                {errorNiveau && <p className="text-red-500">{errorNiveau}</p>} */}
             </CustomDialogModal>
 
         </>

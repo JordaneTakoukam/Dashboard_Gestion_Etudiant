@@ -12,14 +12,13 @@ import { apiUpdateMatiere } from '../../../api/api_matiere';
 
 
 
-function ModalCreateUpdate({ enseignement, matiere }: { enseignement: EnseignementType | null, matiere:MatiereType|null|undefined }) {
+function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | null, matiere:MatiereType|null|undefined }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
-    const [enseignantPrincipal, setEnseignantPrincipal] = useState<EnseignantType>();
-    const [enseignantSuppleant, setEnseignantSuppleant] = useState<EnseignantType>();
+    
     
     const [errorTypeEnseignement, setErrorTypeEnseignement] = useState("");
     const [errorEnseignantPrincipal, setErrorEnseignantPrincipal] = useState("");
@@ -27,56 +26,53 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
-    const { data: { enseignants } } = useSelector((state: RootState) => state.enseignantSlice);
-    useEffect(() => {
-        const fetchEnseignants = async () => {
-            dispatch(setEnseignantsLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                // Initialisation de currentCycleId et currentNiveauId
+    // const { data: { enseignants } } = useSelector((state: RootState) => state.enseignantSlice);
+    // useEffect(() => {
+    //     const fetchEnseignants = async () => {
+    //         dispatch(setEnseignantsLoading(true)); // Définissez le loading à true avant le chargement
+    //         try {
+    //             // Initialisation de currentCycleId et currentNiveauId
                
-                const emptyEnseignants : EnseignantListGetType={
-                    enseignants: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
-                }
-                const fetchedEnseignants = await apiGetEnseignantsByNomPrenom();
-                if (fetchedEnseignants) { // Vérifiez si fetchedEnseignants n'est pas faux, vide ou indéfini
-                    dispatch(setEnseignant(fetchedEnseignants));
-                    console.log(enseignants);
-                } else {
-                    dispatch(setEnseignant(emptyEnseignants));
-                }
-            } catch (error) {
-                dispatch(setErrorPageEnseignant(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2)
-            } finally {
-                dispatch(setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
-            }
-        };
+    //             const emptyEnseignants : EnseignantListGetType={
+    //                 enseignants: [],
+    //                 currentPage: 0,
+    //                 totalItems: 0,
+    //                 totalPages: 0,
+    //                 pageSize: 0
+    //             }
+    //             const fetchedEnseignants = await apiGetEnseignantsByNomPrenom();
+    //             if (fetchedEnseignants) { // Vérifiez si fetchedEnseignants n'est pas faux, vide ou indéfini
+    //                 dispatch(setEnseignant(fetchedEnseignants));
+    //                 console.log(enseignants);
+    //             } else {
+    //                 dispatch(setEnseignant(emptyEnseignants));
+    //             }
+    //         } catch (error) {
+    //             dispatch(setErrorPageEnseignant(t('message.erreur')));
+    //             createToast(t('message.erreur'), "", 2)
+    //         } finally {
+    //             dispatch(setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
+    //         }
+    //     };
 
-        fetchEnseignants();
-    }, [dispatch, t]);
+    //     fetchEnseignants();
+    // }, [dispatch, t]);
     
     useEffect(() => {
         if (enseignement) {
-            setModalTitle(t('form_update.enregistrer')+t('form_update.enseignement'));
-            const typeEns = typesEnseignement.find(typeEns => typeEns._id === enseignement.typeEnseignement);
+            setModalTitle(t('form_update.enregistrer')+t('form_update.type_ens'));
+            const typeEns = typesEnseignement.find(typeEns => typeEns._id === enseignement);
             setTypeEnseignement(typeEns);
-            setEnseignantPrincipal(enseignement.enseignantPrincipal);
-            setEnseignantSuppleant(enseignement.enseignantSuppleant);
+            
             
         
         }else{
-            setModalTitle(t('form_save.enregistrer')+t('form_save.enseignement'));
+            setModalTitle(t('form_save.enregistrer')+t('form_save.type_ens'));
             setTypeEnseignement(undefined);
-            setEnseignantPrincipal(undefined);
-            setEnseignantSuppleant(undefined);
         }
         if (isFirstRender) {
             setErrorTypeEnseignement("");
-            setErrorEnseignantPrincipal("");
+            // setErrorEnseignantPrincipal("");
             setIsFirstRender(false);
             
         }
@@ -94,32 +90,29 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
 
     const handleCreateUpdate = async () => {
         // Vérifier si tous les champs requis sont remplis
-        if (!typeEnseignement || !enseignantPrincipal) {
+        if (!typeEnseignement ) {
             if (!typeEnseignement) {
                 setErrorTypeEnseignement(t('error.type_ens'));
             }
-            if (!enseignantPrincipal) {
-                setErrorEnseignantPrincipal(t('error.enseignant'));
-            }
+            // if (!enseignantPrincipal) {
+            //     setErrorEnseignantPrincipal(t('error.enseignant'));
+            // }
 
             return;
         }
         if (matiere) {
-            var saveEnseignement:EnseignementType={
-                typeEnseignement: typeEnseignement._id || "",
-                enseignantPrincipal:enseignantPrincipal,
-                enseignantSuppleant:enseignantSuppleant
-            }
-            if(enseignement){
-                saveEnseignement._id=enseignement._id
-            }
+            var saveEnseignement:string= typeEnseignement._id || "";
+            
+            // if(enseignement){
+            //     saveEnseignement=enseignement;
+            // }
 
-            var newEnseignements:EnseignementType[] = [];
+            var newEnseignements:string[] = [];
             for (let i = 0; matiere.typesEnseignement && i < matiere.typesEnseignement.length; i++) {
                 const enseignement = matiere.typesEnseignement[i];
                 newEnseignements.push(enseignement)
             }
-            const index = newEnseignements.findIndex((obj) => obj._id === enseignement?._id);
+            const index = newEnseignements.findIndex((obj) => obj=== enseignement);
             if (index !== -1) {
                 newEnseignements[index] = saveEnseignement;
             }else{
@@ -131,7 +124,6 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
                     code:matiere.code,
                     libelleFr:matiere.libelleFr,
                     libelleEn:matiere.libelleEn,
-                    niveau:matiere.niveau, 
                     prerequisFr:matiere.prerequisFr, 
                     prerequisEn:matiere.prerequisEn, 
                     approchePedFr:matiere.approchePedFr, 
@@ -172,22 +164,22 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
         }
     };
 
-    const handleEnseignantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedId = e.target.value;
-        const selectedEnseignant = enseignants.find(enseignant => enseignant._id === selectedId);
-        if (selectedEnseignant) {
-            setEnseignantPrincipal(selectedEnseignant);
-            setErrorEnseignantPrincipal("");
-        }
-    };
+    // const handleEnseignantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedId = e.target.value;
+    //     const selectedEnseignant = enseignants.find(enseignant => enseignant._id === selectedId);
+    //     if (selectedEnseignant) {
+    //         // setEnseignantPrincipal(selectedEnseignant);
+    //         setErrorEnseignantPrincipal("");
+    //     }
+    // };
 
-    const handleEnseignantSupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedId = e.target.value;
-        const selectedEnseignant = enseignants.find(enseignant => enseignant._id === selectedId);
-        if (selectedEnseignant) {
-            setEnseignantSuppleant(selectedEnseignant);
-        }
-    };
+    // const handleEnseignantSupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     const selectedId = e.target.value;
+    //     const selectedEnseignant = enseignants.find(enseignant => enseignant._id === selectedId);
+    //     if (selectedEnseignant) {
+    //         // setEnseignantSuppleant(selectedEnseignant);
+    //     }
+    // };
 
 
 
@@ -202,14 +194,14 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
             >
                 <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
                 {!enseignement && <select
-                    value={typeEnseignement ? typeEnseignement.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
+                    value={typeEnseignement ? lang==='fr'?typeEnseignement?.libelleFr??"":typeEnseignement?.libelleEn??"" : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
                     onChange={handleTypeEnseignementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement.typeEnseignement === type._id))
+                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement === type._id))
                                     .map(typeEnseignement => (
-                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{typeEnseignement.code}</option>
+                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{lang==='fr'?typeEnseignement.libelleFr:typeEnseignement.libelleEn}</option>
                     ))}
                 </select>}
                 {enseignement && <select
@@ -218,18 +210,18 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                    {enseignement.typeEnseignement && ( // Vérifie si une matière est déjà sélectionnée dans l'enseignement
-                        <option key={enseignement.typeEnseignement} value={typeEnseignement?.code??""}>
-                            {typeEnseignement?.code??""}
+                    {enseignement && ( // Vérifie si une matière est déjà sélectionnée dans l'enseignement
+                        <option key={enseignement} value={typeEnseignement?.code??""}>
+                            {lang==='fr'?typeEnseignement?.libelleFr??"":typeEnseignement?.libelleEn??""}
                         </option>
                     )}
-                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement.typeEnseignement === type._id))
+                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement === type._id))
                                     .map(typeEnseignement => (
-                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{typeEnseignement.code}</option>
+                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{lang==='fr'?typeEnseignement.libelleFr:typeEnseignement.libelleEn}</option>
                     ))}
                 </select>}
                 {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
-                <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
+                {/* <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
                 <select
                     value={enseignantPrincipal ? enseignantPrincipal._id : t('select_par_defaut.selectionnez') + t('select_par_defaut.enseignant')}
                     onChange={handleEnseignantChange}
@@ -251,7 +243,7 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: Enseigneme
                     {enseignants.map(enseignant => (
                         <option key={enseignant._id} value={enseignant._id}>{enseignant.nom+" "+enseignant.prenom}</option>
                     ))}
-                </select>
+                </select> */}
             </CustomDialogModal>
         </>
     );

@@ -26,6 +26,10 @@ const matiereSlice = createSlice({
         setMatiereSelected(state, action: PayloadAction<MatiereType>) {
             state.selectedMatiere = action.payload;
         },
+        setPage(state){
+            state.data.pageSize +=1;
+            state.data.totalItems+=1;
+        },
         setMatiereLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
         },
@@ -55,14 +59,14 @@ const matiereSlice = createSlice({
             }
         },
 
-        updateEnseignements(state, action: PayloadAction<UpdateEnseignementsPayload>) {
-            const { id, enseignementsData } = action.payload;
-            const index = state.data.matieres.findIndex(e => e._id === id);
-            if (index !== -1) {
-                state.data.matieres[index].typesEnseignement = enseignementsData
+        // updateEnseignements(state, action: PayloadAction<UpdateEnseignementsPayload>) {
+        //     const { id, enseignementsData } = action.payload;
+        //     const index = state.data.matieres.findIndex(e => e._id === id);
+        //     if (index !== -1) {
+        //         state.data.matieres[index].typesEnseignement = enseignementsData
                 
-            }
-        },
+        //     }
+        // },
         deleteMatiere(state, action: PayloadAction<DeleteMatierePayload>) {
             const { id } = action.payload;
             state.data.matieres = state.data.matieres.filter(e => e._id !== id);
@@ -116,7 +120,7 @@ const matiereSlice = createSlice({
         },
 
         //Gérer les enseignements de la matières
-        ajouterEnseignement(state, action: PayloadAction<EnseignementType>) {
+        ajouterEnseignement(state, action: PayloadAction<string>) {
             
             const matiere = state.selectedMatiere;
             if (matiere && matiere.typesEnseignement) {
@@ -137,7 +141,7 @@ const matiereSlice = createSlice({
             const { enseignementId} = action.payload;
             const matiere = state.selectedMatiere;
             if (matiere && matiere.typesEnseignement) {
-                matiere.typesEnseignement = matiere.typesEnseignement.filter(enseignement => enseignement._id !== enseignementId);
+                matiere.typesEnseignement = matiere.typesEnseignement.filter(enseignement => enseignement !== enseignementId);
             }
         }
     },
@@ -146,6 +150,7 @@ const matiereSlice = createSlice({
 // Actions exportées
 export const {
     setMatiereSelected,
+    setPage,
     setMatiereLoading,
     setErrorPageMatiere,
     setMatieres,
@@ -153,7 +158,7 @@ export const {
     updateMatiere,
     deleteMatiere,
     updateChapitres,
-    updateEnseignements,
+    // updateEnseignements,
     ajouterChapitre,
     modifierChapitre,
     retirerChapitre,

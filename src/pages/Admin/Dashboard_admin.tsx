@@ -54,7 +54,7 @@ const DashBoardAmin = () => {
                     setTotalAbsenceEnseignant(totalAbsenceEnseignant);
                 }
 
-                const progressionGlobal = await getProgressionGlobalEnseignants();
+                const progressionGlobal = await getProgressionGlobalEnseignants({annee:currentYear, semestre:currentSemester});
                 if (progressionGlobal !== null) {
                     setProgression(progressionGlobal);
                 }

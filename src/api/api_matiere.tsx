@@ -6,11 +6,11 @@ const api = `${apiUrl}/matiere`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs }: MatiereType): Promise<ReponseApiPros> {
+export async function apiCreateMatiere({ code, libelleFr, libelleEn, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs }: MatiereType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs },
+            { code, libelleFr, libelleEn, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,12 +26,12 @@ export async function apiCreateMatiere({ code, libelleFr, libelleEn, niveau, pre
     }
 }
 
-export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs }: MatiereType): Promise<ReponseApiPros> {
+export async function apiUpdateMatiere({ _id, code, libelleFr, libelleEn, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs }: MatiereType): Promise<ReponseApiPros> {
     
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, niveau, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs },
+            { code, libelleFr, libelleEn, prerequisFr, prerequisEn, approchePedFr, approchePedEn, evaluationAcquisFr, evaluationAcquisEn, typesEnseignement, chapitres, objectifs },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,7 +66,28 @@ export async function apiDeleteMatiere(matiereId: string): Promise<ReponseApiPro
     }
 }
 
-export async function getMatieresByNiveauWithPagination({ niveauId, page, annee, semestre }: { niveauId: string, page: number, annee:number, semestre:number }): Promise<MatiereReturnGetType> {
+export async function apiSearchMatiere({ searchString, langue }: { langue:string, searchString: string }): Promise<MatiereReturnGetType> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchMatiere/${langue}/${searchString}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const matieres: MatiereReturnGetType = response.data.data;
+
+        return matieres;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function getMatieresByNiveauWithPagination({ niveauId, page, annee, semestre }: { niveauId?: string, page: number, annee?:number, semestre?:number }): Promise<MatiereReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -187,7 +208,8 @@ export async function generateProgressByEnseignant({ niveauId, enseignantId, ann
     }
 }
 
-export async function getMatieresByNiveau({ niveauId, annee, semestre }: { niveauId: string, annee:number, semestre:number}): Promise<ProgressionMatiereReturnGetType> {
+export async function getMatieresByNiveau({ niveauId, annee, semestre }: { niveauId?: string, annee?:number, semestre?:number}): Promise<ProgressionMatiereReturnGetType> {
+    console.log(niveauId)
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getMatieresByNiveau/${niveauId}`,
@@ -213,7 +235,7 @@ export async function getMatieresByNiveau({ niveauId, annee, semestre }: { nivea
     }
 }
 
-export async function generateListMatByNiveau({ annee, semestre, departement, section, cycle, niveau, langue }: { annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string}): Promise<Blob> {
+export async function generateListMatByNiveau({ annee, semestre, departement, section, cycle, niveau, langue }: { annee?: number, semestre?:number, departement?:CommonSettingProps, section?:SectionProps, cycle?:CycleProps, niveau?:NiveauProps, langue:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListMatByNiveau/${annee}/${semestre}`,

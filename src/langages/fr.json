@@ -69,6 +69,7 @@
     "communes": "Communes",
     "objectifs": "Objectifs",
     "enseignements": "Enseignements",
+    "type_ens": "Activité pédagogique",
     "periodes_enseignement": "Périodes d'enseignement",
     "enseignement_periode": "Enseignements de la période"
   },
@@ -94,6 +95,8 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "message_telecharger":"Veuillez appliquer un filtre avant de télécharger la liste. Sélectionnez des critères de filtre pour affiner votre recherche et réessayez.",
+    "recherche":"Recherche...",
     "notif_abs_debut": "Absence signalé pour le cours prévu ",
     "notif_abs_milieu": " de ",
     "pause": "PAUSE",
@@ -319,6 +322,8 @@
   },
   "filtre": {
     "filtrer": "Filtrer",
+    "objectif": "Filtrer la liste des objectifs de la matière suivant :",
+    "chapitre": "Filtrer la liste des chapitres de la matière suivant :",
     "etudiant": "Filtrer la liste des étudiants suivant :",
     "enseignant": "Filtrer la liste des enseignants suivant:",
     "matiere": "Filtrer la liste des matières suivant:",
@@ -359,6 +364,7 @@
     "evenement": "un nouvel évènement",
     "objectif": "un objectif",
     "enseignement": "un enseignement",
+    "type_ens": "une activité pédagogique",
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
@@ -392,6 +398,7 @@
     "evenement": "de l'évènement",
     "objectif": "de l'objectif",
     "enseignement": "de l'enseignement",
+    "type_ens": "de l'activité pédagogique",
     "periode_enseignement": "de la période d'enseignement"
   },
   "form_delete": {
@@ -421,6 +428,7 @@
     "evenement": "de l'évènement",
     "objectif": "de l'objectif",
     "enseignement": "de l'enseignement",
+    "type_ens": "de l'activité pédagogique",
     "periode_enseignement": "de la période d'enseignement"
   },
   "error": {
@@ -433,6 +441,7 @@
     "phase_activite_en":"Le champ phase d'activités en anglais est obligatoire.",
     "type_ens": "Au moins une activité pédagogique doit être défini.",
     "enseignement": "Au moins un enseignement doit être défini.",
+    "enseignant": "Le champ enseignant est obligatoire.",
     "objectif": "Au moins un objectif doit être défini.",
     "competence": "Au moins une compétence doit être défini.",
     "region": "Le champ région est obligatoire.",

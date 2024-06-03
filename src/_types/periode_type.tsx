@@ -11,8 +11,8 @@ interface PeriodeType {
     heureDebut:string,
     heureFin:string,
     salleCours?:string,
-    enseignantPrincipal?:UserState,
-    enseignantSuppleant?:UserState,
+    enseignantPrincipal:UserState | EnseignantType,
+    enseignantSuppleant?:UserState | EnseignantType,
 }
 
 interface PeriodeInitialData {

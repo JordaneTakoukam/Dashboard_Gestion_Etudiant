@@ -21,6 +21,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from "jspdf";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import Bouton from "../../ui/Bouton";
 
 interface TableMatiereProps {
     data: MatiereType[];
@@ -45,9 +46,9 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const [filteredSemestre, setFilteredSemestre]=useState([]);
     const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // const niveauxEnseignantIds = currentUser?.niveaux.map(inscription => inscription.niveau) ?? [];
@@ -58,11 +59,11 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
-    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemestre);
-    const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
-    const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
-    const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
+    const [selectedYear, setSelectedYear] = useState<number>();
+    const [selectedSemestre, setSelectedSemestre] = useState<number>();
+    const [selectSectionId, setSelectIdSection] = useState<string | undefined>();
+    const [selectCycleId, setSelectIdCycle] = useState<string | undefined>();
+    const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>();
 
     const [filteredSection, setFilteredSection] = useState<SectionProps[]>([]);
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
@@ -120,10 +121,13 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
     const fetchAllMatieres = async () => {
         try {
+            
 
             if (selectNiveauId) {
                 const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
                 return fetchedMatieres.matieres;
+            }else{
+                alert(t("label.message_telecharger"));
             }
             // Réinitialisez les erreurs s'il y en a
         } catch (error) {
@@ -145,7 +149,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             if(selected === 'PDF'){
                 const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
                 if(selectNiveauId && section && cycle && niveau && departement){
-                    if(currentUser && currentUser.role===roles.enseignant){
+                    if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
                         await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
@@ -153,15 +157,21 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             }
                         })
                     }else{
-                        if(section && cycle && niveau && departement){
+                        // if(section && cycle && niveau && departement && selectedYear && selectedSemestre){
+                        if(selectedYear){
                             await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
                                 // Créer un objet URL pour le blob PDF
                                 if(blob){
                                     createPDF(blob, title);
                                 }
                             })
+                        }else{
+                            alert(t("label.message_telecharger"));
                         }
+                        // }
                     }
+                }else{
+                    alert(t("label.message_telecharger"));
                 }
                 
             }else{
@@ -175,6 +185,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 })
             }
         } catch (error) {
+            console.log(error)
             createToast(t('message.erreur'), "", 2);
         }finally {
             setIsDownload(false);
@@ -195,7 +206,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
                     // Vérifier si matiere.chapitres est défini
                     if (matiere.chapitres) {
-                        rows.push([`${matiere.code} : ${lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}`]);
+                        rows.push([`${lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}`]);
 
                         // Parcourir les chapitres
                         matiere.chapitres.forEach(chapitre => {
@@ -262,17 +273,33 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
             setSelectedYear(extractYear(selected.toString()));
+            if(!selectedSemestre || !section){
+                sections.length>0 && setSection(sections[0]);
+                sections.length>0 && setSelectIdSection(sections[0]._id);
+                sections.length>0 && filterCycleBySection(sections[0]._id);
+                setSelectedSemestre(currentSemestre);
+            }
         }
     };
 
     const handleSemestreSelect = (selected: number | undefined) => {
         if(selected){
+            if(!selectedYear || !section){
+                setSelectedYear(currentYear);
+                sections.length>0 && setSection(sections[0]);
+                sections.length>0 && setSelectIdSection(sections[0]._id);
+                sections.length>0 && filterCycleBySection(sections[0]._id);
+            }
             setSelectedSemestre(selected);
         }
     };
     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (selected?._id) {
+            if(!selectedSemestre || !selectedYear){
+                setSelectedYear(currentYear);
+                setSelectedSemestre(currentSemestre);
+            }
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
             setSection(selected);
@@ -350,8 +377,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         if (!selectSectionId) {
             console.log("if");
             if (sections && sections.length > 0) {
-                filterCycleBySection(sections[0]._id);
-                setSection(sections[0]);
+                // filterCycleBySection(sections[0]._id);
+                // setSection(sections[0]);
             }
         } else {
             setFilteredCycle([]);
@@ -373,7 +400,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     }, [filteredCycle]);
 
     useEffect(() => {
-
+        
         const fetchMatieres = async () => {
             dispatch(setMatiereLoading(true)); // Définissez le loading à true avant le chargement
             try {
@@ -387,7 +414,9 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 if (selectNiveauId) {
                     let fetchedMatieres = null;
                     if (currentUser && currentUser.role === roles.enseignant) {
-                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                        if(selectedYear && selectedSemestre){
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                        }
                     } else {
                         fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
                     }
@@ -399,7 +428,13 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                         dispatch(setMatieres(emptyMatieres));
                     }
                 } else {
-                    dispatch(setMatieres(emptyMatieres));
+                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined });
+                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                        dispatch(setMatieres(fetchedMatieres));
+                    } else {
+
+                        dispatch(setMatieres(emptyMatieres));
+                    }
                 }
                 // Réinitialisez les erreurs s'il y en a
             } catch (error) {
@@ -410,7 +445,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             }
         }
         fetchMatieres();
-    }, [dispatch, selectNiveauId, selectedYear, selectedSemestre, t]); // Déclencher l'effet lorsque currentPage change
+    }, [dispatch, selectNiveauId, selectedYear, selectedSemestre, currentPage, t]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<MatiereType[]>(data);
@@ -421,6 +456,15 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     }, [searchText, data]);
 
 
+    const handleRefreshFilters = () => {
+        setSelectedYear(undefined);
+        setSelectedSemestre(undefined);
+        setSection(undefined);
+        setCycle(undefined)
+        setNiveau(undefined);
+        setFilteredCycle([]);
+        setFilteredNiveaux([]);
+    };
 
 
     return (
@@ -436,7 +480,15 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.matiere')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.matiere')} 
+                <Bouton
+                    iconeSmall={true}
+                    circle={true}
+                    typeRefresh={true}
+                    // titreBouton={t('boutton.actualiser')}
+                    onClick={handleRefreshFilters}
+                /></h1>
+                
                 {/* version mobile */}
                 <div className="block lg:hidden">
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
@@ -494,7 +546,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 title={t('label.annee')}
                                 selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
-                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
+                                defaultValue={formatYear(selectedYear)} // ou spécifie une valeur par défaut
                                 onSelect={handleAnneeSelect}
                             />
                             
@@ -502,7 +554,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={filteredSection}
-                                defaultValue={filteredSection[0]} // ou spécifie une valeur par défaut
+                                defaultValue={section} // ou spécifie une valeur par défaut
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -510,7 +562,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={filteredCycle[0]} // ou spécifie une valeur par défaut
+                                defaultValue={cycle} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -518,7 +570,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={filteredNiveaux[0]} // ou spécifie une valeur par défaut
+                                defaultValue={niveau} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -527,7 +579,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
                                 items={[1, 2, 3]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
+                                defaultValue={selectedSemestre} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                         </div>
@@ -563,7 +615,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
                 {/* Pagination */}
 
-                <Pagination
+                {filteredData && filteredData.length>0 && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -573,7 +625,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-                />
+                />}
 
             </div>
 

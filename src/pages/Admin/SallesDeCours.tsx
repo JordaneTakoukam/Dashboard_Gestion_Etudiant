@@ -24,7 +24,7 @@ const SallesDeCours = () => {
     const handleAddSection = () => {
         setSelectedSalleCours(null);
     }
-    const sallesDecours = useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours);
+    const sallesDecours = useSelector((state: RootState) => state.dataSetting.dataSetting.sallesDeCours);
     return (
         <>
             <Breadcrumb pageName={t('menu.salles')} />

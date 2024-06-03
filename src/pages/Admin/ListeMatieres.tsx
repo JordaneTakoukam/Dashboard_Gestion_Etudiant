@@ -21,7 +21,7 @@ const ListeDesMatieres = () => {
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     // Utilisez useSelector pour accéder à l'état du reducer
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
@@ -55,11 +55,10 @@ const ListeDesMatieres = () => {
                     if(currentUser && currentUser.role===roles.enseignant){
                         fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre });
                     }else{
-                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: currentNiveauId, page: 1,  annee: currentYear, semestre: currentSemestre });
+                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: 1,  annee: undefined, semestre: undefined });
                     }
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
-                        console.log(matieres);
                     } else {
                         dispatch(setMatieres(emptyMatieres));
                     }
@@ -74,6 +73,7 @@ const ListeDesMatieres = () => {
         };
 
         fetchMatieres();
+        
     }, [dispatch, t, niveauxEns]);
 
 

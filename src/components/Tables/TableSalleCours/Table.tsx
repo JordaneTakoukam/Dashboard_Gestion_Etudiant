@@ -92,7 +92,7 @@ const Table = ({ data, onCreate, onEdit }: TableSalleProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                {/* <h1>Pagination ici</h1> */}
 
             </div>
 

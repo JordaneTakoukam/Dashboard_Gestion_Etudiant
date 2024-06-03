@@ -22,7 +22,8 @@ function ModalDelete({ chapitre, matiere }: { chapitre : ChapitreType|null, mati
             await apiDeleteChapitre(chapitre._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     if(chapitre._id){
-                        dispatch(retirerChapitre({chapitreId:chapitre._id}))
+                        dispatch(deleteChapitre({ id: chapitre._id }));
+                        // dispatch(retirerChapitre({chapitreId:chapitre._id}))
                     }
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();

@@ -6,11 +6,11 @@ const api = `${apiUrl}/matiere/chapitre`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateChapitre({ code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs }: ChapitreType): Promise<ReponseApiPros> {
+export async function apiCreateChapitre({ annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere }: ChapitreType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs },
+            { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,11 +26,11 @@ export async function apiCreateChapitre({ code, libelleFr, libelleEn, typesEnsei
     }
 }
 
-export async function apiUpdateChapitre({ _id, code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs }: ChapitreType): Promise<ReponseApiPros> {
+export async function apiUpdateChapitre({ _id, annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere }: ChapitreType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { code, libelleFr, libelleEn, typesEnseignement, matiere, objectifs },
+            { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,6 +61,35 @@ export async function apiDeleteChapitre(chapitreId: string): Promise<ReponseApiP
         return response.data;
     } catch (error) {
         console.error('Error deleting section:', error);
+        throw error;
+    }
+}
+
+export async function getChapitreByMatiereWithPagination({ matiereId, page, annee, semestre }: { matiereId: string, page: number, annee:number, semestre:number }): Promise<ChapitreReturnGetType> {
+    const pageSize: number = 10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getChapitres/${matiereId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    page: page,
+                    pageSize: pageSize,
+                    annee:annee,
+                    semestre:semestre
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const matieres: ChapitreReturnGetType = response.data.data;
+        
+        return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
         throw error;
     }
 }

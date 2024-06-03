@@ -99,10 +99,10 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
     const handleCreateUpdate = async () => {
         // create
         if (!categorie) {
-            if (!code || !libelleFr || !libelleEn || !grade) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn || !grade) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -156,10 +156,10 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
         //update
         else {
 
-            if (!code || !libelleFr || !libelleEn || !grade) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn || !grade) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -227,14 +227,14 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
             >
 
                 {/* input 1 */}
-                <Label text={t('label.code')} required />
+                <Label text={t('label.code')} />
                 <Input
                     value={code}
                     type='text'
                     setValue={(value) => { setCode(value); setErrorCode("") }}
                     hasBackground={true}
                 />
-                <ErrorMessage message={errorCode} />
+                {/* <ErrorMessage message={errorCode} /> */}
 
 
                 {/* input 2 */}

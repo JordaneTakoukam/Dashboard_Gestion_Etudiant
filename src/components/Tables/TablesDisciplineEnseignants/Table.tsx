@@ -332,7 +332,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
                 {/* Pagination */}
 
-                <Pagination
+                {filteredData && filteredData.length>0 && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -342,7 +342,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-                />
+                />}
             </div>
 
             {/* bouton downlod Download */}

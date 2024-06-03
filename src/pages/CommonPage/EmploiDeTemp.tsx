@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import Table from "../../components/Tables/TableEmploieDeTemps/Table";
-import { SalleCours, sallesCours } from "../Admin/SallesDeCours";
 import FormCreateUpdate from "../../components/Modals/ModalEmploiTemps/FormCreateUpdate";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +28,7 @@ const EmploiDeTemp = () => {
 
     // Récupérer les données de l'état Redux
     const periodes = useSelector((state: RootState) => state.periodeSlice.data.periodes);
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     // Récupérer le premier niveau du premier cycle
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
@@ -71,7 +70,7 @@ const EmploiDeTemp = () => {
         };
 
         fetchPeriodes();
-    }, [dispatch, t]);
+    }, [dispatch,currentYear, t]);
 
     const handleEditPeriode = (periode: PeriodeType) => {
         setSelectedPeriode(periode);

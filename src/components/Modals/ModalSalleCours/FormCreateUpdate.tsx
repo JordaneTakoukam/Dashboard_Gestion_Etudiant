@@ -59,7 +59,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
         setErrorCode(""); 
         setErrorLibelleFr("");
         setErrorLibelleEn("");
-        setErrorNbPlace("");
+        setErrorNbPlace("");    
         setIsFirstRender(true);
         dispatch(setShowModal()); 
     };
@@ -68,10 +68,10 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
     const handleCreateUpdate = async () => {
         // create
         if (!salleDeCours) {
-            if (!code || !libelleFr || !libelleEn) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.nom_fr'));
                 }
@@ -87,7 +87,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(createSettingItem({
-                            tableName: 'salleDeCours', newItem: {
+                            tableName: 'sallesDeCours', newItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
@@ -113,10 +113,10 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
         //update
         else {
 
-            if (!code || !libelleFr || !libelleEn) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.nom_fr'));
                 }
@@ -135,7 +135,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         dispatch(updateSettingItem({
-                            tableName: 'salleDeCours',
+                            tableName: 'sallesDeCours',
                             updatedItem: {
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,
@@ -171,14 +171,14 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                 handleConfirm={handleCreateUpdate}
             >
                 
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.code')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={code}
                     onChange={(e) => {setCode(e.target.value); setErrorCode("")}}
                 />
-                {errorCode && <p className="text-red-500" >{errorCode}</p>}
+                {/* {errorCode && <p className="text-red-500" >{errorCode}</p>} */}
                 <label>{t('label.nom_chose_fr')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"

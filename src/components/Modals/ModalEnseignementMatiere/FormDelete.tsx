@@ -10,7 +10,7 @@ import createToast from '../../../hooks/toastify';
 
 
 
-function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementType|null, matiere:MatiereType|null|undefined}) {
+function ModalDelete({ enseignement, matiere }: { enseignement : string|null, matiere:MatiereType|null|undefined}) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
@@ -22,11 +22,11 @@ function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementTyp
     const handleDelete = async () => {
         
         if(matiere && matiere._id && enseignement){
-            var newEnseignements:EnseignementType[] = [];
+            var newEnseignements:string[] = [];
             for (let i = 0; matiere.typesEnseignement && i < matiere.typesEnseignement.length; i++) {
                 
                 const ens = matiere.typesEnseignement[i];
-                if(ens._id !== enseignement._id){
+                if(ens !== enseignement){
                     newEnseignements.push(ens)
                 }
                 
@@ -37,7 +37,6 @@ function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementTyp
                     code:matiere.code,
                     libelleFr:matiere.libelleFr,
                     libelleEn:matiere.libelleEn,
-                    niveau:matiere.niveau, 
                     prerequisFr:matiere.prerequisFr, 
                     prerequisEn:matiere.prerequisEn, 
                     approchePedFr:matiere.approchePedFr, 
@@ -51,8 +50,8 @@ function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementTyp
                 }
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
-                    if(enseignement._id){
-                        dispatch(retirerEnseignement({enseignementId:enseignement._id}))
+                    if(enseignement){
+                        dispatch(retirerEnseignement({enseignementId:enseignement}))
                     }
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();
@@ -67,7 +66,7 @@ function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementTyp
     }
     useEffect(()=>{
         if(enseignement){
-            const typeEns = typesEnseignement.find(typeEns => typeEns._id === enseignement.typeEnseignement);
+            const typeEns = typesEnseignement.find(typeEns => typeEns._id === enseignement);
             setTypeEnseignement(typeEns);
         }
     }, [typesEnseignement, enseignement, t])
@@ -80,7 +79,7 @@ function ModalDelete({ enseignement, matiere }: { enseignement : EnseignementTyp
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.enseignement')} : {typeEnseignement?.code}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.type_ens')} : {typeEnseignement?.code}</h1>
             </CustomDialogModal>
         </>
     );

@@ -11,9 +11,9 @@ import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 
 interface TableEnseignementProps {
-    data?: EnseignementType[];
+    data?: string[];
     onCreate:()=>void;
-    onEdit: (enseignement:EnseignementType) => void;
+    onEdit: (enseignement:string) => void;
 }
 
 
@@ -34,7 +34,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignementProps) => {
         setCurrentPage(pageNumber);
     };
     const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<EnseignementType[] | undefined>(data);
+    const [filteredData, setFilteredData] = useState<string[] | undefined>(data);
     // Filtrer les matières en fonction de la langue
     // const filterEnseignementByContent = (enseignements: EnseignementType[] | undefined) => {
     //     if(enseignements){
@@ -80,7 +80,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignementProps) => {
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
                 {selectedMatiere && (<div>
-                    {selectedMatiere.code}:{lang === 'fr' ? selectedMatiere.libelleFr : selectedMatiere.libelleEn}
+                    {lang === 'fr' ? selectedMatiere.libelleFr : selectedMatiere.libelleEn}
                 </div>)}
 
                 {/* DEBUT DU TABLE */}

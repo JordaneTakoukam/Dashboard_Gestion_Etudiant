@@ -7,6 +7,7 @@ import {apiUpdateChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
 import { retirerObjectif, updateMatiere } from '../../../_redux/features/matiere_slice';
 import { apiDeleteObjectif } from '../../../api/api_objectif';
+import { deleteObjectif } from '../../../_redux/features/objectif_slice';
 
 
 function ModalDelete({ objectif, matiere }: {objectif:ObjectifType | null,  matiere:MatiereType | undefined}) {
@@ -21,7 +22,8 @@ function ModalDelete({ objectif, matiere }: {objectif:ObjectifType | null,  mati
             await apiDeleteObjectif(objectif._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     if(objectif._id){
-                        dispatch(retirerObjectif({objectifId:objectif._id}))
+                        dispatch(deleteObjectif({ id: objectif._id }));
+                        // dispatch(retirerObjectif({objectifId:objectif._id}))
                     }
                     closeModal();
 

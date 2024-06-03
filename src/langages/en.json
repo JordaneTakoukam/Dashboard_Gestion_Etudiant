@@ -69,6 +69,7 @@
     "communes": "Communes",
     "objectifs": "Objectives",
     "enseignements": "Teachings",
+    "type_ens": "Educational Activity",
     "periodes_enseignement": "Teaching Periods",
     "enseignement_periode": "Teachings of the Period"
   },
@@ -94,6 +95,8 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "message.telecharger":"Please apply a filter before downloading the list. Select filter criteria to refine your search and try again.",
+    "recherche":"Search...",
     "notif_abs_debut": "Absence reported for the scheduled lesson ",
     "notif_abs_milieu": "",
     "pause": "BREAK",
@@ -226,7 +229,7 @@
     "taux_presence": "Relative Attendance Rate"
   },
   "recherche": {
-    "rechercher": "Search",
+    "rechercher": "Search ",
     "etudiant": "a student",
     "enseignant": "a teacher",
     "matiere": "a subject",
@@ -319,6 +322,8 @@
 
   "filtre": {
     "filtrer": "Filter",
+    "objectif": "Filter the list of the following subject objectives:",
+    "chapitre": "Filter the list of the following subject chapters:",
     "etudiant": "Filter the list of students by:",
     "enseignant": "Filter the list of teachers by:",
     "matiere": "Filter the list of subjects by:",
@@ -335,7 +340,7 @@
     "periodes_enseignement": "Filter teaching periods by:"
   },
   "form_save": {
-    "enregistrer": "Save",
+    "enregistrer": "Save ",
     "pause": "a break",
     "etudiant": "a new student",
     "enseignant": "a new teacher",
@@ -359,6 +364,7 @@
     "evenement": "a new event",
     "objectif": "an objective",
     "enseignement": "a teaching",
+    "type_ens": "an educational activity",
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
@@ -392,6 +398,7 @@
     "evenement": "of the event",
     "objectif": "of the objective",
     "enseignement": "of the teaching",
+    "type_ens": "of the educational activity",
     "periode_enseignement": "of the teaching period"
   },
   "form_delete": {
@@ -420,6 +427,7 @@
     "evenement": "of the event",
     "objectif": "of the objective",
     "enseignement": "of the teaching",
+    "type_ens": "of the educational activity",
     "periode_enseignement": "of the teaching period"
   },
   "error": {
@@ -432,6 +440,7 @@
     "phase_activite_en":"The activities phase in english field is required",
     "type_ens": "At least one educational activity must be defined.",
     "enseignement": "At least one teaching must be defined.",
+    "enseignant": "The teacher field is required.",
     "objectif": "At least one objective must be defined.",
     "competence": "At least one competence must be defined.",
     "region": "The region field is required.",

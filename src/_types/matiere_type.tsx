@@ -5,14 +5,14 @@ interface MatiereType {
     code: string;
     libelleFr: string;
     libelleEn: string;
-    niveau: string;
+    // niveau: string;
     prerequisFr: string;
     prerequisEn: string;
     approchePedFr: string;
     approchePedEn: string;
     evaluationAcquisFr: string;
     evaluationAcquisEn: string;
-    typesEnseignement?: EnseignementType[],
+    typesEnseignement?: string[],
     chapitres?: ChapitreType[],
     objectifs?: ObjectifType[],
 }

@@ -70,8 +70,11 @@ export function formatDateForInput(dateString: string) {
   return formattedDate;
 }
 
-export function formatYear(year: number) {
-  return `${year}-${year + 1}`;
+export function formatYear(year: number | undefined) {
+  if(year){
+    return `${year}-${year + 1}`;
+  }
+  return undefined;
 }
 
 export function extractYear(yearRange: string) {
@@ -157,10 +160,10 @@ export function calculateSeancesEffectuees (enseignement: MatiereEnseignement, p
                   );
 
                   if (periodesAvecJour.length > 0) {
-                      const typeEns = enseignement.matiere.typesEnseignement && enseignement.matiere.typesEnseignement.find((ens) => ens.typeEnseignement === periodesAvecJour[0].typeEnseignement);
-                      if (typeEns) {
-                          countAbsences++;
-                      }
+                      // const typeEns = enseignement.matiere.typesEnseignement && enseignement.matiere.typesEnseignement.find((ens) => ens.typeEnseignement === periodesAvecJour[0].typeEnseignement);
+                      // if (typeEns) {
+                      //     countAbsences++;
+                      // }
                   }
                   absencesMap.set(key, true); // Marquer l'absence comme traitée
               }

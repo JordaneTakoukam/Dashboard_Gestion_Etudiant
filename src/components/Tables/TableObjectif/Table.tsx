@@ -9,31 +9,104 @@ import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
+import { FaFilter, FaSort } from "react-icons/fa";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import { setErrorPageObjectif, setObjectifLoading, setObjectifs } from "../../../_redux/features/objectif_slice";
+import createToast from "../../../hooks/toastify";
+import { getObjectifByMatiereWithPagination } from "../../../api/api_objectif";
+import Pagination from "../../Pagination/Pagination";
 
 interface TableObjectifProps {
-    data?: ObjectifType[];
+    data: ObjectifType[];
     onCreate:()=>void;
     onEdit: (objectif:ObjectifType) => void;
 }
 
 const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
     const {t}=useTranslation();
-    const pageIsLoading = false;
+    const pageIsLoading = useSelector((state: RootState) => state.objectifSlice.pageIsLoading);
+    
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
+
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemestre);
+
     const dispatch = useDispatch();
+
+    
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
+    const toggleDropdownVisibility = () => {
+        setIsDropdownVisible(!isDropdownVisible);
+    };
+   // variable pour la pagination
+   const itemsPerPage = useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre delements maximum par page
+   const [currentPage, setCurrentPage] = useState<number>(1);
+
+   const indexOfLastItem = currentPage * itemsPerPage;
+   const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+
+   const count:number = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
+   const handlePageClick = (pageNumber: number) => {
+       setCurrentPage(pageNumber);
+   };
+   // Render page numbers
+   const pageNumbers = [];
+   for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+       pageNumbers.push(i);
+   }
+
+   const hasPrevious = currentPage > 1;
+   const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+   const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+   const endItem = Math.min(count, indexOfLastItem);
+
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
     const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<ObjectifType[] | undefined>(data);
+
+    useEffect(() => {
+
+        const fetchObjectifs = async () => {
+            dispatch(setObjectifLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyObjectifs: ObjectifReturnGetType = {
+                    objectifs: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                if(selectedMatiere && selectedMatiere._id){
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: selectedMatiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                        
+                    if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
+                        dispatch(setObjectifs(fetchedObjectifs));
+                    } else {
+                        dispatch(setObjectifs(emptyObjectifs));
+                    }
+                }else {
+                    dispatch(setObjectifs(emptyObjectifs));
+                }
+                
+                // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageObjectif(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setObjectifLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+        fetchObjectifs();
+    }, [dispatch, selectedMatiere, selectedYear, selectedSemestre, currentPage, t]); // Déclencher l'effet lorsque currentPage change
+    
+    // modifier les données de la page lors de la recherche ou de la sélection de la section
+    const [filteredData, setFilteredData] = useState<ObjectifType[]>(data);
+
     // Filtrer les matières en fonction de la langue
     const filterObjectifByContent = (objectifs: ObjectifType[] | undefined) => {
         if(objectifs){
@@ -50,28 +123,24 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
        return [];
     };
 
-    // const { data: { matieres } } = useSelector((state: RootState) => state.matiereSlice);
-    // useEffect(() => {
-        
-    //     const mat = matieres.find(m=>m._id===chapitre?.matiere);
-    //     if(mat){
-    //         onEditMatiere(mat)
-    //     }
-    //     if(mat && mat.chapitres && mat.chapitres.length>0){
-    //         const chap=chapitre && mat.chapitres.find(chap=>chap._id=== chapitre._id);
-    //         if(chap){
-    //             onEditChapitre(chap);
-    //             setFilteredData(chap.objectifs);
-    //         }
-            
-    //     }
-        
-    // },[matieres]);
+    
 
     useEffect(() => {
         const result = filterObjectifByContent(data);
         setFilteredData(result);
     }, [searchText, data]);
+
+    const handleAnneeSelect = (selected: String | undefined) => {
+        if(selected){
+            setSelectedYear(extractYear(selected.toString()));
+        }
+    };
+
+    const handleSemestreSelect = (selected: number | undefined) => {
+        if(selected){
+            setSelectedSemestre(selected);
+        }
+    };
 
     return (
         <div>
@@ -90,8 +159,55 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 
                 {selectedMatiere && (<div>
-                    {selectedMatiere.code}:{lang === 'fr' ? selectedMatiere.libelleFr : selectedMatiere.libelleEn}
+                    {lang === 'fr' ? selectedMatiere.libelleFr : selectedMatiere.libelleEn}
                 </div>)}
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.objectif')} </h1>
+                {/* version mobile */}
+                <div className="block lg:hidden">
+                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
+                    {isDropdownVisible && (
+                        <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
+                            <CustomDropDown2<String>
+                                title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
+                                onSelect={handleAnneeSelect}
+                            />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2, 3]}
+                                defaultValue={1} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* version desktop */}
+                <div className="hidden lg:block">
+                    <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
+                        <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
+                            <CustomDropDown2<String>
+                                title={t('label.annee')}
+                                selectedItem={formatYear(selectedYear)}
+                                items={generateYearRange(currentYear,firstYear)}
+                                defaultValue={formatYear(selectedYear)} // ou spécifie une valeur par défaut
+                                onSelect={handleAnneeSelect}
+                            />
+
+                            <CustomDropDown2<number>
+                                title={t('label.semestre')}
+                                selectedItem={selectedSemestre}
+                                items={[1, 2, 3]}
+                                defaultValue={selectedSemestre} // ou spécifie une valeur par défaut
+                                onSelect={handleSemestreSelect}
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
@@ -118,6 +234,18 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
                 </div>
 
                 {/* Pagination */}
+
+                {filteredData && filteredData.length>0 && <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
+                />}
 
 
             </div>

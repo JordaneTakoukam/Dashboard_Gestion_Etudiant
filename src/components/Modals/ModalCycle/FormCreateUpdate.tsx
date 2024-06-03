@@ -99,10 +99,8 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
     const handleCreateUpdate = async () => {
         // create
         if (!cycle) {
-            if (!code || !libelleFr || !libelleEn || !section) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn || !section) {
+                
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -156,10 +154,8 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
         //update
         else {
 
-            if (!code || !libelleFr || !libelleEn || !section) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn || !section) {
+                
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -227,14 +223,14 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
             >
 
                 {/* input 1 */}
-                <Label text={t('label.code')} required />
+                <Label text={t('label.code')} />
                 <Input
                     value={code}
                     type='text'
                     setValue={(value) => { setCode(value); setErrorCode("") }}
                     hasBackground={true}
                 />
-                <ErrorMessage message={errorCode} />
+                {/* <ErrorMessage message={errorCode} /> */}
 
 
                 {/* input 2 */}

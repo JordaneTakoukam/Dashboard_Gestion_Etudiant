@@ -491,7 +491,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
                 {/* Pagination */}
 
-                <Pagination
+                {filteredData && filteredData.length>0 && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -502,7 +502,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
 
-                />
+                />}
 
             </div>
 

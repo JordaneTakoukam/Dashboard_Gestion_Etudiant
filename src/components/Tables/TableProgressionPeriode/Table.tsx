@@ -35,8 +35,8 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.progressionPeriodeEnseignementSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
@@ -496,7 +496,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
 
                 {/* Pagination */}
 
-                <Pagination
+                {/* {filteredPeriode && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -507,7 +507,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
 
-                />
+                />} */}
 
             </div>
 

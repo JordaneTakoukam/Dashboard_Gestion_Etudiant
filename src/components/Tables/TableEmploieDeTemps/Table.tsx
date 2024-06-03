@@ -31,11 +31,11 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const pageIsLoading = useSelector((state: RootState) => state.periodeSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     const dispatch = useDispatch();
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
-    const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
+    const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.sallesDeCours); 
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
@@ -123,7 +123,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         const enseignantSuppleant = coursJour.enseignantSuppleant;
                         jourCell.textContent = t('label.pause');
                         if(!coursJour.pause){
-                            jourCell.textContent = `${coursJour.matiere?lang==='fr'?coursJour.matiere.libelleFr:coursJour.matiere.libelleEn:""} - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?codeSalleCours.code:""}`;
+                            jourCell.textContent = `${coursJour.matiere?lang==='fr'?coursJour.matiere.libelleFr:coursJour.matiere.libelleEn:""} - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?lang==='fr'?codeSalleCours.libelleFr:codeSalleCours.libelleEn:""}`;
                         }
                         // if (roles.admin === userRole || roles.superAdmin === userRole) {
                             jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);

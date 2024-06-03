@@ -1,12 +1,14 @@
 // Définir le type de données pour un chapitre
 interface ChapitreType {
     _id?: string;
+    annee:number;
+    semestre:number;
     code: string;
     libelleFr: string;
     libelleEn: string;
     typesEnseignement: EnseignementType[],
     matiere:string,
-    objectifs:ObjectifType[],
+    // objectifs:ObjectifType[],
 }
 
 interface ChapitreInitialData {

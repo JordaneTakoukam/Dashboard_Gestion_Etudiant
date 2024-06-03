@@ -7,22 +7,30 @@ import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { apiCreateObjectif, apiUpdateObjectif } from '../../../api/api_objectif';
 import { ajouterObjectif, modifierObjectif } from '../../../_redux/features/matiere_slice';
+import { createObjectif, updateObjectif } from '../../../_redux/features/objectif_slice';
+import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
+import { formatYear } from '../../../fonctions/fonction';
 
 
 
 function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | null, matiere:MatiereType | undefined }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
+    const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
     const [etat, setEtat]=useState(0);
+    const [semestre, setSemestre] = useState(currentSemester);
+    const [annee, setAnnee] = useState(currentYear);
     
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
-
+    const [errorSemestre, setErrorSemestre] = useState("");
    
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
@@ -32,14 +40,17 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
         
         if (objectif) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.objectif'));
+            setAnnee(objectif.annee);
+            setSemestre(objectif.semestre);
             setCode(objectif.code);
             setLibelleFr(objectif.libelleFr);
             setLibelleEn(objectif.libelleEn);
             setEtat(objectif.etat);
             
-            
         }else{
             setModalTitle(t('form_save.enregistrer')+t('form_save.objectif'));
+            setAnnee(currentYear);
+            setSemestre(currentSemester);
             setCode("");
             setLibelleFr("");
             setLibelleEn("");
@@ -49,6 +60,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
             setErrorCode("");
             setErrorLibelleFr("");
             setErrorLibelleEn("");
+            setErrorSemestre("");
             setIsFirstRender(false);
         }
     }, [objectif,  isFirstRender, t]);
@@ -57,16 +69,23 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
         setErrorCode("");
         setErrorLibelleFr("");
         setErrorLibelleEn("");
+        setErrorSemestre("");
         setIsFirstRender(true);
         dispatch(setShowModal());
     };
 
+    const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSemestre(parseInt(event.target.value));
+        setErrorSemestre("");
+    };
+
     const handleCreateUpdate = async () => {
         // Vérifier si tous les champs requis sont remplis
-        if (!code || !libelleFr || !libelleEn) {
-            if (!code) {
-                setErrorCode(t('error.code'));
+        if ( !libelleFr || !libelleEn || !semestre) {
+            if (!semestre) {
+                setErrorSemestre(t('error.semestre'));
             }
+
             if (!libelleFr) {
                 setErrorLibelleFr(t('error.libelle_fr'));
             }
@@ -82,6 +101,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
             if(matiere?._id){ 
                 await apiCreateObjectif(
                     {
+                        annee:annee,
+                        semestre:semestre,
                         code:code, 
                         libelleFr:libelleFr, 
                         libelleEn:libelleEn, 
@@ -92,7 +113,21 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(ajouterObjectif({...e.data}))
+                        dispatch(createObjectif({
+                            
+                            objectif: {
+                                _id: e.data._id,
+                                annee:e.data.annee,
+                                semestre:e.data.semestre,
+                                code: e.data.code,
+                                libelleFr: e.data.libelleFr,
+                                libelleEn: e.data.libelleEn,
+                                etat: e.data.etat,
+                                matiere: e.data.matiere,
+                            }
+                            
+                        }));
+                        // dispatch(ajouterObjectif({...e.data}))
                         closeModal();
 
                     } else {
@@ -110,6 +145,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
             await apiUpdateObjectif(
                 {
                     _id:objectif._id, 
+                    annee:annee,
+                    semestre:semestre,
                     code:code, 
                     libelleFr:libelleFr, 
                     libelleEn:libelleEn, 
@@ -120,7 +157,21 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
                     
-                    dispatch(modifierObjectif({...e.data}))
+                    // dispatch(modifierObjectif({...e.data}))
+                    dispatch(
+                        updateObjectif({
+                            id: e.data._id,
+                            objectifData: {
+                                _id: e.data._id,
+                                annee:e.data.annee,
+                                semestre:e.data.semestre,
+                                code:e.data.code,
+                                libelleFr:e.data.libelleFr,
+                                libelleEn:e.data.libelleEn,
+                                etat:e.data.etat,
+                                matiere:e.data.matiere,
+                            }
+                        }));
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();
                 } else {
@@ -142,15 +193,35 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
-                
-                <label>{t('label.code')}</label><label className="text-red-500"> *</label>
+                <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={formatYear(annee)}
+                    readOnly
+                    onChange={(e) => { setAnnee(parseInt(e.target.value)); }}
+                />
+                <label>{t('label.semestre')}</label><label className="text-red-500"> *</label>
+                <select
+                    value={semestre}
+                    onChange={handleSemestreChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.semestre')}</option>
+                    {semestres.map((semestre, index) => (
+                        <option key={index} value={semestre}>{semestre}</option>
+                    ))}
+
+                </select>
+                {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
+                <label>{t('label.code')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={code}
                     onChange={(e) => { setCode(e.target.value); setErrorCode("") }}
                 />
-                {errorCode && <p className="text-red-500">{errorCode}</p>}
+                {/* {errorCode && <p className="text-red-500">{errorCode}</p>} */}
                 <label>{t('label.libelle_fr')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"

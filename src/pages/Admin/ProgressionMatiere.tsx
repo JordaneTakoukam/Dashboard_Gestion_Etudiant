@@ -8,6 +8,8 @@ import { getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../api/ap
 import createToast from "../../hooks/toastify";
 import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../_redux/features/progession_matiere_slice";
 import { config } from "../../config";
+import { setObjectifLoading, setObjectifs, setErrorPageObjectif } from "../../_redux/features/objectif_slice";
+import { getObjectifByMatiereWithPagination } from "../../api/api_objectif";
 
 const ProgressionMatiere = () => {
     const { t } = useTranslation();
@@ -15,7 +17,8 @@ const ProgressionMatiere = () => {
 
     // Récupérer les données de l'état Redux
     const { data: { matieres } } = useSelector((state: RootState) => state.progressionMatiereSlice);
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const { data: { objectifs } } = useSelector((state: RootState) => state.objectifSlice);
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
@@ -74,10 +77,46 @@ const ProgressionMatiere = () => {
         fetchMatieres();
     }, [dispatch]);
 
+    useEffect(() => {
+
+        const fetchObjectifs = async () => {
+            dispatch(setObjectifLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyObjectifs: ObjectifReturnGetType = {
+                    objectifs: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                
+                if(matieres && matieres.length>0 && matieres[0]._id){
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matieres[0]._id, page: 1, annee: currentYear, semestre: currentSemestre });
+                        
+                    if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
+                        dispatch(setObjectifs(fetchedObjectifs));
+                    } else {
+                        dispatch(setObjectifs(emptyObjectifs));
+                    }
+                }else {
+                    dispatch(setObjectifs(emptyObjectifs));
+                }
+                
+                // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageObjectif(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setObjectifLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+        fetchObjectifs();
+    }, [currentYear,t, dispatch]); // Déclencher l'effet lorsque currentPage change
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.progression')} />
-            <Table data={matieres && matieres[0]} matieres={matieres}/>
+            <Table data={objectifs} matieres={matieres}/>
         </>
     );
 };

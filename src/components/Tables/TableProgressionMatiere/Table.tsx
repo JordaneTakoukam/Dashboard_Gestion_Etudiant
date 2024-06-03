@@ -16,8 +16,12 @@ import * as XLSX from 'xlsx';
 import { config } from "../../../config";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { setObjectifLoading, setObjectifs, setErrorPageObjectif } from "../../../_redux/features/objectif_slice";
+import { getObjectifByMatiereWithPagination, getProgressionMatiere } from "../../../api/api_objectif";
+import NoDataTable from "../common/NoDataTable";
+import Pagination from "../../Pagination/Pagination";
 
-const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }) => {
+const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[] }) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
 
@@ -29,42 +33,49 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     };
 
     //Calcul de la progression de chaque leçon
-    const calculateProgress = (matiere : MatiereType | undefined) => {
-        let totalObjectifs = 0;
-        let objectifsAvecEtat1 = 0;
-        if(matiere && matiere.objectifs){
-            totalObjectifs = matiere.objectifs.length;
-            matiere.objectifs.forEach((objectif) => {
-                if (objectif.etat == 1) {
-                    objectifsAvecEtat1++;
-                }
-            });
+    const calculateProgress = async (matiere : MatiereType | undefined) => {
+        if(matiere && matiere._id){
+            await getProgressionMatiere({matiereId:matiere._id}).then(result=>{
+                setProgress(result);
+            })
         }
+        // let totalObjectifs = 0;
+        // let objectifsAvecEtat1 = 0;
+        // if(matiere && matiere.objectifs){
+        //     totalObjectifs = matiere.objectifs.length;
+        //     matiere.objectifs.forEach((objectif) => {
+        //         if (objectif.etat == 1) {
+        //             objectifsAvecEtat1++;
+        //         }
+        //     });
+        // }
         
     
-        const progress = totalObjectifs === 0 ? 0 : (objectifsAvecEtat1 / totalObjectifs) * 100;
+        // const progress = totalObjectifs === 0 ? 0 : (objectifsAvecEtat1 / totalObjectifs) * 100;
     
-        return parseFloat(progress.toFixed(2));
+        // return parseFloat(progress.toFixed(2));
     };
 
     // let matiere:Matiere=listMatieres[0];
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const pageIsLoading = useSelector((state: RootState) => state.progressionMatiereSlice.pageIsLoading);
+    const pageIsLoading = useSelector((state: RootState) => state.objectifSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [matiere, setMatiere] = useState<MatiereType>();
-    const [filteredMatiere, setFilteredMatiere] = useState<MatiereType | undefined>(data);
+    const [filteredMatiere, setFilteredMatiere] = matieres && matieres.length>0 ? useState<MatiereType | undefined>(matieres[0]):useState<MatiereType | undefined>();
+    
+    const [filteredData, setFilteredData] = useState<ObjectifType[]>(data);
     const [formatToDownload, setFormatToDownload] = useState("");
-    const [progress, setProgress] = useState(calculateProgress(data));
+    const [progress, setProgress] = useState(0);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
 
@@ -78,6 +89,28 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
 
     
+    // variable pour la pagination
+    const itemsPerPage = useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre delements maximum par page
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+
+    const count:number = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
 
 
 
@@ -169,10 +202,10 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     };
 
     const handleMatiereSelect = (selected: MatiereType | undefined) => {
-        setFilteredMatiere(selected);
-        setMatiere(selected)
-        setProgress(calculateProgress(selected));
-        console.log(selected)
+        if(selected){
+            setFilteredMatiere(selected);
+            setMatiere(selected)
+        }
     };
 
     const fetchAllMatieres = async () => {
@@ -245,16 +278,22 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
         
     };
 
-    const exportToExcel = ( filename: string,matieres: MatiereType[] | undefined) => {
+    const exportToExcel = async ( filename: string,matieres: MatiereType[] | undefined) => {
         if(matieres){
             const wb = XLSX.utils.book_new();
             
             // Créer une feuille de calcul
+            let progress = 0;
+            if(matiere && matiere._id){
+                await getProgressionMatiere({matiereId:matiere._id}).then(result=>{
+                    progress=result;
+                })
+            }
             const ws = XLSX.utils.aoa_to_sheet([
                 [t('label.matieres'), t('label.progression')],
                 ...matieres.flatMap(matiere => {
                     const rows = [];
-                    rows.push([`${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,calculateProgress(matiere)+" %"]);
+                    rows.push([`${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,progress+" %"]);
                     return rows;
                 })
             ]);
@@ -293,7 +332,6 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     //fournir initialement les données à la page
     useEffect(() => {
         if(!selectSectionId){
-            console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
                 setSection(sections[0]);
@@ -341,7 +379,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
     }, [filteredNiveaux]);
     useEffect(() => {
         const fetchMatieres = async () => {
-            const matieres : ProgressionMatiereReturnGetType = {
+            const emptyMatieres : ProgressionMatiereReturnGetType = {
                 matieres: [],
                 currentPage: 0,
                 totalItems: 0,
@@ -363,13 +401,13 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                         }
 
                         if(fetchedMatieres){
-                            dispatch(setMatieres(fetchedMatieres));    
+                            dispatch(setMatieres(fetchedMatieres));   
                         }else{
-                            dispatch(setMatieres(matieres));    
+                            dispatch(setMatieres(emptyMatieres));    
                         }
                         
                     }else{
-                        dispatch(setMatieres(matieres));
+                        dispatch(setMatieres(emptyMatieres));
                     }
                     dispatch(setErrorPageMatiere(null)); // Réinitialiser les erreurs s'il y en a
                 } catch (error) {
@@ -379,25 +417,77 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                     dispatch(setMatiereLoading(false)); // Définir le chargement à false après avoir récupéré les données
                 }
             }else{
-                dispatch(setMatieres(matieres));
+                dispatch(setMatieres(emptyMatieres));
             }
         };
 
         fetchMatieres();
+        
     }, [dispatch, selectNiveauId, selectedSemestre, t]);
 
     useEffect(() => {
         if (matieres && matieres.length > 0) {
-            console.log('if');
             // Sélectionner la première matière et mettre à jour les états nécessaires
-            setFilteredMatiere(matieres[0]);
-            setMatiere(matieres[0])
-            setProgress(calculateProgress(matieres[0]));
+            if(matiere){
+                setFilteredMatiere(matiere);
+                setMatiere(matiere)
+                calculateProgress(matiere);
+                setCurrentPage(1);
+            }else{
+                setFilteredMatiere(matieres[0]);
+                setMatiere(matieres[0])
+                calculateProgress(matieres[0]);
+                setCurrentPage(1);
+            }
+            
         }else{
             setFilteredMatiere(undefined);
+            setMatiere(undefined);
             setProgress(0);
+            
         }
-    }, [matieres]);
+        
+    }, [matieres, dispatch, t, data]);
+
+    useEffect(() => {
+        const fetchObjectifs = async () => {
+            dispatch(setObjectifLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyObjectifs: ObjectifReturnGetType = {
+                    objectifs: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                
+                if(matiere && matiere._id){
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                        
+                    if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
+                        dispatch(setObjectifs(fetchedObjectifs));
+                        // setFilteredData(fetchedObjectifs.objectifs);
+                    } else {
+                        dispatch(setObjectifs(emptyObjectifs));
+                        // setFilteredData(emptyObjectifs.objectifs)
+                    }
+                }else {
+                    
+                    dispatch(setObjectifs(emptyObjectifs));
+                    
+                    // setFilteredData(emptyObjectifs.objectifs)
+                }
+                
+                // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageObjectif(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setObjectifLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+        fetchObjectifs();
+    }, [matiere, selectedSemestre, selectedYear, selectNiveauId, currentPage, t, dispatch]); // Déclencher l'effet lorsque currentPage change
 
 
     return (
@@ -454,7 +544,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 title={t('label.matiere')}
                                 selectedItem={matiere}
                                 items={matieres}
-                                defaultValue={matieres[0]} // ou spécifie une valeur par défaut
+                                defaultValue={matiere} // ou spécifie une valeur par défaut
                                 displayProperty={(matiere: MatiereType) => `${lang === 'fr'?matiere.libelleFr:matiere.libelleEn}`}
                                 onSelect={handleMatiereSelect}
                             />
@@ -508,7 +598,7 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                                 title={t('label.matiere')}
                                 selectedItem={matiere}
                                 items={matieres}
-                                defaultValue={matieres[0]} // ou spécifie une valeur par défaut
+                                defaultValue={matiere} // ou spécifie une valeur par défaut
                                 displayProperty={(matiere: MatiereType) => `${lang === 'fr'?matiere.libelleFr:matiere.libelleEn}`}
                                 onSelect={handleMatiereSelect}
                             />
@@ -536,15 +626,15 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                         {
                             pageIsLoading ?
                                 <LoadingTable />:
-                                // : !data.chapitres?
-                                //     <NoDataTable/> :
-                                    <HeaderTable matiere={filteredMatiere} />
+                                 data.length==0?
+                                    <NoDataTable/> :
+                                    matiere&&<HeaderTable matiere={filteredMatiere} />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredMatiere} />
+                            !pageIsLoading && <BodyTable data={data} />
                         }
 
 
@@ -554,6 +644,17 @@ const Table = ({ data, matieres }: { data: MatiereType, matieres:MatiereType[] }
                 </div>
 
                 {/* Pagination */}
+                {data && data.length>0 && <Pagination 
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
+                />}
 
             </div>
 

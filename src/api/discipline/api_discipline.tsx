@@ -5,6 +5,52 @@ import { apiUrl, wstjqer } from '../../config.js';
 const api = `${apiUrl}/absence`;
 const token = localStorage.getItem(wstjqer);
 
+export async function getNotifications ({ userId, niveauxId, role, annee, semestre }: { userId: string, niveauxId?:string[], role:string, annee:number, semestre:number }): Promise<SignalementAbsence[]> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/notifications/${userId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    niveauxId:niveauxId,
+                    role:role,
+                    annee:annee,
+                    semestre: semestre,
+                },
+            },
+        );
+        const absences = response.data.data.absences;
+
+        return absences;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function markNotificationAsRead({notificationId, userId}: {notificationId:string, userId:string}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/notifications/markAsRead`,
+            { notificationId, userId },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        // console.error('Error creating section : ', error);
+        throw error;
+    }
+}
+
 export async function apiGetAbsencesSignaler({ userId, niveauxId, role, annee, semestre }: { userId: string, niveauxId?:string[], role:string, annee:number, semestre:number }): Promise<SignalementAbsence[]> {
     try {
         const response: AxiosResponse<any> = await axios.get(

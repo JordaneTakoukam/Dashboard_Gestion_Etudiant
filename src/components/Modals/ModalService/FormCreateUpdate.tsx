@@ -64,10 +64,10 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
     const handleCreateUpdate = async () => {
         // create
         if (!service) {
-            if (!code || !libelleFr || !libelleEn) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn) {
+                // if (!code) {
+                //     setErrorCode(t('error.code'));
+                // }
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -108,10 +108,8 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
         //update
         else {
 
-            if (!code || !libelleFr || !libelleEn) {
-                if (!code) {
-                    setErrorCode(t('error.code'));
-                }
+            if (!libelleFr || !libelleEn) {
+                
                 if (!libelleFr) {
                     setErrorLibelleFr(t('error.libelle'));
                 }
@@ -165,14 +163,14 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
             >
 
                 {/* input 1 */}
-                <Label text={t('label.code')} required />
+                <Label text={t('label.code')} />
                 <Input
                     value={code}
                     type='text'
                     setValue={(value) => { setCode(value); setErrorCode("") }}
                     hasBackground={true}
                 />
-                <ErrorMessage message={errorCode} />
+                {/* <ErrorMessage message={errorCode} /> */}
 
 
                 {/* input 2 */}

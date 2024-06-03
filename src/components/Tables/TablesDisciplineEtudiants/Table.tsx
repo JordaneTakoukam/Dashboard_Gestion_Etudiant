@@ -27,7 +27,7 @@ interface TableDisciplineProps {
 
 const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
-
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -46,13 +46,13 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const selectedSemestre = useSelector((state: RootState) => state.etudiantDisciplineSlice.selected.semestre)
-    const [selectSemestre, setSelectSemestre]=useState(currentSemestre);
-    const [selectedYear, setSelectYear]=useState(currentYear);
+    const [selectSemestre, setSelectSemestre] = useState(currentSemestre);
+    const [selectedYear, setSelectYear] = useState(currentYear);
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
-    const [section, setSection] = sections.length>0?useState<SectionProps>(sections[0]):useState<SectionProps>();;
+    const [section, setSection] = sections.length > 0 ? useState<SectionProps>(sections[0]) : useState<SectionProps>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
 
@@ -76,16 +76,16 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
-                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
+                setCycle(cycles.find(cycle => cycle._id === result[0]._id))
                 filterNiveauxByCycle(cycle?._id)
-            }else{
+            } else {
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
                 filterNiveauxByCycle(undefined);
                 setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
-        }else{
+        } else {
             setFilteredCycle([])
             setSelectIdCycle(undefined);
             setCycle(undefined);
@@ -94,21 +94,21 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     // filtrer les donnee a partir de l'id du cycle selectionner
     const filterNiveauxByCycle = (cycleId: string | undefined) => {
-        
+
         if (cycleId && cycleId !== '') {
             // Filtrer les départements en fonction de l'ID de la région
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
             if (result.length > 0) {
                 setSelectIdNiveau(result[0]._id);
-                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
+                setNiveau(niveaux.find(niveau => niveau._id === result[0]._id))
                 setFilteredNiveaux(result)
-            }else{
+            } else {
                 setSelectIdNiveau(undefined);
                 setNiveau(undefined);
                 setFilteredNiveaux([])
             }
-            
-        }else{
+
+        } else {
             setFilteredNiveaux([])
             setSelectIdNiveau(undefined);
             setNiveau(undefined);
@@ -159,7 +159,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         }
     };
 
-    
+
 
 
 
@@ -190,7 +190,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     const [isInitialMount, setIsInitialMount] = useState(true);
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.etudiantDisciplineSlice.pageIsLoadingOnTable);
-    const [isDownload, setIsDownload]=useState(false);
+    const [isDownload, setIsDownload] = useState(false);
 
 
 
@@ -215,7 +215,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
     const handlePageClick = (pageNumber: number) => { setCurrentPage(pageNumber); };
     // end --------- pagination
-    const emptyEtudiants : EtudiantDisciplineListGetType={
+    const emptyEtudiants: EtudiantDisciplineListGetType = {
         etudiants: [],
         currentPage: 0,
         totalItems: 0,
@@ -224,8 +224,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     }
     useEffect(() => {
         // if (annee && semestre) {
-            dispatch(setAnneeDisciplineEns(selectedYear));
-            dispatch(setSemestreDisciplineEns(selectSemestre));
+        dispatch(setAnneeDisciplineEns(selectedYear));
+        dispatch(setSemestreDisciplineEns(selectSemestre));
         // }
 
 
@@ -240,7 +240,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             dispatch(setEtudiantsDisciplineLoadingOnTable(true));
 
             try {
-                const emptyEtudiants : EtudiantDisciplineListGetType={
+                const emptyEtudiants: EtudiantDisciplineListGetType = {
                     etudiants: [],
                     currentPage: 0,
                     totalItems: 0,
@@ -249,7 +249,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 }
                 if (selectNiveauId) {
                     const fetchedEtudiants = await apiGetAbsencesWithEtudiantsByFilter({
-                        page: currentPage, semestre: selectSemestre, annee: selectedYear, niveauId:selectNiveauId
+                        page: currentPage, semestre: selectSemestre, annee: selectedYear, niveauId: selectNiveauId
                     });
                     if (fetchedEtudiants) {
                         dispatch(setEtudiantDiscipline(fetchedEtudiants));
@@ -259,7 +259,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                         dispatch(setEtudiantDiscipline(emptyEtudiants));
                         dispatch(setErrorPageEtudiantDiscipline(t('message.erreur')));
                     }
-                }else{
+                } else {
                     dispatch(setEtudiantDiscipline(emptyEtudiants));
                 }
             } catch (error) {
@@ -271,20 +271,20 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
         fetchEtudiantWithAbsences();
 
-    },[dispatch, selectNiveauId, selectedYear, selectSemestre, currentPage, t]);
+    }, [dispatch, selectNiveauId, selectedYear, selectSemestre, currentPage, t]);
 
 
 
     const fetchAllAbsEtudiant = async () => {
         try {
-            
-            if(selectNiveauId){
-                const fetchedEtudiants = await apiGetAllAbsencesWithEtudiantsByFilter({  annee:selectedYear, semestre:selectSemestre, niveauId:selectNiveauId});
+
+            if (selectNiveauId) {
+                const fetchedEtudiants = await apiGetAllAbsencesWithEtudiantsByFilter({ annee: selectedYear, semestre: selectSemestre, niveauId: selectNiveauId });
                 return fetchedEtudiants.etudiants;
             }
-            
-            
-                // Réinitialisez les erreurs s'il y en a
+
+
+            // Réinitialisez les erreurs s'il y en a
         } catch (error) {
             dispatch(setErrorPageEtudiant(t('message.erreur')));
             createToast(t('message.erreur'), "", 2)
@@ -296,27 +296,27 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const handleDownloadSelect = async (selected: string) => {
         // setFormatToDownload(selected);
-        try{
+        try {
             setIsDownload(true);
             let title = "liste_des_absences_etudiant";
             if (lang !== 'fr') {
                 title = "abscences_teacher_list";
             }
 
-            if(selected === 'PDF'){
-                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
-                if(section && cycle && niveau && departement){
-                    await generateListAbsenceEtudiant({  annee:selectedYear, semestre:selectSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
+            if (selected === 'PDF') {
+                const departement = section && departements.find(dep => dep._id && dep._id.toString() === section.departement.toString());
+                if (section && cycle && niveau && departement) {
+                    await generateListAbsenceEtudiant({ annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang }).then((blob) => {
                         // Créer un objet URL pour le blob PDF
-                        if(blob){
+                        if (blob) {
                             createPDF(blob, title);
                         }
                     })
                 }
-                
-            }else{
+
+            } else {
                 await fetchAllAbsEtudiant().then((absences) => {
-                    
+
                     if (selected === 'CSV') {
 
                     } else {
@@ -326,26 +326,26 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             }
         } catch (error) {
             createToast(t('message.erreur'), "", 2);
-        }finally {
+        } finally {
             setIsDownload(false);
         }
     };
 
-    const exportToExcel = ( filename: string,etudiants: UserDiscipline[] | undefined) => {
-        if(etudiants){
+    const exportToExcel = (filename: string, etudiants: UserDiscipline[] | undefined) => {
+        if (etudiants) {
             const wb = XLSX.utils.book_new();
-            
+
             // Créer une feuille de calcul
             const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'),'Absences(H)'],
+                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'), 'Absences(H)'],
                 ...etudiants.flatMap(etudiant => {
                     const rows = [];
-                    rows.push([etudiant.matricule, etudiant.nom, etudiant.prenom, etudiant.genre, etudiant.email, etudiant.date_naiss?etudiant.date_naiss?.split("T")[0]:"", etudiant.lieu_naiss??"" 
-                    , nbTotalAbsences(etudiant.absences)]);
+                    rows.push([etudiant.matricule, etudiant.nom, etudiant.prenom, etudiant.genre, etudiant.email, etudiant.date_naiss ? etudiant.date_naiss?.split("T")[0] : "", etudiant.lieu_naiss ?? ""
+                        , nbTotalAbsences(etudiant.absences)]);
                     return rows;
                 })
             ]);
-          
+
             // Ajouter la feuille de calcul au classeur
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
             // Générer un fichier Excel binaire
@@ -358,34 +358,34 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             link.download = filename;
             // Cliquez sur le lien pour télécharger le fichier Excel
             link.click();
-        }else{
-            
+        } else {
+
         }
     }
 
     useEffect(() => {
-        if(!selectSectionId){
+        if (!selectSectionId) {
             console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
             }
-        }else{
+        } else {
             setFilteredCycle([]);
             filterCycleBySection(selectSectionId);
         }
-        
-        
+
+
     }, [sections, selectSectionId]);
 
     useEffect(() => {
         if (filteredCycle && filteredCycle.length > 0) {
-            if(!selectCycleId){
+            if (!selectCycleId) {
                 filterNiveauxByCycle(filteredCycle[0]?._id);
-            }else{
+            } else {
                 filterNiveauxByCycle(selectCycleId);
             }
-                
-        }        
+
+        }
     }, [filteredCycle]);
 
     return (
@@ -412,7 +412,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-                            
+
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
@@ -460,7 +460,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 defaultValue={annee}
                                 onSelect={handleAnneeSelect}
                             />
-                            
+
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
@@ -503,8 +503,9 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8 relative min-h-[250px]">
                     <table className="w-full table-auto">
-                        { filteredData.length === 0 ?
-                                    <NoDataTable /> :<HeaderTable />}
+                        {data.length === 0 && settingIsLoading ?
+                            <NoDataTable />
+                            : <HeaderTable />}
 
                         {
                             pageIsLoadingOnTable ?
@@ -532,7 +533,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
             {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
+                {isDownload ? <Download /> : <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
             </div>
 
         </div>

@@ -14,6 +14,7 @@ import { generateYearRange } from "../../../../fonctions/fonction";
 import { apiGetAbsencesWithEtudiantsByFilter } from "../../../../api/discipline/api_discipline";
 import Table from "../../../../components/Tables/TablesDisciplineEtudiants/Table";
 import { setAnneeDisciplineEns } from "../../../../_redux/features/absence/discipline_enseignant_slice";
+import Loading from "../../../../components/ui/loading";
 
 
 // a mdofier les differetns champs + le slice
@@ -51,19 +52,19 @@ const DisciplineDesEtudiants = () => {
         const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
         try {
             let fetchedEtudiants;
-            const emptyEtudiants : EtudiantDisciplineListGetType={
+            const emptyEtudiants: EtudiantDisciplineListGetType = {
                 etudiants: [],
                 currentPage: 0,
                 totalItems: 0,
                 totalPages: 0,
                 pageSize: 0
             }
-            if(currentNiveauId){
+            if (currentNiveauId) {
                 fetchedEtudiants = await apiGetAbsencesWithEtudiantsByFilter({
-                    page: 1, semestre: currentSemestre, annee: currentYear, niveauId:currentNiveauId
+                    page: 1, semestre: currentSemestre, annee: currentYear, niveauId: currentNiveauId
                 });
             }
-            
+
             if (fetchedEtudiants) {
                 dispatch(setEtudiantDiscipline(fetchedEtudiants));
                 console.log(fetchedEtudiants);
@@ -104,6 +105,8 @@ const DisciplineDesEtudiants = () => {
     }, [dispatch, t]);
 
 
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.discipline')} />
@@ -112,15 +115,17 @@ const DisciplineDesEtudiants = () => {
                 //     <LoadingTable /> :
                 //     pageError ?
                 //         <PageErreur onRefresh={handleRefresh} /> :
-                        
-                            <div>
-                                {/* <SectionRefresh refreshFunction={handleRefresh} />: */}
 
-                                <Table
-                                    data={etudiants}
-                                    onEdit={handleEditHourEtudiant} />
+                settingIsLoading ? <div className=" pt-30 lg:pt-50"><Loading /></div> :
 
-                            </div>
+                    <div>
+                        {/* <SectionRefresh refreshFunction={handleRefresh} />: */}
+
+                        <Table
+                            data={etudiants}
+                            onEdit={handleEditHourEtudiant} />
+
+                    </div>
 
             }
 

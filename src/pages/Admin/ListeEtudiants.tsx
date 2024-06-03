@@ -10,20 +10,24 @@ import createToast from "../../hooks/toastify";
 import { apiGetEtudiantsWithPagination } from "../../api/other_users/api_etudiant";
 import ModalCreateEtudiant from "../../components/Modals/ModalEtudiant/DialogCreateEtudiant";
 import ModalRole from "../../components/Modals/ModalEtudiant/ModalRole";
+import Loading from "../../components/ui/loading";
 
 
 
 const ListeDesEtudiants = () => {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [selectedEtudiant, setSelectedEtudiant] = useState<EtudiantType | null>(null);
-    
+
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     // Utilisez useSelector pour accéder à l'état du reducer
     const { data: { etudiants } } = useSelector((state: RootState) => state.etudiantSlice);
+
+
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
 
     useEffect(() => {
         const fetchEtudiants = async () => {
@@ -32,7 +36,7 @@ const ListeDesEtudiants = () => {
                 // Initialisation de currentCycleId et currentNiveauId
                 const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
                 const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
-                const emptyEtudiants : EtudiantListGetType={
+                const emptyEtudiants: EtudiantListGetType = {
                     etudiants: [],
                     currentPage: 0,
                     totalItems: 0,
@@ -40,7 +44,7 @@ const ListeDesEtudiants = () => {
                     pageSize: 0
                 }
                 if (currentNiveauId) {
-                    const fetchedEtudiants = await apiGetEtudiantsWithPagination({ niveauId: currentNiveauId, page: 1, annee:currentYear });
+                    const fetchedEtudiants = await apiGetEtudiantsWithPagination({ niveauId: currentNiveauId, page: 1, annee: currentYear });
                     if (fetchedEtudiants) { // Vérifiez si fetchedEtudiants n'est pas faux, vide ou indéfini
                         dispatch(setEtudiant(fetchedEtudiants));
                         console.log(etudiants);
@@ -73,12 +77,15 @@ const ListeDesEtudiants = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.liste_etudiant')} />
-            <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
-
+            {
+                settingIsLoading ?
+                    <div className=" pt-30 lg:pt-50"><Loading /></div> :
+                    <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
+            }
             {/* Boite de dialogue */}
-            <ModalCreateEtudiant etudiant={selectedEtudiant} /> 
-            <ModalDeleteEtudiant etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
-            <ModalRole etudiant={selectedEtudiant}/>{/*Supprimer un étudiant */}
+            <ModalCreateEtudiant etudiant={selectedEtudiant} />
+            <ModalDeleteEtudiant etudiant={selectedEtudiant} />{/*Supprimer un étudiant */}
+            <ModalRole etudiant={selectedEtudiant} />{/*Supprimer un étudiant */}
         </>
     );
 };

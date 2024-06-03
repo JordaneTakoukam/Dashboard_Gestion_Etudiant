@@ -42,6 +42,21 @@ export function validateEmail(email: string) {
   return '';
 }
 
+
+export function isValidVerificationCode(code: string) {
+  if (code.length < 6) {
+    return "Le code n'est pas valide";
+  }
+  return '';
+}
+
+export function isValidEmail(email: string) {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "L'adresse e-mail n'est pas valide.";
+  }
+  return '';
+}
+
 export function validatePassword(password: string) {
   if (!password) {
     return "toast.mot_de_passe_requis";

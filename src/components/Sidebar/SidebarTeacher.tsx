@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import LogoPng from "./../../images/logo/logo.png";
 import { config } from '../../config';
 import { RxDashboard } from "react-icons/rx";
 import { PiStudentFill } from "react-icons/pi";
@@ -242,6 +241,17 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             }
                                                         >
                                                             {t('sub_menu.progression')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-par-periode"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression_periode')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>

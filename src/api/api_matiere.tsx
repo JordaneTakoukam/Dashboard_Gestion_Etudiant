@@ -209,7 +209,6 @@ export async function generateProgressByEnseignant({ niveauId, enseignantId, ann
 }
 
 export async function getMatieresByNiveau({ niveauId, annee, semestre }: { niveauId?: string, annee?:number, semestre?:number}): Promise<ProgressionMatiereReturnGetType> {
-    console.log(niveauId)
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/getMatieresByNiveau/${niveauId}`,

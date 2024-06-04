@@ -7,9 +7,7 @@ import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { setShowModal } from "../../../_redux/features/setting";
 import { RootState } from "../../../_redux/store";
-import { FaFilter, FaSort } from 'react-icons/fa';
-import { extractYear, formatYear, generateYearRange } from '../../../fonctions/fonction';
-import CustomDropDown2 from '../../DropDown/CustomDropDown2';
+import { extractYear } from '../../../fonctions/fonction';
 
 interface TablePromotionProps {
     data: PromotionProps[];
@@ -54,7 +52,6 @@ const Table = ({ data, onCreate, onEdit }: TablePromotionProps) => {
             setSelectedYear(extractYear(selected.toString()));
         }
 
-        console.log(selectedYear)
     };
 
     return (

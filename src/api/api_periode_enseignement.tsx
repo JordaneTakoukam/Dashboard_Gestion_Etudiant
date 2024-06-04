@@ -113,7 +113,6 @@ export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { n
 
         // Extraction de tous les objets de paramètres de la réponse
         const matieres: ProgressionPeriodeEnseignementReturnGetType = response.data.data;   
-        console.log(matieres);
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);
@@ -151,27 +150,28 @@ export async function generateListPeriodeEnseignement({annee, semestre, departem
     }
 }
 
-export async function generateProgressionPeriodeEnseignement({ periode, departement, section, cycle, niveau, langue }: { periode:PeriodeEnseignementType, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
+export async function generateProgressionPeriodeEnseignement({ periode, departement, section, cycle, niveau, langue, annee, semestre }: { periode:PeriodeEnseignementType, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, annee:number, semestre:number }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/generateProgressionPeriodeEnseignement`,
+            `${api}/generateProgressionPeriodeEnseignement/${periode._id}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
                 },
                 params: {
-                    periode: periode,
                     departement:departement,
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    annee:annee,
+                    semestre:semestre
                 },
                 responseType: 'blob',
             },
         );
-
+        
         // Extraction de tous les objets de paramètres de la réponse
         const pdfBlob: Blob = response.data;
 

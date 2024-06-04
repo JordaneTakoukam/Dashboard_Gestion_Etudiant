@@ -126,7 +126,6 @@ const Table = ({ data, onCreate, onEdit }: TableCommuneProps) => {
     //fournir initialement les données à la page
     useEffect(() => {
         if(!selectRegionId){
-            console.log("if");
             if (regions && regions.length > 0) {
                 filterDepartementByRegion(regions[0]._id);
             }

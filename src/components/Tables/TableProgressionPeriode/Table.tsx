@@ -10,13 +10,10 @@ import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import createToast from "../../../hooks/toastify";
-import Pagination from "../../Pagination/Pagination";
-import { calculateSeancesEffectuees, createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { generateProgressionPeriodeEnseignement, getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../../_redux/features/progession_periode_slice";
 import * as XLSX from 'xlsx';
-import React from "react";
-import { getPeriodesByNiveau } from "../../../api/api_periode";
 import Download from "../common/Download";
 
 interface TablePeriodeEnseignementProps {
@@ -29,6 +26,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
@@ -120,7 +118,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                 const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
                 if(section && cycle && niveau && departement){
                     if(filteredPeriode){
-                        await generateProgressionPeriodeEnseignement({ periode: filteredPeriode, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
+                        await generateProgressionPeriodeEnseignement({ periode: filteredPeriode, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, annee:selectedYear, semestre:selectedSemestre}).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title);
@@ -232,7 +230,6 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const handlePeriodeSelect = (selected: PeriodeEnseignementType | undefined) => {
         setFilteredPeriode(selected);
         setPeriode(selected)
-        console.log(selected)
     };
 
     // Filtrer les périodes d'enseignement en fonction de la langue
@@ -338,7 +335,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     }, [dispatch, selectedYear, selectedSemestre, selectNiveauId, t]);
     useEffect(() => {
         if (periodes && periodes.length > 0) {
-            console.log('if');
+            
             // Sélectionner la première matière et mettre à jour les états nécessaires
             setFilteredPeriode(periodes[0]);
             setPeriode(periodes[0]);

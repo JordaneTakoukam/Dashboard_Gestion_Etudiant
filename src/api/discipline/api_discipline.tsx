@@ -22,8 +22,7 @@ export async function getNotifications ({ userId, niveauxId, role, annee, semest
                 },
             },
         );
-        const absences = response.data.data.absences;
-
+        const absences = response.data.data;
         return absences;
     } catch (error) {
         // console.error('Error getting all settings:', error);
@@ -36,6 +35,26 @@ export async function markNotificationAsRead({notificationId, userId}: {notifica
         const response: AxiosResponse<any> = await axios.post(
             `${api}/notifications/markAsRead`,
             { notificationId, userId },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        // console.error('Error creating section : ', error);
+        throw error;
+    }
+}
+
+export async function markAllNotificationAsRead({notificationIds, userId}: {notificationIds:string[], userId:string}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/notifications/markAllAsRead`,
+            { notificationIds, userId },
             {
                 headers: {
                     'Content-Type': 'application/json',

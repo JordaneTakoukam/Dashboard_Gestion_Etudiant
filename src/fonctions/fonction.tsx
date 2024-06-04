@@ -4,7 +4,6 @@ import { jours } from "../pages/CommonPage/EmploiDeTemp";
 
 
 
-
 export function capitalizeFirstLetter(text: string) {
   if (text.length === 0) {
     return text;
@@ -84,6 +83,8 @@ export function formatDateForInput(dateString: string) {
   const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
 }
+
+
 
 export function formatYear(year: number | undefined) {
   if(year){
@@ -225,6 +226,22 @@ export function formatDate(date:string):string{
   const day = dateObj.getDate().toString().padStart(2, '0');
 
   const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}
+
+export function formatDateWithLang(date:string, lang:string):string{
+  const dateStr = date;
+  const dateObj = new Date(dateStr);
+
+  const year = dateObj.getFullYear();
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // +1 car les mois sont indexés à partir de 0
+  const day = dateObj.getDate().toString().padStart(2, '0');
+
+  let formattedDate = `${year}-${month}-${day}`;
+  if(lang==='fr'){
+    formattedDate = `${day}-${month}-${year}`;
+  }
   return formattedDate;
 }
 

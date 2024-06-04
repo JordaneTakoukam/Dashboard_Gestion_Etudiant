@@ -52,10 +52,10 @@ const DashboardDelegate = () => {
         const fetchData = async () => {
             
             try {
-                // const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
-                // if (totalEtudiantByYear !== null) {
-                //     setTotalEtudiant(totalEtudiantByYear);
-                // }
+                const totalEtudiantByYear = await apiGetTotalEtudiantByYear({ annee: currentYear });
+                if (totalEtudiantByYear !== null) {
+                    setTotalEtudiant(totalEtudiantByYear);
+                }
 
                 // const totalEnseignants = await apiGetTotalEnseignants();
                 // if (totalEnseignants !== null) {
@@ -110,7 +110,7 @@ const DashboardDelegate = () => {
                     <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={nbAbsence+' H'} id={2} />
 
                     <div className='mt-3'>
-                        <CardAlertRecente alertList={[]} additionalStyle={'min-h-[250px]'} />
+                        <CardAlertRecente additionalStyle={'min-h-[250px]'} />
 
                     </div>
                 </div>

@@ -125,7 +125,7 @@ const DashboardTeacher = () => {
                         <CardAlertRecente alertList={[]} additionalStyle={'min-h-[250px]'} />
                     </div>
                 </div> */}
-                <CardAlertRecente alertList={[]} />
+                <CardAlertRecente />
                 <CardCourProgrammer listCourProgrammer={periodes} pageIsLoading={pagePeriodeLoading} />
                 <CardEvenement listEvenement={evenements} pageIsLoading={pageEventLoading} />
             </div>

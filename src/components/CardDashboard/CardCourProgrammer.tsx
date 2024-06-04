@@ -15,7 +15,7 @@ export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer, pageIsL
     const {t}=useTranslation();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const typesEnseignement=useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement); 
-    const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.salleDeCours); 
+    const sallesCours=useSelector((state: RootState) => state.dataSetting.dataSetting.sallesDeCours); 
     return (
         <div className={`relative ${additionalStyle} rounded-sm border border-stroke bg-white py-6 px-5 shadow-default dark:border-strokedark dark:bg-boxdark  w-full`}>
 
@@ -28,7 +28,7 @@ export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer, pageIsL
 
             {/* contenu */}
             {pageIsLoading ?
-                <LoadingTable />:<div className='flex justify-center w-full'>
+                <LoadingTable />:<div className='flex justify-center w-full mb-10'>
 
                {listCourProgrammer && listCourProgrammer.length === 0 ? (
                     <h4 className="text-[15px] font-normal text-body dark:text-white py-[100px] text-center mt-0 lg:py-[150px] w-full">
@@ -41,8 +41,8 @@ export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer, pageIsL
                             "border-b border-[#eee] py-0 lg:py-2 px-2  dark:border-strokedark w-full"}>
                                 <p>{t('label.horaire')} : {periode.heureDebut+"-"+periode.heureFin}</p>
                                 <p>{t('label.jour')} : {lang === 'fr' ? jours.find(jour=>jour.ordre==periode.jour)?.libelleFr??"" : jours.find(jour=>jour.ordre==periode.jour)?.libelleEn??""}</p>
-                                <p>{t('label.matiere')} : {periode.pause?t('label.pause'):periode.matiere && (typesEnseignement.find(type=>type._id===periode.typeEnseignement)?.code??"")+" "+periode.matiere.code}</p>
-                                {!periode.pause && (<p>{t('label.salle_cour')} : {sallesCours.find(salle=>salle._id===periode.salleCours)?.code??""}</p>)}
+                                <p>{t('label.matiere')} : {periode.pause?t('label.pause'):periode.matiere && (lang==='fr'?periode.matiere.libelleFr:periode.matiere.libelleEn)}</p>
+                                {!periode.pause && (<p>{t('label.salle_cour')} : {lang==='fr'?sallesCours.find(salle=>salle._id===periode.salleCours)?.libelleFr??"":sallesCours.find(salle=>salle._id===periode.salleCours)?.libelleEn??""}</p>)}
                             </div>
                         ))}
                     </div>)

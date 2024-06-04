@@ -2,6 +2,7 @@ import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineE
 import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
 import ListeDesMatieres from '../pages/Admin/ListeMatieres';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
+import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
 import Abscences from '../pages/CommonPage/Abscences';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
 import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
@@ -48,6 +49,12 @@ const coreRoutes = [
     path: '/subjects/progressions',
     title: 'Progréssion',
     component: ProgressionMatiere,
+  },
+
+  {
+    path: '/subjects/progressions-par-periode',
+    title: 'Progréssion par période',
+    component: ProgressionPeriode,
   },
 
 

@@ -95,6 +95,9 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "notifications":"Notifications",
+    "marquer_tous_lu":"Mark all as read",
+    "marquer_lu":"Mark as read",
     "message.telecharger":"Please apply a filter before downloading the list. Select filter criteria to refine your search and try again.",
     "recherche":"Search...",
     "notif_abs_debut": "Absence reported for the scheduled lesson ",

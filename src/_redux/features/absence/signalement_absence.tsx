@@ -38,6 +38,15 @@ const signalementAbsenceSlice = createSlice({
             }
         },
 
+        removeSignalement(state, action: PayloadAction<string>) {
+            const id  = action.payload;
+            state.data = state.data.filter(e => e._id !== id);
+        },
+
+        removeSignalements(state, action: PayloadAction<string[]>) {
+            const idsToRemove = action.payload;
+            state.data = state.data.filter(e => e && e._id && !idsToRemove.includes(e._id));
+        },
 
         setSignalementAbsenceLoading(state, action: PayloadAction<boolean>) {
             state.pageIsLoading = action.payload;
@@ -59,7 +68,9 @@ export const {
     setSignalementAbsenceLoading,
     setSignalementAbsenceError,
     setNewAbsence,
-    setSignalementAbsences
+    setSignalementAbsences,
+    removeSignalement,
+    removeSignalements
 } = signalementAbsenceSlice.actions;
 
 ;

@@ -38,8 +38,6 @@ interface UserState {
     commune: string | null;
     grade: string | null;
 
-    region: string | null;
-    departement: string | null;
 }
 
 interface InscriptionType {

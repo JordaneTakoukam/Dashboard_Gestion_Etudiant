@@ -66,7 +66,6 @@ const ListeDesMatieres = () => {
                     }
                 } // Réinitialisez les erreurs s'il y en a
             } catch (error) {
-                console.log(error);
                 dispatch(setErrorPageMatiere(t('message.erreur')));
                 createToast(t('message.erreur'), "", 2)
             } finally {

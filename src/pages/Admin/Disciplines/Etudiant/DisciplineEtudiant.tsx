@@ -3,10 +3,6 @@ import Breadcrumb from "../../../../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../_redux/store";
-import LoadingTable from "../../../../components/Tables/common/LoadingTable";
-import { PageErreur } from "../../../../components/_Global/PageErreur";
-import { PageNoData } from "../../../../components/_Global/PageNoData";
-import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
 
 import { useNavigate } from 'react-router-dom';
 import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/absence/discipline_etudiant_slice";
@@ -29,7 +25,6 @@ const DisciplineDesEtudiants = () => {
     const [isHourRemove, setHourRemove] = useState(false);
 
     const handleEditHourEtudiant = (etudiant: UserDiscipline, isHourRemove: boolean) => {
-        console.log("handleEditHour");
         setSelectedEtudiant(etudiant);
         setHourRemove(isHourRemove);
     }
@@ -67,7 +62,6 @@ const DisciplineDesEtudiants = () => {
 
             if (fetchedEtudiants) {
                 dispatch(setEtudiantDiscipline(fetchedEtudiants));
-                console.log(fetchedEtudiants);
 
                 dispatch(setErrorPageEtudiantDiscipline(null));
             } else {

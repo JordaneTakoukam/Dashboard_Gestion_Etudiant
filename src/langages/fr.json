@@ -95,6 +95,9 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "notifications":"Notifications",
+    "marquer_tous_lu":"Tous marquer comme lu",
+    "marquer_lu":"Marquer comme lu",
     "message_telecharger":"Veuillez appliquer un filtre avant de télécharger la liste. Sélectionnez des critères de filtre pour affiner votre recherche et réessayez.",
     "recherche":"Recherche...",
     "notif_abs_debut": "Absence signalé pour le cours prévu ",

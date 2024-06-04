@@ -1,7 +1,7 @@
 interface SignalementAbsence {
     _id?: string;
     user: UserState;
-    enseignant?:UserState;
+    enseignant?:UserState | EnseignantType;
     role: string;
     heure_debut_absence: string;
     heure_fin_absence: string;

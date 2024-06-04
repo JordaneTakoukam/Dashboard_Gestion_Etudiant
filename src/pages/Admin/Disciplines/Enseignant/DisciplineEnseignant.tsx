@@ -7,7 +7,6 @@ import { RootState } from "../../../../_redux/store";
 import LoadingTable from "../../../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
-import { SectionRefresh } from "../../../../components/ui/SectionRefresh";
 import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
 
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +24,6 @@ const DisciplineDesEnseignants = () => {
     const [isHourRemove, setHourRemove] = useState(false);
 
     const handleEditHourEnseignant = (enseignant: UserDiscipline, isHourRemove: boolean) => {
-        console.log("handleEditHour");
         setSelectedEnseignant(enseignant);
         setHourRemove(isHourRemove);
     }
@@ -48,7 +46,6 @@ const DisciplineDesEnseignants = () => {
             });
             if (fetchedEnseignants) {
                 dispatch(setEnseignantDiscipline(fetchedEnseignants));
-                console.log(fetchedEnseignants);
 
                 dispatch(setErrorPageEnseignantDiscipline(null));
             } else {

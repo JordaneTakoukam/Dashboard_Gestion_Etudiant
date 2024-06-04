@@ -13,6 +13,7 @@ import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/fea
 import { formatYear } from '../../../fonctions/fonction';
 import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../api/api_periode';
 import { apiSignalerAbsence } from '../../../api/discipline/api_discipline';
+import { config } from '../../../config';
 
 
 
@@ -117,10 +118,14 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         
         
         if (periodeCours) {
+            let enseignant=undefined;
+            if(currentUser.role!==config.roles.enseignant){
+                enseignant = periodeCours.enseignantPrincipal;
+            }
             await apiSignalerAbsence(
                 {
                     user:currentUser,
-                    enseignant:periodeCours.enseignantPrincipal,
+                    enseignant:enseignant,
                     role:currentUser.role,
                     heure_debut_absence:periodeCours.heureDebut,
                     heure_fin_absence:periodeCours.heureFin,

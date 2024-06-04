@@ -17,7 +17,7 @@ import Layout from './layout/Layout.js';
 import DashboardDelegate from './pages/Delegue/Dashboard_delegue.js';
 import ResetPassword from './pages/Authentication/ResetPassword.js';
 import { isUserAuthenticated } from './middlewares/auth_middleware.js';
-import { setMinimumUser, setUser } from './_redux/features/user_slice.js';
+import { setMinimumUser, setRole, setUser } from './_redux/features/user_slice.js';
 import Loading from './components/ui/loading.js';
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from './_redux/features/data_setting_slice.js';
 import { apiGetAllSettings } from './api/settings/api_data_setting.js';
@@ -25,7 +25,7 @@ import { setSaveDeviceType } from './_redux/features/setting.js';
 import ChoisirCompte from './pages/ChoisirCompte/ChoisirCompte.js';
 import { io } from 'socket.io-client';
 import { addSignalementAbsence, setNewAbsence, setSignalementAbsences } from './_redux/features/absence/signalement_absence.js';
-import { apiGetAbsencesSignaler } from './api/discipline/api_discipline.js';
+import { apiGetAbsencesSignaler, getNotifications } from './api/discipline/api_discipline.js';
 import { RootState } from './_redux/store.js';
 import { apiGetNiveauxByEnseignant } from './api/other_users/api_enseignant.js';
 import { getCurrentUserData } from './api/api_user.js';
@@ -40,7 +40,7 @@ function App() {
   const roles = config.roles;
 
 
-  const [userRole, setUserRole] = useState<String>('');
+  const [userRole, setUserRole] = useState<string>('');
 
   const [loading, setLoading] = useState<boolean>(false);
   // recuperer les info en local storage
@@ -98,6 +98,7 @@ function App() {
               await getCurrentUserData({ userId: userId }).then((e: UserState) => {
                 dispatch(setUser(e));
                 setUserLog(e);
+                // dispatch(setRole(role));
                 setLoading(false);
               }).catch((e) => {
                 setLoading(false);
@@ -157,11 +158,11 @@ function App() {
   const fetchAbsencesSignaler = async (user: UserState, niveaux: string[] | undefined) => {
     try {
       const emptySignalement: SignalementAbsence[] = []
-      const fetchedAbsences = await apiGetAbsencesSignaler({
-        userId: user._id, niveauxId: niveaux, role: user.role, annee: currentYear, semestre: currentSemester
+      const fetchedAbsences = await getNotifications({
+        userId: user._id, niveauxId: niveaux, role: userRole, annee: currentYear, semestre: currentSemester
       });
 
-
+      // console.log(fetchedAbsences);
       if (fetchedAbsences && fetchedAbsences.length > 0) {
         dispatch(setNewAbsence(true));
         dispatch(setSignalementAbsences(fetchedAbsences));
@@ -187,25 +188,25 @@ function App() {
         const socket = io(socket_url);
 
         socket.on('message', (data: { message: SignalementAbsence }) => {
-          if ((userLog.role === config.roles.admin) || userLog.role === config.roles.superAdmin) {
+          if ((userRole === config.roles.admin) || userRole === config.roles.superAdmin) {
             dispatch(addSignalementAbsence(data.message));
             dispatch(setNewAbsence(true));
           }
 
           if ((data.message.role === config.roles.etudiant) || (data.message.role === config.roles.delegue)) {
             // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
-            if ((userLog._id !== data.message.user._id) && (userLog.role === config.roles.delegue) && (niveauxId.includes(data.message.niveau))) {
+            if ((userLog._id.toString() !== data.message.user._id.toString()) && (userRole === config.roles.delegue) && (niveauxId.includes(data.message.niveau))) {
               //  
               dispatch(addSignalementAbsence(data.message));
               dispatch(setNewAbsence(true));
             }
 
-            if ((userLog._id !== data.message.user._id) && userLog.role === config.roles.enseignant) {
+            if ((userLog._id.toString() !== data.message.user._id.toString()) && userRole === config.roles.enseignant) {
               fetchNiveauEnseignant(userLog).then(niveaux => {
                 if (niveaux) {
                   niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
                 }
-                if ((userLog._id === data.message.enseignant?._id) && niveauxId.includes(data.message.niveau)) {
+                if ((userLog._id.toString() === data.message.enseignant?._id?.toString()) && niveauxId.includes(data.message.niveau)) {
                   dispatch(addSignalementAbsence(data.message));
                   dispatch(setNewAbsence(true));
                 }
@@ -215,16 +216,16 @@ function App() {
 
           if ((data.message.role === config.roles.enseignant)) {
             // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
-            if ((userLog._id !== data.message.user._id) && (userLog.role === config.roles.delegue || userLog.role === config.roles.enseignant) && (niveauxId.includes(data.message.niveau))) {
+            if ((userLog._id.toString() !== data.message.user._id.toString()) && (userRole === config.roles.delegue || userRole === config.roles.enseignant) && (niveauxId.includes(data.message.niveau))) {
               dispatch(addSignalementAbsence(data.message));
               dispatch(setNewAbsence(true));
             }
           }
 
         });
-        if (userLog.role === config.roles.admin) {
+        if (userRole === config.roles.admin) {
           fetchAbsencesSignaler(userLog, undefined);
-        } else if (userLog.role === config.roles.enseignant) {
+        } else if (userRole === config.roles.enseignant) {
 
           fetchNiveauEnseignant(userLog).then(niveaux => {
             if (niveaux) {

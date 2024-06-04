@@ -116,7 +116,7 @@ export async function getProgressionMatiere({matiereId}:{matiereId:string}): Pro
 export async function getProgressionGlobalEnseignants({annee, semestre}:{annee:number, semestre:number}): Promise<number> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getProgressionGlobalEnseignants`,
+            `${api}/getProgressionGlobalEnseignantsObj`,
             {
                 headers: {
                     'Content-Type': 'application/json',

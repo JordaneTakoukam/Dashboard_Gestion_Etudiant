@@ -148,7 +148,6 @@ export async function apiGetTotalEnseignants(): Promise<number> {
             },
         );
         const totalEnseignant: number = response.data.data;
-        console.log("====" + totalEnseignant);
         return totalEnseignant;
     } catch (error) {
         console.error('Error getting all settings:', error);

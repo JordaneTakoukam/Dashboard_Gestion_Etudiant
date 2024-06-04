@@ -27,7 +27,7 @@ export const CardEvenement = ({ additionalStyle, listEvenement, pageIsLoading }:
             {pageIsLoading ? (
                 <LoadingTable />
             ) : (
-                <div className="w-full">
+                <div className="w-full mb-10">
                     {listEvenement && listEvenement.length === 0 ? (
                         <h4 className="text-[15px] font-normal text-body dark:text-white py-[100px] text-center mt-0 lg:py-[150px] w-full">
                             {t('tableau_de_bord.evenements_aucun')}

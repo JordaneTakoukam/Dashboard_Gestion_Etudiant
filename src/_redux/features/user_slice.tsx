@@ -25,7 +25,7 @@ const initialState: UserState = {
     photo_profil: '',
     status: '',
     abscence: null,
-    historique_connexion: [],
+    historique_connexion: []
 };
 
 // Création du Slice pour l'utilisateur
@@ -36,6 +36,10 @@ export const userSlice = createSlice({
         // Définir l'utilisateur complet
         setUser: (state, action: PayloadAction<UserState>) => {
             return { ...state, ...action.payload };
+        },
+
+        setRole: (state, action: PayloadAction<string>) => {
+            state.role = action.payload;
         },
         // Définir l'utilisateur avec des propriétés minimales
         setMinimumUser: (state, action: PayloadAction<MinUserState>) => {
@@ -60,7 +64,7 @@ export const userSlice = createSlice({
 });
 
 // Exporter les actions
-export const { setUser, setMinimumUser, updateUserNiveaux, updateUserAbsences, updateUser } = userSlice.actions;
+export const { setUser, setMinimumUser, updateUserNiveaux, updateUserAbsences, updateUser, setRole } = userSlice.actions;
 
 // Exporter le reducer
 export default userSlice.reducer;

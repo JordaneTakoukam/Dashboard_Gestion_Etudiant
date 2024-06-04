@@ -80,7 +80,8 @@ function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : Mat
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.enseignement')} : {enseignement?(typesEnseignement.find(type=>type._id===enseignement.typeEnseignement)?.code)+" "+enseignement.matiere.code:""}</h1>
+                <div></div>
+                {/* <h1>{t('form_delete.suppression')+t('form_delete.enseignement')} : {enseignement?(typesEnseignement.find(type=>type._id===enseignement)?.code)+" "+enseignement.matiere.code:""}</h1> */}
             </CustomDialogModal>
         </>
     );

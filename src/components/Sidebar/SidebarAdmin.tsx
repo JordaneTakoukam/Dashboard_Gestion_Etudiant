@@ -188,7 +188,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         </NavLink>
                                                     </li>
 
-                                                    <li>
+                                                    {/* <li>
                                                         <NavLink
                                                             to="/students/absence_reporting"
                                                             className={({ isActive }) =>
@@ -198,7 +198,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         >
                                                             {t('sub_menu.absence_reporting')}
                                                         </NavLink>
-                                                    </li>
+                                                    </li> */}
                                                 </ul>
 
 
@@ -274,7 +274,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
-                                                    <li>
+                                                    {/* <li>
                                                         <NavLink
                                                             to="/teachers/absence_reporting"
                                                             className={({ isActive }) =>
@@ -284,7 +284,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         >
                                                             {t('sub_menu.absence_reporting')}
                                                         </NavLink>
-                                                    </li>
+                                                    </li> */}
                                                 </ul>
                                             </div>
                                             {/* <!-- Dropdown Menu End --> */}

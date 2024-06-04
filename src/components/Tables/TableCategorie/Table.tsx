@@ -76,7 +76,6 @@ const Table = ({ data, onCreate, onEdit }: TableCategorieProps) => {
     // fournir initialement les donnee a la page
     useEffect(() => {
         if(!selectGradeId){
-            console.log("if");
             if (grades && grades.length > 0) {
                 filterCategorieByGrade(grades[0]._id);
             }

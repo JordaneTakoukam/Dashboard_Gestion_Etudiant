@@ -76,7 +76,6 @@ const Table = ({ data, onCreate, onEdit }: TableCycleProps) => {
     // fournir initialement les donnee a la page
     useEffect(() => {
         if(!selectSectionId){
-            console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
             }

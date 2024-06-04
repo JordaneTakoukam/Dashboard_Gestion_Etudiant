@@ -1,9 +1,12 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { formatDateWithLang } from "../../../fonctions/fonction";
+import { RootState } from "../../../_redux/store";
 
 
 const BodyTable = ({ data }: { data: AbsenceType[]|undefined }) => {
 
     const dispatch = useDispatch();
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     function calculerDifferenceHeures(heureDebut:string, heureFin:string) {
         // Extraire les heures et les minutes de début et de fin
         const debutHeureMinute = heureDebut.split(':');
@@ -36,7 +39,7 @@ const BodyTable = ({ data }: { data: AbsenceType[]|undefined }) => {
 
                 {/* date */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{item.dateAbsence.toString().split('T')[0]}</h5>
+                    <h5>{formatDateWithLang(item.dateAbsence.toString(), lang)}</h5>
                 </td>
 
                 {/* période */}

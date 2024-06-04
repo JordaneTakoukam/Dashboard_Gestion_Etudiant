@@ -150,7 +150,7 @@ export async function apiGetNbEtudiantsParSection({ annee }: { annee: number }):
             },
         );
         const totalEtudiant = response.data.data;
-        console.log(totalEtudiant)
+        
         return totalEtudiant;
     } catch (error) {
         console.error('Error getting total students per section:', error);
@@ -174,7 +174,7 @@ export async function apiGetNbAbsenceEtudiantsParSection({ annee, semestre }: { 
             },
         );
         const totalAbsenceEtudiant = response.data.data;
-        console.log(totalAbsenceEtudiant)
+        
         return totalAbsenceEtudiant;
     } catch (error) {
         console.error('Error getting total students per section:', error);

@@ -189,6 +189,21 @@ span.flatpickr-weekday,
   width: 100%;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(234, 245, 253);
+  border-radius: 10px;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(234, 245, 253);
+}
+
+
 /* Ajoutez les styles supplémentaires pour les champs d'entrée si nécessaire */
 .enseignant-input,
 .enseignant-sup-input {

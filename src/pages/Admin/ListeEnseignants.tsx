@@ -74,32 +74,7 @@ const ListeDesEnseignants = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.liste_enseignant')} />
-
-            {
-                pageIsLoading === true ?
-                    <LoadingTable /> :
-                    pageError ?
-                        <PageErreur onRefresh={handleRefresh} /> :
-                        enseignants.length === 0 ?
-                            <PageNoData
-                                titrePage={t('aucun.enseignant')}
-                                titreBouton={t('ajouter_votre_premier.enseignant')}
-                                showModalCreate={handleCreate}
-                                refreshFunction={handleRefresh}
-                            />
-                            :
-                            <div>
-                                {/* <SectionRefresh refreshFunction={handleRefresh} /> */}
-
-                                <Table
-                                    data={enseignants}
-                                    onCreate={handleAddEnseignant}
-                                    onEdit={handleEditEnseignant} />
-
-
-                            </div>
-
-            }
+            <Table data={enseignants} onCreate={handleAddEnseignant} onEdit={handleEditEnseignant} />
 
             {/* Boite de dialogue */}
             <ModalCreateEnseignant enseignant={selectedEnseignant} />

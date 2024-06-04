@@ -100,7 +100,7 @@ const DashBoardStudent = () => {
                 <div className="flex flex-col gap-y-3">
                     <CardDashboard title={t('tableau_de_bord.nombre_total_absence')} value={nbAbsence+' H'} id={1} />
                     <CardDashboard title={t('tableau_de_bord.progression')} id={4} progressionValue={progression} />
-                    <CardAlertRecente alertList={[]} />
+                    <CardAlertRecente />
 
                 </div>
 

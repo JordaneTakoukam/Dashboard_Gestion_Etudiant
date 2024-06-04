@@ -1,12 +1,10 @@
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../../_redux/store"
-import { config } from "../../../config"
 import { useEffect, useState } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import React from "react"
 import { useTranslation } from "react-i18next"
 import { getPeriodesByNiveau } from "../../../api/api_periode"
-import { calculateSeancesEffectuees } from "../../../fonctions/fonction"
 
 interface BodyPeriodeEnseignementProps {
     data: PeriodeEnseignementType | undefined;

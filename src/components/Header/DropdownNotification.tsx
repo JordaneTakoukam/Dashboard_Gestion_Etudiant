@@ -4,10 +4,18 @@ import { Link } from 'react-router-dom';
 import { RootState } from '../../_redux/store';
 import { useTranslation } from 'react-i18next';
 import { jours } from '../../pages/CommonPage/EmploiDeTemp';
-import { setNewAbsence } from '../../_redux/features/absence/signalement_absence';
+import { removeSignalement, removeSignalements, setNewAbsence } from '../../_redux/features/absence/signalement_absence';
+import { formatDateWithLang } from '../../fonctions/fonction';
+import { markAllNotificationAsRead, markNotificationAsRead } from '../../api/discipline/api_discipline';
 
 const DropdownNotification = () => {
-  const listAbsenceSignaler = useSelector((state: RootState) => state.signalementAbsence.data);
+  const listAbsenceSignaler:SignalementAbsence[] = useSelector((state: RootState) => state.signalementAbsence.data);
+  // Sort listAbsenceSignaler by date_creation in descending order
+  const sortedAbsenceSignaler = [...listAbsenceSignaler].sort((a, b) => {
+    const dateA = a.date_creation ? new Date(a.date_creation) : new Date(0);
+    const dateB = b.date_creation ? new Date(b.date_creation) : new Date(0);
+    return dateB.getTime() - dateA.getTime();
+  });
   const newAbsence = useSelector((state: RootState) => state.signalementAbsence.newAbsence);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -41,19 +49,43 @@ const DropdownNotification = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
-  const {t}=useTranslation();
-  const dispatch =useDispatch();
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const currentUser: UserState = useSelector((state: RootState) => state.user);
+  const markAllAsRead = async (signalementAbsences: SignalementAbsence[]) => {
+    let notificationIds: string[] = [];
+    signalementAbsences.forEach(s => {
+      if (s._id) {
+        notificationIds.push(s._id);
+      }
+    });
+    if (notificationIds) {
+      await markAllNotificationAsRead({ notificationIds: notificationIds, userId: currentUser._id }).then((e: ReponseApiPros) => {
+        if (e.success) {
+          dispatch(removeSignalements(notificationIds));
+        }
+      });
+    }
+  };
+
+  const markAsRead = async (notificationId: string | undefined) => {
+    if (notificationId) {
+      await markNotificationAsRead({ notificationId: notificationId, userId: currentUser._id }).then((e: ReponseApiPros) => {
+        if (e.success) {
+          dispatch(removeSignalement(notificationId));
+        }
+      });
+    }
+  };
 
   return (
     <li className="relative">
       <Link
         ref={trigger}
-        onClick={() => {setDropdownOpen(!dropdownOpen); dispatch(setNewAbsence(false))}}
+        onClick={() => { setDropdownOpen(!dropdownOpen); dispatch(setNewAbsence(false)) }}
         to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
-        {/* bing rouge */}
-
         {
           newAbsence &&
           <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
@@ -81,75 +113,57 @@ const DropdownNotification = () => {
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
         className={`absolute -right-27 mt-2.5 flex overflow-auto min-h-[150px] max-h-[500px] w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${dropdownOpen === true ? 'block' : 'hidden'
-          }`}
+          } custom-scrollbar`}
       >
-        <div className="px-4.5 py-3">
-          <h5 className="text-sm font-medium text-bodydark2">Notifications</h5>
+        <div className="px-4.5 py-3 flex justify-between items-center">
+          <h5 className="text-sm font-medium text-bodydark2">{t('label.notifications')}</h5>
+          {sortedAbsenceSignaler && sortedAbsenceSignaler.length > 0 && <button onClick={() => markAllAsRead(sortedAbsenceSignaler)} className="text-xs text-primary">{t('label.marquer_tous_lu')}</button>}
         </div>
 
-
         {
-          listAbsenceSignaler.length === 0 ?
+          sortedAbsenceSignaler.length === 0 ?
             <p className="text-sm mx-4 mt-8">
               <span className="text-black dark:text-white">
-               {t('tableau_de_bord.aucune_alerte')}
+                {t('tableau_de_bord.aucune_alerte')}
               </span>{' '}
             </p> :
-            <div>
+            <div className="overflow-y-auto max-h-[300px] custom-scrollbar">
               {
-                listAbsenceSignaler.map((e, index) => {
-                  const dateCreation = new Date(e.date_creation);
-                  const formattedDate = `${dateCreation.getDate()}/${dateCreation.getMonth() + 1}/${dateCreation.getFullYear()} ${dateCreation.getHours()}h:${dateCreation.getMinutes()}m`;
+                sortedAbsenceSignaler.slice(0, 5).map((e, index) => {
+                  const formattedDate = e.date_creation ? formatDateWithLang(e.date_creation.toString(), lang) : "";
 
                   return (
-                    <li key={index}>
-                      <ul className="flex h-auto flex-col overflow-y-auto">
-                        <li>
-                          <Link
-                            onClick={() => {
-                              setDropdownOpen(false)
-                            }}
-                            className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                            to={e.role === "enseignant" ? "/teachers/absence_reporting" : e.role === "etudiant" ? '/students/absence_reporting' : '#'}
-                          >
-                            <div className='text-sm'>
-                              <div className='flex gap-x-1'>
-                                {/* <p className='text-meta-1 opacity-75 underline'>{e.motif}</p> */}
-                                {' - '}
-                                <span className="text-black dark:text-white">
-                                  {`${e.user?.nom??""} ${e.user?.prenom??""}`}
-                                </span>
-                              </div>
-                              <p className='text-[14px] font-medium'>
-                                {t('label.notif_abs_debut')}
-                                {lang === 'fr' ? jours.find(jour => jour.ordre === e.jour_absence)?.libelleFr : jours.find(jour => jour.ordre === e.jour_absence)?.libelleEn}
-                                {t('label.notif_abs_milieu')}{e.heure_debut_absence + "-" + e.heure_fin_absence}
-                              </p>
-                              {/* <p className='line-clamp-2 text-[13px]'>{e.description}</p>
-                              <p className="text-xs mt-2 items-end">{formattedDate}</p> */}
+                    
+                    <ul className="flex h-auto flex-col overflow-y-auto" key={index}>
+                      <li>
+                        <div className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+                          <div className='text-sm'>
+                            <div className='flex justify-between'>
+                              <span className="font-bold text-black dark:text-white">
+                                {`${e.user?.nom ?? ""} ${e.user?.prenom ?? ""}`}
+                              </span>
+                              <button onClick={() => markAsRead(e._id)} className="text-xs text-primary">{t('label.marquer_lu')}</button>
                             </div>
-
-                            {/* <p className="text-sm">
-                              <p className='text-meta-1 opacity-80'>{e.motif}</p>
-                              <span className="text-black dark:text-white ">
-                                {`${e.nom} ${e.prenom}`}
-                              </span>{' - '}
-
-                              {e.titre}
-                            </p>  */}
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
+                            <p className='text-[14px] font-medium'>
+                              {t('label.notif_abs_debut')}
+                              {lang === 'fr' ? jours.find(jour => jour.ordre === e.jour_absence)?.libelleFr : jours.find(jour => jour.ordre === e.jour_absence)?.libelleEn}
+                              {t('label.notif_abs_milieu')}{e.heure_debut_absence + "-" + e.heure_fin_absence}
+                            </p>
+                            <p className='text-right'>
+                              {formattedDate}
+                            </p>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    
                   );
                 })
               }
-
-            </div >
+            </div>
         }
-
-      </div >
-    </li >
+      </div>
+    </li>
   );
 };
 

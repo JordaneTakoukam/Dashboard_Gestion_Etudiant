@@ -20,6 +20,8 @@ import Bouton from "../../ui/Bouton";
 import LoadingOnTable from "../common/LoadingOnTable";
 import { createPDF } from "../../../fonctions/fonction";
 import Download from "../common/Download";
+import LoadingTable from "../common/LoadingTable";
+import NoDataTable from "../common/NoDataTable";
 
 interface TableEnseignantProps {
     data: EnseignantType[];
@@ -468,17 +470,20 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                     <table className="w-full table-auto ">
                         {/* en tete du tableau */}
 
-
-                        <HeaderTableEnseignant />
+                        {
+                            pageIsLoadingOnTable ?
+                                <LoadingTable />
+                                : filteredData.length === 0 ?
+                                    <NoDataTable /> :
+                                    <HeaderTableEnseignant />
+                        }
+                        
 
 
                         {/* corp du tableau*/}
                         {
-                            pageIsLoadingOnTable ?
-                                <LoadingOnTable /> :
-                                <BodyTableEnseignant
-                                    data={filteredData}
-                                    onEdit={onEdit} />
+                            
+                            <BodyTableEnseignant data={filteredData} onEdit={onEdit} />
                         }
 
 

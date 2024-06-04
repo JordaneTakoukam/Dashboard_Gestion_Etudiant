@@ -51,7 +51,7 @@ const Breadcrumb = ({
   };
 
   return (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:justify-between">
       <h2 className="text-[18px] md:text-[20px] font-semibold text-black dark:text-white">{pageName}</h2>
 
       <nav>
@@ -102,7 +102,7 @@ const Breadcrumb = ({
           {isGestionEnseignant && (
             <li>
               <span className='flex'>
-                <Link className='hover:underline ' to={"/teachers/disciplines"} onClick={handleDisciplneEnseignant}>{t('sub_menu.discipline')}</Link>
+                <Link className='hover:underline ' to={"/teachers/disciplines"} onClick={handleDisciplneEnseignant}>{ t('sub_menu.discipline')}</Link>
                 <span className='ml-2'> /</span>
               </span>
             </li>

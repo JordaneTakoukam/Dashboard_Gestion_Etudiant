@@ -7,6 +7,7 @@ import createToast from "../../hooks/toastify";
 import { getPeriodesEnseignement } from "../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../_redux/features/progession_periode_slice";
 import Table from "../../components/Tables/TableProgressionPeriode/Table";
+import { config } from "../../config";
 
 const ProgressionMatiere = () => {
     const { t } = useTranslation();
@@ -14,17 +15,23 @@ const ProgressionMatiere = () => {
 
     // Récupérer les données de l'état Redux
     const { data: { periodes } } = useSelector((state: RootState) => state.progressionPeriodeEnseignementSlice);
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-
+    const niveauxEns: InscriptionType[] = currentUser.niveaux;
+    const roles = config.roles;
     useEffect(() => {
         const fetchPeriodeEnseignements = async () => {
             dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
             const currentCycleId = sections && sections.length > 0 ? cycles.find(cycle => cycle.section === "" + sections[0]._id) : null;
-                    const currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
+            let currentNiveauId = currentCycleId && cycles && cycles.length > 0 ? niveaux.find(niveau => niveau.cycle === "" + currentCycleId._id)?._id : null;
+            if (roles.enseignant === currentUser.role) {
+                const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux[0]?.niveau);
+                currentNiveauId = currentNiveau?._id;
+            }
             try {
                 const emptyPeriodes : ProgressionPeriodeEnseignementReturnGetType = {
                     periodes: [],

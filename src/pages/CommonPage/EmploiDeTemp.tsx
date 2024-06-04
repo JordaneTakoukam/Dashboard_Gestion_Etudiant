@@ -57,7 +57,6 @@ const EmploiDeTemp = () => {
 
                 if (currentNiveauId) {
                     const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: currentSemester });
-                    console.log(fetchedPeriodes);
                     dispatch(setPeriodes(fetchedPeriodes));
                 }
                 dispatch(setErrorPagePeriode(null)); // Réinitialiser les erreurs s'il y en a

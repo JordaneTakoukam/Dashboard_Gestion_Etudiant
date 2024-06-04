@@ -47,7 +47,6 @@ const ListeDesEtudiants = () => {
                     const fetchedEtudiants = await apiGetEtudiantsWithPagination({ niveauId: currentNiveauId, page: 1, annee: currentYear });
                     if (fetchedEtudiants) { // Vérifiez si fetchedEtudiants n'est pas faux, vide ou indéfini
                         dispatch(setEtudiant(fetchedEtudiants));
-                        console.log(etudiants);
                     } else {
                         dispatch(setEtudiant(emptyEtudiants));
                     }

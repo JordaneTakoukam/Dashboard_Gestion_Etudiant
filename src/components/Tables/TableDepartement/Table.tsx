@@ -76,7 +76,6 @@ const Table = ({ data, onCreate, onEdit }: TableDepartementProps) => {
     // fournir initialement les donnee a la page
     useEffect(() => {
         if(!selectRegionId){
-            console.log("if");
             if (regions && regions.length > 0) {
                 filterDepartementByRegion(regions[0]._id);
             }

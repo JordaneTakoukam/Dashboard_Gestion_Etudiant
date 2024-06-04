@@ -9,8 +9,6 @@ import {getPeriodesEnseignementWithPagination } from "../../api/api_periode_ense
 import Table from "../../components/Tables/TablePeriodeEnseignement/Table";
 import FormCreateUpdate from "../../components/Modals/ModalPeriodeEnseignement/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalPeriodeEnseignement/FormDelete";
-import EnseignementsPeriode from "./EnseignementsPeriode";
-import { setShowModalPeriode } from "../../_redux/features/setting";
 
 
 
@@ -40,7 +38,6 @@ const ListeDesPeriodesEnseignement = () => {
                 } ;
                 if (currentNiveauId) {
                     const fetchedPeriodeEnseignements = await getPeriodesEnseignementWithPagination({ niveauId: currentNiveauId, page: 1, annee:currentYear, semestre:currentSemester });
-                    console.log(fetchedPeriodeEnseignements);
                     if (fetchedPeriodeEnseignements) { // Vérifiez si fetchedPeriodeEnseignements n'est pas faux, vide ou indéfini
                         dispatch(setPeriodeEnseignements(fetchedPeriodeEnseignements));                        
                     } else {

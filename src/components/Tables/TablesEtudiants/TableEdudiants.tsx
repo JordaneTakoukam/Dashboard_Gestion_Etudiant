@@ -273,7 +273,6 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
         if(!selectSectionId){
-            console.log("if");
             if (sections && sections.length > 0) {
                 filterCycleBySection(sections[0]._id);
             }

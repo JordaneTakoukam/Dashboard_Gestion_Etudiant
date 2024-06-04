@@ -58,7 +58,14 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             dispatch(setShowModalElement());
         }else{
             if(periode){
-                dispatch(setShowModalSignalerAbsence());
+                if(userRole===roles.enseignant && (currentUser._id===periode.enseignantPrincipal._id || (periode.enseignantSuppleant && currentUser._id===periode.enseignantSuppleant._id))){
+                    dispatch(setShowModalSignalerAbsence());
+                }
+
+                if(userRole===roles.etudiant || userRole===roles.delegue){
+                    dispatch(setShowModalSignalerAbsence());   
+                }
+                
             }
         }
         
@@ -362,7 +369,6 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             }
             return false;
         });
-        console.log(userNiveaux);
     };
     
     

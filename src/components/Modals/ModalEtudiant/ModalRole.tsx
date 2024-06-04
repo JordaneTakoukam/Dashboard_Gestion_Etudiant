@@ -103,7 +103,7 @@ function ModalRole({ etudiant }: { etudiant: EtudiantType | null }) {
             <CustomDialogModal
                 title={t('form_update.roles')}
                 isModalOpen={isModalOpen}
-                isDelete={true}
+                isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleUpdateRole}
             >

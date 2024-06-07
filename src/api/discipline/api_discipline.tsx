@@ -117,8 +117,6 @@ export async function apiSignalerAbsence({user,enseignant,role,heure_debut_absen
 }
 
 
-
-
 export async function apiGetAbsencesByUserAndFilter({ userId, semestre, annee }: { userId: string, semestre: Number, annee: Number }): Promise<AbsenceType[]> {
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -156,6 +154,58 @@ export async function apiGetAbsencesWithEnseignantsByFilter({ page, semestre, an
                 params: {
                     page: page,
                     pageSize: pageSize,
+                    semestre: semestre,
+                    annee: annee
+                },
+            },
+        );
+        const enseignants = response.data.data;
+
+        return enseignants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiSearchUserDiscipline({semestre, annee, searchText }: {semestre: Number, annee: Number, searchText:string }): Promise<EnseignantDisciplineListGetType> {
+    const limit: number = 10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchUser/${searchText}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    limit: limit,
+                    semestre: semestre,
+                    annee: annee
+                },
+            },
+        );
+        const enseignants = response.data.data;
+
+        return enseignants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiSearchUserDisciplineEtudiant({semestre, annee, searchText }: {semestre: Number, annee: Number, searchText:string }): Promise<EtudiantDisciplineListGetType> {
+    const limit: number = 10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchUserEtudiant/${searchText}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    limit: limit,
                     semestre: semestre,
                     annee: annee
                 },

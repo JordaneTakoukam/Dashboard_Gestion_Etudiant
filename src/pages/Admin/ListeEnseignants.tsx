@@ -9,10 +9,6 @@ import Table from "../../components/Tables/TablesEnseignants/Table";
 import ModalCreateEnseignant from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
 import ModalDeleteEnseignant from "../../components/Modals/ModalEnseignant/FormDelete";
 import { setShowModal } from "../../_redux/features/setting";
-import { SectionRefresh } from "../../components/ui/SectionRefresh";
-import { PageNoData } from "../../components/_Global/PageNoData";
-import { PageErreur } from "../../components/_Global/PageErreur";
-import LoadingTable from "../../components/Tables/common/LoadingTable";
 
 
 

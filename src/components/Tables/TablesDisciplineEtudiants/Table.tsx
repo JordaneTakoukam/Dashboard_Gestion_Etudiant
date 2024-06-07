@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import InputSearch from "../common/SearchTable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
@@ -11,13 +11,14 @@ import { RootState } from "../../../_redux/store";
 import { createPDF, extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
 import Pagination from "../../Pagination/Pagination";
 import { setAnneeDisciplineEns, setEtudiantDiscipline, setEtudiantsDisciplineLoadingOnTable, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_etudiant_slice";
-import { apiGetAbsencesWithEtudiantsByFilter, apiGetAllAbsencesWithEtudiantsByFilter, generateListAbsenceEtudiant } from "../../../api/discipline/api_discipline";
+import { apiGetAbsencesWithEtudiantsByFilter, apiGetAllAbsencesWithEtudiantsByFilter, apiSearchUserDiscipline, apiSearchUserDisciplineEtudiant, generateListAbsenceEtudiant } from "../../../api/discipline/api_discipline";
 import LoadingOnTable from "../common/LoadingOnTable";
 import * as XLSX from 'xlsx';
 import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
 import NoDataTable from "../common/NoDataTable";
 import Download from "../common/Download";
+import { config } from "../../../config";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -52,7 +53,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
-    const [section, setSection] = sections.length > 0 ? useState<SectionProps>(sections[0]) : useState<SectionProps>();;
+    const [section, setSection] = sections.length > 0 ? useState<SectionProps | undefined>(sections[0]) : useState<SectionProps | undefined>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
 
@@ -139,6 +140,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
             setSection(selected);
+            setSearchText("")
         }
     };
 
@@ -148,6 +150,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             setSelectIdCycle(selected._id);
             filterNiveauxByCycle(selected._id);
             setCycle(selected);
+            setSearchText("")
         }
     };
 
@@ -155,7 +158,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
-            setNiveau(selected)
+            setNiveau(selected);
+            setSearchText("")
         }
     };
 
@@ -181,9 +185,57 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         });
     };
 
+    // useEffect(() => {
+    //     const result = filterEtudiantByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
+
+    const latestQueryDiscipline = useRef('');
+   
     useEffect(() => {
-        const result = filterEtudiantByContent(data);
-        setFilteredData(result);
+        dispatch(setEtudiantsDisciplineLoadingOnTable(true));
+        latestQueryDiscipline.current = searchText;
+        try{
+            
+            const filterDisciplineByContent = async () => {
+                if (searchText === '') {
+                    // setAnnee(formatYear(currentYear));
+                    sections.length>0?setSection(sections[0]):setSection(undefined);
+                    filterCycleBySection(section?._id);
+                    // setCycle(filteredCycle[0]);
+                    filterNiveauxByCycle(cycle?._id);
+                    // setNiveau(filteredNiveaux[0]);
+                    
+                    const result: UserDiscipline[] = data;
+                    setFilteredData(result); 
+                }else{
+                    setSection(undefined);
+                    setCycle(undefined);
+                    setNiveau(undefined);
+                    setFilteredCycle([]);
+                    setFilteredNiveaux([]);
+                    let disciplinesResult : UserDiscipline[] = [];
+                    await apiSearchUserDisciplineEtudiant({annee:selectedYear, semestre:selectSemestre, searchText:searchText}).then(result=>{
+                        if (latestQueryDiscipline.current === searchText) {
+                            if(result){
+                                disciplinesResult = result.etudiants;
+                                setFilteredData(disciplinesResult);
+                            }
+                          }
+                        
+                    })
+                }
+        
+                
+            };
+            filterDisciplineByContent();
+        }catch(e){
+            dispatch(setErrorPageEtudiantDiscipline(t('message.erreur')));
+        }finally{
+            if (latestQueryDiscipline.current === searchText) {
+                dispatch(setEtudiantsDisciplineLoadingOnTable(false)); // Définissez le loading à false après le chargement
+            }
+        }
     }, [searchText, data]);
 
 
@@ -195,25 +247,28 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
     // start pagination
-    const count: number = useSelector((state: RootState) => state.etudiantDisciplineSlice.data.totalItems);
-    const itemsPerPage = useSelector((state: RootState) => state.etudiantDisciplineSlice.data.pageSize); // nombre delements maximum par page
-
+    const itemsPerPage =  useSelector((state: RootState) => state.etudiantDisciplineSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.etudiantDisciplineSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
-    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-    const endItem = Math.min(count, indexOfLastItem);
-
-    const hasPrevious = currentPage > 1;
-    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
     // Render page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
 
-    const handlePageClick = (pageNumber: number) => { setCurrentPage(pageNumber); };
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+    
     // end --------- pagination
     const emptyEtudiants: EtudiantDisciplineListGetType = {
         etudiants: [],
@@ -391,7 +446,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.etudiant')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.etudiant')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -416,7 +471,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                defaultValue={section} // ou spécifie une valeur par défaut
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -424,7 +479,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                defaultValue={cycle} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -432,7 +487,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                defaultValue={niveau} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -464,7 +519,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                defaultValue={section} // ou spécifie une valeur par défaut
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -472,7 +527,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                defaultValue={cycle} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -480,7 +535,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                defaultValue={niveau} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -517,7 +572,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
                 {/* Pagination */}
 
-                {filteredData && filteredData.length>0 && <Pagination
+                {(searchText === '' && filteredData && filteredData.length>0) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

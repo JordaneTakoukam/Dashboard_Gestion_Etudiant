@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTableEnseignant from "./HeaderTable";
@@ -15,9 +15,8 @@ import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading, setEnseig
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
-import { apiGetEnseignants, apiGetEnseignantsWithPagination, generateListEnseignant } from "../../../api/other_users/api_enseignant";
+import { apiGetEnseignants, apiGetEnseignantsWithPagination, apiSearchEnseignant, generateListEnseignant } from "../../../api/other_users/api_enseignant";
 import Bouton from "../../ui/Bouton";
-import LoadingOnTable from "../common/LoadingOnTable";
 import { createPDF } from "../../../fonctions/fonction";
 import Download from "../common/Download";
 import LoadingTable from "../common/LoadingTable";
@@ -209,6 +208,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             setService(undefined);
             filterCategorieByGrade(selected._id);
             setFonction(undefined);
+            setSearchText('');
         }
     };
 
@@ -219,6 +219,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             dispatch(setSelectedEnseignant({ key: "categorie", value: selected }))
             setService(undefined);
             setFonction(undefined);
+            setSearchText('');
         }
     };
 
@@ -228,8 +229,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             setCatgeorie(undefined);
             setService(selected);
             dispatch(setSelectedEnseignant({ key: "service", value: selected }))
-
             setFonction(undefined);
+            setSearchText('');
         }
     };
 
@@ -240,35 +241,46 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             setService(undefined);
             setFonction(selected);
             dispatch(setSelectedEnseignant({ key: "fonction", value: selected }))
-
+            setSearchText('');
         }
     };
 
     // Filtrer les matières en fonction de la langue
-    const filterEnseignantByContent = (enseignants: EnseignantType[]) => {
-        if (searchText === '') {
-            const result: EnseignantType[] = enseignants;
-            return result;
-        }
-        return enseignants.filter(enseignant => {
-            const prenom = enseignant?.prenom || "";
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
+    // const filterEnseignantByContent = async (enseignants: EnseignantType[]) => {
+    //     if (searchText === '') {
+    //         const result: EnseignantType[] = enseignants;
+    //         return result;
+    //     }
+    //     let enseignantsResult : EnseignantType[] = [];
+    //     await apiSearchEnseignant({ searchString: searchText }).then(result=>{
+    //         if(result){
+    //             enseignantsResult = result.enseignants;
+    //         }
+    //     })
+
+    //     return enseignantsResult;
+    //         // Vérifiez si la requête actuelle correspond toujours à la dernière requête
+        
+    //     // return enseignants.filter(enseignant => {
+    //     //     const prenom = enseignant?.prenom || "";
+    //     //     // Vérifie si le code ou le libellé contient le texte de recherche
+    //     //     return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
+    //     // });
+    // };
 
 
 
     // variable pour la pagination
-    const itemsPerPage = useSelector((state: RootState) => state.enseignantSlice.data.pageSize); // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+    const itemsPerPage =  useSelector((state: RootState) => state.enseignantSlice.data.pageSize); // nombre d'éléments maximum par page
     const count = useSelector((state: RootState) => state.enseignantSlice.data.totalItems);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+
     // Render page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
@@ -278,9 +290,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const hasPrevious = currentPage > 1;
     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
 
-    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const startItem = indexOfFirstItem + 1;
     const endItem = Math.min(count, indexOfLastItem);
-
     //fournir initialement les données à la page
     // Effet pour filtrer les options des CustomDropDown
 
@@ -344,9 +355,40 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     // modifier les données de la page lors de la recherche ou de la sélection de la grade
     const [filteredData, setFilteredData] = useState<EnseignantType[]>(data);
 
+    const latestQueryEnseignant = useRef('');
     useEffect(() => {
-        const result = filterEnseignantByContent(data);
-        setFilteredData(result);
+        
+        dispatch(setEnseignantsLoading(true));
+        latestQueryEnseignant.current = searchText;
+        try{
+            
+            const filterEnseignantByContent = async () => {
+                if (searchText === '') {
+                    const result: EnseignantType[] = data;
+                    setFilteredData(result); 
+                }else{
+                    let enseignantsResult : EnseignantType[] = [];
+                    await apiSearchEnseignant({ searchString:searchText, limit:10 }).then(result=>{
+                        if (latestQueryEnseignant.current === searchText) {
+                            if(result){
+                                enseignantsResult = result.enseignants;
+                                setFilteredData(enseignantsResult);
+                            }
+                          }
+                        
+                    })
+                }
+        
+                
+            };
+            filterEnseignantByContent();
+        }catch(e){
+            dispatch(setErrorPageEnseignant(t('message.erreur')));
+        }finally{
+            if (latestQueryEnseignant.current === searchText) {
+                (setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
     }, [searchText, data]);
     
     const handleRefreshFilters = () => {
@@ -362,9 +404,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {(roles.admin === userRole || roles.superAdmin === userRole) && (
-                    <ButtonCreate
-                        onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                    />)}
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />
+                    <ButtonCreate onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""} />)}
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -496,7 +537,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
                 {/* Pagination */}
 
-                {filteredData && filteredData.length>0 && <Pagination
+                {(searchText==='' && filteredData && filteredData.length>0) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

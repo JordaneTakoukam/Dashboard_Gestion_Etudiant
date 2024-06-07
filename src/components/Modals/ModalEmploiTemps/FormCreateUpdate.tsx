@@ -4,10 +4,8 @@ import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useRef, useState } from 'react';
 import { Jour, jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
-import { FaTrash } from 'react-icons/fa6';
 import { useTranslation } from 'react-i18next';
-import { setMatiereLoading, setMatieres, setErrorPageMatiere } from '../../../_redux/features/matiere_slice';
-import { apiSearchMatiere, getMatieresByNiveau } from '../../../api/api_matiere';
+import { apiSearchMatiere } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
 import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
 import { formatYear } from '../../../fonctions/fonction';
@@ -86,7 +84,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setQueryEnsPrincipal("");
             setResultsEnsPrincipal([]);
           } else if (queryEnsPrincipal.trim().length > 0) {
-            const result = await apiSearchEnseignant({ searchString: queryEnsPrincipal });
+            const result = await apiSearchEnseignant({ searchString: queryEnsPrincipal, limit:5 });
             // Vérifiez si la requête actuelle correspond toujours à la dernière requête
             if (latestQueryEnsPrincipal.current === queryEnsPrincipal) {
               setResultsEnsPrincipal(result.enseignants);
@@ -98,6 +96,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
           }
         } catch (error) {
           console.error('Error fetching search resultsEnsPrincipal:', error);
+          createToast(t('message.erreur'), "", 2)
         } finally {
           if (latestQueryEnsPrincipal.current === queryEnsPrincipal) {
             setIsLoadingEnsPrincipal(false);
@@ -116,7 +115,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setQueryEnsSuppleant("");
             setResultsEnsSuppleant([]);
           } else if (queryEnsSuppleant.trim().length > 0) {
-            const result = await apiSearchEnseignant({ searchString: queryEnsSuppleant });
+            const result = await apiSearchEnseignant({ searchString: queryEnsSuppleant, limit:5 });
             // Vérifiez si la requête actuelle correspond toujours à la dernière requête
             if (latestQueryEnsSuppleant.current === queryEnsSuppleant) {
               setResultsEnsSuppleant(result.enseignants);
@@ -128,6 +127,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
           }
         } catch (error) {
           console.error('Error fetching search resultsEnsSuppleant:', error);
+          createToast(t('message.erreur'), "", 2)
         } finally {
           if (latestQueryEnsSuppleant.current === queryEnsSuppleant) {
             setIsLoadingEnsSuppleant(false);
@@ -158,6 +158,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
           }
         } catch (error) {
           console.error('Error fetching search resultsMatiere:', error);
+          createToast(t('message.erreur'), "", 2)
         } finally {
           if (latestQueryMatiere.current === queryMatiere) {
             setIsLoadingMatiere(false);

@@ -29,7 +29,7 @@ export function PickPhoto() {
 
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
   const [updatePhoto, setUpdatePhoto] = useState<boolean>(false);
-
+  
   const [file, setFile] = useState<File | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);

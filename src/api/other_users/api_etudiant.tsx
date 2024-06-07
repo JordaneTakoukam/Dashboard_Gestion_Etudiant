@@ -36,6 +36,26 @@ export async function apiGetEtudiantsWithPagination({ page, annee, niveauId }: {
     }
 }
 
+export async function apiSearchEtudiant({ searchString, limit }: {  searchString: string, limit:number }): Promise<EtudiantListGetType> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchEtudiant/${searchString}/${limit}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const etudiants: EtudiantListGetType = response.data.data;
+
+        return etudiants;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
 export async function apiGetEtudiants({ annee, niveauId }: { annee: number, niveauId: string }): Promise<EtudiantListGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(

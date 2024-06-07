@@ -64,11 +64,11 @@ export async function apiGetEnseignants({ grade, categorie, service, fonction }:
     }
 }
 
-export async function apiSearchEnseignant({ searchString }: {  searchString: string }): Promise<EnseignantListGetType> {
+export async function apiSearchEnseignant({ searchString, limit }: {  searchString: string, limit:number }): Promise<EnseignantListGetType> {
    
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/searchEnseignant/${searchString}`,
+            `${api}/searchEnseignant/${searchString}/${limit}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

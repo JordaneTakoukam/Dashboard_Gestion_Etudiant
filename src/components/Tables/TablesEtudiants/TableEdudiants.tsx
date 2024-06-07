@@ -4,7 +4,7 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTableEtudiant from "./HeaderTableEtudiant";
@@ -17,8 +17,8 @@ import { setErrorPageEtudiant, setEtudiant, setEtudiantsLoading } from "../../..
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
-import { apiGetEtudiants, apiGetEtudiantsWithPagination, generateListEtudiant } from "../../../api/other_users/api_etudiant";
-import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { apiGetEtudiants, apiGetEtudiantsWithPagination, apiSearchEtudiant, generateListEtudiant } from "../../../api/other_users/api_etudiant";
+import { createPDF, extractYear, formatYear, generateYearRange, validateEmail } from "../../../fonctions/fonction";
 import Download from "../common/Download";
 
 interface TableEtudiantProps {
@@ -45,7 +45,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const pageIsLoading = useSelector((state: RootState) => state.etudiantSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     
-    const [section, setSection] = sections.length>0?useState<SectionProps>(sections[0]):useState<SectionProps>();;
+    const [section, setSection] = sections.length>0?useState<SectionProps | undefined>(sections[0]):useState<SectionProps | undefined>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
@@ -212,6 +212,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
             setSection(selected);
+            setSearchText('');
         }
     };
 
@@ -221,6 +222,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             setSelectIdCycle(selected._id);
             filterNiveauxByCycle(selected._id);
             setCycle(selected);
+            setSearchText('');
         }
     };
 
@@ -228,7 +230,8 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
-            setNiveau(selected)
+            setNiveau(selected);
+            setSearchText('');
         }
     };
 
@@ -248,28 +251,28 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     
 
      // variable pour la pagination
-     const itemsPerPage = useSelector((state: RootState) => state.etudiantSlice.data.pageSize); // nombre delements maximum par page
-     const [currentPage, setCurrentPage] = useState<number>(1);
- 
-     const indexOfLastItem = currentPage * itemsPerPage;
-     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
-     const count =useSelector((state: RootState) => state.etudiantSlice.data.totalItems);
-     const handlePageClick = (pageNumber: number) => {
-         setCurrentPage(pageNumber);
-     };
-     // Render page numbers
-     const pageNumbers = [];
-     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
-         pageNumbers.push(i);
-     }
- 
-     const hasPrevious = currentPage > 1;
-     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
- 
-     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-     const endItem = Math.min(count, indexOfLastItem);
+    const itemsPerPage =  useSelector((state: RootState) => state.etudiantSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.etudiantSlice.data.totalItems);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+    
     //fournir initialement les données à la page
     // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
@@ -332,12 +335,50 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<EtudiantType[]>(data);
 
+    const latestQueryEtudiant = useRef('');
     useEffect(() => {
-        const result = filterEtudiantByContent(data);
-        setFilteredData(result);
+        dispatch(setEtudiantsLoading(true));
+        latestQueryEtudiant.current = searchText;
+        try{
+            
+            const filterEtudiantByContent = async () => {
+                if (searchText === '') {
+                    sections.length>0?setSection(sections[0]):setSection(undefined);
+                    filterCycleBySection(section?._id);
+                    // setCycle(filteredCycle[0]);
+                    filterNiveauxByCycle(cycle?._id);
+                    // setNiveau(filteredNiveaux[0]);
+                    const result: EtudiantType[] = data;
+                    setFilteredData(result); 
+                }else{
+                    setSection(undefined);
+                    setCycle(undefined);
+                    setNiveau(undefined);
+                    setFilteredCycle([]);
+                    setFilteredNiveaux([]);
+                    let etudiantsResult : EtudiantType[] = [];
+                    await apiSearchEtudiant({ searchString:searchText, limit:10 }).then(result=>{
+                        if (latestQueryEtudiant.current === searchText) {
+                            if(result){
+                                etudiantsResult = result.etudiants;
+                                setFilteredData(etudiantsResult);
+                            }
+                          }
+                        
+                    })
+                }
+        
+                
+            };
+            filterEtudiantByContent();
+        }catch(e){
+            dispatch(setErrorPageEtudiant(t('message.erreur')));
+        }finally{
+            if (latestQueryEtudiant.current === searchText) {
+                dispatch(setEtudiantsLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
     }, [searchText, data]);
-    
-
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -346,7 +387,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                     title={t('boutton.nouvelle_etudiant')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.etudiant')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.etudiant')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -371,7 +412,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                defaultValue={section} // ou spécifie une valeur par défaut
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -379,7 +420,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                defaultValue={cycle} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -387,7 +428,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                defaultValue={niveau} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -411,7 +452,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
-                                defaultValue={sections[0]} // ou spécifie une valeur par défaut
+                                defaultValue={section} // ou spécifie une valeur par défaut
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -419,7 +460,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={cycles[0]} // ou spécifie une valeur par défaut
+                                defaultValue={cycle} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -427,7 +468,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={niveaux[0]} // ou spécifie une valeur par défaut
+                                defaultValue={niveau} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />

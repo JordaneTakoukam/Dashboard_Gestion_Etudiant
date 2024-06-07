@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import InputSearch from "../common/SearchTable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
@@ -8,15 +8,16 @@ import BodyTable from "./BodyTable";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { createPDF, extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
+import { createPDF, extractYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
 import Pagination from "../../Pagination/Pagination";
 import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantsDisciplineLoadingOnTable, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_enseignant_slice";
-import { apiGetAbsencesWithEnseignantsByFilter, apiGetAllAbsencesWithEnseignantsByFilter, generateListAbsenceEnseignant } from "../../../api/discipline/api_discipline";
+import { apiGetAbsencesWithEnseignantsByFilter, apiGetAllAbsencesWithEnseignantsByFilter, apiSearchUserDiscipline, generateListAbsenceEnseignant } from "../../../api/discipline/api_discipline";
 import LoadingOnTable from "../common/LoadingOnTable";
 import * as XLSX from 'xlsx';
 import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
 import Download from "../common/Download";
+import { config } from "../../../config";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -59,7 +60,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         if (selected) {
             setAnnee(selected);
             setSelectYear(extractYear(selected));
-            dispatch(setAnneeDisciplineEns(parseInt(selected)))
+            dispatch(setAnneeDisciplineEns(parseInt(selected)));
+            setSearchText('');
         }
         // setFonction(selected);
         // dispatch(setSelectedEnseignant({ key: "fonction", value: selected }))
@@ -71,6 +73,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             setSelectSemestre(selected)
             setSemestre(selected);
             dispatch(setSemestreDisciplineEns(selected));
+            setSearchText('');
         }
 
     };
@@ -82,22 +85,60 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const [filteredData, setFilteredData] = useState<UserDiscipline[]>(data);
 
     // Filtrer les matières en fonction de la langue
-    const filterEnseignantByContent = (enseignants: UserDiscipline[]) => {
-        if (searchText === '') {
-            const result: UserDiscipline[] = enseignants;
-            return result;
-        }
-        return enseignants.filter(enseignant => {
-            const prenom = enseignant?.prenom || "";
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
+    // const filterEnseignantByContent = (enseignants: UserDiscipline[]) => {
+    //     if (searchText === '') {
+    //         const result: UserDiscipline[] = enseignants;
+    //         return result;
+    //     }
+    //     return enseignants.filter(enseignant => {
+    //         const prenom = enseignant?.prenom || "";
+    //         // Vérifie si le code ou le libellé contient le texte de recherche
+    //         return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
+    //     });
+    // };
 
+    // useEffect(() => {
+    //     const result = filterEnseignantByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
+
+    const latestQueryDiscipline = useRef('');
+   
     useEffect(() => {
-        const result = filterEnseignantByContent(data);
-        setFilteredData(result);
+        
+        dispatch(setEnseignantsDisciplineLoadingOnTable(true));
+        latestQueryDiscipline.current = searchText;
+        try{
+            
+            const filterDisciplineByContent = async () => {
+                if (searchText === '') {
+                    const result: UserDiscipline[] = data;
+                    setFilteredData(result); 
+                }else{
+                    let disciplinesResult : UserDiscipline[] = [];
+                    await apiSearchUserDiscipline({annee:selectedYear, semestre:selectSemestre, searchText:searchText}).then(result=>{
+                        if (latestQueryDiscipline.current === searchText) {
+                            if(result){
+                                disciplinesResult = result.enseignants;
+                                setFilteredData(disciplinesResult);
+                            }
+                          }
+                        
+                    })
+                }
+        
+                
+            };
+            filterDisciplineByContent();
+        }catch(e){
+            dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
+        }finally{
+            if (latestQueryDiscipline.current === searchText) {
+                dispatch(setEnseignantsDisciplineLoadingOnTable(false)); // Définissez le loading à false après le chargement
+            }
+        }
     }, [searchText, data]);
+    
 
 
 
@@ -108,25 +149,28 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
     // start pagination
-    const count: number = useSelector((state: RootState) => state.enseignantDisciplineSlice.data.totalItems);
-    const itemsPerPage = useSelector((state: RootState) => state.enseignantDisciplineSlice.data.pageSize); // nombre delements maximum par page
 
+    const itemsPerPage =  useSelector((state: RootState) => state.enseignantDisciplineSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.enseignantDisciplineSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
-    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-    const endItem = Math.min(count, indexOfLastItem);
-
-    const hasPrevious = currentPage > 1;
-    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
     // Render page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
 
-    const handlePageClick = (pageNumber: number) => { setCurrentPage(pageNumber); };
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
     // end --------- pagination
 
     useEffect(() => {
@@ -257,7 +301,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -332,7 +376,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
                 {/* Pagination */}
 
-                {filteredData && filteredData.length>0 && <Pagination
+                {(searchText ==='' && filteredData && filteredData.length>0) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

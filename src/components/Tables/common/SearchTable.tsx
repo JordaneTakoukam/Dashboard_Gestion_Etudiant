@@ -3,17 +3,21 @@ import { useState } from "react";
 
 interface SearchProps {
     hintText: string;
+    value?:string;
     onSubmit: (text: string) => void;
+
 }
 
-const InputSearch = ({ hintText, onSubmit }: SearchProps) => {
-    const [inputValue, setInputValue] = useState("");
+const InputSearch = ({ hintText, value, onSubmit }: SearchProps) => {
+    const [inputValue, setInputValue] = useState(value);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        
         const text = event.target.value;
         setInputValue(text);
-        // Appeler onSubmit à chaque changement de valeur dans l'input
         onSubmit(text);
+        // Appeler onSubmit à chaque changement de valeur dans l'input
+        
     };
 
     return (
@@ -23,7 +27,7 @@ const InputSearch = ({ hintText, onSubmit }: SearchProps) => {
                     className="w-full text-[12px] lg:text-[14px] px-3 lg:px-6 h-[42.5px] rounded bg-transparent text-black focus:outline-none dark:text-white"
                     type="text"
                     placeholder={hintText}
-                    value={inputValue}
+                    value={(value === '')?value:inputValue}
                     onChange={handleChange}
                 />
 

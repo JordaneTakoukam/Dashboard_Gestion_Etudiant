@@ -83,7 +83,7 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                     <p className=' pb-3'>{t('label.annee')} : {periodeCours?formatYear(periodeCours.annee):""}</p>
                     <p className=' pb-3'>{t('label.semestre')} : {periodeCours?.semestre??""}</p>
                     <p className=' pb-3'>{t('label.jour')} : {periodeCours?lang==='fr'?jours.find(jour=>jour.ordre==periodeCours.jour)?.libelleFr:jours.find(jour=>jour.ordre==periodeCours.jour)?.libelleEn:""}</p>
-                    {!periodeCours?.pause && <p className='pb-3'>{t('label.matiere')} : {lang==='fr'?periodeCours?.matiere.libelleFr??"":periodeCours?.matiere.libelleEn??""}</p>}
+                    {!periodeCours?.pause && <p className='pb-3'>{t('label.matiere')} : {(periodeCours&&periodeCours.matiere)?lang==='fr' ?periodeCours.matiere.libelleFr??"":periodeCours.matiere.libelleEn??"":""}</p>}
 
                     <p className=' pb-3'>{t('label.heure_debut')} : {periodeCours?.heureDebut??""}</p>
 

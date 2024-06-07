@@ -21,7 +21,7 @@ import Download from "../common/Download";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
-    onEdit: (etudiant: UserDiscipline, isHourRemove: boolean) => void;
+    onEdit: (etudiant: UserDiscipline) => void;
 }
 
 
@@ -42,8 +42,8 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
 
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const selectedSemestre = useSelector((state: RootState) => state.etudiantDisciplineSlice.selected.semestre)
     const [selectSemestre, setSelectSemestre] = useState(currentSemestre);
@@ -509,7 +509,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                         {
                             pageIsLoadingOnTable ?
                                 <LoadingOnTable /> :
-                                <BodyTable data={filteredData} />
+                                <BodyTable data={filteredData} onEdit={onEdit}/>
 
                         }
                     </table>

@@ -7,9 +7,9 @@ import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
 import { apiCreateAbsence, apiDeleteAbsence, apiJustifierAbsence } from '../../../api/discipline/api_discipline';
 import createToast from '../../../hooks/toastify';
-import { ajouterAbsenceEnseignant, modifierAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
+import { ajouterAbsenceEnseignant, ajouterAbsenceEnseignantDisciplineUI, modifierAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
 import { nbTotalAbsences } from '../../../fonctions/fonction';
-import { ajouterAbsenceEtudiant, modifierAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
+import { ajouterAbsenceEtudiant, ajouterAbsenceEtudiantDisciplineUI, modifierAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
 
 
 function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, isJustify }: { isStudent: boolean, user: CustomEnseignantSelect | CustomEtudiantSelect | CustomUserSelect | null, isSignaled?: boolean, isHourRemove: boolean, isJustify: boolean }) {
@@ -228,9 +228,11 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                         createToast(e.message[lang as keyof typeof e.message], '', 0);
                         if (isStudent) {
                             dispatch(ajouterAbsenceEtudiant({ ...e.data }));
+                            dispatch(ajouterAbsenceEtudiantDisciplineUI({ ...e.data}));
 
                         } else {
                             dispatch(ajouterAbsenceEnseignant({ ...e.data }));
+                            dispatch(ajouterAbsenceEnseignantDisciplineUI({ ...e.data}));
                         }
                         closeModal();
                     } else {

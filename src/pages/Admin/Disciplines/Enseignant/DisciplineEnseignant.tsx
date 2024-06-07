@@ -8,29 +8,47 @@ import LoadingTable from "../../../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
 import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
-
+import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
 import { useNavigate } from 'react-router-dom';
-import { setEnseignantDiscipline, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/absence/discipline_enseignant_slice";
+import { setEnseignantDiscipline, setEnseignantSelected, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/absence/discipline_enseignant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
+import { setShowModal } from "../../../../_redux/features/setting";
 
 const DisciplineDesEnseignants = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const navigate = useNavigate();
-
+    const [isJustify, setJustify] = useState(false);
+    const [isHourRemove, setHourRemove] = useState(false);
     const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantDisciplineSlice);
 
-    const [selectedEnseignant, setSelectedEnseignant] = useState<UserDiscipline | null>(null);
-    const [isHourRemove, setHourRemove] = useState(false);
+    const [selectedEtudiant, setSelectedEtudiant] = useState<UserDiscipline | undefined>();
+    const [enseignantCustomSelected, setEnseignantCustomSelected] = useState<CustomEtudiantSelect>({ absence: undefined, user: selectedEtudiant })
+    const handleShowModal = () => { dispatch(setShowModal()); }
+    const handleEditHourEnseignant = (selectEnseignant : UserDiscipline) => {
+        
+        if(isHourRemove){
+            setHourRemove(isHourRemove);
+            setJustify(false);
+        }
 
-    const handleEditHourEnseignant = (enseignant: UserDiscipline, isHourRemove: boolean) => {
-        setSelectedEnseignant(enseignant);
-        setHourRemove(isHourRemove);
+        if(isJustify){
+            setJustify(isJustify);
+            setHourRemove(false);
+        }
+        
+        if (selectEnseignant) {
+            // contien l'utilisateur et l'objet absence a supprimer
+            setEnseignantCustomSelected({ absence: undefined, user: selectEnseignant })
+            dispatch(setEnseignantSelected(selectEnseignant))
+        }
+
+        handleShowModal();
     }
 
 
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const currentPlageDate: string[] = generateYearRange(currentYear, firstYear);
 
@@ -99,10 +117,8 @@ const DisciplineDesEnseignants = () => {
                             <div>
                                 {/* <SectionRefresh refreshFunction={handleRefresh} /> */}
 
-                                <Table
-                                    data={enseignants}
-                                    onEdit={handleEditHourEnseignant} />
-
+                                <Table data={enseignants} onEdit={handleEditHourEnseignant} />
+                                <ModalCreateUpdateAbsence isStudent={false} user={enseignantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
                             </div>
 
             }

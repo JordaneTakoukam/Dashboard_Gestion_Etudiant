@@ -68,7 +68,7 @@ const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement
                     </td>
 
                     {/* État */}
-                    {roles.admin === userRole || roles.superAdmin === userRole ? (
+                    {(roles.admin === userRole || roles.superAdmin === userRole) ? (
                         <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                             <select
                                 value={selectedEtatMap[item.code] ? lang === 'fr' ? selectedEtatMap[item.code]?.libelleFr : selectedEtatMap[item.code]?.libelleEn : ""}
@@ -87,7 +87,7 @@ const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement
                     )}
 
                     {/* Action  bouton pour edit*/}
-                    {roles.admin === userRole || roles.superAdmin === userRole && (
+                    {(roles.admin === userRole || roles.superAdmin === userRole) && (
                         <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                             <ButtonCrudTable
                                 onClickEdit={() => {

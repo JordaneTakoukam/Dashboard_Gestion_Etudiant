@@ -1,18 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowModal, setShowModalDelete, setShowModalElement, setShowModalPause } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
-import CustomDialogModal from '../CustomDialogModal';
-import { Fragment, useEffect, useState } from 'react';
-import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
+import { Fragment} from 'react';
 import { useTranslation } from 'react-i18next';
-import { apiCreateAbsence, apiDeleteAbsence, apiJustifierAbsence } from '../../../api/discipline/api_discipline';
-import createToast from '../../../hooks/toastify';
-import { ajouterAbsenceEnseignant, modifierAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
-import { nbTotalAbsences } from '../../../fonctions/fonction';
-import { ajouterAbsenceEtudiant, modifierAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
 import { Transition, Dialog } from '@headlessui/react';
 import { IoMdClose } from 'react-icons/io';
-import FormCreateUpdate from './FormCreateUpdate';
 
 
 function ModalGestionElement({ periodeCours }: { periodeCours: PeriodeType | null }) {
@@ -75,12 +67,12 @@ function ModalGestionElement({ periodeCours }: { periodeCours: PeriodeType | nul
                                         {/* <div className='mt-5 md:mt-10'>{children}</div> */}
                                         <div className="flex flex-col items-start space-y-2 p-4">
                                             {(!periodeCours || periodeCours && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => { closeModal(); dispatch(setShowModal())} }>
-                                                {!periodeCours?t('form_save.enregistrer')+t('form_save.periode'):t('form_update.enregistrer')+t('form_update.periode')}
+                                                {(!periodeCours || (periodeCours && !periodeCours._id))?t('form_save.enregistrer')+t('form_save.periode'):t('form_update.enregistrer')+t('form_update.periode')}
                                             </button>)}
-                                            {((!periodeCours) || (periodeCours && periodeCours.pause)) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalPause())}}>
-                                            {!periodeCours?t('form_save.enregistrer')+t('form_save.pause'):t('form_update.enregistrer')+t('form_update.pause')}
+                                            {((!periodeCours) || (periodeCours && periodeCours.pause) || (periodeCours && !periodeCours._id)) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalPause())}}>
+                                            {(!periodeCours || (periodeCours && !periodeCours._id))?t('form_save.enregistrer')+t('form_save.pause'):t('form_update.enregistrer')+t('form_update.pause')}
                                             </button>)}
-                                            {periodeCours && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalDelete())}}>
+                                            {(periodeCours && periodeCours._id) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalDelete())}}>
                                                 {t('form_delete.suppression')+t('form_delete.periode')}
                                             </button>)}
                                             

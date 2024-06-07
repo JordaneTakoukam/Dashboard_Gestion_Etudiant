@@ -5,9 +5,10 @@ import { useTranslation } from "react-i18next";
 interface ButtonNewProps {
     onClick: () => void;
     title:string;
+    isAbsence?:boolean;
 }
 
-const ButtonCreate = ({ onClick }: ButtonNewProps) => {
+const ButtonCreate = ({ isAbsence, onClick }: ButtonNewProps) => {
     const { t } = useTranslation();
 
     return (
@@ -21,9 +22,11 @@ const ButtonCreate = ({ onClick }: ButtonNewProps) => {
             <div className="text-[18px]  md:text-[22px] ">
                 <IoMdAdd />
             </div>
-            <h1 className='hidden lg:block pr-1'>
+            {!isAbsence?(<h1 className='hidden lg:block pr-1'>
                 {t('label.ajouter')}
-            </h1>
+            </h1>):<h1 className='hidden lg:block pr-1'>
+                {t('boutton.signaler_absence')}
+            </h1>}
         </button>
     );
 };

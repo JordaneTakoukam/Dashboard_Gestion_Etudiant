@@ -1,17 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalPause, } from '../../../_redux/features/setting';
+import { setShowModalPause, } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { Jour, jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
-import { FaTrash } from 'react-icons/fa6';
 import { useTranslation } from 'react-i18next';
-import { setMatiereLoading, setMatieres, setErrorPageMatiere } from '../../../_redux/features/matiere_slice';
-import { getMatieresByNiveau } from '../../../api/api_matiere';
-import createToast from '../../../hooks/toastify';
 import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
-import { formatYear } from '../../../fonctions/fonction';
 import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../api/api_periode';
+import { formatYear } from '../../../fonctions/fonction';
+import createToast from '../../../hooks/toastify';
 
 
 
@@ -130,7 +127,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
     useEffect(() => {
 
-        if (periodeCours) {
+        if (periodeCours && periodeCours._id) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.pause'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
@@ -156,6 +153,21 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setSemestre(currentSemester);
             setFilteredCycle(undefined);
             setFilteredNiveau(undefined);
+            if(periodeCours && !periodeCours._id){
+                const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
+                const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
+                const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
+                currentSection && filterCycleBySection(currentSection._id);
+                currentCycle && filterNiveauByCycle(currentCycle._id);
+                setJour(jours.find((jour) => periodeCours.jour == jour.ordre));
+                setHeureDebut(periodeCours.heureDebut);
+                setHeureFin(periodeCours.heureFin);
+                setSection(currentSection);
+                setCycle(currentCycle);
+                setNiveau(currentNiveau);
+                setSemestre(periodeCours.semestre);
+                setAnnee(periodeCours.annee);  
+            }
         }
 
 
@@ -283,7 +295,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             return;
         }
         
-        if (!periodeCours) {
+        if (!periodeCours || (periodeCours && !periodeCours._id)) {
             if (niveau._id && jour.ordre) {
                 await apiCreatePeriode(
                     {

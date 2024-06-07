@@ -57,6 +57,18 @@ const disciplineEnseignantSlice = createSlice({
                 enseignant.absences.unshift(action.payload);
             }
         },
+        
+        ajouterAbsenceEnseignantDisciplineUI(state, action: PayloadAction<AbsenceType>) {
+            // Ajoute l'absence à la liste des absences de l'etudiant sélectionné
+            const enseignant = state.selected.user;
+            if (enseignant) {
+               const findEnseignant = state.data.enseignants.find(e=>e._id===enseignant._id); 
+               if(findEnseignant){
+                    findEnseignant.absences.unshift(action.payload);
+               }
+            }
+            
+        },
 
         modifierAbsenceEnseignant(state, action: PayloadAction<AbsenceType>) {
     
@@ -86,7 +98,7 @@ export const {
     setErrorPageEnseignantDiscipline,
     setEnseignantDiscipline,
     setEnseignantsDisciplineLoadingOnTable,
-
+    ajouterAbsenceEnseignantDisciplineUI,
     setSemestreDisciplineEns,
     setAnneeDisciplineEns,
     ajouterAbsenceEnseignant,

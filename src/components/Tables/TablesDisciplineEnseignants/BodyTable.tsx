@@ -3,9 +3,10 @@ import { nbTotalAbsences, nbTotalAbsencesJustifier, nbTotalAbsencesNonJustifier 
 import { useNavigate } from "react-router-dom"
 import { setEnseignantSelected } from "../../../_redux/features/absence/discipline_enseignant_slice"
 import { MdOutlineManageAccounts } from "react-icons/md";
+import ButtonCrudTable from "../common/ButtonActionTable";
 
 
-const BodyTable = ({ data }: { data: UserDiscipline[] }) => {
+const BodyTable = ({ data, onEdit}: { data: UserDiscipline[], onEdit: (enseignant : UserDiscipline) => void }) => {
 
     const dispatch = useDispatch();
 
@@ -57,7 +58,12 @@ const BodyTable = ({ data }: { data: UserDiscipline[] }) => {
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                    <ButtonCrudTable
+                        onClickAddHour={() => {
+                            onEdit(item);
+                        }}
+                    />
 
                     <button
                         className="bg-primary text-white px-6 py-2 mx-4 rounded-lg hover:bg-opacity-75"
@@ -69,15 +75,6 @@ const BodyTable = ({ data }: { data: UserDiscipline[] }) => {
                         <MdOutlineManageAccounts className="text-lg" />
                     </button>
 
-
-                    {/* <ButtonCrudTable
-                        onClickAddHour={() => {
-                            onEdit(item, false);
-                            dispatch(setShowModal())
-                        }}
-                        onClickRemovHour={roles.admin === userRole || roles.superAdmin === userRole ? () => {
-                        } : undefined}
-                    /> */}
                 </td>
             </tr>
         ))}

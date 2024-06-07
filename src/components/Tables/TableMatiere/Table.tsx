@@ -175,14 +175,20 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 }
                 
             }else{
-                await fetchAllMatieres().then(async (matieres) => {
-                    
-                    if (selected === 'CSV') {
+                if(currentUser && currentUser.role === roles.enseignant){
+                    exportToExcel(title + ".xlsx", filteredData)
+                }else{
+                    await fetchAllMatieres().then(async (matieres) => {
+                        
+                        if (selected === 'CSV') {
 
-                    } else {
-                        exportToExcel(title + ".xlsx", matieres)
-                    }
-                })
+                        } else {
+                            
+                            exportToExcel(title + ".xlsx", matieres);
+                            
+                        }
+                    })
+                }
             }
         } catch (error) {
             console.log(error)
@@ -210,12 +216,14 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
                         // Parcourir les chapitres
                         matiere.chapitres.forEach(chapitre => {
-                            rows.push([
-                                lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn,
-                                chapitre.typesEnseignement.length > 0 && chapitre.typesEnseignement[0].volumeHoraire || "", // Volume horaire pour le premier type d'enseignement
-                                chapitre.typesEnseignement.length > 1 && chapitre.typesEnseignement[1].volumeHoraire || "", // Volume horaire pour le deuxième type d'enseignement
-                                chapitre.typesEnseignement.length > 2 && chapitre.typesEnseignement[2].volumeHoraire || ""  // Volume horaire pour le troisième type d'enseignement
-                            ]);
+                            if(chapitre.annee==selectedYear && chapitre.semestre==selectedSemestre){
+                                rows.push([
+                                    lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn,
+                                    chapitre.typesEnseignement.length > 0 && chapitre.typesEnseignement[0].volumeHoraire || "", // Volume horaire pour le premier type d'enseignement
+                                    chapitre.typesEnseignement.length > 1 && chapitre.typesEnseignement[1].volumeHoraire || "", // Volume horaire pour le deuxième type d'enseignement
+                                    chapitre.typesEnseignement.length > 2 && chapitre.typesEnseignement[2].volumeHoraire || ""  // Volume horaire pour le troisième type d'enseignement
+                                ]);
+                            }
                         });
                     }
 
@@ -233,10 +241,12 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                         if (matiere.objectifs) {
 
                             matiere.objectifs.forEach(objectif => {
-                                if (objectifs.length > 0) {
-                                    objectifs = objectifs + "," + (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
-                                } else {
-                                    objectifs = (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
+                                if(objectif.annee==selectedYear && objectif.semestre==selectedSemestre){
+                                    if (objectifs.length > 0) {
+                                        objectifs = objectifs + ";" + (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
+                                    } else {
+                                        objectifs = (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
+                                    }
                                 }
 
                             })
@@ -374,15 +384,30 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         setFilteredSection(sections);
     }, []);
     useEffect(() => {
-        if (!selectSectionId) {
-            if (sections && sections.length > 0) {
-                // filterCycleBySection(sections[0]._id);
-                // setSection(sections[0]);
+        if (currentUser && currentUser.role === roles.enseignant) {
+            setSelectedYear(currentYear);
+            setSelectedSemestre(currentSemestre);
+            if (!selectSectionId) {
+                if (sections && sections.length > 0) {
+                    filterCycleBySection(sections[0]._id);
+                    setSection(sections[0]);
+                }
+            } else {
+                setFilteredCycle([]);
+                filterCycleBySection(selectSectionId);
             }
-        } else {
-            setFilteredCycle([]);
-            filterCycleBySection(selectSectionId);
+        }else{
+            if (!selectSectionId) {
+                if (sections && sections.length > 0) {
+                    // filterCycleBySection(sections[0]._id);
+                    // setSection(sections[0]);
+                }
+            } else {
+                setFilteredCycle([]);
+                filterCycleBySection(selectSectionId);
+            }
         }
+        
 
 
     }, [sections, selectSectionId]);
@@ -410,29 +435,48 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                     totalPages: 0,
                     pageSize: 0
                 }
-                if (selectNiveauId) {
-                    let fetchedMatieres = null;
-                    if (currentUser && currentUser.role === roles.enseignant) {
+                if (currentUser && currentUser.role === roles.enseignant) {
+                    if (selectNiveauId) {
+                        let fetchedMatieres=undefined;
                         if(selectedYear && selectedSemestre){
-                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                             fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                        }
+                        
+
+                        if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                            dispatch(setMatieres(fetchedMatieres));
+                        } else {
+
+                            dispatch(setMatieres(emptyMatieres));
+                        }
+                    } else{
+                        dispatch(setMatieres(emptyMatieres));
+                    }
+                }else{
+                    if (selectNiveauId) {
+                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                        // if (currentUser && currentUser.role === roles.enseignant) {
+                        //     if(selectedYear && selectedSemestre){
+                        //         fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                        //     }
+                        // } else {
+                        //     fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                        // }
+
+                        if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                            dispatch(setMatieres(fetchedMatieres));
+                        } else {
+
+                            dispatch(setMatieres(emptyMatieres));
                         }
                     } else {
-                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
-                    }
+                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined });
+                        if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                            dispatch(setMatieres(fetchedMatieres));
+                        } else {
 
-                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                        dispatch(setMatieres(fetchedMatieres));
-                    } else {
-
-                        dispatch(setMatieres(emptyMatieres));
-                    }
-                } else {
-                    const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined });
-                    if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                        dispatch(setMatieres(fetchedMatieres));
-                    } else {
-
-                        dispatch(setMatieres(emptyMatieres));
+                            dispatch(setMatieres(emptyMatieres));
+                        }
                     }
                 }
                 // Réinitialisez les erreurs s'il y en a
@@ -470,7 +514,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {roles.admin === currentUser.role || roles.superAdmin === currentUser.role && (<ButtonCreate
+                {(roles.admin === currentUser.role || roles.superAdmin === currentUser.role) && (<ButtonCreate
                     onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.matiere')} onSubmit={(text) => setSearchText(text)} />
             </div>
@@ -480,13 +524,13 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.matiere')} 
-                <Bouton
+                {(currentUser && currentUser.role !== roles.enseignant) && (<Bouton
                     iconeSmall={true}
                     circle={true}
                     typeRefresh={true}
                     // titreBouton={t('boutton.actualiser')}
                     onClick={handleRefreshFilters}
-                /></h1>
+                />)}</h1>
                 
                 {/* version mobile */}
                 <div className="block lg:hidden">
@@ -614,7 +658,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
                 {/* Pagination */}
 
-                {filteredData && filteredData.length>0 && <Pagination
+                {((currentUser && currentUser.role!==roles.enseignant) && (filteredData && filteredData.length>0)) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

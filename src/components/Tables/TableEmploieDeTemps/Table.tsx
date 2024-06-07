@@ -57,7 +57,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         if(userRole===roles.admin || userRole===roles.superAdmin){
             dispatch(setShowModalElement());
         }else{
-            if(periode){
+            if(periode && periode.enseignantPrincipal){
                 if(userRole===roles.enseignant && (currentUser._id===periode.enseignantPrincipal._id || (periode.enseignantSuppleant && currentUser._id===periode.enseignantSuppleant._id))){
                     dispatch(setShowModalSignalerAbsence());
                 }
@@ -139,9 +139,23 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                         // }
                     }else{
                         // if (roles.admin === userRole || roles.superAdmin === userRole) {
-                            jourCell.onclick = () => ouvrirFormulairePeriode();
-                            jourCell.style.cursor = 'pointer';
-                            jourCell.style.width='100px'
+                            const heureDebut = horaire.split("-")[0].trim();
+                            const heureFin = horaire.split("-")[1].trim();
+                            if(selectNiveauId){
+                                const periode : PeriodeType={
+                                    pause: false,
+                                    jour: jour.ordre,
+                                    semestre: selectedSemestre,
+                                    annee: selectedYear,
+                                    niveau: selectNiveauId,
+                                    heureDebut: heureDebut,
+                                    heureFin: heureFin,
+                                    enseignantPrincipal: undefined
+                                };
+                                jourCell.onclick = () => ouvrirFormulairePeriode(periode);
+                                jourCell.style.cursor = 'pointer';
+                                jourCell.style.width='100px'
+                            }
                         // }
                     }
                 });
@@ -428,7 +442,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
 
     return (
         <div>
-            {roles.admin === userRole || roles.superAdmin === userRole && <div className="flex justify-after items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+            {(roles.admin === userRole || roles.superAdmin === userRole) && <div className="flex justify-after items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.periode_cours')}
                     onClick={() => { onCreate();dispatch(setShowModalElement()) }}

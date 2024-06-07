@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Key, Suspense, useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import SignIn from './pages/Authentication/SignIn.js';
 import { ToastContainer } from 'react-toastify';
@@ -98,7 +98,7 @@ function App() {
               await getCurrentUserData({ userId: userId }).then((e: UserState) => {
                 dispatch(setUser(e));
                 setUserLog(e);
-                // dispatch(setRole(role));
+                dispatch(setRole(role));
                 setLoading(false);
               }).catch((e) => {
                 setLoading(false);
@@ -338,7 +338,7 @@ function App() {
                     ) :
                     userRole === roles.etudiant ?
                       (
-                        routeStudent.map((route, index) => {
+                        routeStudent.map((route: { path: any; component: any; }, index: Key | null | undefined) => {
                           const { path, component: Component } = route;
                           return (
                             <Route

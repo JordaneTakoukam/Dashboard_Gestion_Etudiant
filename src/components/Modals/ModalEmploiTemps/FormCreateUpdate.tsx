@@ -342,7 +342,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
     useEffect(() => {
 
-        if (periodeCours) {
+        if (periodeCours && periodeCours._id) {
             setModalTitle(t('form_update.enregistrer') + t('form_update.periode'));
             const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
@@ -398,6 +398,21 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setFilteredCycle(undefined);
             setFilteredNiveau(undefined);
             setTypesEnseignementMat([]);
+            if(periodeCours && !periodeCours._id){
+                const currentNiveau = niveaux.find(niveau => niveau._id === "" + periodeCours.niveau);
+                const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
+                const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
+                currentSection && filterCycleBySection(currentSection._id);
+                currentCycle && filterNiveauByCycle(currentCycle._id);
+                setJour(jours.find((jour) => periodeCours.jour == jour.ordre));
+                setHeureDebut(periodeCours.heureDebut);
+                setHeureFin(periodeCours.heureFin);
+                setSection(currentSection);
+                setCycle(currentCycle);
+                setNiveau(currentNiveau);
+                setSemestre(periodeCours.semestre);
+                setAnnee(periodeCours.annee);  
+            }
 
         }
 
@@ -615,7 +630,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             return;
         }
         
-        if (!periodeCours) {
+        if ((!periodeCours) || (periodeCours && !periodeCours._id)) {
             if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
                 await apiCreatePeriode(
                     {

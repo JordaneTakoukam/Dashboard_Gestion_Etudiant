@@ -117,7 +117,7 @@ const Table = ({ data, absences, onEdit, handleAbsencesChange }: TableProps) => 
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 <ButtonCreate
                     title={t('boutton.signaler_absence')}
-                    
+                    isAbsence={true}
                     onClick={() => { data.role===config.roles.enseignant?navigate('/teacher/schedule'):navigate('/student/schedule') }}
                 />
                 <h5>{t('label.total_heure_absence')} : {nbTotalAbsences(absences)} {t('label.heure')}(s)</h5>

@@ -5,12 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../_redux/store";
 
 import { useNavigate } from 'react-router-dom';
-import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/absence/discipline_etudiant_slice";
+import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns, setEtudiantselected } from "../../../../_redux/features/absence/discipline_etudiant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
 import { apiGetAbsencesWithEtudiantsByFilter } from "../../../../api/discipline/api_discipline";
 import Table from "../../../../components/Tables/TablesDisciplineEtudiants/Table";
 import { setAnneeDisciplineEns } from "../../../../_redux/features/absence/discipline_enseignant_slice";
 import Loading from "../../../../components/ui/loading";
+import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
+import { setShowModal } from "../../../../_redux/features/setting";
+
 
 
 // a mdofier les differetns champs + le slice
@@ -18,15 +21,36 @@ const DisciplineDesEtudiants = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [isJustify, setJustify] = useState(false);
+    const [isHourRemove, setHourRemove] = useState(false);
+    // const selectedEtudiant = useSelector((state: RootState) => state.etudiantDisciplineSlice.selected.user);
+    
 
     const { data: { etudiants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.etudiantDisciplineSlice);
 
-    const [selectedEtudiant, setSelectedEtudiant] = useState<UserDiscipline | null>(null);
-    const [isHourRemove, setHourRemove] = useState(false);
+    const [selectedEtudiant, setSelectedEtudiant] = useState<UserDiscipline | undefined>();
+    const [etudiantCustomSelected, setEtudiantCustomSelected] = useState<CustomEtudiantSelect>({ absence: undefined, user: selectedEtudiant })
+    const handleShowModal = () => { dispatch(setShowModal()); }
 
-    const handleEditHourEtudiant = (etudiant: UserDiscipline, isHourRemove: boolean) => {
-        setSelectedEtudiant(etudiant);
-        setHourRemove(isHourRemove);
+    const handleEditHourEtudiant = (selectEtudiant : UserDiscipline) => {
+        
+        if(isHourRemove){
+            setHourRemove(isHourRemove);
+            setJustify(false);
+        }
+
+        if(isJustify){
+            setJustify(isJustify);
+            setHourRemove(false);
+        }
+        
+        if (selectEtudiant) {
+            // contien l'utilisateur et l'objet absence a supprimer
+            setEtudiantCustomSelected({ absence: undefined, user: selectEtudiant })
+            dispatch(setEtudiantselected(selectEtudiant))
+        }
+
+        handleShowModal();
     }
 
 
@@ -115,9 +139,8 @@ const DisciplineDesEtudiants = () => {
                     <div>
                         {/* <SectionRefresh refreshFunction={handleRefresh} />: */}
 
-                        <Table
-                            data={etudiants}
-                            onEdit={handleEditHourEtudiant} />
+                        <Table data={etudiants} onEdit={handleEditHourEtudiant} />
+                        <ModalCreateUpdateAbsence isStudent={true} user={etudiantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
 
                     </div>
 

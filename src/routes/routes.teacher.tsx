@@ -1,6 +1,9 @@
+import Chapitres from '../pages/Admin/Chapitres';
 import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
 import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
+import Enseignements from '../pages/Admin/Enseignements';
 import ListeDesMatieres from '../pages/Admin/ListeMatieres';
+import Objectifs from '../pages/Admin/Objectifs';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
 import Abscences from '../pages/CommonPage/Abscences';
@@ -43,6 +46,24 @@ const coreRoutes = [
     path: '/subjects/subject-list',
     title: 'Liste des matières',
     component: ListeDesMatieres,
+  },
+
+  {
+    path: '/subjects/chapitres/manage',
+    title: 'Liste des chapitres',
+    component: Chapitres,
+  },
+
+  {
+    path: '/subjects/objectifs/manage',
+    title: 'Liste des objectifs',
+    component: Objectifs,
+  },
+
+  {
+    path: '/subjects/enseignements/manage',
+    title: 'Liste des enseignements',
+    component: Enseignements,
   },
 
   {

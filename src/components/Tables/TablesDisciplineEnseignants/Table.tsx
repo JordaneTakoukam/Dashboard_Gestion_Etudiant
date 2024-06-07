@@ -20,7 +20,7 @@ import Download from "../common/Download";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
-    onEdit: (enseignant: UserDiscipline, isHourRemove: boolean) => void;
+    onEdit: (enseignant: UserDiscipline) => void;
 }
 
 
@@ -324,7 +324,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                         {
                             pageIsLoadingOnTable ?
                                 <LoadingOnTable /> :
-                                <BodyTable data={filteredData} />
+                                <BodyTable data={filteredData} onEdit={onEdit}/>
 
                         }
                     </table>

@@ -361,7 +361,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {roles.admin === userRole || roles.superAdmin === userRole && (
+                {(roles.admin === userRole || roles.superAdmin === userRole) && (
                     <ButtonCreate
                         onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                    />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} onSubmit={(text) => setSearchText(text)} />

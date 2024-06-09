@@ -20,6 +20,7 @@ import { setObjectifLoading, setObjectifs, setErrorPageObjectif } from "../../..
 import { getObjectifByMatiereWithPagination, getProgressionMatiere } from "../../../api/api_objectif";
 import NoDataTable from "../common/NoDataTable";
 import Pagination from "../../Pagination/Pagination";
+import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 
 const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[] }) => {
     const {t}=useTranslation();
@@ -90,16 +91,16 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
 
     
     // variable pour la pagination
-    const itemsPerPage = useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre delements maximum par page
+    const itemsPerPage =  useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
-
     const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-
-    const count:number = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+
     // Render page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
@@ -109,9 +110,9 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
     const hasPrevious = currentPage > 1;
     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
 
-    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const startItem = indexOfFirstItem + 1;
     const endItem = Math.min(count, indexOfLastItem);
-
+    
 
 
     // filtrer les donnee a partir de l'id de la section selectionner
@@ -214,9 +215,9 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
             if (selectNiveauId) {
                 let fetchedMatieres = null
                 if(currentUser && currentUser.role===roles.enseignant){
-                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                 }else{
-                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre});
+                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre, langue:lang});
                 }
                 if(fetchedMatieres){
                     return fetchedMatieres.matieres;
@@ -395,9 +396,9 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                         
                         let fetchedMatieres = null
                         if(currentUser && currentUser.role===roles.enseignant){
-                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                         }else{
-                            fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
+                            fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                         }
 
                         if(fetchedMatieres){
@@ -462,7 +463,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                 }
                 
                 if(matiere && matiere._id){
-                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
                         
                     if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
                         dispatch(setObjectifs(fetchedObjectifs));
@@ -536,8 +537,8 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2, 3]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
+                                items={semestres}
+                                defaultValue={selectedSemestre} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<MatiereType>
@@ -590,8 +591,8 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2, 3]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
+                                items={semestres}
+                                defaultValue={selectedSemestre} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                             <CustomDropDown2<MatiereType>

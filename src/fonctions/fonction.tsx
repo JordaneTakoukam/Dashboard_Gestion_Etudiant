@@ -11,6 +11,24 @@ export function capitalizeFirstLetter(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
+const trimString = (str: string) => str.trim();
+
+export const sortEnseignements = (periode: PeriodeEnseignementType, langue: string) => {
+  if(periode.enseignements){
+      periode.enseignements.sort((a, b) => {
+        const libelleA = langue === 'fr' ? a.matiere.libelleFr : a.matiere.libelleEn;
+        const libelleB = langue === 'fr' ? b.matiere.libelleFr : b.matiere.libelleEn;
+        
+        const trimmedAndCapitalizedA = capitalizeFirstLetter(trimString(libelleA));
+        const trimmedAndCapitalizedB = capitalizeFirstLetter(trimString(libelleB));
+
+        if (trimmedAndCapitalizedA < trimmedAndCapitalizedB) return -1;
+        if (trimmedAndCapitalizedA > trimmedAndCapitalizedB) return 1;
+        return 0;
+      });
+  }
+  return periode;
+};
 
 export async function decrypt(encryptedValue: String) {
   const iv = encryptedValue.substr(0, 32);

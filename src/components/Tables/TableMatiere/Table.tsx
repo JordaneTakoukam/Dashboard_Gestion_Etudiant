@@ -4,7 +4,7 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
@@ -14,7 +14,7 @@ import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../../_redux/features/matiere_slice";
-import { generateListMatByEnseignantNiveau, generateListMatByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
+import { apiSearchMatiere, apiSearchMatiereByEnseignant, generateListMatByEnseignantNiveau, generateListMatByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
@@ -22,6 +22,8 @@ import jsPDF from "jspdf";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import Bouton from "../../ui/Bouton";
+import { userSlice } from "../../../_redux/features/user_slice";
+import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 
 interface TableMatiereProps {
     data: MatiereType[];
@@ -69,6 +71,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
+    const [refreshFilter, setRefreshFilter] = useState<boolean>(false);
 
 
 
@@ -124,7 +127,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             
 
             if (selectNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre });
+                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                 return fetchedMatieres.matieres;
             }else{
                 alert(t("label.message_telecharger"));
@@ -288,6 +291,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 sections.length>0 && setSelectIdSection(sections[0]._id);
                 sections.length>0 && filterCycleBySection(sections[0]._id);
                 setSelectedSemestre(currentSemestre);
+                setSearchText('');
+                setRefreshFilter(false);
             }
         }
     };
@@ -301,6 +306,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 sections.length>0 && filterCycleBySection(sections[0]._id);
             }
             setSelectedSemestre(selected);
+            setSearchText('');
+            setRefreshFilter(false);
         }
     };
     // recuperer l'id de la section suite au click sur l'input select
@@ -313,6 +320,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             setSelectIdSection(selected._id);
             filterCycleBySection(selected._id);
             setSection(selected);
+            setSearchText('');
+            setRefreshFilter(false);
         }
     };
 
@@ -349,16 +358,16 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
 
     // variable pour la pagination
-    const itemsPerPage = useSelector((state: RootState) => state.matiereSlice.data.pageSize); // nombre delements maximum par page
+    const itemsPerPage =  useSelector((state: RootState) => state.matiereSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.matiereSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
-
     const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-
-    const count:number = useSelector((state: RootState) => state.matiereSlice.data.totalItems);
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+
     // Render page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
@@ -368,8 +377,9 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const hasPrevious = currentPage > 1;
     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
 
-    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const startItem = indexOfFirstItem + 1;
     const endItem = Math.min(count, indexOfLastItem);
+    
 
     //fournir initialement les données à la page
     // Effet pour filtrer les options des CustomDropDown
@@ -439,7 +449,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                     if (selectNiveauId) {
                         let fetchedMatieres=undefined;
                         if(selectedYear && selectedSemestre){
-                             fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
+                             fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                         }
                         
 
@@ -454,7 +464,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                     }
                 }else{
                     if (selectNiveauId) {
-                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
                         // if (currentUser && currentUser.role === roles.enseignant) {
                         //     if(selectedYear && selectedSemestre){
                         //         fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
@@ -470,7 +480,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             dispatch(setMatieres(emptyMatieres));
                         }
                     } else {
-                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined });
+                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined, langue:lang});
                         if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                             dispatch(setMatieres(fetchedMatieres));
                         } else {
@@ -488,16 +498,95 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             }
         }
         fetchMatieres();
-    }, [dispatch, selectNiveauId, selectedYear, selectedSemestre, currentPage, t]); // Déclencher l'effet lorsque currentPage change
+    }, [dispatch, currentPage, selectedYear, selectedSemestre, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+    
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<MatiereType[]>(data);
 
-    useEffect(() => {
-        const result = filterMatiereByContent(data);
-        setFilteredData(result);
-    }, [searchText, data]);
+    // useEffect(() => {
+    //     const result = filterMatiereByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
 
+    useEffect(() => {
+
+        if(searchText === ''){
+            setRefreshFilter(false);
+        }else{
+            setRefreshFilter(true);
+        }
+    }, [searchText]);
+
+    const latestQueryMatiere = useRef('');
+    useEffect(() => {
+        dispatch(setMatiereLoading(true));
+        latestQueryMatiere.current = searchText;
+        try{
+            
+            const filterMatiereByContent = async () => {
+                if (searchText === '') {
+                    if(currentUser.role === roles.enseignant){
+                        sections.length>0?setSection(sections[0]):setSection(undefined);
+                        filterCycleBySection(section?._id);
+                        // setCycle(filteredCycle[0]);
+                        filterNiveauxByCycle(cycle?._id);
+                        // setNiveau(filteredNiveaux[0]);
+                    }else{
+                        if(refreshFilter){
+                            handleRefreshFilters();
+                        }
+                    }
+                    
+                    const result: MatiereType[] = data;
+                    setFilteredData(result); 
+                }else{
+                    if(currentUser.role === roles.enseignant){
+                        setSection(undefined);
+                        setCycle(undefined);
+                        setNiveau(undefined);
+                        setFilteredCycle([]);
+                        setFilteredNiveaux([]);
+                    }else{
+                        handleRefreshFilters();
+                    }
+                    let matieresResult : MatiereType[] = [];
+                    if(currentUser.role === roles.enseignant){
+                        if(selectedYear){
+                            await apiSearchMatiereByEnseignant({ searchString:searchText, limit:10, langue:lang, enseignantId:currentUser._id, annee:selectedYear }).then(result=>{
+                                if (latestQueryMatiere.current === searchText) {
+                                    if(result){
+                                        matieresResult = result.matieres;
+                                        setFilteredData(matieresResult);
+                                    }
+                                }
+                                
+                            })
+                        }
+                    }else{
+                        await apiSearchMatiere({ searchString:searchText, limit:10, langue:lang }).then(result=>{
+                            if (latestQueryMatiere.current === searchText) {
+                                if(result){
+                                    matieresResult = result.matieres;
+                                    setFilteredData(matieresResult);
+                                }
+                            }
+                            
+                        })
+                    }
+                }
+        
+                
+            };
+            filterMatiereByContent();
+        }catch(e){
+            dispatch(setErrorPageMatiere(t('message.erreur')));
+        }finally{
+            if (latestQueryMatiere.current === searchText) {
+                dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+    }, [searchText, data, refreshFilter]);
 
     const handleRefreshFilters = () => {
         setSelectedYear(undefined);
@@ -516,7 +605,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
                 {(roles.admin === currentUser.role || roles.superAdmin === currentUser.role) && (<ButtonCreate
                     onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                />)}
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.matiere')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.matiere')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -573,8 +662,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2, 3]}
-                                defaultValue={1} // ou spécifie une valeur par défaut
+                                items={semestres}
+                                defaultValue={selectedSemestre} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
                         </div>
@@ -621,7 +710,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={selectedSemestre}
-                                items={[1, 2, 3]}
+                                items={semestres}
                                 defaultValue={selectedSemestre} // ou spécifie une valeur par défaut
                                 onSelect={handleSemestreSelect}
                             />
@@ -647,7 +736,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} />
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} annee={selectedYear} semestre={selectedSemestre} />
                         }
 
 
@@ -658,7 +747,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
                 {/* Pagination */}
 
-                {((currentUser && currentUser.role!==roles.enseignant) && (filteredData && filteredData.length>0)) && <Pagination
+                {((searchText ==='') && (currentUser && currentUser.role!==roles.enseignant) && (filteredData && filteredData.length>0)) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

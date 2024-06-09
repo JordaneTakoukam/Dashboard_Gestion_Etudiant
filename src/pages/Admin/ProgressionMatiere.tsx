@@ -25,6 +25,7 @@ const ProgressionMatiere = () => {
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     useEffect(() => {
         const fetchMatieres = async () => {
@@ -51,9 +52,9 @@ const ProgressionMatiere = () => {
                     if (currentNiveauId) {
                         let fetchedMatieres = null
                         if(currentUser && currentUser.role===roles.enseignant){
-                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee: currentYear, semestre: currentSemestre });
+                            fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee: currentYear, semestre: currentSemestre, langue:lang});
                         }else{
-                            fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: currentSemestre });
+                            fetchedMatieres = await getMatieresByNiveau({ niveauId: currentNiveauId, annee: currentYear, semestre: currentSemestre, langue:lang });
                         }
                         if(fetchedMatieres){
                             dispatch(setMatieres(fetchedMatieres));
@@ -91,7 +92,7 @@ const ProgressionMatiere = () => {
                 }
                 
                 if(matieres && matieres.length>0 && matieres[0]._id){
-                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matieres[0]._id, page: 1, annee: currentYear, semestre: currentSemestre });
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matieres[0]._id, page: 1, annee: currentYear, semestre: currentSemestre, langue:lang });
                         
                     if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
                         dispatch(setObjectifs(fetchedObjectifs));

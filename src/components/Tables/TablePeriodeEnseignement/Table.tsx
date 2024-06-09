@@ -257,28 +257,29 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
 
     
 
-     // variable pour la pagination
-     const itemsPerPage = useSelector((state: RootState) => state.periodeEnseignementSlice.data.pageSize); // nombre delements maximum par page
-     const [currentPage, setCurrentPage] = useState<number>(1);
- 
-     const indexOfLastItem = currentPage * itemsPerPage;
-     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-    //  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
-     const count =useSelector((state: RootState) => state.periodeEnseignementSlice.data.totalItems);
-     const handlePageClick = (pageNumber: number) => {
-         setCurrentPage(pageNumber);
-     };
-     // Render page numbers
-     const pageNumbers = [];
-     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
-         pageNumbers.push(i);
-     }
- 
-     const hasPrevious = currentPage > 1;
-     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
- 
-     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-     const endItem = Math.min(count, indexOfLastItem);
+    // variable pour la pagination
+    const itemsPerPage =  useSelector((state: RootState) => state.periodeEnseignementSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.periodeEnseignementSlice.data.totalItems);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
+    const handlePageClick = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+    
 
     //fournir initialement les données à la page
     // Effet pour filtrer les options des CustomDropDown

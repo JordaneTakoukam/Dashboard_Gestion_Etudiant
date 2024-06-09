@@ -18,6 +18,7 @@ const Chapitres = () => {
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const { data: { chapitres } } = useSelector((state: RootState) => state.chapitreSlice);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     
     const navigate = useNavigate();
     useEffect(() => {
@@ -50,7 +51,7 @@ const Chapitres = () => {
                     pageSize: 0
                 }
                 if(selectedMatiere && selectedMatiere._id){
-                    const fetchedChapitres = await getChapitreByMatiereWithPagination({ matiereId: selectedMatiere._id, page: 1, annee: currentYear, semestre: currentSemestre });
+                    const fetchedChapitres = await getChapitreByMatiereWithPagination({ matiereId: selectedMatiere._id, page: 1, annee: currentYear, semestre: currentSemestre, langue:lang });
                         
                     if (fetchedChapitres) { // Vérifiez si fetchedChapitres n'est pas faux, vide ou indéfini
                         dispatch(setChapitres(fetchedChapitres));

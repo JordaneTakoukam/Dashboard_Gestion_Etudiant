@@ -12,9 +12,11 @@ import { setMatiereSelected } from "../../../_redux/features/matiere_slice"
 interface BodyMatiereProps {
     data: MatiereType[];
     onEdit: (matiere: MatiereType) => void;
+    semestre:number|undefined;
+    annee:number|undefined
 }
 
-const BodyTable = ({ data, onEdit }: BodyMatiereProps) => {
+const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
     // const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -47,8 +49,13 @@ const BodyTable = ({ data, onEdit }: BodyMatiereProps) => {
     function nombreDeChapitres(matiere: MatiereType) {
         // Vérifier si la matière existe et si elle a une liste de chapitres
         if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
-            // Retourner la longueur de la liste des chapitres
-            return matiere.chapitres.length;
+            if(!annee && !semestre){
+                // Retourner la longueur de la liste des chapitres
+                return matiere.chapitres.length;
+            }else{
+                const chapitres = matiere.chapitres.filter(chap=> chap.annee==annee && chap.semestre==semestre);
+                return chapitres.length;
+            }
         } else {
             // Si la matière est invalide ou n'a pas de chapitres, retourner 0
             return 0;
@@ -61,10 +68,15 @@ const BodyTable = ({ data, onEdit }: BodyMatiereProps) => {
         // Vérifier si la matière existe et si elle a une liste de chapitres
         if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
             // Parcourir tous les chapitres de la matière
-            matiere.chapitres.forEach(chapitre => {
+            let chapitres = matiere.chapitres;
+            if(annee && semestre){
+                chapitres = matiere.chapitres.filter(chap=> chap.annee==annee && chap.semestre==semestre);
+            }
+            chapitres.forEach(chapitre => {
                 // Vérifier si le chapitre a une liste de types d'enseignement
                 if (chapitre.typesEnseignement && Array.isArray(chapitre.typesEnseignement)) {
                     // Ajouter le volume horaire de chaque type d'enseignement du chapitre au volume total
+                    
                     chapitre.typesEnseignement.forEach(typeEnseignement => {
                         if (typeEnseignement.volumeHoraire) {
                             volumeTotal += typeEnseignement.volumeHoraire;

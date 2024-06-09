@@ -146,7 +146,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setQueryMatiere("");
             setResultsMatiere([]);
           } else if (queryMatiere.trim().length > 0) {
-            const result = await apiSearchMatiere({ langue:lang, searchString: queryMatiere });
+            const result = await apiSearchMatiere({ langue:lang, searchString: queryMatiere, limit:5 });
             // Vérifiez si la requête actuelle correspond toujours à la dernière requête
             if (latestQueryMatiere.current === queryMatiere) {
               setResultsMatiere(result.matieres);

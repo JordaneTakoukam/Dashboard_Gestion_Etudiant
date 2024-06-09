@@ -65,7 +65,7 @@ export async function apiDeleteObjectif(objectifId: string): Promise<ReponseApiP
     }
 }
 
-export async function getObjectifByMatiereWithPagination({ matiereId, page, annee, semestre }: { matiereId: string, page: number, annee:number, semestre:number }): Promise<ObjectifReturnGetType> {
+export async function getObjectifByMatiereWithPagination({ matiereId, page, annee, semestre, langue }: { matiereId: string, page: number, annee:number, semestre:number, langue:string }): Promise<ObjectifReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -79,7 +79,8 @@ export async function getObjectifByMatiereWithPagination({ matiereId, page, anne
                     page: page,
                     pageSize: pageSize,
                     annee:annee,
-                    semestre:semestre
+                    semestre:semestre,
+                    langue:langue
                 },
             },
         );
@@ -109,6 +110,32 @@ export async function getProgressionMatiere({matiereId}:{matiereId:string}): Pro
         return parseFloat(progress.toFixed(2));
     } catch (error) {
         console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiSearchObjectif({ searchString, langue, limit, matiereId, annee }: { langue:string, searchString: string, limit:number, matiereId:string, annee:number }): Promise<ObjectifReturnGetType> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchObjectif/${langue}/${searchString}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    limit:limit,
+                    matiereId:matiereId,
+                    annee:annee,
+                }
+            },
+        );
+        const objectifs: ObjectifReturnGetType = response.data.data;
+
+        return objectifs;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
         throw error;
     }
 }

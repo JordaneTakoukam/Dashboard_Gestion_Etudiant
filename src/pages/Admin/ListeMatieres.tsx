@@ -29,6 +29,7 @@ const ListeDesMatieres = () => {
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const niveauxEns: InscriptionType[] = currentUser.niveaux;
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
 
     const roles = config.roles;
@@ -55,9 +56,9 @@ const ListeDesMatieres = () => {
                 if (currentNiveauId) {
                     let fetchedMatieres=null;
                     if(currentUser && currentUser.role===roles.enseignant){
-                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre });
+                        fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: currentNiveauId, enseignantId: currentUser._id, annee:currentYear, semestre:currentSemestre, langue:lang });
                     }else{
-                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: 1,  annee: undefined, semestre: undefined });
+                        fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: 1,  annee: undefined, semestre: undefined, langue:lang });
                     }
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));

@@ -4,7 +4,7 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
@@ -15,7 +15,7 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import Pagination from "../../Pagination/Pagination";
 import { setEvenementLoading, setEvenements, setErrorPageEvenement } from "../../../_redux/features/evenement_slice";
-import { generateListEvent, getAllEvenementsByYear, getEvenementsByYear } from "../../../api/api_evenement";
+import { apiSearchEvenement, generateListEvent, getAllEvenementsByYear, getEvenementsByYear } from "../../../api/api_evenement";
 import createToast from "../../../hooks/toastify";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { PageErreur } from "../../_Global/PageErreur";
@@ -44,7 +44,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? [];
     const promotions = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions) ?? [];
-    const [promotion, setPromotion] = useState<PromotionProps>();
+    const [promotion, setPromotion] = useState<PromotionProps | undefined>();
     
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -68,9 +68,11 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const handlePromotionSelect = (selected: PromotionProps | undefined) => {
         if (selected?._id) {
             setPromotion(selected);
+            setSearchText('');
         }
     };
     const [searchText, setSearchText] = useState<string>('');
+    const [isSearch, setIsSearch] = useState<boolean>(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     // Filtrer les évènement en fonction de la langue
     const filterEventByContent = (evenements: EvenementType[]) => {
@@ -279,26 +281,21 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     }
     };
       
-      
-
-
-    // variable pour la pagination
-    //
 
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
 
     // variable pour la pagination
-    const itemsPerPage = useSelector((state: RootState) => state.evenementSlice.data.pageSize);; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
+    const itemsPerPage =  useSelector((state: RootState) => state.evenementSlice.data.pageSize); // nombre d'éléments maximum par page
     const count = useSelector((state: RootState) => state.evenementSlice.data.totalItems);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+
     // Render page numbers
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
@@ -308,9 +305,9 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const hasPrevious = currentPage > 1;
     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
 
-    const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+    const startItem = indexOfFirstItem + 1;
     const endItem = Math.min(count, indexOfLastItem);
-
+    
     // Fonction pour récupérer les événements en fonction de l'année et de la page actuelle
     const fetchEvenements = async (annee: number, page: number) => {
         dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
@@ -371,12 +368,67 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const [originalData, setOriginalData] = useState<EvenementType[]>(data); // Ajout d'une copie des données originales
 
 
-    useEffect(() => {
-        const result = filterEventByContent(data);
-        setFilteredData(result);
-    }, [searchText, data]);
+    // useEffect(() => {
+    //     const result = filterEventByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
 
-   
+    useEffect(() => {
+        if(searchText!==''){
+             setIsSearch(true);
+        }else{
+             setIsSearch(false);
+        }
+     }, [searchText]);
+     useEffect(() => {
+        // if(searchText===''){
+            if(promotions && promotions.length>0){
+                setPromotion(promotions[0]);
+            }
+        // }
+     }, []);
+
+    const latestQueryEvenement = useRef('');
+    useEffect(() => {
+        dispatch(setEvenementLoading(true));
+        latestQueryEvenement.current = searchText;
+        try{
+            
+            const filterEvenementByContent = async () => {
+                if (searchText === '') {
+                    if(isSearch){
+                        if(promotions && promotions.length>0){
+                            setPromotion(promotions[0]);
+                        }
+                    }
+                    const result: EvenementType[] = data;
+                    setFilteredData(result); 
+                }else{
+                    setPromotion(undefined);
+                    let evenementsResult : EvenementType[] = [];
+                    await apiSearchEvenement({ searchString:searchText, limit:10, langue:lang, annee:selectedYear }).then(result=>{
+                        if (latestQueryEvenement.current === searchText) {
+                            if(result){
+                                evenementsResult = result.evenements;
+                                setFilteredData(evenementsResult);
+                            }
+                        }
+                        
+                    })
+                    
+                }
+        
+                
+            };
+            filterEvenementByContent();
+        }catch(e){
+            dispatch(setErrorPageEvenement(t('message.erreur')));
+        }finally{
+            if (latestQueryEvenement.current === searchText) {
+                dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+    }, [searchText, data]);
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -385,7 +437,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                     title={t('boutton.nouvel_evenement')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher') + t('recherche.evenement')} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher') + t('recherche.evenement')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -411,7 +463,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                                 title={t('label.promotion')}
                                 selectedItem={promotion}
                                 items={promotions}
-                                defaultValue={promotions[0]} // ou spécifie une valeur par défaut
+                                defaultValue={promotion} // ou spécifie une valeur par défaut
                                 displayProperty={(promotion: PromotionProps) => `${lang === 'fr' ? promotion.libelleFr : promotion.libelleEn}`}
                                 onSelect={handlePromotionSelect}
                             />
@@ -436,7 +488,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                                 title={t('label.promotion')}
                                 selectedItem={promotion}
                                 items={promotions}
-                                defaultValue={promotions[0]} // ou spécifie une valeur par défaut
+                                defaultValue={promotion} // ou spécifie une valeur par défaut
                                 displayProperty={(promotion: PromotionProps) => `${lang === 'fr' ? promotion.libelleFr : promotion.libelleEn}`}
                                 onSelect={handlePromotionSelect}
                             />
@@ -476,7 +528,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
                 {/* Pagination */}
 
-                {filteredData && filteredData.length>0 &&<Pagination
+                {searchText==='' && filteredData && filteredData.length>0 &&<Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

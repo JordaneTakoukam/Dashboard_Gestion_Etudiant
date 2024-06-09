@@ -4,7 +4,7 @@ import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,7 @@ import { extractYear, formatYear, generateYearRange } from "../../../fonctions/f
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { setErrorPageObjectif, setObjectifLoading, setObjectifs } from "../../../_redux/features/objectif_slice";
 import createToast from "../../../hooks/toastify";
-import { getObjectifByMatiereWithPagination } from "../../../api/api_objectif";
+import { apiSearchObjectif, getObjectifByMatiereWithPagination } from "../../../api/api_objectif";
 import Pagination from "../../Pagination/Pagination";
 
 interface TableObjectifProps {
@@ -32,7 +32,7 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
 
     const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemestre);
+    const [selectedSemestre, setSelectedSemestre] = useState<number | undefined>(currentSemestre);
 
     const dispatch = useDispatch();
 
@@ -42,16 +42,17 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
         setIsDropdownVisible(!isDropdownVisible);
     };
    // variable pour la pagination
-   const itemsPerPage = useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre delements maximum par page
+   
+   const itemsPerPage =  useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre d'éléments maximum par page
+   const count = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
    const [currentPage, setCurrentPage] = useState<number>(1);
-
    const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-
-   const count:number = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
+   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+   
    const handlePageClick = (pageNumber: number) => {
        setCurrentPage(pageNumber);
    };
+
    // Render page numbers
    const pageNumbers = [];
    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
@@ -61,13 +62,13 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
    const hasPrevious = currentPage > 1;
    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
 
-   const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
+   const startItem = indexOfFirstItem + 1;
    const endItem = Math.min(count, indexOfLastItem);
-
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
 
     const [searchText, setSearchText] = useState<string>('');
+    const [isSearch, setIsSearch] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -81,8 +82,8 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
                     totalPages: 0,
                     pageSize: 0
                 }
-                if(selectedMatiere && selectedMatiere._id){
-                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: selectedMatiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
+                if(selectedMatiere && selectedMatiere._id && selectedSemestre){
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: selectedMatiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
                         
                     if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
                         dispatch(setObjectifs(fetchedObjectifs));
@@ -125,20 +126,74 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
 
     
 
+    // useEffect(() => {
+    //     const result = filterObjectifByContent(data);
+    //     setFilteredData(result);
+    // }, [searchText, data]);
     useEffect(() => {
-        const result = filterObjectifByContent(data);
-        setFilteredData(result);
-    }, [searchText, data]);
+       if(searchText!==''){
+            setIsSearch(true);
+       }else{
+            setIsSearch(false);
+       }
+    }, [searchText]);
+    const latestQueryObjectif = useRef('');
+    useEffect(() => {
+        dispatch(setObjectifLoading(true));
+        latestQueryObjectif.current = searchText;
+        
+        try{
+            
+            const filterObjectifByContent = async () => {
+                if (searchText === '') {
+                    if(isSearch){
+                        setSelectedSemestre(currentSemestre)
+                    }
+                    const result: ObjectifType[] = data;
+                    setFilteredData(result); 
+                }else{
+                    setSelectedSemestre(undefined);
+                    let objectifsResult : ObjectifType[] = [];
+                    if(selectedMatiere && selectedMatiere._id){
+                        await apiSearchObjectif({ searchString:searchText, limit:10, langue:lang, matiereId:selectedMatiere?._id, annee:selectedYear }).then(result=>{
+                            if (latestQueryObjectif.current === searchText) {
+                                if(result){
+                                    objectifsResult = result.objectifs;
+                                    setFilteredData(objectifsResult);
+                                }
+                            }
+                            
+                        })
+                    }else{
+                        setSelectedSemestre(currentSemestre);
+                        const result: ObjectifType[] = data;
+                        setFilteredData(result); 
+                    }
+                }
+        
+                
+            };
+            filterObjectifByContent();
+        }catch(e){
+            dispatch(setErrorPageObjectif(t('message.erreur')));
+        }finally{
+            if (latestQueryObjectif.current === searchText) {
+                dispatch(setObjectifLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+    }, [searchText, isSearch, data]);
 
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
             setSelectedYear(extractYear(selected.toString()));
+            setSearchText('')
         }
     };
 
     const handleSemestreSelect = (selected: number | undefined) => {
         if(selected){
             setSelectedSemestre(selected);
+            setSearchText('');
         }
     };
 
@@ -150,7 +205,7 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
                     title={t('boutton.nouvel_objectif')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />
-                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.objectif'))} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.objectif'))} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
@@ -235,7 +290,7 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
 
                 {/* Pagination */}
 
-                {filteredData && filteredData.length>0 && <Pagination
+                {searchText==='' && filteredData && filteredData.length>0 && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

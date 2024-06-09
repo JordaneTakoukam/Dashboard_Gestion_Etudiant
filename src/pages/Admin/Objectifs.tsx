@@ -21,6 +21,7 @@ const Objectifs = () => {
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const { data: { objectifs } } = useSelector((state: RootState) => state.objectifSlice);
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
 
     const handleEditObejctif = (objectif: ObjectifType) => {
         setSelectedObjectif(objectif);
@@ -49,7 +50,7 @@ const Objectifs = () => {
                     pageSize: 0
                 }
                 if(selectedMatiere && selectedMatiere._id){
-                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: selectedMatiere._id, page: 1, annee: currentYear, semestre: currentSemestre });
+                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: selectedMatiere._id, page: 1, annee: currentYear, semestre: currentSemestre, langue:lang });
                         
                     if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
                         dispatch(setObjectifs(fetchedObjectifs));

@@ -97,6 +97,31 @@ export async function getEvenementsByYear({ annee, promotion, page }: { annee: n
     }
 }
 
+export async function apiSearchEvenement({ searchString, langue, limit, annee }: { langue:string, searchString: string, limit:number, annee:number }): Promise<EvenementReturnGetType> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchEvent/${langue}/${searchString}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    limit:limit,
+                    annee:annee
+                }
+            },
+        );
+        const evenements: EvenementReturnGetType = response.data.data;
+
+        return evenements;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 export async function getAllEvenementsByYear({ annee}: { annee: number}): Promise<EvenementReturnGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(

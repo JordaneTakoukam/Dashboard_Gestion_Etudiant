@@ -65,7 +65,7 @@ export async function apiDeleteChapitre(chapitreId: string): Promise<ReponseApiP
     }
 }
 
-export async function getChapitreByMatiereWithPagination({ matiereId, page, annee, semestre }: { matiereId: string, page: number, annee:number, semestre:number }): Promise<ChapitreReturnGetType> {
+export async function getChapitreByMatiereWithPagination({ matiereId, page, annee, semestre, langue }: { matiereId: string, page: number, annee:number, semestre:number, langue:string }): Promise<ChapitreReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -79,7 +79,8 @@ export async function getChapitreByMatiereWithPagination({ matiereId, page, anne
                     page: page,
                     pageSize: pageSize,
                     annee:annee,
-                    semestre:semestre
+                    semestre:semestre,
+                    langue:langue
                 },
             },
         );
@@ -90,6 +91,32 @@ export async function getChapitreByMatiereWithPagination({ matiereId, page, anne
         return matieres;
     } catch (error) {
         console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiSearchChapitre({ searchString, langue, limit, matiereId, annee }: { langue:string, searchString: string, limit:number, matiereId:string, annee:number }): Promise<ChapitreReturnGetType> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchChapitre/${langue}/${searchString}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    limit:limit,
+                    matiereId:matiereId,
+                    annee:annee
+                }
+            },
+        );
+        const chapitres: ChapitreReturnGetType = response.data.data;
+
+        return chapitres;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
         throw error;
     }
 }

@@ -48,7 +48,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                 
                 if (periodeEnseignement && periodeEnseignement.niveau) {
                     
-                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: periodeEnseignement.niveau, annee:currentYear, semestre:currentSemester});
+                    const fetchedMatieres = await getMatieresByNiveau({ niveauId: periodeEnseignement.niveau, annee:currentYear, semestre:currentSemester, langue:lang});
                     if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                         dispatch(setMatieres(fetchedMatieres));
                     } else {

@@ -35,6 +35,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
     const [email, setEmail] = useState("");
     const [contact, setContact] = useState("");
     const [matricule, setMatricule] = useState("");
+    const [nationalite, setNationalite] = useState("");
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -83,6 +84,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
             setEmail(admin.email);
             setContact(admin.contact ? admin.contact : "");
             setMatricule(admin.matricule ? admin.matricule : "");
+            setNationalite(admin.nationalite ? admin.nationalite : "");
             // setSection(currentSection);
             // setCycle(currentCycle);
             // setNiveau(currentNiveau);
@@ -104,6 +106,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
             setEmail("");
             setContact("");
             setMatricule("");
+            setNationalite("");
             setSection(undefined);
             setCycle(undefined);
             setNiveau(undefined);
@@ -427,6 +430,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                     email,
                     contact,
                     matricule,
+                    nationalite,
                     prenom,
                     date_naiss: dateNaiss,
                     lieu_naiss: lieuNaiss,
@@ -451,6 +455,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                             photo_profil: e.data.photo_profil,
                             contact: e.data.contact,
                             matricule: e.data.matricule,
+                            nationalite: e.data.nationalite,
                             prenom: e.data.prenom,
                             date_naiss: e.data.date_naiss,
                             lieu_naiss: e.data.lieu_naiss,
@@ -487,6 +492,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                     photo_profil: "",
                     contact,
                     matricule,
+                    nationalite,
                     prenom,
                     date_naiss: dateNaiss,
                     lieu_naiss: lieuNaiss,
@@ -508,6 +514,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                             photo_profil: e.data.photo_profil,
                             contact: e.data.contact,
                             matricule: e.data.matricule,
+                            nationalite: e.data.nationalite,
                             prenom: e.data.prenom,
                             date_naiss: e.data.date_naiss,
                             lieu_naiss: e.data.lieu_naiss,
@@ -602,6 +609,13 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                     <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                 </div>
                 {errorGenre && <p className="text-red-500">{errorGenre}</p>}
+                <label>{t('label.nationalite')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={nationalite}
+                    onChange={(e) => { setNationalite(e.target.value) }}
+                />
                 <label>{t('label.email')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"

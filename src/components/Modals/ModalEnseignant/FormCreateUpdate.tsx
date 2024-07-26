@@ -11,7 +11,7 @@ import createToast from '../../../hooks/toastify';
 
 function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     // const sections: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     // const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     // const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
@@ -35,6 +35,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const [email, setEmail] = useState("");
     const [contact, setContact] = useState("");
     const [matricule, setMatricule] = useState("");
+    const [nationalite, setNationalite] = useState("");
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -83,6 +84,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             setEmail(enseignant.email);
             setContact(enseignant.contact ? enseignant.contact : "");
             setMatricule(enseignant.matricule ? enseignant.matricule : "");
+            setNationalite(enseignant.nationalite?enseignant.nationalite:"");
             // setSection(currentSection);
             // setCycle(currentCycle);
             // setNiveau(currentNiveau);
@@ -104,6 +106,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             setEmail("");
             setContact("");
             setMatricule("");
+            setNationalite("");
             setSection(undefined);
             setCycle(undefined);
             setNiveau(undefined);
@@ -427,6 +430,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     email,
                     contact,
                     matricule,
+                    nationalite,
                     prenom,
                     date_naiss: dateNaiss,
                     lieu_naiss: lieuNaiss,
@@ -452,6 +456,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                             photo_profil: e.data.photo_profil,
                             contact: e.data.contact,
                             matricule: e.data.matricule,
+                            nationalite: e.data.nationalite,
                             prenom: e.data.prenom,
                             date_naiss: e.data.date_naiss,
                             lieu_naiss: e.data.lieu_naiss,
@@ -490,6 +495,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     photo_profil: "",
                     contact,
                     matricule,
+                    nationalite,
                     prenom,
                     date_naiss: dateNaiss,
                     lieu_naiss: lieuNaiss,
@@ -514,6 +520,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                                 photo_profil: e.data.photo_profil,
                                 contact: e.data.contact,
                                 matricule: e.data.matricule,
+                                nationalite: e.data.nationalite,
                                 prenom: e.data.prenom,
                                 date_naiss: e.data.date_naiss,
                                 lieu_naiss: e.data.lieu_naiss,
@@ -610,6 +617,13 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                     <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                 </div>
                 {errorGenre && <p className="text-red-500">{errorGenre}</p>}
+                <label>{t('label.nationalite')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={nationalite}
+                    onChange={(e) => { setNationalite(e.target.value) }}
+                />
                 <label>{t('label.email')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"

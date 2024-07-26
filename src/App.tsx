@@ -24,12 +24,12 @@ import { apiGetAllSettings } from './api/settings/api_data_setting.js';
 import { setSaveDeviceType } from './_redux/features/setting.js';
 import ChoisirCompte from './pages/ChoisirCompte/ChoisirCompte.js';
 import { io } from 'socket.io-client';
-import { addSignalementAbsence, setNewAbsence, setSignalementAbsences } from './_redux/features/absence/signalement_absence.js';
-import { apiGetAbsencesSignaler, getNotifications } from './api/discipline/api_discipline.js';
 import { RootState } from './_redux/store.js';
 import { apiGetNiveauxByEnseignant } from './api/other_users/api_enseignant.js';
 import { getCurrentUserData } from './api/api_user.js';
 import VerificationCode from './pages/Authentication/verification_code.js';
+import { addNotification, setNewNotification, setNotifications } from './_redux/features/notification_slice.js';
+import { getNotifications } from './api/api_notification.js';
 
 function App() {
 
@@ -155,19 +155,19 @@ function App() {
   // recuperer les info du token si le user est connecter
 
 
-  const fetchAbsencesSignaler = async (user: UserState, niveaux: string[] | undefined) => {
+  const fetchNotifications = async (user: UserState, niveaux: string[] | undefined) => {
     try {
-      const emptySignalement: SignalementAbsence[] = []
-      const fetchedAbsences = await getNotifications({
+      const emptyNotification: NotificationType[] = []
+      const fetchedNotifications = await getNotifications({
         userId: user._id, niveauxId: niveaux, role: userRole, annee: currentYear, semestre: currentSemester
       });
 
-      // console.log(fetchedAbsences);
-      if (fetchedAbsences && fetchedAbsences.length > 0) {
-        dispatch(setNewAbsence(true));
-        dispatch(setSignalementAbsences(fetchedAbsences));
+      console.log(fetchedNotifications);
+      if (fetchedNotifications && fetchedNotifications.length > 0) {
+        dispatch(setNotifications(fetchedNotifications));
+        dispatch(setNewNotification(true));
       } else {
-        dispatch(setSignalementAbsences(emptySignalement));
+        dispatch(setNotifications(emptyNotification));
       }
     } catch (error) {
     }
@@ -187,56 +187,59 @@ function App() {
         // Établit une connexion avec le serveur Socket.io
         const socket = io(socket_url);
 
-        socket.on('message', (data: { message: SignalementAbsence }) => {
+        socket.on('message', (data : NotificationType ) => {
+          
           if ((userRole === config.roles.admin) || userRole === config.roles.superAdmin) {
-            dispatch(addSignalementAbsence(data.message));
-            dispatch(setNewAbsence(true));
+            dispatch(addNotification(data));
+            dispatch(setNewNotification(true));
           }
-
-          if ((data.message.role === config.roles.etudiant) || (data.message.role === config.roles.delegue)) {
-            // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
-            if ((userLog._id.toString() !== data.message.user._id.toString()) && (userRole === config.roles.delegue) && (niveauxId.includes(data.message.niveau))) {
-              //  
-              dispatch(addSignalementAbsence(data.message));
-              dispatch(setNewAbsence(true));
-            }
-
-            if ((userLog._id.toString() !== data.message.user._id.toString()) && userRole === config.roles.enseignant) {
-              fetchNiveauEnseignant(userLog).then(niveaux => {
-                if (niveaux) {
-                  niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
+          if(data.type.toString() === config.typeNotifications.absence){
+              if ((data.role === config.roles.etudiant) || (data.role === config.roles.delegue)) {
+                // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
+                
+                if (data.signalementAbsence && ((userLog._id.toString() !== data.user._id.toString()) && (userRole === config.roles.delegue) && (data.signalementAbsence.niveau && (niveauxId.includes(data.signalementAbsence.niveau))))) {
+                  //  
+                  dispatch(addNotification(data));
+                  dispatch(setNewNotification(true));
                 }
-                if ((userLog._id.toString() === data.message.enseignant?._id?.toString()) && niveauxId.includes(data.message.niveau)) {
-                  dispatch(addSignalementAbsence(data.message));
-                  dispatch(setNewAbsence(true));
+                
+                if ((userLog._id.toString() !== data.user._id.toString()) && userRole === config.roles.enseignant) {
+                  fetchNiveauEnseignant(userLog).then(niveaux => {
+                    if (niveaux) {
+                      niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
+                    }
+                    if (data.signalementAbsence && ((userLog._id.toString() === data.signalementAbsence.enseignant?.toString()) && (data.signalementAbsence.niveau && niveauxId.includes(data.signalementAbsence.niveau)))) {
+                      dispatch(addNotification(data));
+                      dispatch(setNewNotification(true));
+                    }
+                  })
                 }
-              })
-            }
-          }
+              }
 
-          if ((data.message.role === config.roles.enseignant)) {
-            // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
-            if ((userLog._id.toString() !== data.message.user._id.toString()) && (userRole === config.roles.delegue || userRole === config.roles.enseignant) && (niveauxId.includes(data.message.niveau))) {
-              dispatch(addSignalementAbsence(data.message));
-              dispatch(setNewAbsence(true));
-            }
+              if ((data.role === config.roles.enseignant)) {
+                // verifier si lutilisateur qui recupere le msg est un enseignant ou un delegue
+                if (data.signalementAbsence && ((userLog._id.toString() !== data.user._id.toString()) && (userRole === config.roles.delegue || userRole === config.roles.enseignant) && (data.signalementAbsence.niveau && niveauxId.includes(data.signalementAbsence.niveau)))) {
+                  dispatch(addNotification(data));
+                  dispatch(setNewNotification(true));
+                }
+              }
           }
 
         });
         if (userRole === config.roles.admin) {
-          fetchAbsencesSignaler(userLog, undefined);
+          fetchNotifications(userLog, undefined);
         } else if (userRole === config.roles.enseignant) {
 
           fetchNiveauEnseignant(userLog).then(niveaux => {
             if (niveaux) {
               niveauxId = niveaux.map(inscription => inscription.niveau) ?? [];
             }
-            fetchAbsencesSignaler(userLog, niveauxId);
+            fetchNotifications(userLog, niveauxId);
           })
 
 
         } else {
-          fetchAbsencesSignaler(userLog, niveauxId);
+          fetchNotifications(userLog, niveauxId);
         }
 
 

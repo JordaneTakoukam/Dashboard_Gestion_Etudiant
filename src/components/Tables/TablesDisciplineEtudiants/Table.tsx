@@ -200,20 +200,20 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             const filterDisciplineByContent = async () => {
                 if (searchText === '') {
                     // setAnnee(formatYear(currentYear));
-                    sections.length>0?setSection(sections[0]):setSection(undefined);
-                    filterCycleBySection(section?._id);
+                    // sections.length>0?setSection(sections[0]):setSection(undefined);
+                    // filterCycleBySection(section?._id);
                     // setCycle(filteredCycle[0]);
-                    filterNiveauxByCycle(cycle?._id);
+                    // filterNiveauxByCycle(cycle?._id);
                     // setNiveau(filteredNiveaux[0]);
                     
                     const result: UserDiscipline[] = data;
                     setFilteredData(result); 
                 }else{
-                    setSection(undefined);
-                    setCycle(undefined);
-                    setNiveau(undefined);
-                    setFilteredCycle([]);
-                    setFilteredNiveaux([]);
+                    // setSection(undefined);
+                    // setCycle(undefined);
+                    // setNiveau(undefined);
+                    // setFilteredCycle([]);
+                    // setFilteredNiveaux([]);
                     let disciplinesResult : UserDiscipline[] = [];
                     await apiSearchUserDisciplineEtudiant({annee:selectedYear, semestre:selectSemestre, searchText:searchText}).then(result=>{
                         if (latestQueryDiscipline.current === searchText) {

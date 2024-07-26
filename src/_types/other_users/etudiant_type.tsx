@@ -30,7 +30,9 @@ interface EtudiantCreateType {
     service: string | null;
 
     commune: string | null;
-    grade: string | null;
+    nationalite: string | null;
+    diplomeEntre: string | null;
+    specialite: string | null;
     niveaux: InscriptionType[];
 }
 

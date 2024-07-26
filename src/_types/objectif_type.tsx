@@ -8,8 +8,9 @@ interface ObjectifType {
     libelleFr: string;
     libelleEn: string;
     etat:number;//0 non terminé, 1 terminé
+    statut:number;
     date_etat?:Date;
-    matiere:string;
+    matiere:MatiereType;
 }
 
 interface ObjectifInitialData {

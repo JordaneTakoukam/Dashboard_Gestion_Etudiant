@@ -50,7 +50,7 @@ const BodyTableEtudiant = ({ data, onEdit, onAddRole }: { data: EtudiantType[], 
                 
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                <td className="border-b border-[#eee] py-1 px-0 dark:border-strokedark flex justify-center items-center">
                     <SelectButton
                         listPage={[
                             {

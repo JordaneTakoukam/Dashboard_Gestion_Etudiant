@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store";
-import { SelectButton } from "../common/composants/SelectButton";
 import { useTranslation } from "react-i18next";
 interface BodyChapitreProps {
     data: ChapitreType[] | undefined;
@@ -32,18 +31,22 @@ const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                    <h5>{item.statut == 1?t('label.approuver'):t('label.non_approuver')}</h5>
+                </td>
+
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>0 && item.typesEnseignement[0].volumeHoraire}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>1 && item.typesEnseignement[1].volumeHoraire}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>2 && item.typesEnseignement[2].volumeHoraire}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                 {/* <SelectButton
                         listPage={[
                             {

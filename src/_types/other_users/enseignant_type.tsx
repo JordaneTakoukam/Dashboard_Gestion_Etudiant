@@ -17,6 +17,7 @@ interface EnseignantCreateType {
     prenom: string | null;
     email: string;
     matricule: string | null;
+    nationalite: string | null;
 
     lieu_naiss: string | null;
     contact: string | null;
@@ -31,6 +32,7 @@ interface EnseignantCreateType {
     categorie: string | null;
     fonction: string | null;
     service: string | null;
+    
 
     commune: string | null;
 

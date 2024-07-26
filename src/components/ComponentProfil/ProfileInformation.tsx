@@ -14,6 +14,7 @@ import { setMinimumUser, setUser, updateUser } from "../../_redux/features/user_
 import createToast from "../../hooks/toastify";
 import CustomModal from "../Modals/CustomDialogModal";
 import { compareDates } from "../../fonctions/fonction";
+import { config } from "../../config";
 
 interface Props {
     icone: ReactNode; // Type de la variable icone
@@ -54,7 +55,7 @@ function ProfileInformation() {
 
     const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     const dataUserIsLoading = useSelector((state: RootState) => state.user.nom);
-
+    const roles = config.roles;
     const [haveChanged, setHaveChanged] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [openModalConfirm, setOpenModalConfirm] = useState<boolean>(false);
@@ -68,6 +69,7 @@ function ProfileInformation() {
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
     const categories: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
+    const specialites: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.specialites) ?? [];
     const { t } = useTranslation();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
@@ -96,10 +98,13 @@ function ProfileInformation() {
         setEmail(userState.email);
         setContact(userState.contact ? userState.contact : "");
         setMatricule(userState.matricule ? userState.matricule : "");
+        setNationalite(userState.nationalite ? userState.nationalite : "");
+        setDiplomeEntre(userState.diplomeEntre ? userState.diplomeEntre : "");
         setGrade(userState.grade ? grades.find(grade => grade._id === userState.grade) : undefined);
         setCategorie(userState.categorie ? categories.find(categorie => categorie._id === userState.categorie) : undefined);
         setFonction(userState.fonction ? fonctions.find(fonction => fonction._id === userState.fonction) : undefined);
         setService(userState.service ? services.find(service => service._id === userState.service) : undefined);
+        setSpecialite(userState.specialite ? specialites.find(specialite => specialite._id === userState.specialite) : undefined);
         setRegion(currentRegion);
         setDepartement(currentDepartement);
         setCommune(currentCommune);
@@ -113,6 +118,8 @@ function ProfileInformation() {
         categories,
         services]);
     const [matricule, setMatricule] = useState("");
+    const [nationalite, setNationalite] = useState("");
+    const [diplomeEntre, setDiplomeEntre] = useState("");
     const [nom, setNom] = useState("");
     const [prenom, setPrenom] = useState("");
     const [email, setEmail] = useState("");
@@ -122,6 +129,7 @@ function ProfileInformation() {
     const [lieuNaiss, setLieuNaiss] = useState("");
     const [grade, setGrade] = useState<CommonSettingProps>();
     const [service, setService] = useState<CommonSettingProps>();
+    const [specialite, setSpecialite] = useState<CommonSettingProps>();
     const [fonction, setFonction] = useState<CommonSettingProps>();
     const [categorie, setCategorie] = useState<CommonSettingProps>();
     const [region, setRegion] = useState<CommonSettingProps>();
@@ -145,6 +153,8 @@ function ProfileInformation() {
 
         const isModified =
             userState.matricule !== matricule ||
+            userState.nationalite !== nationalite ||
+            userState.diplomeEntre !== diplomeEntre ||
             !isDateEntree ||
             userState.nom !== nom ||
             userState.prenom !== prenom ||
@@ -157,8 +167,9 @@ function ProfileInformation() {
             userState.categorie && userState.categorie != categorie?._id ||
             userState.fonction && userState.fonction != fonction?._id ||
             userState.service && userState.service != service?._id ||
-            userState.region && userState.region != region?._id ||
-            userState.departement && userState.departement != departement?._id ||
+            userState.specialite && userState.specialite != specialite?._id ||
+            // userState.region && userState.region != region?._id ||
+            // userState.departement && userState.departement != departement?._id ||
             userState.commune && userState.commune != commune?._id
             ;
         if (isModified) {
@@ -167,7 +178,7 @@ function ProfileInformation() {
         else {
             setHaveChanged(false);
         }
-    }, [matricule, dateEntreeAdmin, nom, prenom, email, contact, genre, dateNaiss, lieuNaiss,
+    }, [matricule, nationalite, diplomeEntre, specialite, dateEntreeAdmin, nom, prenom, email, contact, genre, dateNaiss, lieuNaiss,
         grade, categorie, fonction, service, region, departement, commune,
 
         regions,
@@ -176,7 +187,8 @@ function ProfileInformation() {
         grades,
         fonctions,
         categories,
-        services
+        services,
+        specialites
     ]);
 
 
@@ -266,6 +278,26 @@ function ProfileInformation() {
             setService(selectedService);
         }
     };
+
+    const handleSpecialiteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSpecialiteLibelle = e.target.value;
+        var selectedSpecialite = null;
+    
+        if (lang === 'fr') {
+            selectedSpecialite = specialites.find(specialite => specialite.libelleFr === selectedSpecialiteLibelle);
+    
+        }
+        else {
+            selectedSpecialite = specialites.find(specialite => specialite.libelleEn === selectedSpecialiteLibelle);
+    
+        }
+    
+    
+        if (selectedSpecialite) {
+            setSpecialite(selectedSpecialite);
+        }
+    };
+
     // filtrer les donnee a partir de l'id de la region selectionner
     const filterDepartementByRegion = (regionId: string | undefined) => {
         if (regionId && regionId !== '') {
@@ -379,12 +411,14 @@ function ProfileInformation() {
                 photo_profil: photoProfil,
                 contact,
                 matricule,
+                nationalite,
+                diplomeEntre,
                 prenom,
                 date_naiss: dateNaiss,
                 lieu_naiss: lieuNaiss,
                 date_entree: dateEntreeAdmin,
                 niveaux: userState.niveaux,
-                grade: grade?._id || null,
+                specialite: specialite?._id || null,
                 categorie: categorie?._id || null,
                 fonction: fonction?._id || null,
                 service: service?._id || null,
@@ -533,36 +567,50 @@ function ProfileInformation() {
                                 </div>
 
                                 {/* genre */}
-                                <div className="w-full mb-5.5">
-                                    <LabelInput title={t('label.genre')} required={true} />
+                                <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.genre')} required={true} />
 
-                                    <div className="relative">
-                                        {/* <IconeInput icone={<MdOutlineMail />} /> */}
-                                        <div className="">
-                                            <input
-                                                className='radio-label-space'
-                                                type="radio"
-                                                id={t('label.homme')}
-                                                name="genre"
-                                                value={t('label.homme')}
-                                                checked={genre === "M"}
-                                                onChange={() => { setGenre("M"); setErrorGenre("") }}
-                                            />
-                                            <label htmlFor={t('label.homme')} className='radio-intern-space font-semibold'>{t('label.homme')}</label>
+                                        <div className="relative">
+                                            {/* <IconeInput icone={<MdOutlineMail />} /> */}
+                                            <div className="">
+                                                <input
+                                                    className='radio-label-space'
+                                                    type="radio"
+                                                    id={t('label.homme')}
+                                                    name="genre"
+                                                    value={t('label.homme')}
+                                                    checked={genre === "M"}
+                                                    onChange={() => { setGenre("M"); setErrorGenre("") }}
+                                                />
+                                                <label htmlFor={t('label.homme')} className='radio-intern-space font-semibold'>{t('label.homme')}</label>
 
+                                                <input
+                                                    className='radio-label-space'
+                                                    type="radio"
+                                                    id={t('label.femme')}
+                                                    name="genre"
+                                                    value={t('label.femme')}
+                                                    checked={genre === "F"}
+                                                    onChange={() => { setGenre("F"); setErrorGenre("") }}
+                                                />
+                                                <label className="font-semibold" htmlFor={t('label.femme')}>{t('label.femme')}</label>
+                                            </div>
+                                        </div>
+                                        {errorGenre && <p className="text-red-500 pt-2 text-sm " >{errorGenre}</p>}
+                                    </div>
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.nationalite')} />
+                                        <div className="relative">
                                             <input
-                                                className='radio-label-space'
-                                                type="radio"
-                                                id={t('label.femme')}
-                                                name="genre"
-                                                value={t('label.femme')}
-                                                checked={genre === "F"}
-                                                onChange={() => { setGenre("F"); setErrorGenre("") }}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="text"
+                                                value={nationalite}
+                                                onChange={(e) => setNationalite(e.target.value)}
                                             />
-                                            <label className="font-semibold" htmlFor={t('label.femme')}>{t('label.femme')}</label>
                                         </div>
                                     </div>
-                                    {errorGenre && <p className="text-red-500 pt-2 text-sm " >{errorGenre}</p>}
+                                    
                                 </div>
                                 <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                                     {/* Date de naissance */}
@@ -598,10 +646,42 @@ function ProfileInformation() {
                                         </div>
                                     </div>
                                 </div>
+                                {(userState.role.toString()===roles.etudiant.toString() || userState.role.toString()===roles.delegue.toString()) && (<div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                    {/* diplome */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.diplome')} />
+
+                                        <div className="relative">
+                                            <input
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                type="text"
+                                                value={diplomeEntre}
+                                                onChange={(e) => setDiplomeEntre(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* Specialite */}
+                                    <div className="w-full sm:w-1/2">
+                                        <LabelInput title={t('label.specialite')} />
+
+                                        <div className="relative">
+                                            <select
+                                                value={specialite ? (lang === 'fr' ? specialite.libelleFr : specialite.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.specialite')}
+                                                onChange={handleSpecialiteChange}
+                                                className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.specialite')}</option>
+                                                {specialites.map(specialite => (
+                                                    <option key={specialite._id} value={(lang === 'fr' ? specialite.libelleFr : specialite.libelleEn)}>{(lang === 'fr' ? specialite.libelleFr : specialite.libelleEn)}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>)}
                             </>
                     }
 
-                    {
+                    {(userState.role.toString()===roles.superAdmin.toString() || userState.role.toString()===roles.admin.toString() || userState.role.toString()===roles.enseignant.toString()) && (
                         settingIsLoading ?
                             <div className="w-full flex justify-center my-10">
                                 <div className=" my-10 h-10 w-10 animate-spin rounded-full border-2 border-solid border-primary border-t-transparent"></div>
@@ -740,31 +820,31 @@ function ProfileInformation() {
 
 
 
-                                {/* bouton valider !! */}
-                                <div className="flex justify-center pt-0 gap-2.5  ">
-                                    <button
-                                        className="text-sm mt-8 flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                        onClick={() => {
-                                            if (haveChanged) {
-                                                setOpenModalConfirm(true)
-                                            } else {
-                                                createToast(lang === 'fr' ? "Aucune information n'a changé." : "No information has changed.", '', 1);
-                                            }
-
-                                        }
-
-
-                                        } >
-                                        {t('boutton.mettre_a_jour_info')}
-                                    </button>
-
-
-                                </div>
-                            </>
+                                
+                            </>)
 
                     }
 
+                    {/* bouton valider !! */}
+                    <div className="flex justify-center pt-0 gap-2.5  ">
+                        <button
+                            className="text-sm mt-8 flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+                            onClick={() => {
+                                if (haveChanged) {
+                                    setOpenModalConfirm(true)
+                                } else {
+                                    createToast(lang === 'fr' ? "Aucune information n'a changé." : "No information has changed.", '', 1);
+                                }
 
+                            }
+
+
+                            } >
+                            {t('boutton.mettre_a_jour_info')}
+                        </button>
+
+
+                    </div>
 
 
                 </div>

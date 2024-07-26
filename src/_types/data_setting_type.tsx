@@ -54,6 +54,7 @@ interface SalleDeCoursProps extends CommonSettingProps {
 // Interface des propriétés de Setting
 interface DataSettingProps {
     services: CommonSettingProps[];
+    specialites: CommonSettingProps[];
     fonctions: CommonSettingProps[];
     grades: CommonSettingProps[];
     categories: CategorieProps[];

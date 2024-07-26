@@ -22,6 +22,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
     const categories: CategorieProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
+    const specialites: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.specialites) ?? [];
     
 
     const { t } = useTranslation();
@@ -35,6 +36,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const [email, setEmail] = useState("");
     const [contact, setContact] = useState("");
     const [matricule, setMatricule] = useState("");
+    const [nationalite, setNationalite] = useState("");
+    const [diplomeEntre, setDiplomeEntre] = useState("");
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -43,6 +46,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const [fonction, setFonction] = useState<CommonSettingProps>();
     const [service, setService] = useState<CommonSettingProps>();
     const [region, setRegion] = useState<CommonSettingProps>();
+    const [specialite, setSpecialite] = useState<CommonSettingProps>();
     const [departement, setDepartement] = useState<DepartementProps>();
     const [commune, setCommune] = useState<CommuneProps>();
     const [dateEntreeAdmin, setDateEntreeAdmin] = useState("");
@@ -84,6 +88,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             setEmail(etudiant.email);
             setContact(etudiant.contact ? etudiant.contact : "");
             setMatricule(etudiant.matricule ? etudiant.matricule : "");
+            setNationalite(etudiant.nationalite ? etudiant.nationalite : "");
+            setDiplomeEntre(etudiant.diplomeEntre ? etudiant.diplomeEntre : "");
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
@@ -92,6 +98,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             setCategorie(currentCategorie);
             setFonction(etudiant.fonction ? fonctions.find(fonction=>fonction._id===etudiant.fonction) : undefined);
             setService(etudiant.service ? services.find(service=>service._id===etudiant.service) : undefined);
+            setSpecialite(etudiant.specialite ? specialites.find(specialite=>specialite._id===etudiant.specialite) : undefined);
             setRegion(currentRegion);
             setDepartement(currentDepartement);
             setCommune(currentCommune);
@@ -326,6 +333,25 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
             setService(selectedService);
         }
     };
+
+    const handleSpecialiteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSpecialiteLibelle = e.target.value;
+        var selectedSpecialite = null;
+
+        if (lang === 'fr') {
+            selectedSpecialite = specialites.find(specialite => specialite.libelleFr === selectedSpecialiteLibelle);
+
+        }
+        else {
+            selectedSpecialite = specialites.find(specialite => specialite.libelleEn === selectedSpecialiteLibelle);
+
+        }
+
+
+        if (selectedSpecialite) {
+            setSpecialite(selectedSpecialite);
+        }
+    };
     // filtrer les donnee a partir de l'id de la region selectionner
     const filterDepartementByRegion = (regionId: string | undefined) => {
         if (regionId && regionId !== '') {
@@ -452,7 +478,10 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         categorie:categorie?._id||null,
                         fonction:fonction?._id||null,
                         service:service?._id||null,
-                        commune:commune?._id||null
+                        commune:commune?._id||null,
+                        nationalite, 
+                        diplomeEntre, 
+                        specialite:specialite?._id||null
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -477,7 +506,10 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                                 categorie:e.data.categorie,
                                 fonction:e.data.fonction,
                                 service:e.data.service,
-                                commune:e.data.commune
+                                commune:e.data.commune,
+                                nationalite:e.data.nationalite, 
+                                diplomeEntre:e.data.diplomeEntre, 
+                                specialite:e.data.specialite
                             }
                             
                         }));
@@ -514,7 +546,10 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         fonction:fonction?._id||null,
                         service:service?._id||null,
                         commune:commune?._id||null,
-                        roles:etudiant.roles
+                        roles:etudiant.roles,
+                        nationalite, 
+                        diplomeEntre, 
+                        specialite:specialite?._id||null,
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -539,7 +574,10 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                                 categorie:e.data.categorie,
                                 fonction:e.data.fonction,
                                 service:e.data.service,
-                                commune:e.data.commune
+                                commune:e.data.commune,
+                                nationalite:e.data.nationalite, 
+                                diplomeEntre:e.data.diplomeEntre, 
+                                specialite:e.data.specialite
                             }
                             
                         }));
@@ -595,7 +633,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                     value={dateNaiss}
                     onChange={(e) => setDateNaiss(e.target.value)}
                 />
-                <label>{t('label.lieu_naiss')}</label><input
+                <label>{t('label.lieu_naiss')}</label>
+                <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={lieuNaiss}
@@ -626,6 +665,13 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                     <label htmlFor={t('label.femme')}>{t('label.femme')}</label>
                 </div>
                 {errorGenre && <p className="text-red-500">{errorGenre}</p>}
+                <label>{t('label.nationalite')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={nationalite}
+                    onChange={(e) => { setNationalite(e.target.value) }}
+                />
                 <label>{t('label.email')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -677,7 +723,25 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                     ))}
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
-                <label>{t('label.grade')}</label>
+                <label>{t('label.diplome')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="text"
+                    value={diplomeEntre}
+                    onChange={(e) => { setDiplomeEntre(e.target.value) }}
+                />
+                <label>{t('label.specialite')}</label>
+                <select
+                    value={specialite ? (lang==='fr'?specialite.libelleFr:specialite.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.specialite')}
+                    onChange={handleSpecialiteChange}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                >
+                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.specialite')}</option>
+                    {specialites.map(specialite => (
+                        <option key={specialite._id} value={(lang==='fr'?specialite.libelleFr:specialite.libelleEn)}>{(lang==='fr'?specialite.libelleFr:specialite.libelleEn)}</option>
+                    ))}
+                </select>
+                {/* <label>{t('label.grade')}</label>
                 <select
                     value={grade ? (lang==='fr'?grade.libelleFr:grade.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.grade')}
                     onChange={handleGradeChange}
@@ -720,7 +784,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                     {services.map(service => (
                         <option key={service._id} value={(lang==='fr'?service.libelleFr:service.libelleEn)}>{(lang==='fr'?service.libelleFr:service.libelleEn)}</option>
                     ))}
-                </select>
+                </select> */}
                 <label>{t('label.region')}</label>
                 <select
                     value={region ? (lang==='fr'?region.libelleFr:region.libelleEn) : t('select_par_defaut.selectionnez') + t('select_par_defaut.region')}

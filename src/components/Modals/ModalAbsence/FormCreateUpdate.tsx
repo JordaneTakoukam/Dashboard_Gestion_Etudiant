@@ -251,7 +251,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
             <CustomDialogModal
                 title={modalTitle} // Utilisation du titre dynamique
                 isModalOpen={isModalOpen}
-                isDelete={isHourRemove || isJustify ? true : false}
+                isDelete={isHourRemove || (isJustify ? true : false)}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
             >
@@ -322,9 +322,9 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
 
                                         <p className=' pb-3'>{t('gestion_absence.date')} : {lang === 'fr' ? new Date(user?.absence?.dateAbsence).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : new Date(user?.absence?.dateAbsence).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
 
-                                        <p className=' pb-3'>{t('label.heureDebut')} : {user.absence.heureDebut}</p>
+                                        <p className=' pb-3'>{t('label.heure_debut')} : {user.absence.heureDebut}</p>
 
-                                        <p className=' pb-3'>{t('label.heureFin')} : {user.absence.heureFin}</p>
+                                        <p className=' pb-3'>{t('label.heure_fin')} : {user.absence.heureFin}</p>
 
                                         <p className=' pb-3'>{t('gestion_absence.nombre_heure_absence')} : <span className='text-meta-1 font-medium'>{nbTotalAbsences([user.absence])} {[user.absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </span></p>
                                         <input

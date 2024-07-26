@@ -37,6 +37,7 @@ import Enseignements from '../pages/Admin/Enseignements';
 import EnseignementsPeriode from '../pages/Admin/EnseignementsPeriode';
 import DepartementsAcademique from '../pages/Admin/DepartementsAcademique';
 import Promotions from '../pages/Admin/Promotions';
+import Documents from '../pages/CommonPage/Documents';
 
 
 
@@ -212,6 +213,13 @@ const coreRoutes = [
     path: '/academic-calendar',
     title: 'Calendrier académique',
     component: CalendrierAcademique,
+  },
+
+  // documents
+  {
+    path: '/documents',
+    title: 'Documents',
+    component: Documents,
   },
 
   // parametres

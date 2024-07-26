@@ -1,17 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalSignalerAbsence, } from '../../../_redux/features/setting';
+import { setShowModalSignalerAbsence, } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { Jour, jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
-import { FaTrash } from 'react-icons/fa6';
+import { Jour, jours } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
-import { setMatiereLoading, setMatieres, setErrorPageMatiere } from '../../../_redux/features/matiere_slice';
-import { getMatieresByNiveau } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
-import { createPeriode, deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
 import { formatYear } from '../../../fonctions/fonction';
-import { apiCreatePeriode, apiDeletePeriode, apiUpdatePeriode } from '../../../api/api_periode';
 import { apiSignalerAbsence } from '../../../api/discipline/api_discipline';
 import { config } from '../../../config';
 
@@ -28,6 +23,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [heureFin, setHeureFin] = useState("");
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
+    const [motif, setMotif] = useState("");
+    const [files, setFiles] = useState<File[]>([]);
 
     const [isFirstRender, setIsFirstRender] = useState(true);
 
@@ -46,6 +43,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setHeureFin(periodeCours.heureFin);
             setSemestre(periodeCours.semestre);
             setAnnee(periodeCours.annee);
+            setMotif("");
+            setFiles([]);
         } else {
         }
 
@@ -63,78 +62,43 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         dispatch(setShowModalSignalerAbsence());
     };
 
-    const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSemestre(parseInt(event.target.value));
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            setFiles(Array.from(event.target.files));
+        }
     };
-
-    
-
-
-
 
     const [isDeleting, setIsDeleting] = useState(false);
 
 
     const handleCreatePeriodeCours = async () => {
-        // if (!jour || !heureDebut || !heureFin || !semestre) {
-        //     if (!jour) {
-        //         // setErrorJour(t('error.jour'));
-        //     }
-        //     if (!heureDebut) {
-        //         // setErrorHeureDebut(t('error.heure_debut'));
-        //     }
-        //     if (!heureFin) {
-        //         // setErrorHeureFin(t('error.heure_fin'));
-        //     }
-                
-        //     if (!enseignant) {
-        //         // setErrorEnseignant(t('error.enseignant'));
-        //     }
-        //     if (!cycle) {
-        //         setErrorCycle(t('error.cycle'));
-        //     }
-        //     if (!niveau) {
-        //         setErrorNiveau(t('error.niveau'));
-        //     }
-
-        //     if (!matiere) {
-        //         setErrorMatiere(t('error.matiere'));
-        //     }
-
-        //     if (!semestre) {
-        //         setErrorSemestre(t('error.semestre'));
-        //     }
-
-        //     if (!typeEnseignement) {
-        //         setErrorTypeEnseignement(t('error.type_ens_periode'));
-        //     }
-
-        //     if (!salleCours) {
-        //         setErrorSalle(t('error.salle'));
-        //     }
-
-        //     return;
-        // }
-        
         
         if (periodeCours) {
             let enseignant=undefined;
             if(currentUser.role!==config.roles.enseignant){
                 enseignant = periodeCours.enseignantPrincipal;
             }
-            await apiSignalerAbsence(
-                {
-                    user:currentUser,
-                    enseignant:enseignant,
-                    role:currentUser.role,
-                    heure_debut_absence:periodeCours.heureDebut,
-                    heure_fin_absence:periodeCours.heureFin,
-                    jour_absence:periodeCours.jour,
-                    semestre,
-                    annee,
-                    niveau:periodeCours.niveau
-                }
-            ).then((e: ReponseApiPros) => {
+            
+            const formData = new FormData();
+            // formData.append('type', config.typeNotifications.absence);
+            formData.append('user', JSON.stringify(currentUser)); // Assume `currentUser` is an object
+            if(enseignant){
+                formData.append('enseignant', JSON.stringify(enseignant));
+            }
+            formData.append('motif', motif);
+            formData.append('role', currentUser.role);
+            formData.append('heure_debut_absence', periodeCours.heureDebut);
+            formData.append('heure_fin_absence', periodeCours.heureFin);
+            formData.append('jour_absence', periodeCours.jour.toString());
+            formData.append('semestre', semestre.toString());
+            formData.append('annee', annee.toString());
+            formData.append('niveau', periodeCours.niveau);
+            
+
+            files.forEach((file, index) => {
+                formData.append(`files`, file);
+            });
+            await apiSignalerAbsence(formData).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();
@@ -203,6 +167,20 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     readOnly
                     value={heureFin}
                     onChange={(e) => { setHeureFin(e.target.value); }}
+                />
+                <label>{t('label.motif')}</label>
+                <textarea
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    value={motif}
+                    maxLength={100} // Limite à 100 caractères
+                    onChange={(e) => { setMotif(e.target.value); }}
+                />
+                <label>{t('label.pieces_jointes')}</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
                 />
                 {/* {errorHeureFin && <p className="text-red-500" >{errorHeureFin}</p>} */}
             </CustomDialogModal>

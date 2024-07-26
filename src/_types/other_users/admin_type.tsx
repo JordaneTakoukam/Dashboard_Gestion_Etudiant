@@ -15,6 +15,7 @@ interface AdminCreateType {
     prenom: string | null;
     email: string;
     matricule: string | null;
+    nationalite: string | null;
     photo_profil?: string | null;
 
     lieu_naiss: string | null;

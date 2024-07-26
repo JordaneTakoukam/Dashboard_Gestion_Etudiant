@@ -1,10 +1,11 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { nbTotalAbsences, nbTotalAbsencesJustifier, nbTotalAbsencesNonJustifier } from "../../../fonctions/fonction"
 import { useNavigate } from "react-router-dom"
 import { setEtudiantselected } from "../../../_redux/features/absence/discipline_etudiant_slice"
 import { MdOutlineManageAccounts } from "react-icons/md";
-import { setShowModal } from "../../../_redux/features/setting";
 import ButtonCrudTable from "../common/ButtonActionTable";
+import { RootState } from "../../../_redux/store";
+import { config } from "../../../config";
 
 
 const BodyTable = ({ data, onEdit}: { data: UserDiscipline[],  onEdit: (etudiant : UserDiscipline) => void }) => {
@@ -12,6 +13,8 @@ const BodyTable = ({ data, onEdit}: { data: UserDiscipline[],  onEdit: (etudiant
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
+    const currentUser:UserState = useSelector((state: RootState) => state.user);
+    const roles = config.roles;
     return <tbody>
         {data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -35,22 +38,11 @@ const BodyTable = ({ data, onEdit}: { data: UserDiscipline[],  onEdit: (etudiant
                     <h5>{item.prenom ? item.prenom : ""}</h5>
                 </td>
 
-
-                {/* e-mail */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
-                    <h5>{item.email}</h5>
-                </td>
-
-                {/* contact */}
-                {/* <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
-                    <h5>{item.contact ? item.contact : ""}</h5>
-                </td> */}
-
                 {/* nombre d'heure d'absence */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{nbTotalAbsences(item.absences)}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
                     <h5>{nbTotalAbsencesJustifier(item.absences)}</h5>
                 </td>
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-5 dark:border-strokedark bg-gray-2 dark:bg-black">
@@ -65,7 +57,7 @@ const BodyTable = ({ data, onEdit}: { data: UserDiscipline[],  onEdit: (etudiant
                             onEdit(item);
                         }}
                     />
-                    <button
+                    {(currentUser.role.toString()===roles.superAdmin.toString() || currentUser.role.toString()===roles.admin.toString()) && (<button
                         className="bg-primary text-white px-6 py-2 mx-4 rounded-lg hover:bg-opacity-75"
                         onClick={() => {
                             dispatch(setEtudiantselected(item))
@@ -73,7 +65,7 @@ const BodyTable = ({ data, onEdit}: { data: UserDiscipline[],  onEdit: (etudiant
 
                         }}>
                         <MdOutlineManageAccounts className="text-lg" />
-                    </button>
+                    </button>)}
 
 
                     

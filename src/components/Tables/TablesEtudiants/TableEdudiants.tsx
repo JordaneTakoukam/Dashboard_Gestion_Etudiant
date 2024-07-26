@@ -61,6 +61,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
+    const [isSearch, setIsSearch] = useState(false);
 
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
@@ -213,6 +214,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             filterCycleBySection(selected._id);
             setSection(selected);
             setSearchText('');
+            setIsSearch(false);
         }
     };
 
@@ -223,6 +225,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             filterNiveauxByCycle(selected._id);
             setCycle(selected);
             setSearchText('');
+            setIsSearch(false);
         }
     };
 
@@ -232,6 +235,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             setSelectIdNiveau(selected._id);
             setNiveau(selected);
             setSearchText('');
+            setIsSearch(false);
         }
     };
 
@@ -330,10 +334,11 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             }
         }
         fetchEtudiants();
-    }, [dispatch, selectNiveauId, selectedYear, currentPage, t]); // Déclencher l'effet lorsque currentPage change
+    }, [dispatch, selectedYear, currentPage, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<EtudiantType[]>(data);
+    
 
     const latestQueryEtudiant = useRef('');
     useEffect(() => {
@@ -343,19 +348,19 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             
             const filterEtudiantByContent = async () => {
                 if (searchText === '') {
-                    sections.length>0?setSection(sections[0]):setSection(undefined);
-                    filterCycleBySection(section?._id);
-                    // setCycle(filteredCycle[0]);
-                    filterNiveauxByCycle(cycle?._id);
-                    // setNiveau(filteredNiveaux[0]);
-                    const result: EtudiantType[] = data;
-                    setFilteredData(result); 
+                    // if(isSearch){
+                        // sections.length>0?setSection(sections[0]):setSection(undefined);
+                        // filterCycleBySection(section?._id);
+                        // filterNiveauxByCycle(cycle?._id);
+                        const result: EtudiantType[] = data;
+                        setFilteredData(result); 
+                    // }
                 }else{
-                    setSection(undefined);
-                    setCycle(undefined);
-                    setNiveau(undefined);
-                    setFilteredCycle([]);
-                    setFilteredNiveaux([]);
+                    // setSection(undefined);
+                    // setCycle(undefined);
+                    // setNiveau(undefined);
+                    // setFilteredCycle([]);
+                    // setFilteredNiveaux([]);
                     let etudiantsResult : EtudiantType[] = [];
                     await apiSearchEtudiant({ searchString:searchText, limit:10 }).then(result=>{
                         if (latestQueryEtudiant.current === searchText) {
@@ -378,7 +383,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 dispatch(setEtudiantsLoading(false)); // Définissez le loading à false après le chargement
             }
         }
-    }, [searchText, data]);
+    }, [searchText, isSearch, data]);
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -387,7 +392,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                     title={t('boutton.nouvelle_etudiant')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.etudiant')} value={searchText} onSubmit={(text) => setSearchText(text)} />
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.etudiant')} value={searchText} onSubmit={(text) =>{setIsSearch(true); setSearchText(text)}} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 

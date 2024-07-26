@@ -10,11 +10,12 @@ import { ajouterObjectif, modifierObjectif } from '../../../_redux/features/mati
 import { createObjectif, updateObjectif } from '../../../_redux/features/objectif_slice';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { formatYear } from '../../../fonctions/fonction';
+import { config } from '../../../config';
 
 
 
 function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | null, matiere:MatiereType | undefined }) {
-    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const lang:string = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
@@ -35,6 +36,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
+    
    
     useEffect(() => {
         
@@ -97,7 +100,10 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
         }
        
         if (!objectif) {
-            console.log(matiere?._id)
+            var statut = 0;
+            if(currentUser.role == config.roles.admin){
+                statut = 1;
+            }
             if(matiere?._id){ 
                 await apiCreateObjectif(
                     {
@@ -107,7 +113,9 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                         libelleFr:libelleFr, 
                         libelleEn:libelleEn, 
                         etat:0,
-                        matiere:matiere?._id
+                        statut,
+                        matiere:matiere?._id,
+                        user:currentUser._id
                         
                     }
                 ).then((e: ReponseApiPros) => {
@@ -123,7 +131,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
                                 etat: e.data.etat,
-                                matiere: e.data.matiere,
+                                statut:e.data.statut,
+                                matiere: matiere,
                             }
                             
                         }));
@@ -151,7 +160,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                     libelleFr:libelleFr, 
                     libelleEn:libelleEn, 
                     etat:objectif.etat,
-                    matiere:objectif.matiere
+                    matiere:objectif.matiere,
+                    statut:objectif.statut
                     
                 }
             ).then((e: ReponseApiPros) => {
@@ -169,7 +179,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                                 libelleFr:e.data.libelleFr,
                                 libelleEn:e.data.libelleEn,
                                 etat:e.data.etat,
-                                matiere:e.data.matiere,
+                                statut:e.data.statut,
+                                matiere:matiere,
                             }
                         }));
                     createToast(e.message[lang as keyof typeof e.message], '', 0);

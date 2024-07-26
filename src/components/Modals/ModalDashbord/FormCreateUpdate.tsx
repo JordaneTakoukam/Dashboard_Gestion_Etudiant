@@ -4,15 +4,11 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setShowModal } from '../../../_redux/features/setting';
-import Input from '../../ui/input';
-import { ErrorMessage, Label } from '../../ui/Label';
-import { apiCreateRegion, apiUpdateRegion } from '../../../api/settings/api_region';
 import createToast from '../../../hooks/toastify';
-import { createSettingItem, setAnneeCourante, setSemestreCourant, updateSettingItem } from '../../../_redux/features/data_setting_slice';
+import { setAnneeCourante, setSemestreCourant } from '../../../_redux/features/data_setting_slice';
 import { extractYear, formatYear, generateYearRange2 } from '../../../fonctions/fonction';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { apiUpdateAnneeCourante, apiUpdateSemestreCourant } from '../../../api/settings/api_data_setting';
-import { CurrentYearDate } from '../../CardDashboard/_CommonYear';
 
 
 function ModalCreateUpdate() {
@@ -21,8 +17,8 @@ function ModalCreateUpdate() {
     const dispatch = useDispatch();
     
 
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
-    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024; 
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
 
     const [semestre, setSemestre] = useState(currentSemester);
@@ -43,7 +39,7 @@ function ModalCreateUpdate() {
         if (isFirstRender) {
             setIsFirstRender(false);
         }
-    }, [isFirstRender, t]);
+    }, [isFirstRender, t, currentYear, currentSemester]);
 
     const closeModal = () => {
        
@@ -74,7 +70,7 @@ function ModalCreateUpdate() {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
             })
         }
-        console.log(semestre+" != "+currentSemester)
+        // console.log(semestre+" != "+currentSemester)
         if(semestre!=currentSemester){
             await apiUpdateSemestreCourant(
                 {semestre}
@@ -93,7 +89,9 @@ function ModalCreateUpdate() {
             })
         }
         
-            
+        if(annee==currentYear && semestre==currentSemester){
+            closeModal();
+        }
         
 
     }

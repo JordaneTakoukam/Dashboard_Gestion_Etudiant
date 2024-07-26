@@ -480,7 +480,10 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             dispatch(setMatieres(emptyMatieres));
                         }
                     } else {
-                        const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined, langue:lang});
+                        let fetchedMatieres = emptyMatieres;
+                        if(!section){
+                            fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: undefined, page: currentPage, annee: undefined, semestre: undefined, langue:lang});
+                        }
                         if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                             dispatch(setMatieres(fetchedMatieres));
                         } else {
@@ -498,7 +501,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             }
         }
         fetchMatieres();
-    }, [dispatch, currentPage, selectedYear, selectedSemestre, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+    }, [section, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+    // [dispatch, currentPage, selectedYear, selectedSemestre, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
     
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
@@ -527,28 +531,28 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             const filterMatiereByContent = async () => {
                 if (searchText === '') {
                     if(currentUser.role === roles.enseignant){
-                        sections.length>0?setSection(sections[0]):setSection(undefined);
-                        filterCycleBySection(section?._id);
+                        // sections.length>0?setSection(sections[0]):setSection(undefined);
+                        // filterCycleBySection(section?._id);
                         // setCycle(filteredCycle[0]);
-                        filterNiveauxByCycle(cycle?._id);
+                        // filterNiveauxByCycle(cycle?._id);
                         // setNiveau(filteredNiveaux[0]);
                     }else{
-                        if(refreshFilter){
-                            handleRefreshFilters();
-                        }
+                        // if(refreshFilter){
+                        //     handleRefreshFilters();
+                        // }
                     }
                     
                     const result: MatiereType[] = data;
                     setFilteredData(result); 
                 }else{
                     if(currentUser.role === roles.enseignant){
-                        setSection(undefined);
-                        setCycle(undefined);
-                        setNiveau(undefined);
-                        setFilteredCycle([]);
-                        setFilteredNiveaux([]);
+                        // setSection(undefined);
+                        // setCycle(undefined);
+                        // setNiveau(undefined);
+                        // setFilteredCycle([]);
+                        // setFilteredNiveaux([]);
                     }else{
-                        handleRefreshFilters();
+                        // handleRefreshFilters();
                     }
                     let matieresResult : MatiereType[] = [];
                     if(currentUser.role === roles.enseignant){
@@ -586,7 +590,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
             }
         }
-    }, [searchText, data, refreshFilter]);
+    }, [searchText, data]);
 
     const handleRefreshFilters = () => {
         setSelectedYear(undefined);
@@ -646,7 +650,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={filteredCycle[0]} // ou spécifie une valeur par défaut
+                                defaultValue={cycle} // ou spécifie une valeur par défaut
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />

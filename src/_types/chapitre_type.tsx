@@ -7,7 +7,8 @@ interface ChapitreType {
     libelleFr: string;
     libelleEn: string;
     typesEnseignement: EnseignementType[],
-    matiere:string,
+    statut:number,
+    matiere:MatiereType,
     // objectifs:ObjectifType[],
 }
 

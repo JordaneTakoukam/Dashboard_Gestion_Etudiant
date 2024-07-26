@@ -3,6 +3,8 @@ interface SignalementAbsence {
     user: UserState;
     enseignant?:UserState | EnseignantType;
     role: string;
+    motif?:string;
+    file_paths?:string[];
     heure_debut_absence: string;
     heure_fin_absence: string;
     jour_absence: number;

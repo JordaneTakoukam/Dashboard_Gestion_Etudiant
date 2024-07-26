@@ -38,11 +38,11 @@ export async function apiGetAdministrateurs({ page }: { page: number }): Promise
 // 
 //
 // create
-export async function apiCreateAdministrateur({nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, categorie, fonction, service, commune }: AdminCreateType): Promise<ReponseApiPros> {
+export async function apiCreateAdministrateur({nom, genre, email, photo_profil, contact, matricule,nationalite, prenom, date_naiss, lieu_naiss, date_entree, categorie, fonction, service, commune }: AdminCreateType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create/create-admin`,
-            { nom, genre, email, photo_profil, contact, matricule, prenom, date_naiss, lieu_naiss, date_entree, categorie, fonction, service, commune },
+            { nom, genre, email, photo_profil, contact, matricule,nationalite, prenom, date_naiss, lieu_naiss, date_entree, categorie, fonction, service, commune },
             {
                 headers: {
                     'Content-Type': 'application/json',

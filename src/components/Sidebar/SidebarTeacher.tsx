@@ -3,13 +3,13 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { config } from '../../config';
 import { RxDashboard } from "react-icons/rx";
 import { PiStudentFill } from "react-icons/pi";
-import { FaRegCalendarTimes } from "react-icons/fa";
+import { FaDownload, FaRegCalendarTimes } from "react-icons/fa";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
 import { FaCalendarAlt } from "react-icons/fa";
-import { FaRegCopyright } from "react-icons/fa6";
+import { FaFile, FaRegCopyright } from "react-icons/fa6";
 import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
 import React from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -304,7 +304,24 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 </NavLink>
                             </li>
                             {/*  calendrier academique*/}
-
+                            {/* document */}
+                            <li>
+                                <NavLink
+                                    to="/documents"
+                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/documents' ||
+                                        pathname.includes('documents')) &&
+                                        'bg-graydark dark:bg-meta-4 text-secondary'
+                                        }`}
+                                >
+                                    <div className='-ml-.75 w-6'>
+                                        <div className='text-[18px]'>
+                                            <FaFile />
+                                        </div>
+                                    </div>
+                                    {t('menu.document')}
+                                </NavLink>
+                            </li>
+                            {/*Documents*/}
 
 
                         </ul>

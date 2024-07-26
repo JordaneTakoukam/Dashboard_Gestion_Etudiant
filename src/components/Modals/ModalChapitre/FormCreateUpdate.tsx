@@ -10,6 +10,7 @@ import { ajouterChapitre, modifierChapitre } from '../../../_redux/features/mati
 import { createChapitre, updateChapitre } from '../../../_redux/features/chapitre_slice';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { formatYear } from '../../../fonctions/fonction';
+import { config } from '../../../config';
 
 
 
@@ -39,6 +40,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
@@ -170,7 +172,10 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             
             return;
         }
-        
+        var statut = 0;
+        if(currentUser.role == config.roles.admin){
+            statut = 1;
+        }
         if (!chapitre) {
             if (matiere && matiere._id) {
                 await apiCreateChapitre(
@@ -180,7 +185,9 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                         code, 
                         libelleFr, 
                         libelleEn, 
-                        typesEnseignement:enseignementState, 
+                        typesEnseignement:enseignementState,
+                        statut,
+                        user:currentUser._id,
                         matiere:matiere._id, 
                         // objectifs:[],
                     }
@@ -195,7 +202,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                                 code: e.data.code,
                                 libelleFr: e.data.libelleFr,
                                 libelleEn: e.data.libelleEn,
-                                matiere: e.data.matiere,
+                                matiere: matiere,
+                                statut:e.data.statut,
                                 typesEnseignement: e.data.typesEnseignement,
                             }
                             
@@ -223,7 +231,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                         libelleFr, 
                         libelleEn, 
                         typesEnseignement:enseignementState, 
-                        matiere:matiere._id, 
+                        matiere:matiere, 
+                        statut:chapitre.statut,
                         // objectifs:chapitre.objectifs,
                         _id:chapitre._id
                     }
@@ -239,7 +248,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                                     code:e.data.code,
                                     libelleFr:e.data.libelleFr,
                                     libelleEn:e.data.libelleEn,
-                                    matiere:e.data.matiere,
+                                    matiere:matiere,
+                                    statut:e.data.statut,
                                     typesEnseignement: e.data.typesEnseignement,
                                 }
                             }));

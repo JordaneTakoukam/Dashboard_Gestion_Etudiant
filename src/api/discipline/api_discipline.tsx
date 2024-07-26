@@ -5,70 +5,6 @@ import { apiUrl, wstjqer } from '../../config.js';
 const api = `${apiUrl}/absence`;
 const token = localStorage.getItem(wstjqer);
 
-export async function getNotifications ({ userId, niveauxId, role, annee, semestre }: { userId: string, niveauxId?:string[], role:string, annee:number, semestre:number }): Promise<SignalementAbsence[]> {
-    try {
-        const response: AxiosResponse<any> = await axios.get(
-            `${api}/notifications/${userId}`,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-                params: {
-                    niveauxId:niveauxId,
-                    role:role,
-                    annee:annee,
-                    semestre: semestre,
-                },
-            },
-        );
-        const absences = response.data.data;
-        return absences;
-    } catch (error) {
-        // console.error('Error getting all settings:', error);
-        throw error;
-    }
-}
-
-export async function markNotificationAsRead({notificationId, userId}: {notificationId:string, userId:string}): Promise<ReponseApiPros> {
-    try {
-        const response: AxiosResponse<any> = await axios.post(
-            `${api}/notifications/markAsRead`,
-            { notificationId, userId },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-            },
-        );
-
-        return response.data;
-    } catch (error) {
-        // console.error('Error creating section : ', error);
-        throw error;
-    }
-}
-
-export async function markAllNotificationAsRead({notificationIds, userId}: {notificationIds:string[], userId:string}): Promise<ReponseApiPros> {
-    try {
-        const response: AxiosResponse<any> = await axios.post(
-            `${api}/notifications/markAllAsRead`,
-            { notificationIds, userId },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-            },
-        );
-
-        return response.data;
-    } catch (error) {
-        // console.error('Error creating section : ', error);
-        throw error;
-    }
-}
 
 export async function apiGetAbsencesSignaler({ userId, niveauxId, role, annee, semestre }: { userId: string, niveauxId?:string[], role:string, annee:number, semestre:number }): Promise<SignalementAbsence[]> {
     try {
@@ -96,23 +32,23 @@ export async function apiGetAbsencesSignaler({ userId, niveauxId, role, annee, s
     }
 }
 
-export async function apiSignalerAbsence({user,enseignant,role,heure_debut_absence,heure_fin_absence,jour_absence,semestre,annee,niveau}: SignalementAbsence): Promise<ReponseApiPros> {
+export async function apiSignalerAbsence(formData: FormData): Promise<ReponseApiPros> {
     try {
-        const response: AxiosResponse<any> = await axios.post(
-            `${api}/signaler`,
-            { user, enseignant, role, heure_debut_absence, heure_fin_absence, jour_absence,semestre,annee,niveau },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': token,
-                },
-            },
-        );
-
-        return response.data;
+      const response: AxiosResponse<any> = await axios.post(
+        `${api}/signaler`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
+        },
+      );
+  
+      return response.data;
     } catch (error) {
-        // console.error('Error creating section : ', error);
-        throw error;
+      console.error('Error signaling absence:', error);
+      throw error;
     }
 }
 
@@ -418,7 +354,6 @@ export async function apiCreateAbsence({ userId, ...absence }: CreateAbsenceType
         throw error;
     }
 }
-
 
 export async function apiDeleteAbsence({ userId, absenceId }: DeleteAbsenceType): Promise<ReponseApiPros> {
     try {

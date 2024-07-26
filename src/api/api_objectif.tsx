@@ -6,11 +6,11 @@ const api = `${apiUrl}/matiere/objectif`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateObjectif({ annee, semestre, code, libelleFr, libelleEn, etat, matiere }: ObjectifType): Promise<ReponseApiPros> {
+export async function apiCreateObjectif({ annee, semestre, code, libelleFr, libelleEn, etat, statut, matiere, user }: { annee:number, semestre:number, code?:string, libelleFr:string, libelleEn:string, etat:number, statut:number, matiere:string, user:string}): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { annee, semestre, code, libelleFr, libelleEn,etat, matiere},
+            { annee, semestre, code, libelleFr, libelleEn,etat, statut, matiere, user},
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,6 +31,24 @@ export async function apiUpdateObjectif({ _id, annee, semestre, code, libelleFr,
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
             { annee, semestre, code, libelleFr, libelleEn,etat, matiere },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error updating section:', error);
+        throw error;
+    }
+}
+export async function apiUpdateStatutObj({ objectif }: {objectif:string}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${api}/updateStatut/${objectif}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

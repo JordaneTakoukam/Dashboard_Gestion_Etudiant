@@ -1,4 +1,5 @@
 export const config = {
+    typeNotifications:{absence:"absence", approbation_chap:"approbation_chap", approbation_obj:"approbation_obj"},
     roles: { superAdmin: "super-admin", admin: "admin", enseignant: 'enseignant', etudiant: 'etudiant', delegue: 'delegue' },
     nameApp: "SchoolApp",
     copyRight: '2024 - 2025',

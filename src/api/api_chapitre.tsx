@@ -6,11 +6,11 @@ const api = `${apiUrl}/matiere/chapitre`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateChapitre({ annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere }: ChapitreType): Promise<ReponseApiPros> {
+export async function apiCreateChapitre({ annee, semestre, code, libelleFr, libelleEn, typesEnseignement,statut, user, matiere }: { annee:number, semestre:number, code?:string, libelleFr:string, libelleEn:string, typesEnseignement:EnseignementType[],statut:number, user:string, matiere:string }): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere },
+            { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, statut, user, matiere },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,6 +31,25 @@ export async function apiUpdateChapitre({ _id, annee, semestre, code, libelleFr,
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
             { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error updating section:', error);
+        throw error;
+    }
+}
+
+export async function apiUpdateStatutChap({ chapitre }: {chapitre:string}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${api}/updateStatut/${chapitre}`,
             {
                 headers: {
                     'Content-Type': 'application/json',

@@ -28,6 +28,9 @@ const BodyTable = ({ data, onEdit }: { data?: ObjectifType[], onEdit: (objectif:
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.etat == 1?t('label.atteind'):t('label.non_atteind')}</h5>
                 </td>
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+                    <h5>{item.statut == 1?t('label.approuver'):t('label.non_approuver')}</h5>
+                </td>
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">

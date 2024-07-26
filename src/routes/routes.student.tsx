@@ -4,6 +4,7 @@ import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbse
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import Abscences from '../pages/CommonPage/Abscences';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
+import Documents from '../pages/CommonPage/Documents';
 import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
 // import Matieres from '../pages/CommonPage/Matieres';
 // import Parametres from '../pages/Admin/Administration';
@@ -63,6 +64,13 @@ const coreRoutes = [
     path: '/academic-calendar',
     title: 'Calendrier académique',
     component: CalendrierAcademique,
+  },
+
+  // documents
+  {
+    path: '/documents',
+    title: 'Documents',
+    component: Documents,
   },
 
   // profil

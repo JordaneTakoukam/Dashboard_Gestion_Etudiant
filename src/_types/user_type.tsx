@@ -21,6 +21,8 @@ interface UserState {
     prenom: string | null;
     email: string;
     matricule: string | null;
+    nationalite: string | null;
+    diplomeEntre: string | null;
 
     lieu_naiss: string | null;
     contact: string | null;
@@ -35,6 +37,7 @@ interface UserState {
     categorie: string | null;
     fonction: string | null;
     service: string | null;
+    specialite: string | null;
     commune: string | null;
     grade: string | null;
 

@@ -12,8 +12,8 @@ import { TbSchool } from "react-icons/tb";
 import { IoSettingsOutline } from "react-icons/io5";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
-import { FaCalendarAlt } from "react-icons/fa";
-import { FaRegCopyright } from "react-icons/fa6";
+import { FaCalendarAlt, FaDownload } from "react-icons/fa";
+import { FaFile, FaRegCopyright } from "react-icons/fa6";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import LogoNavbar from './LogoNavbar';
@@ -650,8 +650,24 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                             {/* calen */}
 
-
-
+                            {/* document */}
+                            <li>
+                                <NavLink
+                                    to="/documents"
+                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/documents' ||
+                                        pathname.includes('documents')) &&
+                                        'bg-graydark dark:bg-meta-4 text-secondary'
+                                        }`}
+                                >
+                                    <div className='-ml-.75 w-6'>
+                                        <div className='text-[18px]'>
+                                            <FaFile />
+                                        </div>
+                                    </div>
+                                    {t('menu.document')}
+                                </NavLink>
+                            </li>
+                            {/*Documents*/}            
 
 
                             {/* <!-- Autres --> */}

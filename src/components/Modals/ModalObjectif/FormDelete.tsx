@@ -3,9 +3,7 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import {apiUpdateChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
-import { retirerObjectif, updateMatiere } from '../../../_redux/features/matiere_slice';
 import { apiDeleteObjectif } from '../../../api/api_objectif';
 import { deleteObjectif } from '../../../_redux/features/objectif_slice';
 

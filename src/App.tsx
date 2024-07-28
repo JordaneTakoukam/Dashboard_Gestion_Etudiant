@@ -162,7 +162,7 @@ function App() {
         userId: user._id, niveauxId: niveaux, role: userRole, annee: currentYear, semestre: currentSemester
       });
 
-      console.log(fetchedNotifications);
+      // console.log(fetchedNotifications);
       if (fetchedNotifications && fetchedNotifications.length > 0) {
         dispatch(setNotifications(fetchedNotifications));
         dispatch(setNewNotification(true));

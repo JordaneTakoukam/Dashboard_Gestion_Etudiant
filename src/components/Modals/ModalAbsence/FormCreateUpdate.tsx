@@ -327,9 +327,8 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                                         <p className=' pb-3'>{t('label.heure_fin')} : {user.absence.heureFin}</p>
 
                                         <p className=' pb-3'>{t('gestion_absence.nombre_heure_absence')} : <span className='text-meta-1 font-medium'>{nbTotalAbsences([user.absence])} {[user.absence].length > 1 ? t('menu.heure_d_absence') : t('menu.heures_d_absences')} </span></p>
-                                        <input
+                                        <textarea
                                             className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                            type="text"
                                             value={motif}
 
                                             maxLength={100} // Limite à 100 caractères

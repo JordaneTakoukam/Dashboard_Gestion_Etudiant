@@ -1,12 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 import { apiUrl, wstjqer } from '../config.js';
 
-
 const api = `${apiUrl}/document`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiSaveDocument({ formData, nomFr, nomEn }: { formData: FormData, nomFr:string, nomEn:string}): Promise<ReponseApiPros> {
+export async function apiSaveDocumentUpload({ formData}: { formData: FormData}): Promise<ReponseApiPros> {
     
     try {
         const response: AxiosResponse<ReponseApiPros> = await axios.post(
@@ -16,22 +15,18 @@ export async function apiSaveDocument({ formData, nomFr, nomEn }: { formData: Fo
                 headers: {
                     'content-type': 'multipart/form-data',
                     'token': token,
-                },
-                params:{
-                    nomFr,
-                    nomEn
                 }
             },
         );
 
         return response.data;
     } catch (error) {
-        console.error('Error saving document:', error);
+        console.error('Error saving documentupload:', error);
         throw error;
     }
 }
 
-export async function apiDeleteDocument(id: string): Promise<ReponseApiPros> {
+export async function apiDeleteDocumentUpload(id: string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.delete(
             `${api}/delete/${id}`,
@@ -50,7 +45,7 @@ export async function apiDeleteDocument(id: string): Promise<ReponseApiPros> {
     }
 }
 
-export async function apiGetDocuments({ page }: { page: number }): Promise<DocumentReturnGetType> {
+export async function apiGetDocumentUploads({ page }: { page: number }): Promise<DocumentUploadReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -68,19 +63,19 @@ export async function apiGetDocuments({ page }: { page: number }): Promise<Docum
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const documents: DocumentReturnGetType = response.data.data;
+        const documentuploads: DocumentUploadReturnGetType = response.data.data;
 
-        return documents;
+        return documentuploads;
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;
     }
 }
 
-export async function apiDownloadDocument(id: string, lang: string): Promise<ReponseApiPros> {
+export async function apiDownloadDocumentUpload(id: string, file_path?:string): Promise<void> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/download/${id}/${lang}`,
+            `${api}/download/${id}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,18 +85,24 @@ export async function apiDownloadDocument(id: string, lang: string): Promise<Rep
             },
         );
 
-        // Create a URL for the file and trigger a download
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `document_${id}.${lang}`); // Set the file name
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        // Extract the file name from the Content-Disposition header
+        if(file_path){
+            const fileName = file_path.split('/').pop();
+            if(fileName){
+                // Create a URL for the file and trigger a download
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileName); // Set the file name
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+        }
 
-        return response.data;
+        // return response.data;
     } catch (error) {
-        console.error('Error downloading document:', error);
+        console.error('Error downloading documentupload:', error);
         throw error;
     }
 }
@@ -132,7 +133,7 @@ export async function apiDownloadPiecesJointes(file_paths:string[]): Promise<voi
         link.remove();
 
     } catch (error) {
-        console.error('Erreur lors du téléchargement des documents:', error);
+        console.error('Erreur lors du téléchargement des documentuploads:', error);
         throw error;
     }
 }

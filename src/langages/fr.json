@@ -96,10 +96,12 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "aucun_doc_dispo":"Aucun document disponible",
     "statut":"Statut",
     "approuver":"Approuvé",
     "non_approuver":"Non approuvé",
     "telecharger_doc":"Télécharger un document",
+    "import_doc":"Importer un document",
     "telecharger_zone":"Faites glisser et déposez un document ici, ou cliquez pour en sélectionner un",
     "doc_dispo":"Documents disponibles",
     "notifications":"Notifications",
@@ -305,6 +307,7 @@
     "nouveau_departement": "Nouveau département",
     "nouvelle_commune": "Nouvelle commune",
     "telecharger":"Télécharger",
+    "importer":"Importer",
     "telecharger_format": "Télécharger au format",
     "ajouter_type": "Ajouter une activité",
     "ajouter_obj": "Ajouter un objectif",
@@ -361,6 +364,7 @@
   },
   "form_save": {
     "enregistrer": "Enregistrer ",
+    "document":"un nouveau document",
     "pause": "une pause",
     "etudiant": "un nouvel étudiant",
     "enseignant": "un nouvel enseignant",
@@ -426,6 +430,7 @@
     "suppression": "Suppression ",
     "pause": "de la pause",
     "absence": "Supprimer une absence : ",
+    "document":"du document",
     "etudiant": "de l'étudiant",
     "enseignant": "de l'enseignant",
     "administrateur": "de l'administrateur",
@@ -560,7 +565,8 @@
     "sur_un_total_de": "sur un total de",
     "entree": "entrées",
     "precedent": "Précédent",
-    "suivant": "Suivant"
+    "suivant": "Suivant",
+    "sur":"sur"
   },
   "liste": {
     "signalement_absence_etudiants": "Signalements d'absence des étudiants",

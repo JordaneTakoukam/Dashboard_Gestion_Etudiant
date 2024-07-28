@@ -9,8 +9,8 @@ import periodeEnseignementReducer from "./features/periode_enseignement_slice.ts
 import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import progressionPeriodeEnseignementReducer from "./features/progession_periode_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
-import documentReducer from "./features/document_slice.tsx";
 import objectifReducer from "./features/objectif_slice.tsx";
+import documentUploadReducer from "./features/document_upload_slice.tsx";
 import AdminReducer from "./features/admin_slice.tsx";
 import EnseignantReducer from "./features/enseignant_slice.tsx";
 import EnseignanDisciplineReducer from "./features/absence/discipline_enseignant_slice.tsx";
@@ -26,11 +26,11 @@ const store = configureStore({
     dataSetting: dataSettingReducer,
     evenementSlice: evenementReducer,
     periodeSlice: periodeReducer,
-    documentSlice: documentReducer,
     matiereSlice: matiereReducer,
     periodeEnseignementSlice: periodeEnseignementReducer,
     chapitreSlice: chapitreReducer,
     objectifSlice: objectifReducer,
+    documentUploadSlice: documentUploadReducer,
     progressionMatiereSlice: progressionMatiereReducer,
     progressionPeriodeEnseignementSlice: progressionPeriodeEnseignementReducer,
 

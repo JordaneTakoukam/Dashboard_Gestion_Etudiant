@@ -11,7 +11,7 @@ import { apiUpdateStatutChap } from '../../../api/api_chapitre';
 import { updateChapitre } from '../../../_redux/features/chapitre_slice';
 import { apiUpdateStatutObj } from '../../../api/api_objectif';
 import { updateObjectif } from '../../../_redux/features/objectif_slice';
-import { apiDownloadPiecesJointes } from '../../../api/api_document';
+import { apiDownloadPiecesJointes } from '../../../api/api_document_upload';
 
 interface ModalNotificationDetailsProps {
     notification: NotificationType | null;

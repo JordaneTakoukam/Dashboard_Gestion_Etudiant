@@ -96,10 +96,12 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "aucun_doc_dispo":"Document not available",
     "statut":"Status",
     "approuver":"Approved",
     "non_approuver":"Not approved",
-    "telecharger_doc":"Upload Document",
+    "telecharger_doc":"Upload document",
+    "import_doc":"Upload document",
     "telecharger_zone":"Drag & drop a document here, or click to select one",
     "doc_dispo":"Available Documents",
     "notifications":"Notifications",
@@ -304,6 +306,7 @@
     "nouveau_departement": "New Department",
     "nouvelle_commune": "New Commune",
     "telecharger":"Upload",
+    "importer":"Import",
     "telecharger_format": "Download in format",
     "ajouter_type": "Add an educational activity",
     "ajouter_obj": "Add an objective",
@@ -361,6 +364,7 @@
   },
   "form_save": {
     "enregistrer": "Save ",
+    "document":"a new document",
     "pause": "a break",
     "etudiant": "a new student",
     "enseignant": "a new teacher",
@@ -426,6 +430,7 @@
     "suppression": "Deletion",
     "pause": "of the break",
     "absence": "Delete an absence:",
+    "document":"of the document",
     "etudiant": "of the student",
     "enseignant": "of the teacher",
     "administrateur": "of the administrator",
@@ -559,7 +564,8 @@
     "sur_un_total_de": "out of a total of",
     "entree": "entries",
     "precedent": "Previous",
-    "suivant": "Next"
+    "suivant": "Next",
+    "sur":"of"
   },
   "notification_details": {
     "title": "Notification Details",

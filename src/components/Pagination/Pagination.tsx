@@ -18,11 +18,11 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
     const { t } = useTranslation();
     return (
         <>
-            { (
+            { pageNumbers.length>1 && (
                 <div className='flex items-center mt-8 mb-5'>
                     <div className="flex justify-between items-center w-full">
                         <div>
-                            <p>{t("pagination.affichage_des_elements")}{" "}
+                            {/* <p>{t("pagination.affichage_des_elements")}{" "}
                                 <span className="font-semibold">{!(count > itemsPerPage) ? '1' : startItem}</span>
                                 {" "}{t("gestion_absence.a")}{" "}
                                 <span className="font-semibold">{endItem}</span>
@@ -30,6 +30,14 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
                                 {t("pagination.sur_un_total_de")}
                                 <span className="font-semibold">{" "}{count}{" "}</span>
                                 {t("pagination.entree")}
+                            </p> */}
+                            <p>
+                                <span className="font-semibold">{!(count > itemsPerPage) ? '1' : startItem}</span>
+                                <span> - </span>
+                                <span className="font-semibold">{endItem} </span>
+                                {t("pagination.sur")}
+                                <span className="font-semibold"> {endItem} </span>
+
                             </p>
                         </div>
                         <div className="flex">
@@ -41,7 +49,7 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
                                     <div className="text-[20px]  ">
                                         <IoArrowBack />
                                     </div>
-                                    {t("pagination.precedent")}
+                                    {/* {t("pagination.precedent")} */}
 
                                 </button>
                             ) : (
@@ -53,7 +61,7 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
                                         <IoArrowBack />
                                     </div>
 
-                                    {t("pagination.precedent")}
+                                    {/* {t("pagination.precedent")} */}
 
                                 </button>
                             )}
@@ -76,7 +84,7 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
                                     className="pl-3 text-black  hover:text-primary duration-300 flex items-center  font-semibold text-[13px] dark:text-gray-2 hover:dark:text-primary"
                                     onClick={() => handlePageClick(currentPage + 1)}
                                 >
-                                    {t("pagination.suivant")}
+                                    {/* {t("pagination.suivant")} */}
 
                                     <div className="text-[20px] ">
                                         <IoArrowForward />
@@ -87,7 +95,7 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
                                     className={` ${count > itemsPerPage ? 'text-black ' : 'text-[#aaa6a6]'} pl-3  hover:text-gray-500 duration-300 flex items-center  font-semibold text-[13px] dark:text-gray-2 cursor-not-allowed`}
                                     disabled
                                 >
-                                    {t("pagination.suivant")}
+                                    {/* {t("pagination.suivant")} */}
 
                                     <div className="text-[20px]">
                                         <IoArrowForward />

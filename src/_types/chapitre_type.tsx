@@ -9,7 +9,7 @@ interface ChapitreType {
     typesEnseignement: EnseignementType[],
     statut:number,
     matiere:MatiereType,
-    // objectifs:ObjectifType[],
+    objectifs?:ObjectifType[],
 }
 
 interface ChapitreInitialData {

@@ -29,6 +29,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
     const [enseignementState, setEnseignementState] = useState<EnseignementType[]>([]); // État local pour les types d'enseignement
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
+    const [statut, setStatut]=useState(0);
     
     const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
     const [errorCode, setErrorCode] = useState("");
@@ -41,6 +42,15 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
     const currentUser: UserState = useSelector((state: RootState) => state.user);
+    const statuts:string[]=[t('label.approuver'), t('label.non_approuver')];
+    const handleStatutChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedStatut = e.target.value;
+        setStatut(0);
+        
+        if(selectedStatut === t('label.approuver')){
+            setStatut(1);
+        }
+    };
 
     useEffect(() => {
         const listeTypesEnseignementDeMatiere = matiere && matiere.typesEnseignement && matiere.typesEnseignement
@@ -58,17 +68,18 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                 .filter(type => type !== undefined) as CommonSettingProps[];
         listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
 
-
+        console.log(chapitre)
         if (chapitre) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.chapitre'));
             setCode(chapitre.code);
             setLibelleFr(chapitre.libelleFr);
             setLibelleEn(chapitre.libelleEn);
             // setTypesEnseignementState(chapitre.typesEnseignement);
+            setStatut(chapitre.statut);
             setEnseignementState(chapitre.typesEnseignement);
             setAnnee(chapitre.annee);
             setSemestre(chapitre.semestre);
-            // setObjectifs(chapitre.objectifs);
+            chapitre.objectifs && setObjectifs(chapitre.objectifs);
             
         }else{
             setModalTitle(t('form_save.enregistrer')+t('form_save.chapitre'));
@@ -77,6 +88,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             setLibelleEn("");
             setTypesEnseignementState([]);
             setAnnee(currentYear);
+            setStatut(0);
             setSemestre(currentSemester);
             setEnseignementState([]);
             handleAddTypeEnseignement();
@@ -172,11 +184,11 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
             
             return;
         }
-        var statut = 0;
-        if(currentUser.role == config.roles.admin){
-            statut = 1;
-        }
+        
         if (!chapitre) {
+            if(currentUser.role == config.roles.admin || currentUser.role == config.roles.superAdmin){
+                setStatut(1);
+            }
             if (matiere && matiere._id) {
                 await apiCreateChapitre(
                     {
@@ -232,8 +244,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                         libelleEn, 
                         typesEnseignement:enseignementState, 
                         matiere:matiere, 
-                        statut:chapitre.statut,
-                        // objectifs:chapitre.objectifs,
+                        statut:statut,
+                        objectifs:chapitre.objectifs,
                         _id:chapitre._id
                     }
                 ).then((e: ReponseApiPros) => {
@@ -320,6 +332,19 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                     onChange={(e) => { setLibelleEn(e.target.value); setErrorLibelleEn("") }}
                 />
                 {errorLibelleEn && <p className="text-red-500">{errorLibelleEn}</p>}
+                {(currentUser.role=== config.roles.admin || currentUser.role=== config.roles.superAdmin) && <>
+                    <label>{t('label.statut')}</label>
+                    <select
+                        value={chapitre ? (statut==1 ? t('label.approuver') : t('label.non_approuver')) : t('select_par_defaut.selectionnez') + t('select_par_defaut.statut')}
+                        onChange={handleStatutChange}
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    >
+                        <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.statut')}</option>
+                        {statuts.map(stat => (
+                            <option key={statuts.indexOf(stat)} value={stat.toString()}>{stat.toString()}</option>
+                        ))}
+                    </select>
+                </>}
                 <div>
                     <h3>{t('label.type_ens')}<label className="text-red-500"> *</label></h3>
                     {enseignementState.map((type, index) => (

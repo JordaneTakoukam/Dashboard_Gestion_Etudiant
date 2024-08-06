@@ -96,6 +96,7 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "chapitre":"Chapitre",
     "aucun_doc_dispo":"Aucun document disponible",
     "statut":"Statut",
     "approuver":"Approuvé",
@@ -321,6 +322,7 @@
   },
   "select_par_defaut": {
     "selectionnez": "Sélectionnez ",
+    "statut":"un statut",
     "section": "une section",
     "departementAcademique": "un département académique",
     "cycle": "un cylce",

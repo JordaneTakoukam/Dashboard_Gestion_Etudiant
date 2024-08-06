@@ -26,11 +26,11 @@ export async function apiCreateChapitre({ annee, semestre, code, libelleFr, libe
     }
 }
 
-export async function apiUpdateChapitre({ _id, annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere }: ChapitreType): Promise<ReponseApiPros> {
+export async function apiUpdateChapitre({ _id, annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere, statut }: ChapitreType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere },
+            { annee, semestre, code, libelleFr, libelleEn, typesEnseignement, matiere, statut },
             {
                 headers: {
                     'Content-Type': 'application/json',

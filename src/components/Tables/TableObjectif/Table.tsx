@@ -84,7 +84,6 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
                 }
                 if(selectedMatiere && selectedMatiere._id && selectedSemestre){
                     const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: selectedMatiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
-                        
                     if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
                         dispatch(setObjectifs(fetchedObjectifs));
                     } else {

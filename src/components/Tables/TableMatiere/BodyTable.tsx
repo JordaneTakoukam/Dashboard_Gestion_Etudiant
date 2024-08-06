@@ -124,16 +124,16 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
                     <SelectButton
                         listPage={[
                             {
+                                "name": t('label.types_ens'),
+                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/enseignements/manage')}
+                            },
+                            {
                                 "name": t('label.chapitres'),
                                 "handleClick": () => { dispatch(setMatiereSelected(item));navigate('/subjects/chapitres/manage') }
                             },
                             {
                                 "name": t('label.objectifs'),
                                 "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
-                            },
-                            {
-                                "name": t('label.types_ens'),
-                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/enseignements/manage')}
                             }
                         ]}
                     />

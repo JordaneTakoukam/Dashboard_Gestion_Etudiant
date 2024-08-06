@@ -11,6 +11,7 @@ interface ObjectifType {
     statut:number;
     date_etat?:Date;
     matiere:MatiereType;
+    chapitre?:ChapitreType;
 }
 
 interface ObjectifInitialData {

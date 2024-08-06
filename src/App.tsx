@@ -190,8 +190,10 @@ function App() {
         socket.on('message', (data : NotificationType ) => {
           
           if ((userRole === config.roles.admin) || userRole === config.roles.superAdmin) {
-            dispatch(addNotification(data));
-            dispatch(setNewNotification(true));
+            if((userLog._id.toString() !== data.user._id.toString())){
+              dispatch(addNotification(data));
+              dispatch(setNewNotification(true));
+            }
           }
           if(data.type.toString() === config.typeNotifications.absence){
               if ((data.role === config.roles.etudiant) || (data.role === config.roles.delegue)) {

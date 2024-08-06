@@ -6,11 +6,11 @@ const api = `${apiUrl}/matiere/objectif`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateObjectif({ annee, semestre, code, libelleFr, libelleEn, etat, statut, matiere, user }: { annee:number, semestre:number, code?:string, libelleFr:string, libelleEn:string, etat:number, statut:number, matiere:string, user:string}): Promise<ReponseApiPros> {
+export async function apiCreateObjectif({ annee, semestre, code, libelleFr, libelleEn, etat, statut, matiere,chapitre, user }: { annee:number, semestre:number, code?:string, libelleFr:string, libelleEn:string, etat:number, statut:number, matiere:string,chapitre?:string, user:string}): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { annee, semestre, code, libelleFr, libelleEn,etat, statut, matiere, user},
+            { annee, semestre, code, libelleFr, libelleEn,etat, statut, matiere,chapitre, user},
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,11 +26,11 @@ export async function apiCreateObjectif({ annee, semestre, code, libelleFr, libe
     }
 }
 
-export async function apiUpdateObjectif({ _id, annee, semestre, code, libelleFr, libelleEn,etat, matiere }: ObjectifType): Promise<ReponseApiPros> {
+export async function apiUpdateObjectif({ _id, annee, semestre, code, libelleFr, libelleEn,etat, matiere,statut, chapitre }: ObjectifType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { annee, semestre, code, libelleFr, libelleEn,etat, matiere },
+            { annee, semestre, code, libelleFr, libelleEn,etat, matiere,statut, chapitre },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,6 +107,36 @@ export async function getObjectifByMatiereWithPagination({ matiereId, page, anne
         const matieres: ObjectifReturnGetType = response.data.data;
         
         return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function getObjectifByChapitreWithPagination({ chapitreId, page, annee, semestre, langue }: { chapitreId: string, page: number, annee:number, semestre:number, langue:string }): Promise<ObjectifReturnGetType> {
+    const pageSize: number = 10;
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getObjectifsChap/${chapitreId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    page: page,
+                    pageSize: pageSize,
+                    annee:annee,
+                    semestre:semestre,
+                    langue:langue
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const chapitres: ObjectifReturnGetType = response.data.data;
+        
+        return chapitres;
     } catch (error) {
         console.error('Error getting all settings:', error);
         throw error;

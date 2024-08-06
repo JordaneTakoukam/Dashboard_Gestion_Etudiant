@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowModal } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
@@ -11,6 +11,8 @@ import { createObjectif, updateObjectif } from '../../../_redux/features/objecti
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { formatYear } from '../../../fonctions/fonction';
 import { config } from '../../../config';
+import { apiSearchChapitre } from '../../../api/api_chapitre';
+import SearchInput from '../../ui/SearchInput';
 
 
 
@@ -19,12 +21,14 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
     const {t}=useTranslation();
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    
 
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
     const [etat, setEtat]=useState(0);
+    const [statut, setStatut]=useState(0);
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
     
@@ -37,6 +41,20 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
     const currentUser: UserState = useSelector((state: RootState) => state.user);
+
+    const [resultsChapitre, setResultsChapitre] = useState<ChapitreType[]>([]);
+    const [isLoadingChapitre, setIsLoadingChapitre] = useState(false);
+    const [queryChapitre, setQueryChapitre] = useState('');
+    const latestQueryChapitre = useRef('');
+    const [selectedChapitre, setSelectedChapitre] = useState<ChapitreType>();
+    const statuts:string[]=[t('label.approuver'), t('label.non_approuver')];
+    const handleStatutChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedStatut = e.target.value;
+        setStatut(0);
+        if(selectedStatut === t('label.approuver')){
+            setStatut(1);
+        }
+    };
     
    
     useEffect(() => {
@@ -49,6 +67,10 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
             setLibelleFr(objectif.libelleFr);
             setLibelleEn(objectif.libelleEn);
             setEtat(objectif.etat);
+            setStatut(objectif.statut);
+            setSelectedChapitre(objectif.chapitre);
+            objectif.chapitre?setQueryChapitre(`${lang==='fr'?objectif.chapitre.libelleFr:objectif.chapitre.libelleEn}`.trim()):setQueryChapitre('');
+            
             
         }else{
             setModalTitle(t('form_save.enregistrer')+t('form_save.objectif'));
@@ -58,6 +80,9 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
             setLibelleFr("");
             setLibelleEn("");
             setEtat(0);
+            setStatut(0);
+            setSelectedChapitre(undefined);
+            setQueryChapitre('');
         }
         if (isFirstRender) {
             setErrorCode("");
@@ -82,6 +107,49 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
         setErrorSemestre("");
     };
 
+    const handleBlurChapitre = () => {
+        setTimeout(() => {
+        setResultsChapitre([]);
+        }, 200); // Délai pour permettre l'exécution de l'événement de clic
+    };
+
+    const handleSelectChapitre = (chapitre:ChapitreType) => {
+        setSelectedChapitre(chapitre);
+        setQueryChapitre(`${lang==='fr'?chapitre.libelleFr:chapitre.libelleEn}`.trim());
+        setResultsChapitre([]);
+      };
+      
+    //Rechercher un chapitre
+    const handleSearchChapitre = async (queryChapitre: string) => {
+        setIsLoadingChapitre(true);
+        latestQueryChapitre.current = queryChapitre;
+      
+        try {
+          if (queryChapitre === '') {
+            setSelectedChapitre(undefined);
+            setQueryChapitre("");
+            setResultsChapitre([]);
+          } else if (queryChapitre.trim().length > 0) {
+            const result = await apiSearchChapitre({ langue:lang, searchString: queryChapitre, limit:5, matiereId:matiere?._id??"", annee:annee });
+            // Vérifiez si la requête actuelle correspond toujours à la dernière requête
+            if (latestQueryChapitre.current === queryChapitre) {
+              setResultsChapitre(result.chapitres);
+            }
+          } else {
+            setSelectedChapitre(undefined);
+            setQueryChapitre("");
+            setResultsChapitre([]);
+          }
+        } catch (error) {
+          console.error('Error fetching search resultsChapitre:', error);
+          createToast(t('message.erreur'), "", 2)
+        } finally {
+          if (latestQueryChapitre.current === queryChapitre) {
+            setIsLoadingChapitre(false);
+          }
+        }
+    };
+
     const handleCreateUpdate = async () => {
         // Vérifier si tous les champs requis sont remplis
         if ( !libelleFr || !libelleEn || !semestre) {
@@ -100,9 +168,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
         }
        
         if (!objectif) {
-            var statut = 0;
-            if(currentUser.role == config.roles.admin){
-                statut = 1;
+            if(currentUser.role == config.roles.admin || currentUser.role == config.roles.superAdmin){
+                setStatut(1);
             }
             if(matiere?._id){ 
                 await apiCreateObjectif(
@@ -115,6 +182,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                         etat:0,
                         statut,
                         matiere:matiere?._id,
+                        chapitre:selectedChapitre?._id,
                         user:currentUser._id
                         
                     }
@@ -133,6 +201,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                                 etat: e.data.etat,
                                 statut:e.data.statut,
                                 matiere: matiere,
+                                chapitre:selectedChapitre
                             }
                             
                         }));
@@ -161,7 +230,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                     libelleEn:libelleEn, 
                     etat:objectif.etat,
                     matiere:objectif.matiere,
-                    statut:objectif.statut
+                    chapitre:selectedChapitre,
+                    statut:statut
                     
                 }
             ).then((e: ReponseApiPros) => {
@@ -181,6 +251,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                                 etat:e.data.etat,
                                 statut:e.data.statut,
                                 matiere:matiere,
+                                chapitre:selectedChapitre,
                             }
                         }));
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -249,6 +320,45 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                     onChange={(e) => { setLibelleEn(e.target.value); setErrorLibelleEn("") }}
                 />
                 {errorLibelleEn && <p className="text-red-500">{errorLibelleEn}</p>}
+                {(currentUser.role=== config.roles.admin || currentUser.role=== config.roles.superAdmin) && <>
+                    <label>{t('label.statut')}</label>
+                    <select
+                        value={objectif ? (statut==1 ? t('label.approuver') : t('label.non_approuver')) : t('select_par_defaut.selectionnez') + t('select_par_defaut.statut')}
+                        onChange={handleStatutChange}
+                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    >
+                        <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.statut')}</option>
+                        {statuts.map(stat => (
+                            <option key={statuts.indexOf(stat)} value={stat.toString()}>{stat.toString()}</option>
+                        ))}
+                    </select>
+                </>}
+                <label>{t('label.chapitre')}</label>
+                <div >
+                    <SearchInput 
+                        onSearch={handleSearchChapitre} 
+                        placeHolder={t('recherche.rechercher')+t('recherche.chapitre')}
+                        style="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                        query={queryChapitre}
+                        setQuery={setQueryChapitre}
+                        onBlur={handleBlurChapitre}
+                    />
+                    {isLoadingChapitre ? (
+                        <p>{t('label.recherche')}</p>
+                    ) : resultsChapitre.length>0 && (
+                        <ul className="border mt-2">
+                            {resultsChapitre.map((chapitre) => (
+                                <li 
+                                    key={chapitre._id} 
+                                    className="p-2 border-b cursor-pointer"
+                                    onClick={() => handleSelectChapitre(chapitre)}
+                                >
+                                    {lang==='fr'?chapitre.libelleFr:chapitre.libelleEn}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </CustomDialogModal>
         </>
     );

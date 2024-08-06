@@ -406,6 +406,18 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 setFilteredCycle([]);
                 filterCycleBySection(selectSectionId);
             }
+        }else if(currentUser && (currentUser.role === roles.etudiant || currentUser.role === roles.delegue)){
+            setSelectedYear(currentYear);
+            setSelectedSemestre(currentSemestre);
+            if (!selectSectionId) {
+                if (sections && sections.length > 0) {
+                    filterCycleBySection(sections[0]._id);
+                    setSection(sections[0]);
+                }
+            } else {
+                setFilteredCycle([]);
+                filterCycleBySection(selectSectionId);
+            }
         }else{
             if (!selectSectionId) {
                 if (sections && sections.length > 0) {
@@ -617,7 +629,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.matiere')} 
-                {(currentUser && currentUser.role !== roles.enseignant) && (<Bouton
+                {(currentUser && currentUser.role !== roles.enseignant  && currentUser.role !== roles.etudiant && currentUser.role !== roles.delegue) && (<Bouton
                     iconeSmall={true}
                     circle={true}
                     typeRefresh={true}

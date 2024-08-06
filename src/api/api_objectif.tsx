@@ -45,6 +45,26 @@ export async function apiUpdateObjectif({ _id, annee, semestre, code, libelleFr,
         throw error;
     }
 }
+
+export async function apiUpdateEtatObjectif({objectifId, etat}: {objectifId: string, etat: number}): Promise<ReponseApiPros> {
+    try {
+        
+        const response: AxiosResponse<any> = await axios.put(
+            `${api}/update_etat/${objectifId}/${etat}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error updating section:', error);
+        throw error;
+    }
+}
 export async function apiUpdateStatutObj({ objectif }: {objectif:string}): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(

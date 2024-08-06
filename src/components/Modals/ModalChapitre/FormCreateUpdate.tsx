@@ -216,6 +216,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                                 libelleEn: e.data.libelleEn,
                                 matiere: matiere,
                                 statut:e.data.statut,
+                                etat:e.data.etat,
                                 typesEnseignement: e.data.typesEnseignement,
                             }
                             
@@ -245,6 +246,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                         typesEnseignement:enseignementState, 
                         matiere:matiere, 
                         statut:statut,
+                        etat:chapitre.etat,
                         objectifs:chapitre.objectifs,
                         _id:chapitre._id
                     }
@@ -262,6 +264,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                                     libelleEn:e.data.libelleEn,
                                     matiere:matiere,
                                     statut:e.data.statut,
+                                    etat:e.data.etat,
                                     typesEnseignement: e.data.typesEnseignement,
                                 }
                             }));

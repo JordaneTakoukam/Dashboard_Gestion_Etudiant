@@ -4,6 +4,7 @@ import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbse
 import Enseignements from '../pages/Admin/Enseignements';
 import ListeDesMatieres from '../pages/Admin/ListeMatieres';
 import Objectifs from '../pages/Admin/Objectifs';
+import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
 import Abscences from '../pages/CommonPage/Abscences';
@@ -65,6 +66,12 @@ const coreRoutes = [
     path: '/subjects/enseignements/manage',
     title: 'Liste des enseignements',
     component: Enseignements,
+  },
+
+  {
+    path: '/subjects/progressions-chapitre',
+    title: 'Progréssion',
+    component: ProgressionChapitre,
   },
 
   {

@@ -52,7 +52,8 @@
     "discipline": "Discipline",
     "liste_matiere": "Liste des matières",
     "chapitres": "Chapitres",
-    "progression": "Progression par matière",
+    "progression_chap": "Progression par chapitre",
+    "progression": "Progression par objectif",
     "progression_periode": "Progression par période",
     "sections": "Sections",
     "departementsAcademique": "Département académique",
@@ -96,6 +97,9 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "progression_chap":"Progression dans le chapitre",
+    "info_objectifs":"Ce chapitre ne contient aucun objectif. Si vous confirmez les modifications, l'état du chapitre sera automatiquement mis à jour. Assurez-vous de vérifier les autres paramètres avant de procéder.",
+    "select_all":"Tout sélectionner",
     "chapitre":"Chapitre",
     "aucun_doc_dispo":"Aucun document disponible",
     "statut":"Statut",
@@ -394,6 +398,7 @@
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
+    "progression_chap":"Mettre à jours la progression",
     "annee_semestre": "Modifier l'année ou le semestre courant",
     "etat_absence_just": "Modifier l'état de l'absence justifier en non justifier pour l'étudiant : ",
     "etat_absence_non_just": "Modifier l'état de l'absence non justifier en justifier pour l'étudiant : ",

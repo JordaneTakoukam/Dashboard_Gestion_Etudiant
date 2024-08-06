@@ -3,6 +3,7 @@ import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store";
 import { useTranslation } from "react-i18next";
+import { config } from "../../../config";
 interface BodyChapitreProps {
     data: ChapitreType[] | undefined;
     onEdit: (chapitre: ChapitreType) => void;
@@ -12,6 +13,8 @@ const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const {t}=useTranslation();
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
     
 
     return <tbody>
@@ -31,9 +34,9 @@ const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
                     <h5>{item.statut == 1?t('label.approuver'):t('label.non_approuver')}</h5>
-                </td>
+                </td>}
 
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.typesEnseignement && item.typesEnseignement.length>0 && item.typesEnseignement[0].volumeHoraire}</h5>
@@ -46,7 +49,7 @@ const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                 {/* <SelectButton
                         listPage={[
                             {
@@ -65,7 +68,7 @@ const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
                             dispatch(setShowModalDelete())
                         }}
                     />
-                </td>
+                </td>}
             </tr>
         ))}
     </tbody>

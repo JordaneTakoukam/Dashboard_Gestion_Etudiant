@@ -3,11 +3,14 @@ import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store";
 import { useTranslation } from "react-i18next";
+import { config } from "../../../config";
 
 const BodyTable = ({ data, onEdit }: { data?: ObjectifType[], onEdit: (objectif: ObjectifType) => void }) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
     const {t}=useTranslation();
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
     return <tbody>
         {data?.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -28,12 +31,12 @@ const BodyTable = ({ data, onEdit }: { data?: ObjectifType[], onEdit: (objectif:
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.etat == 1?t('label.atteind'):t('label.non_atteind')}</h5>
                 </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
+               {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{item.statut == 1?t('label.approuver'):t('label.non_approuver')}</h5>
-                </td>
+                </td>}
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);
@@ -44,7 +47,7 @@ const BodyTable = ({ data, onEdit }: { data?: ObjectifType[], onEdit: (objectif:
                             dispatch(setShowModalDelete())
                         }}
                     />
-                </td>
+                </td>}
             </tr>
         ))}
     </tbody>

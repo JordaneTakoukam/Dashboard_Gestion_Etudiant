@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
 import createToast from "../../../hooks/toastify";
-import { apiUpdateObjectif } from "../../../api/api_objectif";
+import { apiUpdateEtatObjectif, apiUpdateObjectif } from "../../../api/api_objectif";
 import { updateObjectif } from "../../../_redux/features/objectif_slice";
 
 const BodyTable = ({ data }: { data: ObjectifType[]}) => {
@@ -19,20 +19,14 @@ const BodyTable = ({ data }: { data: ObjectifType[]}) => {
         if (roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) {
             if (data) {
                 const updatedObjectifs = data.map((objectif, idx) => {
-                    if (idx === objectifIndex) {
+                    if (idx === objectifIndex && objectif._id) {
                         // Créez un nouvel objet Objectif avec l'état mis à jour
                         const updatedObjectif = { ...objectif, etat: objectif.etat === 1 ? 0 : 1 };
 
                         // Appel de l'API de mise à jour du chapitre
-                        apiUpdateObjectif({
-                            _id:objectif._id, 
-                            annee:objectif.annee,
-                            semestre:objectif.semestre,
-                            code:updatedObjectif.code, 
-                            libelleFr:updatedObjectif.libelleFr, 
-                            libelleEn:updatedObjectif.libelleEn, 
+                        apiUpdateEtatObjectif({
+                            objectifId:objectif._id, 
                             etat:updatedObjectif.etat,
-                            matiere:updatedObjectif.matiere
                         }).then((response) => {
                             // Gestion de la réponse de l'API
                             if (response.success) {
@@ -99,7 +93,7 @@ const BodyTable = ({ data }: { data: ObjectifType[]}) => {
                     </td>
                     {/* Case à cocher pour l'état de l'objectif */}
                     <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                        <input type="checkbox" checked={objectif.etat === 1} onChange={() => handleCheckboxChange(indexObjectif)} />
+                        <input className={`${(userRole===config.roles.etudiant || userRole===config.roles.delegue) ? '' : 'cursor-pointer'}`} type="checkbox" checked={objectif.etat === 1} onChange={() => handleCheckboxChange(indexObjectif)} />
                     </td>
                 </tr>
             ))}

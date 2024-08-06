@@ -1,6 +1,11 @@
+import Chapitres from '../pages/Admin/Chapitres';
 import GererAbsencesEnseignant from '../pages/Admin/Disciplines/Enseignant/GererAbsencesEnseignant';
 import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
 import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
+import Enseignements from '../pages/Admin/Enseignements';
+import ListeDesMatieres from '../pages/Admin/ListeMatieres';
+import Objectifs from '../pages/Admin/Objectifs';
+import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
 import ProgressionMatiere from '../pages/Admin/ProgressionMatiere';
 import Abscences from '../pages/CommonPage/Abscences';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
@@ -39,12 +44,47 @@ const coreRoutes = [
   },
 
   // emploi de temps
+  // {
+  //   path: '/student/subjects',
+  //   title: 'Matières',
+  //   component: ProgressionMatiere,
+  // },
+
   {
-    path: '/student/subjects',
-    title: 'Matières',
+    path: '/subjects/subject-list',
+    title: 'Liste des matières',
+    component: ListeDesMatieres,
+  },
+
+  {
+    path: '/subjects/chapitres/manage',
+    title: 'Liste des chapitres',
+    component: Chapitres,
+  },
+
+  {
+    path: '/subjects/objectifs/manage',
+    title: 'Liste des objectifs',
+    component: Objectifs,
+  },
+
+  {
+    path: '/subjects/enseignements/manage',
+    title: 'Liste des enseignements',
+    component: Enseignements,
+  },
+
+  {
+    path: '/subjects/progressions',
+    title: 'Progréssion',
     component: ProgressionMatiere,
   },
 
+  {
+    path: '/subjects/progressions-chapitre',
+    title: 'Progréssion',
+    component: ProgressionChapitre,
+  },
 
   // emploi de temps
   {

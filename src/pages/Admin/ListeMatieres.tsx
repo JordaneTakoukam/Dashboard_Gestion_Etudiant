@@ -53,6 +53,10 @@ const ListeDesMatieres = () => {
                     const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux[0]?.niveau);
                     currentNiveauId = currentNiveau?._id;
                 }
+                if (roles.etudiant === currentUser.role || roles.delegue === currentUser.role) {
+                    const currentNiveau = niveaux.find(niveau => niveau._id === "" + currentUser.niveaux[0]?.niveau);
+                    currentNiveauId = currentNiveau?._id;
+                }
                 if (currentNiveauId) {
                     let fetchedMatieres=null;
                     if(currentUser && currentUser.role===roles.enseignant){

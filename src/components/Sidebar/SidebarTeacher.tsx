@@ -234,6 +234,17 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     </li>
                                                     <li>
                                                         <NavLink
+                                                            to="/subjects/progressions-chapitre"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression_chap')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
                                                             to="/subjects/progressions"
                                                             className={({ isActive }) =>
                                                                 'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +

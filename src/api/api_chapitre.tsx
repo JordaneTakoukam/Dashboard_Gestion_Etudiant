@@ -114,6 +114,46 @@ export async function getChapitreByMatiereWithPagination({ matiereId, page, anne
     }
 }
 
+export async function getProgressionMatiere({matiereId}:{matiereId:string}): Promise<number> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getProgressionMatiereChapitre/${matiereId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+        const progress: number = response.data.data;
+        return parseFloat(progress.toFixed(2));
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+
+export async function apiUpdateEtatChapitre({chapitreId, objectifs, etat}: {chapitreId: string, objectifs?: { _id: string; etat: number }[], etat?: number}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${api}/update_etat/${chapitreId}`,
+            { objectifs, etat },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error updating section:', error);
+        throw error;
+    }
+}
+
 export async function apiSearchChapitre({ searchString, langue, limit, matiereId, annee }: { langue:string, searchString: string, limit:number, matiereId:string, annee:number }): Promise<ChapitreReturnGetType> {
    
     try {

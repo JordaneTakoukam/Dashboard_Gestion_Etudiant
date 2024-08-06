@@ -16,6 +16,7 @@ import { setErrorPageObjectif, setObjectifLoading, setObjectifs } from "../../..
 import createToast from "../../../hooks/toastify";
 import { apiSearchObjectif, getObjectifByMatiereWithPagination } from "../../../api/api_objectif";
 import Pagination from "../../Pagination/Pagination";
+import { config } from "../../../config";
 
 interface TableObjectifProps {
     data: ObjectifType[];
@@ -26,7 +27,8 @@ interface TableObjectifProps {
 const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
     const {t}=useTranslation();
     const pageIsLoading = useSelector((state: RootState) => state.objectifSlice.pageIsLoading);
-    
+    const userRole = useSelector((state: RootState) => state.user.role);
+    const roles = config.roles;
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
@@ -200,10 +202,10 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <ButtonCreate
+                {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <ButtonCreate
                     title={t('boutton.nouvel_objectif')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
-                />
+                />}
                 <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.objectif'))} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}

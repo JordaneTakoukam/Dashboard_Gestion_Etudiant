@@ -206,7 +206,7 @@ export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId
     }
 }
 
-export async function generateProgressByEnseignant({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
+export async function generateProgressByEnseignant({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue, fileType }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateProgressByEnseignant/${niveauId}`,
@@ -223,7 +223,42 @@ export async function generateProgressByEnseignant({ niveauId, enseignantId, ann
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateProgressChapitreByEnseignant({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue, fileType }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string }): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateProgressChapitreByEnseignant/${niveauId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    enseignantId: enseignantId,
+                    annee:annee,
+                    semestre:semestre,
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },
@@ -296,7 +331,7 @@ export async function generateListMatByNiveau({ annee, semestre, departement, se
     }
 }
 
-export async function generateProgressByNiveau({ annee, semestre, departement, section, cycle, niveau, langue }: {  annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string}): Promise<Blob> {
+export async function generateProgressByNiveau({ annee, semestre, departement, section, cycle, niveau, langue, fileType }: {  annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateProgressByNiveau/${annee}/${semestre}`,
@@ -310,7 +345,40 @@ export async function generateProgressByNiveau({ annee, semestre, departement, s
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function generateProgressChapitreByNiveau({ annee, semestre, departement, section, cycle, niveau, langue, fileType, filename }: {  annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string, filename?:string}): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateProgressChapitreByNiveau/${annee}/${semestre}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue,
+                    fileType:fileType,
+                    filename:filename,
                 },
                 responseType: 'blob',
             },

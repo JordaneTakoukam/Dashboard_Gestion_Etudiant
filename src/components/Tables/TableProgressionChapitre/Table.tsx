@@ -9,20 +9,20 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_redux/features/progession_matiere_slice";
-import { generateProgressByEnseignant, generateProgressByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
+import { generateProgressByEnseignant, generateProgressByNiveau, generateProgressChapitreByEnseignant, generateProgressChapitreByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
 import * as XLSX from 'xlsx';
 import { config } from "../../../config";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import { setObjectifLoading, setObjectifs, setErrorPageObjectif } from "../../../_redux/features/objectif_slice";
-import { getObjectifByMatiereWithPagination, getProgressionMatiere } from "../../../api/api_objectif";
+import { setChapitreLoading, setChapitres, setErrorPageChapitre } from "../../../_redux/features/chapitre_slice";
+import { getChapitreByMatiereWithPagination, getProgressionMatiere } from "../../../api/api_chapitre";
 import NoDataTable from "../common/NoDataTable";
 import Pagination from "../../Pagination/Pagination";
 import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 
-const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[] }) => {
+const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:MatiereType[], onEdit: (chapitre:ChapitreType) => void }) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
 
@@ -41,21 +41,6 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                 setProgress(result);
             })
         }
-        // let totalObjectifs = 0;
-        // let objectifsAvecEtat1 = 0;
-        // if(matiere && matiere.objectifs){
-        //     totalObjectifs = matiere.objectifs.length;
-        //     matiere.objectifs.forEach((objectif) => {
-        //         if (objectif.etat == 1) {
-        //             objectifsAvecEtat1++;
-        //         }
-        //     });
-        // }
-        
-    
-        // const progress = totalObjectifs === 0 ? 0 : (objectifsAvecEtat1 / totalObjectifs) * 100;
-    
-        // return parseFloat(progress.toFixed(2));
     };
 
     // let matiere:Matiere=listMatieres[0];
@@ -67,7 +52,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const pageIsLoading = useSelector((state: RootState) => state.objectifSlice.pageIsLoading);
+    const pageIsLoading = useSelector((state: RootState) => state.chapitreSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
@@ -75,7 +60,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
     const [matiere, setMatiere] = useState<MatiereType>();
     const [filteredMatiere, setFilteredMatiere] = matieres && matieres.length>0 ? useState<MatiereType | undefined>(matieres[0]):useState<MatiereType | undefined>();
     
-    const [filteredData, setFilteredData] = useState<ObjectifType[]>(data);
+    const [filteredData, setFilteredData] = useState<ChapitreType[]>(data);
     const [formatToDownload, setFormatToDownload] = useState("");
     const [progress, setProgress] = useState(0);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
@@ -92,8 +77,8 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
 
     
     // variable pour la pagination
-    const itemsPerPage =  useSelector((state: RootState) => state.objectifSlice.data.pageSize); // nombre d'éléments maximum par page
-    const count = useSelector((state: RootState) => state.objectifSlice.data.totalItems);
+    const itemsPerPage =  useSelector((state: RootState) => state.chapitreSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.chapitreSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
@@ -245,7 +230,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
             if(selectNiveauId && section && cycle && niveau && departement){
                 if(selected === 'PDF'){
                     if(currentUser && currentUser.role===roles.enseignant){
-                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
+                        await generateProgressChapitreByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title);
@@ -253,7 +238,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                         })
                     }else{
                         if(section && cycle && niveau && departement){
-                            await generateProgressByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
+                            await generateProgressChapitreByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
                                 // Créer un objet URL pour le blob PDF
                                 if(blob){
                                     createPDF(blob, title);
@@ -262,18 +247,19 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                         }
                     }
                     
-                }else if(selected === 'XLSX'){
+                    
+                }else if (selected === 'XLSX'){
                     if(currentUser && currentUser.role===roles.enseignant){
-                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
+                        await generateProgressChapitreByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx' } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title, 'xlsx');
                             }
                         })
                     }else{
-                        
+
                         if(section && cycle && niveau && departement){
-                            await generateProgressByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx'}).then((blob)=>{
+                            await generateProgressChapitreByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx', filename:title}).then((blob)=>{
                                 // Créer un objet URL pour le blob PDF
                                 if(blob){
                                     createPDF(blob, title, 'xlsx');
@@ -282,6 +268,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                         }
                     }
                 }
+            
             }
         } catch (error) {
             createToast(t('message.erreur'), "", 2);
@@ -291,7 +278,47 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
         
     };
 
-    
+    const exportToExcel = async ( filename: string,matieres: MatiereType[] | undefined) => {
+        
+
+        // if(matieres){
+        //     const wb = XLSX.utils.book_new();
+            
+        //     // Créer une feuille de calcul
+        //     let progress = 0;
+        //     if(matiere && matiere._id){
+        //         await getProgressionMatiere({matiereId:matiere._id}).then(result=>{
+        //             progress=result;
+        //         })
+        //     }
+        //     const ws = XLSX.utils.aoa_to_sheet([
+        //         [t('label.matieres'), t('label.progression')],
+        //         ...matieres.flatMap(matiere => {
+        //             const rows = [];
+        //             rows.push([`${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,progress+" %"]);
+        //             return rows;
+        //         })
+        //     ]);
+
+          
+        //     // Ajouter la feuille de calcul au classeur
+        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        //     // Générer un fichier Excel binaire
+        //     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        //     // Convertir le tableau binaire en un objet Blob
+        //     const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        //     // Créer un lien pour télécharger le fichier Excel
+        //     const link = document.createElement('a');
+        //     link.href = window.URL.createObjectURL(blob);
+        //     link.download = filename;
+        //     // Cliquez sur le lien pour télécharger le fichier Excel
+        //     link.click();
+        // }else{
+            
+        // }
+        
+    }
+
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
             setSelectedYear(extractYear(selected.toString()));
@@ -429,11 +456,11 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
     }, [matieres, dispatch, t, data]);
 
     useEffect(() => {
-        const fetchObjectifs = async () => {
-            dispatch(setObjectifLoading(true)); // Définissez le loading à true avant le chargement
+        const fetchChapitres = async () => {
+            dispatch(setChapitreLoading(true)); // Définissez le loading à true avant le chargement
             try {
-                const emptyObjectifs: ObjectifReturnGetType = {
-                    objectifs: [],
+                const emptyChapitres: ChapitreReturnGetType = {
+                    chapitres: [],
                     currentPage: 0,
                     totalItems: 0,
                     totalPages: 0,
@@ -441,31 +468,31 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                 }
                 
                 if(matiere && matiere._id){
-                    const fetchedObjectifs = await getObjectifByMatiereWithPagination({ matiereId: matiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
+                    const fetchedChapitres = await getChapitreByMatiereWithPagination({ matiereId: matiere._id, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
                         
-                    if (fetchedObjectifs) { // Vérifiez si fetchedObjectifs n'est pas faux, vide ou indéfini
-                        dispatch(setObjectifs(fetchedObjectifs));
-                        // setFilteredData(fetchedObjectifs.objectifs);
+                    if (fetchedChapitres) { // Vérifiez si fetchedChapitres n'est pas faux, vide ou indéfini
+                        dispatch(setChapitres(fetchedChapitres));
+                        // setFilteredData(fetchedChapitres.chapitres);
                     } else {
-                        dispatch(setObjectifs(emptyObjectifs));
-                        // setFilteredData(emptyObjectifs.objectifs)
+                        dispatch(setChapitres(emptyChapitres));
+                        // setFilteredData(emptyChapitres.chapitres)
                     }
                 }else {
                     
-                    dispatch(setObjectifs(emptyObjectifs));
+                    dispatch(setChapitres(emptyChapitres));
                     
-                    // setFilteredData(emptyObjectifs.objectifs)
+                    // setFilteredData(emptyChapitres.chapitres)
                 }
                 
                 // Réinitialisez les erreurs s'il y en a
             } catch (error) {
-                dispatch(setErrorPageObjectif(t('message.erreur')));
+                dispatch(setErrorPageChapitre(t('message.erreur')));
                 createToast(t('message.erreur'), "", 2)
             } finally {
-                dispatch(setObjectifLoading(false)); // Définissez le loading à false après le chargement
+                dispatch(setChapitreLoading(false)); // Définissez le loading à false après le chargement
             }
         }
-        fetchObjectifs();
+        fetchChapitres();
     }, [currentPage, matiere]); // Déclencher l'effet lorsque currentPage change
 
 
@@ -613,7 +640,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} />
+                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
                         }
 
 

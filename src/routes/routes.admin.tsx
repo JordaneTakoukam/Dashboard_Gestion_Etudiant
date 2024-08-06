@@ -38,6 +38,7 @@ import EnseignementsPeriode from '../pages/Admin/EnseignementsPeriode';
 import DepartementsAcademique from '../pages/Admin/DepartementsAcademique';
 import Promotions from '../pages/Admin/Promotions';
 import Documents from '../pages/CommonPage/Documents';
+import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
 
 
 
@@ -122,10 +123,17 @@ const coreRoutes = [
   },
 
   {
+    path: '/subjects/progression-par-chapitre',
+    title: 'Progréssion',
+    component: ProgressionChapitre,
+  },
+
+  {
     path: '/subjects/progressions-par-matiere',
     title: 'Progréssion par matiere',
     component: ProgressionMatiere,
   },
+  
 
   {
     path: '/subjects/progressions-par-periode',

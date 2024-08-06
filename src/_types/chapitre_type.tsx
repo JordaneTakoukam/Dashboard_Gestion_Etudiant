@@ -6,10 +6,11 @@ interface ChapitreType {
     code: string;
     libelleFr: string;
     libelleEn: string;
-    typesEnseignement: EnseignementType[],
-    statut:number,
-    matiere:MatiereType,
-    objectifs?:ObjectifType[],
+    typesEnseignement: EnseignementType[];
+    statut:number; //0 non approuvé, 1 approuvé
+    etat:number;//0 non atteint, 1 atteint
+    matiere:MatiereType;
+    objectifs?:ObjectifType[];
 }
 
 interface ChapitreInitialData {

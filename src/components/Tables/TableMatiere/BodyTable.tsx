@@ -121,7 +121,7 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
-                    <SelectButton
+                    {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <SelectButton
                         listPage={[
                             {
                                 "name": t('label.types_ens'),
@@ -136,12 +136,24 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
                                 "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
                             }
                         ]}
-                    />
+                    />}
+                    {(roles.etudiant === userRole || roles.delegue === userRole) && <SelectButton
+                        listPage={[
+                            {
+                                "name": t('label.chapitres'),
+                                "handleClick": () => { dispatch(setMatiereSelected(item));navigate('/subjects/chapitres/manage') }
+                            },
+                            {
+                                "name": t('label.objectifs'),
+                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
+                            }
+                        ]}
+                    />}
                     <ButtonCrudTable
-                        onClickEdit={() => {
+                        onClickEdit={(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) ?() => {
                             onEdit(item);
                             dispatch(setShowModal())
-                        }}
+                        }:undefined}
                         onClickDelete={(roles.admin === userRole || roles.superAdmin === userRole) ? () => {
                             onEdit(item);
                             dispatch(setShowModalDelete())

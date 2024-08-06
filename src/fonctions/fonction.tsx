@@ -482,12 +482,17 @@ export function reduceWord(word: string, maxSize: number): string {
   }
 }
 
-export function createPDF(blob:Blob, title:string){
+export function createPDF(blob:Blob, title:string, type?:string){
     const url = URL.createObjectURL(blob);
     // Télécharger le PDF
     const link = document.createElement('a');
     link.href = url;
-    link.download = title+'.pdf';
+    
+    let linkDowload=title+'.pdf';
+    if(type){
+      linkDowload=title+'.'+type;
+    }
+    link.download = linkDowload;
     document.body.appendChild(link);
     link.click();
     // Libérer l'URL de l'objet

@@ -16,6 +16,9 @@ import { RootState } from '../../_redux/store';
 import { GiTeacher } from "react-icons/gi";
 import { useTranslation } from 'react-i18next';
 import LogoNavbar from './LogoNavbar';
+import React from 'react';
+import { IoIosArrowDown } from 'react-icons/io';
+import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
 
 
 interface SidebarProps {
@@ -31,8 +34,15 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const sidebar = useRef<any>(null);
 
 
+    // const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
+    // const [sidebarExpanded] = useState(
+    //     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
+    // );
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
-    const [sidebarExpanded] = useState(
+    // const [sidebarExpanded] = useState(
+    //     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
+    // );
+    const [sidebarExpanded, setSidebarExpanded] = useState(
         storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
     );
 
@@ -193,7 +203,7 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
 
                             {/* Matieres enseignants */}
-                            <li>
+                            {/* <li>
                                 <NavLink
                                     to="/student/subjects"
                                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/student/subjects' ||
@@ -208,7 +218,88 @@ const SidebarStudent = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                     </div>
                                     {t('menu.matieres')}
                                 </NavLink>
-                            </li>
+                            </li> */}
+
+<SidebarLinkGroup
+                                activeCondition={
+                                    pathname === '/subjects' || pathname.includes('subjects')
+                                }
+                            >
+                                {(handleClick, open) => {
+                                    return (
+                                        <React.Fragment>
+                                            <NavLink
+                                                to="#"
+                                                className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/subjects' ||
+                                                    pathname.includes('subjects')) &&
+                                                    'bg-graydark dark:bg-meta-4 text-secondary'
+                                                    }`}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    sidebarExpanded
+                                                        ? handleClick()
+                                                        : setSidebarExpanded(true);
+                                                }}
+                                            >
+                                                <div className='w-6'>
+                                                    <div className='text-[17px]'>
+                                                        <LuBookMarked />
+                                                    </div>
+                                                </div>
+                                                {t('menu.matieres')}
+                                                <div
+                                                    className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                                                        }`}>
+                                                    <IoIosArrowDown />
+                                                </div>
+
+                                            </NavLink>
+                                            <div
+                                                className={`translate transform overflow-hidden ${!open && 'hidden'
+                                                    }`}
+                                            >
+                                                <ul className="mt-4 mb-3 flex flex-col gap-2.5 pl-6">
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/subject-list"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center  pb-2 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.liste_matiere')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-chapitre"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression_chap')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression')}
+                                                        </NavLink>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {/* <!-- Dropdown Menu End --> */}
+                                        </React.Fragment>
+                                    );
+                                }}
+                            </SidebarLinkGroup>
+                            {/* Matieres enseignants */}
                             {/* Matieres enseignants */}
 
 

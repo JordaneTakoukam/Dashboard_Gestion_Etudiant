@@ -118,25 +118,24 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             if (lang !== 'fr') {
                 title = "teachers_list_"
             }
-            if(selected === 'PDF'){
-                let gradeId = undefined;
-                let categorieId = undefined;
-                let serviceId = undefined;
-                let fonctionId = undefined;
-                if (grade) {
-                    gradeId = grade._id;
-                }
-                if (categorie) {
-                    categorieId = categorie._id;
-                }
-                if (service) {
-                    serviceId = service._id;
-                }
-                if (fonction) {
-                    fonctionId = fonction._id;
-                }
-                
-                await generateListEnseignant({langue:lang, annee:currentYear, grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId }).then((blob)=>{
+            let gradeId = undefined;
+            let categorieId = undefined;
+            let serviceId = undefined;
+            let fonctionId = undefined;
+            if (grade) {
+                gradeId = grade._id;
+            }
+            if (categorie) {
+                categorieId = categorie._id;
+            }
+            if (service) {
+                serviceId = service._id;
+            }
+            if (fonction) {
+                fonctionId = fonction._id;
+            }
+            if(selected === 'PDF'){   
+                await generateListEnseignant({langue:lang, annee:currentYear, grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId, fileType:'pdf' }).then((blob)=>{
                     // Créer un objet URL pour le blob PDF
                     if(blob){
                         createPDF(blob, title);
@@ -144,12 +143,10 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                 })
                 
             }else{
-                await fetchAllEnseignants().then((enseignants) => {
-                    
-                    if (selected === 'CSV') {
-
-                    } else {
-                        exportToExcel(title + ".xlsx", enseignants)
+                await generateListEnseignant({langue:lang, annee:currentYear, grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId, fileType: 'xlsx' }).then((blob)=>{
+                    // Créer un objet URL pour le blob PDF
+                    if(blob){
+                        createPDF(blob, title, 'xlsx');
                     }
                 })
             }

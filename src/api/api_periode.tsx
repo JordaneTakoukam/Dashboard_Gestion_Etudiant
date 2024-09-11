@@ -91,7 +91,7 @@ export async function getPeriodesByNiveau({ niveauId, annee, semestre }: { nivea
     }
 }
 
-export async function generateEmploisDuTemps({ section, cycle, niveau, langue, annee, semestre }: {section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, annee:number, semestre:number }): Promise<Blob> {
+export async function generateEmploisDuTemps({ section, cycle, niveau, langue, annee, semestre, fileType }: {section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, annee:number, semestre:number, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateEmploisDuTemps/${annee}/${semestre}`,
@@ -104,7 +104,8 @@ export async function generateEmploisDuTemps({ section, cycle, niveau, langue, a
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },

@@ -165,7 +165,7 @@ export async function getFirstTenEventsOfYear({ annee}: { annee: number}): Promi
     }
 }
 
-export async function generateListEvent({annee, langue}:{annee: number, langue:string}): Promise<Blob> {
+export async function generateListEvent({annee, langue, fileType}:{annee: number, langue:string, fileType:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListEvent/${annee}`,
@@ -175,7 +175,8 @@ export async function generateListEvent({annee, langue}:{annee: number, langue:s
                     'token': token,
                 },
                 params:{
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },

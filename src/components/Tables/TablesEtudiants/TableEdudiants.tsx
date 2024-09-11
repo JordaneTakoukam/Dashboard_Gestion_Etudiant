@@ -134,12 +134,13 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             if(lang !== 'fr'){
                 title = "students_list_"+formatYear(selectedYear);
             }
+            const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
             if(selected === 'PDF'){
                 
-                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+
                 if(section && cycle && niveau && departement){
                     
-                    await generateListEtudiant({annee:selectedYear, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
+                    await generateListEtudiant({annee:selectedYear, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);
@@ -149,15 +150,15 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 
                 
             }else{
-                await fetchAllEtudiants().then((etudiants)=>{
+                if(section && cycle && niveau && departement){
                     
-                if (selected === 'CSV'){
-                    
-                }else{
-                    exportToExcel(title+".xlsx", etudiants)
+                    await generateListEtudiant({annee:selectedYear, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx'}).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title, 'xlsx');
+                        }
+                    })
                 }
-                    
-                })
             }
         } catch (error) {
             

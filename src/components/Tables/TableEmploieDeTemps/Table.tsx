@@ -301,7 +301,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             }
             if(selected === 'PDF'){
                 if(section && cycle && niveau){
-                    await generateEmploisDuTemps({section : section, cycle:cycle, niveau:niveau, langue:lang, annee: selectedYear, semestre: selectedSemestre }).then((blob)=>{
+                    await generateEmploisDuTemps({section : section, cycle:cycle, niveau:niveau, langue:lang, annee: selectedYear, semestre: selectedSemestre, fileType:'pdf' }).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);
@@ -310,11 +310,15 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 }
                 
             }else{
-                if (selected === 'CSV'){
-                    // downloadCSV();
-                }else{
-                    exportToExcel(title+".xlsx")
-                }
+                exportToExcel(title+'.xlsx')
+                // if(section && cycle && niveau){
+                //     await generateEmploisDuTemps({section : section, cycle:cycle, niveau:niveau, langue:lang, annee: selectedYear, semestre: selectedSemestre, fileType:'xlsx' }).then((blob)=>{
+                //         // Créer un objet URL pour le blob PDF
+                //         if(blob){
+                //             createPDF(blob, title, 'xlsx');
+                //         }
+                //     })
+                // }
             }
         } catch (error) {
             createToast(t('message.erreur'), "", 2);

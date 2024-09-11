@@ -180,7 +180,7 @@ export async function apiGetAllAbsencesWithEnseignantsByFilter({semestre, annee 
     }
 }
 
-export async function generateListAbsenceEnseignant({langue, semestre, annee }: {langue:string, semestre?: Number, annee?: Number}): Promise<Blob> {
+export async function generateListAbsenceEnseignant({langue, semestre, annee, fileType }: {langue:string, semestre?: Number, annee?: Number, fileType:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListAbsenceEnseignant`,
@@ -192,7 +192,8 @@ export async function generateListAbsenceEnseignant({langue, semestre, annee }: 
                 params: {
                     semestre: semestre,
                     annee: annee,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },
@@ -259,7 +260,7 @@ export async function apiGetAllAbsencesWithEtudiantsByFilter({semestre, annee, n
     }
 }
 
-export async function generateListAbsenceEtudiant({semestre, annee, departement, section, cycle, niveau, langue }: { semestre?: Number, annee?: Number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
+export async function generateListAbsenceEtudiant({semestre, annee, departement, section, cycle, niveau, langue, fileType }: { semestre?: Number, annee?: Number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListAbsenceEtudiant/${annee}/${semestre}`,
@@ -273,7 +274,8 @@ export async function generateListAbsenceEtudiant({semestre, annee, departement,
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },

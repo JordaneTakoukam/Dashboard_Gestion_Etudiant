@@ -240,7 +240,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     title = "abscences_teacher_list";
                 }
                 if(selected === 'PDF'){
-                    await generateListAbsenceEnseignant({ langue:lang, annee:selectedYear, semestre:selectSemestre}).then((blob)=>{
+                    await generateListAbsenceEnseignant({ langue:lang, annee:selectedYear, semestre:selectSemestre, fileType:'pdf'}).then((blob)=>{
                         // Créer un objet URL pour le blob PDF
                         if(blob){
                             createPDF(blob, title);
@@ -248,13 +248,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     })
                     
                 }else{
-                    await fetchAllAbsEnseignant().then((absences) => {
-                        if (selected === 'CSV') {
-
-                        } else {
-                            exportToExcel(title + ".xlsx", absences)
+                    await generateListAbsenceEnseignant({ langue:lang, annee:selectedYear, semestre:selectSemestre, fileType:'xlsx'}).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title, 'xlsx');
                         }
-                
                     })  
                 }
         } catch (error) {

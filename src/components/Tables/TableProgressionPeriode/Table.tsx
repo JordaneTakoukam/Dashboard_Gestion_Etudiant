@@ -114,11 +114,12 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
             if(lang !== 'fr'){
                 title = "periodes_progression";
             }
+            const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
             if(selected === 'PDF'){
-                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+                
                 if(section && cycle && niveau && departement){
                     if(filteredPeriode){
-                        await generateProgressionPeriodeEnseignement({ periode: filteredPeriode, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, annee:selectedYear, semestre:selectedSemestre}).then((blob)=>{
+                        await generateProgressionPeriodeEnseignement({ periode: filteredPeriode, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, annee:selectedYear, semestre:selectedSemestre, fileType:'pdf'}).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title);
@@ -129,10 +130,16 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                 }
                 
             }else{
-                if (selected === 'CSV'){
-
-                }else{
-                    exportToExcel(title+".xlsx", filteredPeriode)
+                if(section && cycle && niveau && departement){
+                    if(filteredPeriode){
+                        await generateProgressionPeriodeEnseignement({ periode: filteredPeriode, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, annee:selectedYear, semestre:selectedSemestre, fileType:'xlsx'}).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title, 'xlsx');
+                            }
+                        })
+                    }
+                    
                 }
             }
         } catch (error) {
@@ -145,13 +152,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     };
 
     const exportToExcel = async ( filename: string,periode: PeriodeEnseignementType | undefined) => {
-        // let fetchedPeriodes = null;
-        // if(niveau && niveau._id){
-        //     fetchedPeriodes = await getPeriodesByNiveau({ niveauId: niveau._id, annee: currentYear, semestre: currentSemester });
-        // }
-         
-        
-        // if(periodes && fetchedPeriodes && fetchedPeriodes.periodes){
+       
             const wb = XLSX.utils.book_new();
 
             // Créer une feuille de calcul

@@ -85,7 +85,7 @@ export async function apiSearchEnseignant({ searchString, limit }: {  searchStri
     }
 }
 
-export async function generateListEnseignant({ langue, annee, grade, categorie, service, fonction }: { langue:string, annee:number, grade?: string, categorie?: string, service?: string, fonction?: string }): Promise<Blob> {
+export async function generateListEnseignant({ langue, annee, grade, categorie, service, fonction, fileType }: { langue:string, annee:number, grade?: string, categorie?: string, service?: string, fonction?: string, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListEnseignant`,
@@ -100,7 +100,8 @@ export async function generateListEnseignant({ langue, annee, grade, categorie, 
                     grade: grade,
                     categorie: categorie,
                     service: service,
-                    fonction: fonction
+                    fonction: fonction,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },

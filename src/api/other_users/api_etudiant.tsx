@@ -79,7 +79,7 @@ export async function apiGetEtudiants({ annee, niveauId }: { annee: number, nive
     }
 }
 
-export async function generateListEtudiant({ annee, departement, section, cycle, niveau, langue }: { annee: number, departement: CommonSettingProps, section: SectionProps, cycle: CycleProps, niveau: NiveauProps, langue: string }): Promise<Blob> {
+export async function generateListEtudiant({ annee, departement, section, cycle, niveau, langue, fileType }: { annee: number, departement: CommonSettingProps, section: SectionProps, cycle: CycleProps, niveau: NiveauProps, langue: string, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListEtudiant/${annee}`,
@@ -93,7 +93,8 @@ export async function generateListEtudiant({ annee, departement, section, cycle,
                     section: section,
                     cycle: cycle,
                     niveau: niveau,
-                    langue: langue
+                    langue: langue,
+                    fileType: fileType
                 },
                 responseType: 'blob',
             },

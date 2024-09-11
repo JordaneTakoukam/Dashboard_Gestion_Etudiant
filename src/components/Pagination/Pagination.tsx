@@ -36,7 +36,7 @@ function Pagination({ count, itemsPerPage, startItem, endItem, hasPrevious, hasN
                                 <span> - </span>
                                 <span className="font-semibold">{endItem} </span>
                                 {t("pagination.sur")}
-                                <span className="font-semibold"> {endItem} </span>
+                                <span className="font-semibold"> {count} </span>
 
                             </p>
                         </div>

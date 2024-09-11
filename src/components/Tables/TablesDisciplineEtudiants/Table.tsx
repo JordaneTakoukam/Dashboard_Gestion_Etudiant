@@ -357,11 +357,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             if (lang !== 'fr') {
                 title = "abscences_teacher_list";
             }
-
+            const departement = section && departements.find(dep => dep._id && dep._id.toString() === section.departement.toString());
             if (selected === 'PDF') {
-                const departement = section && departements.find(dep => dep._id && dep._id.toString() === section.departement.toString());
+                
                 if (section && cycle && niveau && departement) {
-                    await generateListAbsenceEtudiant({ annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang }).then((blob) => {
+                    await generateListAbsenceEtudiant({ annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'pdf' }).then((blob) => {
                         // Créer un objet URL pour le blob PDF
                         if (blob) {
                             createPDF(blob, title);
@@ -370,14 +370,14 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                 }
 
             } else {
-                await fetchAllAbsEtudiant().then((absences) => {
-
-                    if (selected === 'CSV') {
-
-                    } else {
-                        exportToExcel(title + ".xlsx", absences)
-                    }
-                })
+                if (section && cycle && niveau && departement) {
+                    await generateListAbsenceEtudiant({ annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'xlsx' }).then((blob) => {
+                        // Créer un objet URL pour le blob PDF
+                        if (blob) {
+                            createPDF(blob, title, 'xlsx');
+                        }
+                    })
+                }
             }
         } catch (error) {
             createToast(t('message.erreur'), "", 2);

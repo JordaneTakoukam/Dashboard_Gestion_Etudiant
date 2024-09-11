@@ -97,7 +97,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
             }
             setIsDownload(true);
             if(selected === 'PDF'){
-                await generateListEvent({annee:selectedYear, langue:lang}).then((blob)=>{
+                await generateListEvent({annee:selectedYear, langue:lang, fileType:'pdf'}).then((blob)=>{
                     // Créer un objet URL pour le blob PDF
                     if(blob){
                         createPDF(blob, title);
@@ -105,17 +105,12 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                 })
                 
             }else{
-                await fetchAllEvenements(selectedYear).then((evenements)=>{
-
-                    if(evenements){
-                        if (selected === 'CSV'){
-                            exportToCsv(title+".csv", evenements)
-                            // downloadCSV();
-                        }else{
-                            exportToExcel(title+".xlsx", evenements)
-                        }
+                await generateListEvent({annee:selectedYear, langue:lang, fileType:'xlsx'}).then((blob)=>{
+                    // Créer un objet URL pour le blob PDF
+                    if(blob){
+                        createPDF(blob, title, 'xlsx');
                     }
-                });
+                })
             }
         } catch (error) {
             createToast(t('message.erreur'), "", 2);

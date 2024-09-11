@@ -120,7 +120,7 @@ export async function getPeriodesEnseignement({ niveauId, annee, semestre }: { n
     }
 }
 
-export async function generateListPeriodeEnseignement({annee, semestre, departement, section, cycle, niveau, langue }: {annee:number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
+export async function generateListPeriodeEnseignement({annee, semestre, departement, section, cycle, niveau, langue, fileType }: {annee:number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListPeriodeEnseignement/${annee}/${semestre}`,
@@ -134,7 +134,8 @@ export async function generateListPeriodeEnseignement({annee, semestre, departem
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },
@@ -150,7 +151,7 @@ export async function generateListPeriodeEnseignement({annee, semestre, departem
     }
 }
 
-export async function generateProgressionPeriodeEnseignement({ periode, departement, section, cycle, niveau, langue, annee, semestre }: { periode:PeriodeEnseignementType, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, annee:number, semestre:number }): Promise<Blob> {
+export async function generateProgressionPeriodeEnseignement({ periode, departement, section, cycle, niveau, langue, annee, semestre, fileType }: { periode:PeriodeEnseignementType, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, annee:number, semestre:number, fileType:string }): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateProgressionPeriodeEnseignement/${periode._id}`,
@@ -166,7 +167,8 @@ export async function generateProgressionPeriodeEnseignement({ periode, departem
                     niveau:niveau,
                     langue:langue,
                     annee:annee,
-                    semestre:semestre
+                    semestre:semestre,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },

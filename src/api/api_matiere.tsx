@@ -173,7 +173,7 @@ export async function getMatieresByEnseignantNiveau({ niveauId, enseignantId, an
     }
 }
 
-export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string }): Promise<Blob> {
+export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId, annee, semestre, departement, section, cycle, niveau, langue, fileType }: { niveauId: string, enseignantId: string, annee: number, semestre:number, departement:CommonSettingProps, section:SectionProps, cycle:CycleProps, niveau:NiveauProps, langue:string, fileType:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListMatByEnseignantNiveau/${niveauId}`,
@@ -190,7 +190,8 @@ export async function generateListMatByEnseignantNiveau({ niveauId, enseignantId
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },
@@ -301,7 +302,7 @@ export async function getMatieresByNiveau({ langue, niveauId, annee, semestre }:
     }
 }
 
-export async function generateListMatByNiveau({ annee, semestre, departement, section, cycle, niveau, langue }: { annee?: number, semestre?:number, departement?:CommonSettingProps, section?:SectionProps, cycle?:CycleProps, niveau?:NiveauProps, langue:string}): Promise<Blob> {
+export async function generateListMatByNiveau({ annee, semestre, departement, section, cycle, niveau, langue, fileType }: { annee?: number, semestre?:number, departement?:CommonSettingProps, section?:SectionProps, cycle?:CycleProps, niveau?:NiveauProps, langue:string, fileType:string}): Promise<Blob> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/generateListMatByNiveau/${annee}/${semestre}`,
@@ -315,7 +316,8 @@ export async function generateListMatByNiveau({ annee, semestre, departement, se
                     section:section,
                     cycle:cycle,
                     niveau:niveau,
-                    langue:langue
+                    langue:langue,
+                    fileType:fileType
                 },
                 responseType: 'blob',
             },

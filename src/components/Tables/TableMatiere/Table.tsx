@@ -18,11 +18,9 @@ import { apiSearchMatiere, apiSearchMatiereByEnseignant, generateListMatByEnseig
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import * as XLSX from 'xlsx';
-import jsPDF from "jspdf";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import Bouton from "../../ui/Bouton";
-import { userSlice } from "../../../_redux/features/user_slice";
 import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 
 interface TableMatiereProps {
@@ -145,27 +143,53 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         setFormatToDownload(selected);
         try{
             setIsDownload(true);
-            let title = "liste_des_matieres";
+            let title =`maquette_pédagogique_${formatYear(selectedYear)}_semestre_${selectedSemestre}`.replace("-","_")
             if (lang !== 'fr') {
-                title = "subjects_list";
+                title = `pedagogical_framework_${formatYear(selectedYear)}_semester_${selectedSemestre}`.replace("-","_")
             }
-            if(selected === 'PDF'){
-                const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
-                if(selectNiveauId && section && cycle && niveau && departement){
+            const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+            if(selectNiveauId && section && cycle && niveau && departement){
+                if(selected === 'PDF'){
+                    
+                    
+                        if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
+                            await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
+                                // Créer un objet URL pour le blob PDF
+                                if(blob){
+                                    createPDF(blob, title);
+                                }
+                            })
+                        }else{
+                            // if(section && cycle && niveau && departement && selectedYear && selectedSemestre){
+                            if(selectedYear){
+                                await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
+                                    // Créer un objet URL pour le blob PDF
+                                    if(blob){
+                                        createPDF(blob, title);
+                                    }
+                                })
+                            }else{
+                                alert(t("label.message_telecharger"));
+                            }
+                            // }
+                        }
+                    
+                    
+                }else{
                     if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
-                        await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang } ).then((blob)=>{
+                        await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx' } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
-                                createPDF(blob, title);
+                                createPDF(blob, title, 'xlsx');
                             }
                         })
                     }else{
                         // if(section && cycle && niveau && departement && selectedYear && selectedSemestre){
                         if(selectedYear){
-                            await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang}).then((blob)=>{
+                            await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx'}).then((blob)=>{
                                 // Créer un objet URL pour le blob PDF
                                 if(blob){
-                                    createPDF(blob, title);
+                                    createPDF(blob, title, 'xlsx');
                                 }
                             })
                         }else{
@@ -173,25 +197,9 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                         }
                         // }
                     }
-                }else{
-                    alert(t("label.message_telecharger"));
                 }
-                
             }else{
-                if(currentUser && currentUser.role === roles.enseignant){
-                    exportToExcel(title + ".xlsx", filteredData)
-                }else{
-                    await fetchAllMatieres().then(async (matieres) => {
-                        
-                        if (selected === 'CSV') {
-
-                        } else {
-                            
-                            exportToExcel(title + ".xlsx", matieres);
-                            
-                        }
-                    })
-                }
+                alert(t("label.message_telecharger"));
             }
         } catch (error) {
             console.log(error)
@@ -513,7 +521,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             }
         }
         fetchMatieres();
-    }, [section, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+    }, [section, selectNiveauId, currentPage, t]); // Déclencher l'effet lorsque currentPage change
     // [dispatch, currentPage, selectedYear, selectedSemestre, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
     
 

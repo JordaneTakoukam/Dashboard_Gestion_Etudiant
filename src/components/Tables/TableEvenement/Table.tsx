@@ -19,9 +19,6 @@ import { apiSearchEvenement, generateListEvent, getAllEvenementsByYear, getEvene
 import createToast from "../../../hooks/toastify";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { PageErreur } from "../../_Global/PageErreur";
-import cheerio from 'cheerio';
-import {jsPDF}  from "jspdf";
-import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Download from "../common/Download";
 

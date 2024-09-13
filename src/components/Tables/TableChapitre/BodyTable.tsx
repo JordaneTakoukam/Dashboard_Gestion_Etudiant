@@ -34,7 +34,7 @@ const BodyTable = ({ data, onEdit }: BodyChapitreProps) => {
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
                     <h5>{lang === 'fr' ? item.libelleFr : item.libelleEn}</h5>
                 </td>
-                {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
                     <h5>{item.statut == 1?t('label.approuver'):t('label.non_approuver')}</h5>
                 </td>}
 

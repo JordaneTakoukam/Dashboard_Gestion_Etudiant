@@ -517,6 +517,7 @@
     "non_autoriser": "Non autorisé",
     "vous_etes_pas_autoriser_a_mener_cette_action": "Vous n'êtes pas autorisé à mener cette action",
     "erreur": "Une erreur est survenue",
+    "serveur_inactif":"Le serveur est actuellement éteint. Merci de le démarrer.",
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !"
   },
   "aucun": {

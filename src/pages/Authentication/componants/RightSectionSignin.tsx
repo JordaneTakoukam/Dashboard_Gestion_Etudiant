@@ -78,11 +78,7 @@ function RightSectionSigin() {
 
             } catch (e: any) {
                 setLoading(false);
-                try {
-                    createToast((e.message as any)[lang], '', 2)
-
-                } catch (e) {
-                }
+                createToast(t('message.serveur_inactif'), "", 2);
             }
         }
     }

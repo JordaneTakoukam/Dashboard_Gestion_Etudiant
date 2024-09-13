@@ -15,18 +15,12 @@ const BodyTable = ({ data, onEdit }: { data?: string[], onEdit: (enseignement: s
                     <h5 className="">{index + 1}</h5>
                 </td>
 
-                {/* matricule */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
+                {/* activité */}
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
                     <h5>{typesEnseignement.length>0?lang==='fr'?typesEnseignement.find(typeEnseignement => typeEnseignement._id === item)?.libelleFr:typesEnseignement.find(typeEnseignement => typeEnseignement._id === item)?.libelleEn:""}</h5>
                 </td>
 
-                {/* libelle */}
-                {/* <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                    <h5>{item.enseignantPrincipal?item.enseignantPrincipal.nom+" "+item.enseignantPrincipal.prenom??"":""}</h5>
-                </td>
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
-                    <h5>{item.enseignantSuppleant?item.enseignantSuppleant.nom +" "+item.enseignantSuppleant.prenom??"":"" }</h5>
-                </td> */}
+               
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable

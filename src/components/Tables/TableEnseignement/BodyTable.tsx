@@ -17,12 +17,12 @@ const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (en
                 </td>
 
                 {/* matricule */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark hidden md:table-cell">
                     <h5>{item.matiere?item.matiere.code:""}</h5>
                 </td>
 
                 {/* libelle */}
-                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black hidden md:table-cell">
+                <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
                     <h5>{item.matiere?lang === 'fr' ? item.matiere.libelleFr : item.matiere.libelleEn:""}</h5>
                 </td>
                 {/* <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark ">

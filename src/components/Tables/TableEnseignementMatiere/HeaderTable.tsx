@@ -11,8 +11,8 @@ const HeaderTable = () => {
                     #
                 </th>
 
-                {/* matricule */}
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black hidden md:table-cell">
+                {/* activité */}
+                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
                     {t('label.type_ens')}
                 </th>
 

@@ -152,7 +152,9 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                             annee: e.data.annee,
                             dateAbsence: e.data.dateAbsence,
                             heureDebut: e.data.heureDebut,
-                            heureFin: e.data.heureFin
+                            heureFin: e.data.heureFin,
+                            etat: e.data.etat,
+                            motif: e.data.motif
                         }
                         newAbsences.push(absence);
                         

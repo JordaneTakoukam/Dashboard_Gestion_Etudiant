@@ -115,7 +115,7 @@ function ModalNotificationDetails({ notification }: ModalNotificationDetailsProp
                                 <br />
                                 {t('notification_details.jour_absence')}: {lang === 'fr' ? jours.find(jour => jour.ordre == notification.signalementAbsence?.jour_absence)?.libelleFr : jours.find(jour => jour.ordre == notification.signalementAbsence?.jour_absence)?.libelleEn}
                                 <br />
-                                {notification.signalementAbsence.file_paths && (
+                                {notification.signalementAbsence.file_paths && notification.signalementAbsence.file_paths.length> 0 && (
                                     <p>
                                         {t('notification_details.filePaths')}:{" "}
                                         

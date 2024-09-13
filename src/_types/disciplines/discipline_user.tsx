@@ -89,8 +89,8 @@ interface CreateAbsenceType {
     dateAbsence: string,
     heureDebut: string,
     heureFin: string,
-    etat:number,
-    motif:string
+    etat?:number,
+    motif?:string
 }
 
 interface UpdateAbsenceType {

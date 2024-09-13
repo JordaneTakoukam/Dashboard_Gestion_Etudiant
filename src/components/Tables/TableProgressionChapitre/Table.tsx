@@ -9,10 +9,9 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_redux/features/progession_matiere_slice";
-import { generateProgressByEnseignant, generateProgressByNiveau, generateProgressChapitreByEnseignant, generateProgressChapitreByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
+import { generateProgressChapitreByEnseignant, generateProgressChapitreByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
-import * as XLSX from 'xlsx';
 import { config } from "../../../config";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
@@ -60,8 +59,6 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
     const [matiere, setMatiere] = useState<MatiereType>();
     const [filteredMatiere, setFilteredMatiere] = matieres && matieres.length>0 ? useState<MatiereType | undefined>(matieres[0]):useState<MatiereType | undefined>();
     
-    const [filteredData, setFilteredData] = useState<ChapitreType[]>(data);
-    const [formatToDownload, setFormatToDownload] = useState("");
     const [progress, setProgress] = useState(0);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
@@ -195,30 +192,8 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
         }
     };
 
-    const fetchAllMatieres = async () => {
-        try {
-            
-            if (selectNiveauId) {
-                let fetchedMatieres = null
-                if(currentUser && currentUser.role===roles.enseignant){
-                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
-                }else{
-                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre, langue:lang});
-                }
-                if(fetchedMatieres){
-                    return fetchedMatieres.matieres;
-                }
-            }
-                // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageMatiere(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
+    
     const handleDownloadSelect = async (selected: string) => {
-        setFormatToDownload(selected);
 
         try{
             setIsDownload(true);
@@ -278,46 +253,6 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
         
     };
 
-    const exportToExcel = async ( filename: string,matieres: MatiereType[] | undefined) => {
-        
-
-        // if(matieres){
-        //     const wb = XLSX.utils.book_new();
-            
-        //     // Créer une feuille de calcul
-        //     let progress = 0;
-        //     if(matiere && matiere._id){
-        //         await getProgressionMatiere({matiereId:matiere._id}).then(result=>{
-        //             progress=result;
-        //         })
-        //     }
-        //     const ws = XLSX.utils.aoa_to_sheet([
-        //         [t('label.matieres'), t('label.progression')],
-        //         ...matieres.flatMap(matiere => {
-        //             const rows = [];
-        //             rows.push([`${lang==='fr'?matiere.libelleFr:matiere.libelleEn}`,progress+" %"]);
-        //             return rows;
-        //         })
-        //     ]);
-
-          
-        //     // Ajouter la feuille de calcul au classeur
-        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        //     // Générer un fichier Excel binaire
-        //     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        //     // Convertir le tableau binaire en un objet Blob
-        //     const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        //     // Créer un lien pour télécharger le fichier Excel
-        //     const link = document.createElement('a');
-        //     link.href = window.URL.createObjectURL(blob);
-        //     link.download = filename;
-        //     // Cliquez sur le lien pour télécharger le fichier Excel
-        //     link.click();
-        // }else{
-            
-        // }
-        
-    }
 
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){

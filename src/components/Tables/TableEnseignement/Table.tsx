@@ -21,7 +21,6 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const itemsPerPage = 10; // nombre delements maximum par page
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;

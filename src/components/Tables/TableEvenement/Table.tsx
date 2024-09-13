@@ -3,7 +3,7 @@ import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
+import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
@@ -15,11 +15,10 @@ import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import Pagination from "../../Pagination/Pagination";
 import { setEvenementLoading, setEvenements, setErrorPageEvenement } from "../../../_redux/features/evenement_slice";
-import { apiSearchEvenement, generateListEvent, getAllEvenementsByYear, getEvenementsByYear } from "../../../api/api_evenement";
+import { apiSearchEvenement, generateListEvent, getEvenementsByYear } from "../../../api/api_evenement";
 import createToast from "../../../hooks/toastify";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { PageErreur } from "../../_Global/PageErreur";
-import * as XLSX from 'xlsx';
 import Download from "../common/Download";
 
 
@@ -39,7 +38,6 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const dispatch = useDispatch();
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
-    const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? [];
     const promotions = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions) ?? [];
     const [promotion, setPromotion] = useState<PromotionProps | undefined>();
     
@@ -53,7 +51,6 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     };
 
     const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [formatToDownload, setFormatToDownload] = useState("");
 
     const handleAnneeSelect = (selected: String | undefined) => {
         // setFiltreAnnee(selected);
@@ -72,20 +69,10 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const [isSearch, setIsSearch] = useState<boolean>(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     // Filtrer les évènement en fonction de la langue
-    const filterEventByContent = (evenements: EvenementType[]) => {
-        if (searchText === '') {
-            const result: EvenementType[] = evenements;
-            return result;
-        }
-        return evenements.filter(evenement => {
-            const libelle = lang === 'fr' ? evenement.libelleFr : evenement.libelleEn;
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return evenement.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
+   
     
     const handleDownloadSelect = async (selected: string) => {
-        setFormatToDownload(selected);
+        // setFormatToDownload(selected);
         
         try {
             let title = "calendrier_académique_"+formatYear(selectedYear);
@@ -119,159 +106,9 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
         // methode pour download
     };
 
-
-
-    const exportToExcel = (filename: string, evenements:EvenementType[]) => {
-        try {
-            // Filtrer les entêtes se terminant par "Fr" et ceux qui ne se terminent ni par "Fr" ni par "En"
-            var headers = Object.keys(evenements[0]).filter(
-                header => !['_id', '__v', 'date_creation', 'code'].includes(header) 
-                && (header.endsWith("Fr") || (!header.endsWith("Fr") && !header.endsWith("En")))
-            );
-            if(lang !=='fr'){
-                headers = Object.keys(evenements[0]).filter(
-                    header => !['_id', '__v', 'date_creation', 'code'].includes(header) 
-                    && (header.endsWith("En") || (!header.endsWith("En") && !header.endsWith("Fr")))
-                );
-            }
-            
-            // Filtrer les données pour ne récupérer que les propriétés correspondantes aux entêtes sélectionnés
-            const filteredDataForExport = evenements.map(item => {
-                const filteredItem: Record<string, any> = {};
-                
-                headers.forEach(header => {
-                    if (item && Object.prototype.hasOwnProperty.call(item, header)) {
-                        if (header === 'etat') {
-                            // Rechercher l'état correspondant dans la liste des états
-                            const etat = etats.find(etat => etat._id === item[header]);
-                            // Si l'état est trouvé, utiliser son libellé, sinon utiliser l'identifiant ObjectId
-                            filteredItem[header] = etat ? lang==='fr'?etat.libelleFr:etat.libelleEn : item[header];
-                        }else if (header === 'promotion') {
-                            // Rechercher l'état correspondant dans la liste des états
-                            const promotion = promotions.find(promotion => promotion._id === item[header]);
-                            // Si l'état est trouvé, utiliser son libellé, sinon utiliser l'identifiant ObjectId
-                            filteredItem[header] = promotion ? lang==='fr'?promotion.libelleFr:promotion.libelleEn : item[header];
-                        } else if (header === 'dateDebut' || header === 'dateFin') {
-                            // Séparer la date de l'heure et ne garder que la partie date
-                            const datePart = item[header].split('T')[0];
-                            filteredItem[header] = datePart;
-                        } else {
-                            filteredItem[header] = item[header as keyof typeof item]?.toString();
-                        }
-                    }
-                });
-                
-                return filteredItem;
-            });
-            
-            // Renommer les entêtes du tableau d'objets
-            const renamedDataForExport = filteredDataForExport.map(item => {
-                const renamedItem: Record<string, any> = {};
-                
-                Object.keys(item).forEach(key => {
-                    switch (key) {
-                        case 'libelleFr':
-                        case 'libelleEn':
-                            renamedItem[t('label.libelle')] = item[key];
-                            break;
-                        case 'dateDebut':
-                            renamedItem[t('label.date_debut')] = item[key];
-                            break;
-                        case 'dateFin':
-                            renamedItem[t('label.date_fin')] = item[key];
-                            break;
-                        case 'periodeFr':
-                        case 'periodeEn':
-                            renamedItem[t('label.periode')] = item[key];
-                            break;
-                        case 'personnelFr':
-                        case 'personnelEn':
-                            renamedItem[t('label.personnel')] = item[key];
-                            break;
-                        case 'descriptionObservationFr':
-                        case 'descriptionObservationEn':
-                            renamedItem[t('label.description')] = item[key];
-                            break;
-                        case 'etat':
-                            renamedItem[t('label.etat')] = item[key];
-                            break;
-                        case 'promotion':
-                            renamedItem[t('label.promotion')] = item[key];
-                            break;
-                        case 'annee':
-                            renamedItem[t('label.annee')] = item[key];
-                            break;
-                        default:
-                            renamedItem[key] = item[key];
-                            break;
-                    }
-                });
-                
-                return renamedItem;
-            });
-        
-            // Convertir les données JSON filtrées en un tableau de feuilles de calcul
-            const ws = XLSX.utils.json_to_sheet(renamedDataForExport);
-            // Créer un nouveau classeur Excel
-            const wb = XLSX.utils.book_new();
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        } catch (error) {
-            createToast(t('message.erreur'), "", 2);
-        }
-    };
-    
-    const convertArrayOfObjectsToCSV = (evenements: EvenementType[]) => {
-        let csv = '';
-        // Obtenir les entêtes CSV à partir des clés du premier objet
-        const headers = Object.keys(evenements[0]).filter(header => header !== '_id' && header !== '__v');
-        // Ajouter les entêtes CSV à la chaîne CSV
-        csv += headers.join(';') + '\n';
-        // Parcourir chaque objet dans les données et ajouter ses valeurs à la chaîne CSV
-        evenements.forEach((item) => {
-            headers.forEach((header, index) => {
-                // Vérifier si la clé existe dans l'objet
-                if (item && Object.prototype.hasOwnProperty.call(item, header)) {
-                    // Échapper aux guillemets dans les valeurs
-                    const escapedValue = item[header as keyof typeof item]?.toString().replace(/"/g, '""') ?? '';
-                    // Encadrer les valeurs entre guillemets pour respecter le format CSV
-                    csv += (index ? ';' : '') + `"${escapedValue}"`;
-                }
-            });
-            // Aller à la ligne pour le prochain objet
-            csv += '\n';
-        });
-    
-        // Convertir la chaîne CSV en Blob avec l'encodage UTF-8
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    
-        return blob;
-    };
     
     
-      
-    const exportToCsv = (filename: string, evenements:EvenementType[]) => {
-    try {
-        const csv = convertArrayOfObjectsToCSV(evenements);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-    } catch (error) {
-        console.error('Erreur lors de la conversion en CSV :', error);
-    }
-    };
+   
       
 
     const userRole = useSelector((state: RootState) => state.user.role);
@@ -315,7 +152,6 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
                 const fetchedEvenements = await getEvenementsByYear({ annee: annee, promotion:promotion?._id, page: page });
                 // Mettez à jour l'état Redux avec les données récupérées
                 dispatch(setEvenements(fetchedEvenements));
-                // console.log(fetchedEvenements.evenements[0].etat);
     
                 dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
             }else{
@@ -329,24 +165,6 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
             dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
         }
     };
-
-    const fetchAllEvenements = async (annee: number) => {
-        // dispatch(setEvenementLoading(true)); // Définissez le loading à true avant le chargement
-        try {
-            const fetchedEvenements = await getAllEvenementsByYear({ annee: annee});
-            // Mettez à jour l'état Redux avec les données récupérées
-           return fetchedEvenements.evenements;
-            // console.log(fetchedEvenements.evenements[0].etat);
-
-            dispatch(setErrorPageEvenement(null)); // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageEvenement(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            // dispatch(setEvenementLoading(false)); // Définissez le loading à false après le chargement
-        }
-    };
-
     
 
     // Effet pour récupérer les événements initiaux lorsque le composant est monté ou lorsque la page change
@@ -357,7 +175,6 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<EvenementType[]>(data);
-    const [originalData, setOriginalData] = useState<EvenementType[]>(data); // Ajout d'une copie des données originales
 
 
     // useEffect(() => {

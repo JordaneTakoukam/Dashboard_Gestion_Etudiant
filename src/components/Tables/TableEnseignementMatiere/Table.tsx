@@ -2,9 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
-import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
-import { useEffect, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
@@ -21,20 +19,10 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignementProps) => {
     const {t}=useTranslation();
     const pageIsLoading = false;
     const dispatch = useDispatch();
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-    const itemsPerPage = 10; // nombre delements maximum par page
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-    const [searchText, setSearchText] = useState<string>('');
-    const [filteredData, setFilteredData] = useState<string[] | undefined>(data);
+    
     // Filtrer les matières en fonction de la langue
     // const filterEnseignementByContent = (enseignements: EnseignementType[] | undefined) => {
     //     if(enseignements){

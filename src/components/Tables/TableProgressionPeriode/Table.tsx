@@ -6,14 +6,12 @@ import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store"
-import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import createToast from "../../../hooks/toastify";
-import { createPDF, extractYear, formatYear, generateYearRange, sortEnseignements } from "../../../fonctions/fonction";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import { generateProgressionPeriodeEnseignement, getPeriodesEnseignement } from "../../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../../_redux/features/progession_periode_slice";
-import * as XLSX from 'xlsx';
 import Download from "../common/Download";
 
 interface TablePeriodeEnseignementProps {
@@ -24,9 +22,6 @@ interface TablePeriodeEnseignementProps {
 const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
-    const currentUser: UserState = useSelector((state: RootState) => state.user);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
@@ -38,7 +33,6 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.progressionPeriodeEnseignementSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -103,10 +97,8 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
             setNiveau(undefined);
         }
     };
-    const [formatToDownload, setFormatToDownload] = useState("");
 
     const handleDownloadSelect = async (selected: string) => {
-        setFormatToDownload(selected);
         try{
             setIsDownload(true);
 
@@ -151,44 +143,6 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
         
     };
 
-    const exportToExcel = async ( filename: string,periode: PeriodeEnseignementType | undefined) => {
-       
-            const wb = XLSX.utils.book_new();
-
-            // Créer une feuille de calcul
-            const ws = XLSX.utils.aoa_to_sheet([
-                // Première ligne avec le libellé de la période
-                [(lang==='fr'?periode?.periodeFr:periode?.periodeEn)],
-            
-                // Entête des colonnes
-
-                
-                ...(periode?.enseignements || []).flatMap(enseignement => [
-                    [enseignement.matiere.code+":"+(lang==='fr'?enseignement.matiere.libelleFr:enseignement.matiere.libelleEn)],
-                    [t('label.nb_seance_periode'), t('label.nb_seance_pratique'), t('label.gap'), t('label.taux_presence')],
-                    [enseignement.nombreSeance, enseignement.nbSeancesPratiquees, enseignement.nombreSeance - enseignement.nbSeancesPratiquees, `${(( enseignement.nbSeancesPratiquees/ enseignement.nombreSeance) * 100).toFixed(2)}%`]
-                    // [enseignement.nombreSeance, calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), enseignement.nombreSeance - calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes), `${(( calculateSeancesEffectuees(enseignement, fetchedPeriodes.periodes)/ enseignement.nombreSeance) * 100).toFixed(2)}%`]
-                    
-                ])
-            ]);
-          
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        // }else{
-            
-        // }
-        
-    }
     
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
@@ -232,45 +186,7 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
         setFilteredPeriode(selected);
         setPeriode(selected)
     };
-
-    // Filtrer les périodes d'enseignement en fonction de la langue
-    const filterPeriodeEnseignementByContent = (periodeEnseignements: PeriodeEnseignementType[]) => {
-        if (searchText === '') {
-            const result: PeriodeEnseignementType[] = periodeEnseignements;
-            return result;
-        }
-        return periodeEnseignements.filter(periodeEnseignement => {
-            const libelle = lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn;
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return periodeEnseignement.dateDebut.toLowerCase().includes(searchText.toLowerCase()) || periodeEnseignement.dateFin.toLowerCase().includes(searchText.toLowerCase())  || libelle.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
-
-    
-
-     // variable pour la pagination
-     const itemsPerPage = useSelector((state: RootState) => state.periodeEnseignementSlice.data.pageSize); // nombre delements maximum par page
-     const [currentPage, setCurrentPage] = useState<number>(1);
- 
-     const indexOfLastItem = currentPage * itemsPerPage;
-     const indexOfFirstItem = Math.max(0, indexOfLastItem - itemsPerPage);
-    //  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem); // remplacer les donnes de body du tableau par ceci !
-     const count =useSelector((state: RootState) => state.periodeEnseignementSlice.data.totalItems);
-     const handlePageClick = (pageNumber: number) => {
-         setCurrentPage(pageNumber);
-     };
-     // Render page numbers
-     const pageNumbers = [];
-     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
-         pageNumbers.push(i);
-     }
- 
-     const hasPrevious = currentPage > 1;
-     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
- 
-     const startItem = currentPage === Math.ceil(count / itemsPerPage) ? count - itemsPerPage + 1 : indexOfFirstItem + 1;
-     const endItem = Math.min(count, indexOfLastItem);
-
+     
     //fournir initialement les données à la page
     // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {
@@ -491,21 +407,6 @@ const Table = ({ data, periodes }: TablePeriodeEnseignementProps) => {
                         }
                     </table>
                 </div>
-
-                {/* Pagination */}
-
-                {/* {filteredPeriode && <Pagination
-                    count={count}
-                    itemsPerPage={itemsPerPage}
-                    startItem={startItem}
-                    endItem={endItem}
-                    hasPrevious={hasPrevious}
-                    hasNext={hasNext}
-                    currentPage={currentPage}
-                    pageNumbers={pageNumbers}
-                    handlePageClick={handlePageClick}
-
-                />} */}
 
             </div>
 

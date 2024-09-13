@@ -12,7 +12,6 @@ import { setMatiereLoading, setMatieres, setErrorPageMatiere } from "../../../_r
 import { generateProgressByEnseignant, generateProgressByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import LoadingTable from "../common/LoadingTable";
-import * as XLSX from 'xlsx';
 import { config } from "../../../config";
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
@@ -75,8 +74,6 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
     const [matiere, setMatiere] = useState<MatiereType>();
     const [filteredMatiere, setFilteredMatiere] = matieres && matieres.length>0 ? useState<MatiereType | undefined>(matieres[0]):useState<MatiereType | undefined>();
     
-    const [filteredData, setFilteredData] = useState<ObjectifType[]>(data);
-    const [formatToDownload, setFormatToDownload] = useState("");
     const [progress, setProgress] = useState(0);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
@@ -210,30 +207,8 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
         }
     };
 
-    const fetchAllMatieres = async () => {
-        try {
-            
-            if (selectNiveauId) {
-                let fetchedMatieres = null
-                if(currentUser && currentUser.role===roles.enseignant){
-                    fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
-                }else{
-                    fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre, langue:lang});
-                }
-                if(fetchedMatieres){
-                    return fetchedMatieres.matieres;
-                }
-            }
-                // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageMatiere(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
+  
     const handleDownloadSelect = async (selected: string) => {
-        setFormatToDownload(selected);
 
         try{
             setIsDownload(true);

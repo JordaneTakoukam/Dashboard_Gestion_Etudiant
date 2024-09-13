@@ -1,14 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
-import LoadingTable from "../common/LoadingTable";
-import NoDataTable from "../common/NoDataTable";
-import { setShowModal, setShowModalCreate } from "../../../_redux/features/setting";
-import { CustomDropDown } from "../../DropDown/CustomDropDown";
 import { useEffect, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
-import CustomButtonDownload from "../common/CustomButtomDownload";
-import HeaderTable from "./HeaderTable";
-import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
@@ -18,8 +11,7 @@ import { apiGetAbsencesByUserAndFilter } from "../../../api/discipline/api_disci
 import { updateUserAbsences } from "../../../_redux/features/user_slice";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { MdDateRange, MdExpandLess, MdExpandMore, MdClose, MdDone, MdDeleteForever } from "react-icons/md";
-import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
+import { MdDateRange, MdExpandLess, MdExpandMore, MdClose, MdDone } from "react-icons/md";
 
 
 

@@ -16,9 +16,8 @@ import { useTranslation } from "react-i18next";
 import { setErrorPageEtudiant, setEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
-import * as XLSX from 'xlsx';
-import { apiGetEtudiants, apiGetEtudiantsWithPagination, apiSearchEtudiant, generateListEtudiant } from "../../../api/other_users/api_etudiant";
-import { createPDF, extractYear, formatYear, generateYearRange, validateEmail } from "../../../fonctions/fonction";
+import { apiGetEtudiantsWithPagination, apiSearchEtudiant, generateListEtudiant } from "../../../api/other_users/api_etudiant";
+import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import Download from "../common/Download";
 
 interface TableEtudiantProps {
@@ -49,7 +48,6 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
@@ -108,25 +106,9 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             setNiveau(undefined);
         }
     };
-    const [formatToDownload, setFormatToDownload] = useState("");
 
-    const fetchAllEtudiants = async () => {
-        try {
-            
-            if (selectNiveauId) {
-                const fetchedEtudiants = await apiGetEtudiants({ niveauId: selectNiveauId, annee:selectedYear});
-                return fetchedEtudiants.etudiants;
-            }
-                // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageEtudiant(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setEtudiantsLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
+    
     const handleDownloadSelect = async (selected: string) => {
-        setFormatToDownload(selected);
         
         try{
             setIsDownload(true);
@@ -171,36 +153,6 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
 
     
 
-    const exportToExcel = ( filename: string,etudiants: EtudiantType[] | undefined) => {
-        if(etudiants){
-            const wb = XLSX.utils.book_new();
-            
-            // Créer une feuille de calcul
-            const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'),t('label.section'), t('label.cycle'), t('label.niveau')],
-                ...etudiants.flatMap(etudiant => {
-                    const rows = [];
-                    rows.push([etudiant.matricule, etudiant.nom, etudiant.prenom, etudiant.genre, etudiant.email, etudiant.date_naiss?etudiant.date_naiss?.split("T")[0]:"", etudiant.lieu_naiss, section?.code || "", cycle?.code || "", niveau?.code || ""]);
-                    return rows;
-                })
-            ]);
-          
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        }else{
-            
-        }
-    }
 
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
@@ -238,19 +190,6 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             setSearchText('');
             setIsSearch(false);
         }
-    };
-
-    // Filtrer les matières en fonction de la langue
-    const filterEtudiantByContent = (etudiants: EtudiantType[]) => {
-        if (searchText === '') {
-            const result: EtudiantType[] = etudiants;
-            return result;
-        }
-        return etudiants.filter(etudiant => {
-            const prenom = etudiant?.prenom || "";
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return etudiant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-        });
     };
 
     

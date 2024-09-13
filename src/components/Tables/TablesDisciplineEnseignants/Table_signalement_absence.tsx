@@ -1,22 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import InputSearch from "../common/SearchTable";
-import { useEffect, useState } from "react";
-import { FaFilter, FaSort } from "react-icons/fa6";
-import CustomButtonDownload from "../common/CustomButtomDownload";
-import HeaderTable from "./HeaderTable";
-import BodyTable from "./BodyTable";
-import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
-import Pagination from "../../Pagination/Pagination";
-import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantsDisciplineLoadingOnTable, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_enseignant_slice";
-import { apiGetAbsencesWithEnseignantsByFilter, apiGetAllAbsencesWithEnseignantsByFilter } from "../../../api/discipline/api_discipline";
+import { extractYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
+import { setAnneeDisciplineEns, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_enseignant_slice";
+import { apiGetAllAbsencesWithEnseignantsByFilter } from "../../../api/discipline/api_discipline";
 import LoadingOnTable from "../common/LoadingOnTable";
-import * as XLSX from 'xlsx';
 import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
-import { niveau } from "../../../pages/Admin/Niveaux";
 import HeaderTableSignalementAbsence from "./HeaderSignalemetAbsence";
 import BodyTableSignalementAbsence from "./BodyTableSignalementAbsence";
 
@@ -203,44 +194,12 @@ const TableSignalementAbsence = ({ type, listData }: { type: string, listData: S
             } else if (selected === 'CSV') {
 
             } else {
-                exportToExcel(title + ".xlsx", absences)
             }
         })
 
     };
 
-    const exportToExcel = (filename: string, enseignants: UserDiscipline[] | undefined) => {
-        if (enseignants) {
-            const wb = XLSX.utils.book_new();
-
-            // Créer une feuille de calcul
-            const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'), 'Absences(H)'],
-                ...enseignants.flatMap(enseignant => {
-                    const rows = [];
-                    rows.push([enseignant.matricule, enseignant.nom, enseignant.prenom, enseignant.genre, enseignant.email, enseignant.date_naiss ? enseignant.date_naiss?.split("T")[0] : "", enseignant.lieu_naiss ?? ""
-                        , nbTotalAbsences(enseignant.absences)]);
-                    return rows;
-                })
-            ]);
-
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        } else {
-
-        }
-    }
-
+    
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}

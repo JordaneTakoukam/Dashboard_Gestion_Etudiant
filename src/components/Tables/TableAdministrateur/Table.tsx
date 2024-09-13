@@ -158,10 +158,10 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
             </div>
 
             {/* bouton downlod Download */}
-            <div className="mt-7 mb-10">
+            {/* <div className="mt-7 mb-10">
                 <CustomButtonDownload items={['PDF', 'XLSX', 'CSV']} defaultValue="" onClick={handleDownloadSelect} />
 
-            </div>
+            </div> */}
 
         </div>
     );

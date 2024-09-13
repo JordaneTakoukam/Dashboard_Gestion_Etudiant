@@ -14,8 +14,7 @@ import { useTranslation } from "react-i18next";
 import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading, setEnseignantsLoadingOnTable, setSelectedEnseignant, resetSelectedEnseignant } from "../../../_redux/features/enseignant_slice";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
-import * as XLSX from 'xlsx';
-import { apiGetEnseignants, apiGetEnseignantsWithPagination, apiSearchEnseignant, generateListEnseignant } from "../../../api/other_users/api_enseignant";
+import { apiGetEnseignantsWithPagination, apiSearchEnseignant, generateListEnseignant } from "../../../api/other_users/api_enseignant";
 import Bouton from "../../ui/Bouton";
 import { createPDF } from "../../../fonctions/fonction";
 import Download from "../common/Download";
@@ -58,7 +57,6 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
     const [filteredCategorie, setFilteredCategorie] = useState<CategorieProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
-    const [formatToDownload, setFormatToDownload] = useState("");
     
     const filterCategorieByGrade = (gradeId: string | undefined) => {
         if (gradeId && gradeId !== '') {
@@ -80,38 +78,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         }
     };
 
-    const fetchAllEnseignants = async () => {
-        try {
-            let gradeId = undefined;
-            let categorieId = undefined;
-            let serviceId = undefined;
-            let fonctionId = undefined;
-            if (grade) {
-                gradeId = grade._id;
-            }
-            if (categorie) {
-                categorieId = categorie._id;
-            }
-            if (service) {
-                serviceId = service._id;
-            }
-            if (fonction) {
-                fonctionId = fonction._id;
-            }
-
-            const fetchedEnseignants = await apiGetEnseignants({ grade: gradeId, categorie: categorieId, service: serviceId, fonction: fonctionId });
-            return fetchedEnseignants.enseignants;
-
-            // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageEnseignant(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
+    
     const handleDownloadSelect = async (selected: string) => {
-        setFormatToDownload(selected);
         try{
             setIsDownload(true);
             let title = "liste_des_enseignants_"
@@ -158,42 +126,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
     };
 
-    const exportToExcel = (filename: string, enseignants: EnseignantType[] | undefined) => {
-        if (enseignants) {
-            const wb = XLSX.utils.book_new();
-
-            // Créer une feuille de calcul
-            
-            const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'), t('label.grade'), t('label.categorie'), t('label.service'), t('label.fonction')],
-                ...enseignants.flatMap(enseignant => {
-                    const rows = [];
-                    const currentCategorie = categories.find(categorie => categorie._id === enseignant.categorie);
-                    const gradeLib = lang === 'fr' ? grades.find(grade =>currentCategorie && (grade._id ===  currentCategorie.grade))?.libelleFr || "" : grades.find(grade => currentCategorie && (grade._id === currentCategorie.grade))?.libelleEn || "";
-                    const categorieLib = lang === 'fr' ? categories.find(categorie => categorie._id === enseignant.categorie)?.libelleFr || "" : categories.find(categorie => categorie._id === enseignant.categorie)?.libelleEn || "";
-                    const serviceLib = lang === 'fr' ? services.find(service => service._id === enseignant.service)?.libelleFr || "" : services.find(service => service._id === enseignant.service)?.libelleEn || "";
-                    const fonctionLib = lang === 'fr' ? fonctions.find(fonction => fonction._id === enseignant.fonction)?.libelleFr || "" : fonctions.find(fonction => fonction._id === enseignant.fonction)?.libelleEn || "";
-                    rows.push([enseignant.matricule, enseignant.nom, enseignant.prenom, enseignant.genre, enseignant.email, enseignant.date_naiss ? enseignant.date_naiss?.split("T")[0] : "", enseignant.lieu_naiss, gradeLib, categorieLib, serviceLib, fonctionLib]);
-                    return rows;
-                })
-            ]);
-
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        } else {
-
-        }
-    }
+   
 
 
     // recuperer l'id de la grade suite au click sur l'input select

@@ -17,7 +17,6 @@ import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../../_r
 import { apiSearchMatiere, apiSearchMatiereByEnseignant, generateListMatByEnseignantNiveau, generateListMatByNiveau, getMatieresByEnseignantNiveau, getMatieresByNiveau, getMatieresByNiveauWithPagination } from "../../../api/api_matiere";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
-import * as XLSX from 'xlsx';
 import Download from "../common/Download";
 import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 import Bouton from "../../ui/Bouton";
@@ -202,7 +201,6 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 alert(t("label.message_telecharger"));
             }
         } catch (error) {
-            console.log(error)
             createToast(t('message.erreur'), "", 2);
         }finally {
             setIsDownload(false);
@@ -210,86 +208,6 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
     };
 
-
-    const exportToExcel = (filename: string, matieres: MatiereType[] | undefined) => {
-        if (matieres) {
-            const wb = XLSX.utils.book_new();
-
-            // Créer une feuille de calcul
-            const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matieres'), "CM", "TD", "TP"],
-                ...matieres.flatMap(matiere => {
-                    const rows = [];
-
-                    // Vérifier si matiere.chapitres est défini
-                    if (matiere.chapitres) {
-                        rows.push([`${lang === 'fr' ? matiere.libelleFr : matiere.libelleEn}`]);
-
-                        // Parcourir les chapitres
-                        matiere.chapitres.forEach(chapitre => {
-                            if(chapitre.annee==selectedYear && chapitre.semestre==selectedSemestre){
-                                rows.push([
-                                    lang === 'fr' ? chapitre.libelleFr : chapitre.libelleEn,
-                                    chapitre.typesEnseignement.length > 0 && chapitre.typesEnseignement[0].volumeHoraire || "", // Volume horaire pour le premier type d'enseignement
-                                    chapitre.typesEnseignement.length > 1 && chapitre.typesEnseignement[1].volumeHoraire || "", // Volume horaire pour le deuxième type d'enseignement
-                                    chapitre.typesEnseignement.length > 2 && chapitre.typesEnseignement[2].volumeHoraire || ""  // Volume horaire pour le troisième type d'enseignement
-                                ]);
-                            }
-                        });
-                    }
-
-                    rows.push([
-                        (t('label.approche_ped')) + ":" + (lang === 'fr' ? matiere.approchePedFr : matiere.approchePedEn),
-                    ]);
-                    rows.push([
-                        (t('label.prerequis')) + ":" + (lang === 'fr' ? matiere.prerequisFr : matiere.prerequisEn),
-                    ]);
-                    rows.push([
-                        (t('label.evaluation_acquis')) + ":" + (lang === 'fr' ? matiere.evaluationAcquisFr : matiere.evaluationAcquisEn),
-                    ]);
-                    let objectifs = "";
-                    
-                        if (matiere.objectifs) {
-
-                            matiere.objectifs.forEach(objectif => {
-                                if(objectif.annee==selectedYear && objectif.semestre==selectedSemestre){
-                                    if (objectifs.length > 0) {
-                                        objectifs = objectifs + ";" + (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
-                                    } else {
-                                        objectifs = (lang === 'fr' ? objectif.libelleFr : objectif.libelleEn)
-                                    }
-                                }
-
-                            })
-                        }
-                       
-                    rows.push([
-                        (t('label.competences_acquis')) + ":" + objectifs,
-                    ]);
-                    rows.push(Array(4).fill("")); // Espacement entre les matières
-
-                    return rows;
-                })
-            ]);
-
-
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        } else {
-
-        }
-
-    }
 
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){

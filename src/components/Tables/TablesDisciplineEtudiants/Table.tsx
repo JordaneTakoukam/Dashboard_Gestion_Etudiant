@@ -8,17 +8,14 @@ import BodyTable from "./BodyTable";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
-import { createPDF, extractYear, formatYear, generateYearRange, nbTotalAbsences } from "../../../fonctions/fonction";
+import { createPDF, extractYear, generateYearRange } from "../../../fonctions/fonction";
 import Pagination from "../../Pagination/Pagination";
 import { setAnneeDisciplineEns, setEtudiantDiscipline, setEtudiantsDisciplineLoadingOnTable, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns } from "../../../_redux/features/absence/discipline_etudiant_slice";
-import { apiGetAbsencesWithEtudiantsByFilter, apiGetAllAbsencesWithEtudiantsByFilter, apiSearchUserDiscipline, apiSearchUserDisciplineEtudiant, generateListAbsenceEtudiant } from "../../../api/discipline/api_discipline";
+import { apiGetAbsencesWithEtudiantsByFilter, apiSearchUserDisciplineEtudiant, generateListAbsenceEtudiant } from "../../../api/discipline/api_discipline";
 import LoadingOnTable from "../common/LoadingOnTable";
-import * as XLSX from 'xlsx';
-import { setErrorPageEtudiant, setEtudiantsLoading } from "../../../_redux/features/etudiant_slice";
 import createToast from "../../../hooks/toastify";
 import NoDataTable from "../common/NoDataTable";
 import Download from "../common/Download";
-import { config } from "../../../config";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -172,18 +169,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const [searchText, setSearchText] = useState<string>('');
     const [filteredData, setFilteredData] = useState<UserDiscipline[]>(data);
 
-    // Filtrer les matières en fonction de la langue
-    const filterEtudiantByContent = (etudiants: UserDiscipline[]) => {
-        if (searchText === '') {
-            const result: UserDiscipline[] = etudiants;
-            return result;
-        }
-        return etudiants.filter(etudiant => {
-            const prenom = etudiant?.prenom || "";
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return etudiant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
 
     // useEffect(() => {
     //     const result = filterEtudiantByContent(data);
@@ -239,8 +224,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     }, [searchText, data]);
 
 
-
-    const [isInitialMount, setIsInitialMount] = useState(true);
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.etudiantDisciplineSlice.pageIsLoadingOnTable);
     const [isDownload, setIsDownload] = useState(false);
 
@@ -270,13 +253,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const endItem = Math.min(count, indexOfLastItem);
     
     // end --------- pagination
-    const emptyEtudiants: EtudiantDisciplineListGetType = {
-        etudiants: [],
-        currentPage: 0,
-        totalItems: 0,
-        totalPages: 0,
-        pageSize: 0
-    }
+   
     useEffect(() => {
         // if (annee && semestre) {
         dispatch(setAnneeDisciplineEns(selectedYear));
@@ -330,24 +307,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
 
-    const fetchAllAbsEtudiant = async () => {
-        try {
-
-            if (selectNiveauId) {
-                const fetchedEtudiants = await apiGetAllAbsencesWithEtudiantsByFilter({ annee: selectedYear, semestre: selectSemestre, niveauId: selectNiveauId });
-                return fetchedEtudiants.etudiants;
-            }
-
-
-            // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageEtudiant(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setEtudiantsLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
-
+   
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const handleDownloadSelect = async (selected: string) => {
         // setFormatToDownload(selected);
@@ -386,38 +346,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
         }
     };
 
-    const exportToExcel = (filename: string, etudiants: UserDiscipline[] | undefined) => {
-        if (etudiants) {
-            const wb = XLSX.utils.book_new();
-
-            // Créer une feuille de calcul
-            const ws = XLSX.utils.aoa_to_sheet([
-                [t('label.matricule'), t('label.nom'), t('label.prenom'), t('label.genre'), t('label.email'), t('label.date_naiss'), t('label.lieu_naiss'), 'Absences(H)'],
-                ...etudiants.flatMap(etudiant => {
-                    const rows = [];
-                    rows.push([etudiant.matricule, etudiant.nom, etudiant.prenom, etudiant.genre, etudiant.email, etudiant.date_naiss ? etudiant.date_naiss?.split("T")[0] : "", etudiant.lieu_naiss ?? ""
-                        , nbTotalAbsences(etudiant.absences)]);
-                    return rows;
-                })
-            ]);
-
-            // Ajouter la feuille de calcul au classeur
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            // Générer un fichier Excel binaire
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            // Convertir le tableau binaire en un objet Blob
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            // Créer un lien pour télécharger le fichier Excel
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            // Cliquez sur le lien pour télécharger le fichier Excel
-            link.click();
-        } else {
-
-        }
-    }
-
+   
     useEffect(() => {
         if (!selectSectionId) {
             if (sections && sections.length > 0) {

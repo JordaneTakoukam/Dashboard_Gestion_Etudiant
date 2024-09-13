@@ -8,7 +8,7 @@ import HeaderTable from "./HeaderTable";
 import { jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
-import { setShowModal, setShowModalElement, setShowModalSignalerAbsence } from "../../../_redux/features/setting";
+import { setShowModalElement, setShowModalSignalerAbsence } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ import { createPDF, extractYear, formatYear, generateYearRange, premierElement }
 import { setPeriodeLoading, setPeriodes, setErrorPagePeriode } from "../../../_redux/features/periode_slice";
 import { generateEmploisDuTemps, getPeriodesByNiveau } from "../../../api/api_periode";
 import createToast from "../../../hooks/toastify";
-import * as XLSX from 'xlsx';
 import Download from "../common/Download";
 
 
@@ -310,15 +309,15 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 }
                 
             }else{
-                exportToExcel(title+'.xlsx')
-                // if(section && cycle && niveau){
-                //     await generateEmploisDuTemps({section : section, cycle:cycle, niveau:niveau, langue:lang, annee: selectedYear, semestre: selectedSemestre, fileType:'xlsx' }).then((blob)=>{
-                //         // Créer un objet URL pour le blob PDF
-                //         if(blob){
-                //             createPDF(blob, title, 'xlsx');
-                //         }
-                //     })
-                // }
+                // exportToExcel(title+'.xlsx')
+                if(section && cycle && niveau){
+                    await generateEmploisDuTemps({section : section, cycle:cycle, niveau:niveau, langue:lang, annee: selectedYear, semestre: selectedSemestre, fileType:'xlsx' }).then((blob)=>{
+                        // Créer un objet URL pour le blob PDF
+                        if(blob){
+                            createPDF(blob, title, 'xlsx');
+                        }
+                    })
+                }
             }
         } catch (error) {
             createToast(t('message.erreur'), "", 2);
@@ -326,39 +325,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             setIsDownload(false);
         }
     };
-
-    const exportToExcel = (title:string) => {
-        // Créer une nouvelle feuille de calcul
-        const wb = XLSX.utils.book_new();
-        // Convertir les données du tableau en un tableau 2D
-        const data = [['Horaire', ...jours.map(jour => lang === 'fr'?jour.libelleFr:jour.libelleEn)], ...extractTableData()];
-        // Créer une nouvelle feuille de calcul à partir des données
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        // Ajouter la feuille de calcul au classeur
-        XLSX.utils.book_append_sheet(wb, ws, 'Emploi du temps');
-        // Sauvegarder le classeur au format Excel
-        XLSX.writeFile(wb, title);
-    };
-
-    const extractTableData = () => {
-        const tableData = [];
-        const tableBody = document.getElementById('myTable');
-        if (tableBody) {
-            const rows = tableBody.getElementsByTagName('tr');
-            for (let i = 0; i < rows.length; i++) {
-                const rowData = [];
-                const cells = rows[i].getElementsByTagName('td');
-                for (let j = 0; j < cells.length; j++) {
-                    rowData.push(cells[j].textContent ?? '');
-                }
-                tableData.push(rowData);
-            }
-        }
-        return tableData;
-    };
     
-    
-
 
    // Effet pour filtrer les options des CustomDropDown
     useEffect(() => {

@@ -109,23 +109,6 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<ObjectifType[]>(data);
 
-    // Filtrer les matières en fonction de la langue
-    const filterObjectifByContent = (objectifs: ObjectifType[] | undefined) => {
-        if(objectifs){
-            if (searchText === '') {
-                const result: ObjectifType[] = objectifs;
-                return result;
-            }
-            return objectifs.filter(objectif => {
-                const libelle = lang === 'fr' ? objectif.libelleFr : objectif.libelleEn;
-                // Vérifie si le code ou le libellé contient le texte de recherche
-                return objectif.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
-            });
-        }
-       return [];
-    };
-
-    
 
     // useEffect(() => {
     //     const result = filterObjectifByContent(data);

@@ -39,6 +39,7 @@ import DepartementsAcademique from '../pages/Admin/DepartementsAcademique';
 import Promotions from '../pages/Admin/Promotions';
 import Documents from '../pages/CommonPage/Documents';
 import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
+import QRCodeGenerator from '../pages/Admin/QRCode';
 
 
 
@@ -243,6 +244,12 @@ const coreRoutes = [
     title: 'Liste des administrateurs',
     // component: Administration,
     component: ListeDesAdministrateur,
+  },
+  {
+    path: '/parametres/qr-code',
+    title: 'QR Code',
+    // component: Administration,
+    component: QRCodeGenerator,
   },
 
   {

@@ -3,13 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RootState } from '../../_redux/store';
 import { useTranslation } from 'react-i18next';
-import { jours } from '../../pages/CommonPage/EmploiDeTemp';
-import { formatDateWithLang } from '../../fonctions/fonction';
 
 import { removeNotifications, removeNotification, setNewNotification } from '../../_redux/features/notification_slice';
 import { markAllNotificationAsRead, markNotificationAsRead } from '../../api/api_notification';
 import { config } from '../../config';
-import { setShowModalNotificationDetails } from '../../_redux/features/setting';
 
 
 interface NotificationProps {

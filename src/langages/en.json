@@ -60,6 +60,7 @@
     "cycles": "Cycles",
     "niveaux": "Levels",
     "profil": "My Profile",
+    "qr_code":"QR Code",
     "administrateurs": "Administrators",
     "services": "Services",
     "grades": "Grades",
@@ -97,6 +98,7 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "title_qr":"Attendance QR Code Generator",
     "progression_chap":"Chapter progression",
     "info_objectifs":"This chapter does not contain any objectives. If you confirm the changes, the chapter's state will be automatically updated. Please ensure you check other settings before proceeding.",
     "select_all":"Select all",
@@ -321,7 +323,8 @@
     "signaler_absence": "Report my absence",
     "se_connecter": "Log in",
     "oublie_pass": "Forgot Password?",
-    "reinit_pass": "Reset Password"
+    "reinit_pass": "Reset Password",
+    "generer_qr":"Generate QR Code"
   },
   "select_par_defaut": {
   "selectionnez": "Select ",

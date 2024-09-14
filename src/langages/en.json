@@ -44,6 +44,7 @@
     "profil": "My Profile"
   },
   "sub_menu": {
+    "presence_paie":"Attendance and Pay",
     "absence_reporting": "Reported Absences",
     "liste_etudiant": "Student List",
     "gestion_absences_enseignant": "Teacher Absence Management",
@@ -98,6 +99,11 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "taux_horaire": "Hourly rate",
+    "nb_heure": "Number of hours",
+    "montant_brut": "Gross bonus",
+    "irnc": "IRNC",
+    "montant_net": "Net bonus",
     "noQrScanned":"No QR Code scanned yet.",
     "qrContent":"Scanned QR Code Content: ",
     "scan_qr_code":"Scan the QR Code below",
@@ -415,6 +421,7 @@
     "roles": "Modify the role of the student",
     "absence": "Add an absence:",
     "signaler": "Report my absence",
+    "signaler_presence": "Register my presence",
     "enregistrer": "Update information",
     "etudiant": "of the student",
     "enseignant": "of the teacher",

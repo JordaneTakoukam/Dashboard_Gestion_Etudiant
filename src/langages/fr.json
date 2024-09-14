@@ -44,6 +44,7 @@
     "profil": "Mon profil"
   },
   "sub_menu": {
+    "presence_paie":"Présence et Paie",
     "absence_reporting": "Absences signalées",
     "liste_etudiant": "Liste des étudiants",
     "gestion_absences_enseignant": "Gestion des absences de l'enseignant",
@@ -98,6 +99,11 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "taux_horaire":"Taux horaire",
+    "nb_heure":"Nombre d'heure",
+    "montant_brut":"Gratification brut",
+    "irnc":"IRNC",
+    "montant_net":"Gratification net",
     "noQrScanned":"Aucun QR Code scanné pour l'instant.",
     "qrContent":"Contenu du QR Code scanné ",
     "scan_qr_code":"Scannez le QR Code ci-dessous",
@@ -415,6 +421,7 @@
     "roles": "Modifier le rôle de l'étudiant",
     "absence": "Ajouter une absence : ",
     "signaler": "Signaler mon absence",
+    "signaler_presence":"Enregistrer ma présence",
     "enregistrer": "Mettre à jour les informations ",
     "etudiant": "de l'étudiant",
     "enseignant": "de l'enseignant",

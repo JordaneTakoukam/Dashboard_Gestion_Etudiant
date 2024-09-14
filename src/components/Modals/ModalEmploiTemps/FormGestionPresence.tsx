@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalDelete, setShowModalPresence, setShowModalPause, setShowModalSignalerAbsence, setShowModalOpenScan } from '../../../_redux/features/setting';
+import { setShowModal, setShowModalDelete, setShowModalPresence, setShowModalPause, setShowModalSignalerAbsence, setShowModalOpenScan, setShowModalPresenceManuelle } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import { Fragment} from 'react';
 import { useTranslation } from 'react-i18next';
@@ -72,7 +72,7 @@ function ModalGestionPresence({ periodeCours }: { periodeCours: PeriodeType | nu
                                             {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalOpenScan())}}>
                                             {t('label.signaler_presence_qr')}
                                             </button>)}
-                                            {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalDelete())}}>
+                                            {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalPresenceManuelle())}}>
                                                 {t('label.signaler_presence_manuelle')}
                                             </button>)}
                                             

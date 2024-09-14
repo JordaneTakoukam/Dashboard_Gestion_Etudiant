@@ -86,10 +86,10 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
             if (lang !== 'fr') {
                 title = "teachers_list_"
             }
-            let gradeId = undefined;
-            let categorieId = undefined;
-            let serviceId = undefined;
-            let fonctionId = undefined;
+            let gradeId : string | undefined;
+            let categorieId : string | undefined;
+            let serviceId : string | undefined;
+            let fonctionId : string | undefined;
             if (grade) {
                 gradeId = grade._id;
             }
@@ -246,10 +246,10 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                     totalPages: 0,
                     pageSize: 0
                 }
-                let gradeId = undefined;
-                let categorieId = undefined;
-                let serviceId = undefined;
-                let fonctionId = undefined;
+                let gradeId : string | undefined;
+                let categorieId : string | undefined;
+                let serviceId : string | undefined;
+                let fonctionId : string | undefined;
                 if (grade) {
                     gradeId = grade._id;
                 }

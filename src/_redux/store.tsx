@@ -13,6 +13,7 @@ import objectifReducer from "./features/objectif_slice.tsx";
 import documentUploadReducer from "./features/document_upload_slice.tsx";
 import AdminReducer from "./features/admin_slice.tsx";
 import EnseignantReducer from "./features/enseignant_slice.tsx";
+import PresencePaieReducer from "./features/presence_paie_slice.tsx";
 import EnseignanDisciplineReducer from "./features/absence/discipline_enseignant_slice.tsx";
 import EtudiantDisciplineReducer from "./features/absence/discipline_etudiant_slice.tsx";
 import EtudiantReducer from "./features/etudiant_slice.tsx";
@@ -37,6 +38,7 @@ const store = configureStore({
     // 
     admin: AdminReducer,
     enseignantSlice: EnseignantReducer,
+    presencePaieSlice:PresencePaieReducer,
     enseignantDisciplineSlice: EnseignanDisciplineReducer,
     etudiantDisciplineSlice: EtudiantDisciplineReducer,
     etudiantSlice: EtudiantReducer,

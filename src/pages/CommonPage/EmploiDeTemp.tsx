@@ -14,6 +14,7 @@ import FormAddPause from "../../components/Modals/ModalEmploiTemps/FormAddPause"
 import FormCreateUpdateAbsenceSignaler from "../../components/Modals/ModalAbsence/FormCreateUpdateAbsenceSignaler";
 import FormGestionPresence from "../../components/Modals/ModalEmploiTemps/FormGestionPresence";
 import FormScanQrCode from "../../components/Modals/ModalEmploiTemps/FormScanQrCode";
+import FormSignalerPresence from "../../components/Modals/ModalAbsence/FormSignalerPresence";
 
 
 
@@ -91,7 +92,9 @@ const EmploiDeTemp = () => {
             <FormGestionElement periodeCours={selectedPeriode}/>
             <FormGestionPresence periodeCours={selectedPeriode}/>
             <FormScanQrCode periodeCours={selectedPeriode}/>
+            <FormSignalerPresence periodeCours={selectedPeriode}/>
             <FormCreateUpdateAbsenceSignaler periodeCours={selectedPeriode}/>
+            
         </>
     );
 };

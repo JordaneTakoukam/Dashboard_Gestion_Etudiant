@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalSignalerAbsence, } from '../../../_redux/features/setting';
+import { setShowModalPresenceManuelle } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import { config } from '../../../config';
 
 
 
-function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null }) {
+function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -22,29 +22,28 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [heureDebut, setHeureDebut] = useState("");
     const [heureFin, setHeureFin] = useState("");
     const [semestre, setSemestre] = useState(currentSemester);
+    const [matiere, setMatiere] = useState("");
     const [annee, setAnnee] = useState(currentYear);
-    const [motif, setMotif] = useState("");
-    const [files, setFiles] = useState<File[]>([]);
 
     const [isFirstRender, setIsFirstRender] = useState(true);
 
 
-    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openSignalerAbsence);
+    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openPresenceM);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
     const currentUser: UserState = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
 
         if (periodeCours) {
-            setModalTitle(t('form_update.signaler'));
+            setModalTitle(t('form_update.signaler_presence'));
             
             setJour(jours.find((jour) => periodeCours.jour == jour.ordre));
             setHeureDebut(periodeCours.heureDebut);
             setHeureFin(periodeCours.heureFin);
             setSemestre(periodeCours.semestre);
             setAnnee(periodeCours.annee);
-            setMotif("");
-            setFiles([]);
+            const libelle =  lang === 'fr'?periodeCours.matiere?.libelleFr || "":periodeCours.matiere?.libelleEn || ""
+            setMatiere(libelle)
         } else {
         }
 
@@ -59,15 +58,10 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
     const closeModal = () => {
         setIsFirstRender(true);
-        dispatch(setShowModalSignalerAbsence());
+        dispatch(setShowModalPresenceManuelle());
     };
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            setFiles(Array.from(event.target.files));
-        }
-    };
-
+   
     const [isDeleting, setIsDeleting] = useState(false);
 
 
@@ -85,7 +79,6 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             if(enseignant){
                 formData.append('enseignant', JSON.stringify(enseignant));
             }
-            formData.append('motif', motif);
             formData.append('role', currentUser.role);
             formData.append('heure_debut_absence', periodeCours.heureDebut);
             formData.append('heure_fin_absence', periodeCours.heureFin);
@@ -95,9 +88,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             formData.append('niveau', periodeCours.niveau);
             
 
-            files.forEach((file, index) => {
-                formData.append(`files`, file);
-            });
+           
             await apiSignalerAbsence(formData).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -168,25 +159,20 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     value={heureFin}
                     onChange={(e) => { setHeureFin(e.target.value); }}
                 />
-                <label>{t('label.motif')}</label>
-                <textarea
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    value={motif}
-                    maxLength={100} // Limite à 100 caractères
-                    onChange={(e) => { setMotif(e.target.value); }}
-                />
-                <label>{t('label.pieces_jointes')}</label>
+                
+                <label>{t('label.matiere')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
+                    type="text"
+                    value={matiere}
+                    readOnly
+                    onChange={(e) => { setMatiere(e.target.value); }}
                 />
-                {/* {errorHeureFin && <p className="text-red-500" >{errorHeureFin}</p>} */}
+                
             </CustomDialogModal>
 
         </>
     );
 }
 
-export default ModalCreateUpdate;
+export default ModalSignalerPresence;

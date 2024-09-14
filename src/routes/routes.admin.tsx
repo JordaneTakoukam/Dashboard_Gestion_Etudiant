@@ -40,6 +40,7 @@ import Promotions from '../pages/Admin/Promotions';
 import Documents from '../pages/CommonPage/Documents';
 import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
 import QRCodeGenerator from '../pages/Admin/QRCode';
+import PresencePaie from '../pages/Admin/PresencePaie';
 
 
 
@@ -67,6 +68,11 @@ const coreRoutes = [
     path: '/teachers/disciplines',
     title: 'Disciplines des enseignants',
     component: DisciplineDesEnseignants,
+  },
+  {
+    path: '/teachers/presence-paie',
+    title: 'Présence et Paie',
+    component: PresencePaie,
   },
   {
     path: '/students/disciplines',

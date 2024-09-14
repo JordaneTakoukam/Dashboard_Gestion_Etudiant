@@ -274,6 +274,17 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                             {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/teachers/presence-paie"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.presence_paie')}
+                                                        </NavLink>
+                                                    </li>
                                                     {/* <li>
                                                         <NavLink
                                                             to="/teachers/absence_reporting"

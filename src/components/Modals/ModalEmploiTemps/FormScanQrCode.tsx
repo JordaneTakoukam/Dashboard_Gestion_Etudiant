@@ -91,6 +91,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                         style={previewStyle}
                                                         onError={handleError}
                                                         onScan={handleScan}
+                                                        facingMode="environment"
                                                     />
                                                     {error && <p className="text-red-500">{error}</p>}
                                                     {qrData ? (

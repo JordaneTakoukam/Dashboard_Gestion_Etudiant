@@ -98,6 +98,12 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "noQrScanned":"No QR Code scanned yet.",
+    "qrContent":"Scanned QR Code Content: ",
+    "scan_qr_code":"Scan the QR Code below",
+    "signaler_absence":"1. Report my absence (I want to report that I will be absent for this session.)",
+    "signaler_presence_qr":"2. Record my attendance by scanning the QR code (I will scan the QR code to automatically record my attendance.)",
+    "signaler_presence_manuelle":"3. Record my attendance manually (I want to manually record my attendance. An alert will be sent to my class representative, who will need to confirm my attendance before it is recorded.)",
     "title_qr":"Attendance QR Code Generator",
     "progression_chap":"Chapter progression",
     "info_objectifs":"This chapter does not contain any objectives. If you confirm the changes, the chapter's state will be automatically updated. Please ensure you check other settings before proceeding.",

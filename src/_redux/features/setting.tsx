@@ -13,6 +13,8 @@ interface SettingState {
         openSignalerAbsence:boolean,
         openPause:boolean,
         openElement:boolean,
+        openScan:boolean,
+        openPresence:boolean,
         addRole:boolean,
         openChapitre: boolean,
         openEnseignement:boolean,
@@ -34,6 +36,8 @@ const initialState: SettingState = {
         openSignalerAbsence:false,
         openPause:false,
         openElement:false,
+        openPresence:false,
+        openScan:false,
         addRole:false,
         openChapitre: false,
         openEnseignement:false,
@@ -80,6 +84,14 @@ export const settingSlice = createSlice({
             state.showModal.openElement = !state.showModal.openElement;
         },
 
+        setShowModalPresence: (state) => {
+            state.showModal.openPresence = !state.showModal.openPresence;
+        },
+
+        setShowModalOpenScan: (state) => {
+            state.showModal.openScan = !state.showModal.openScan;
+        },
+
         setShowModalPause: (state) => {
             state.showModal.openPause = !state.showModal.openPause;
         },
@@ -118,7 +130,7 @@ export const {
     setShowModalDeleteCustom,
     setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage
-    , setSaveDeviceType,setShowRoleModal, setShowModalPeriode, setShowModalElement,setShowModalPause, setShowModalNotificationDetails,
+    , setSaveDeviceType,setShowRoleModal, setShowModalPeriode, setShowModalElement, setShowModalPresence, setShowModalOpenScan, setShowModalPause, setShowModalNotificationDetails,
     setCurrentIndexUserRole,setShowModalSignalerAbsence
 } = settingSlice.actions;
 

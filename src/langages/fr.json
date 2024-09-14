@@ -98,6 +98,12 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "noQrScanned":"Aucun QR Code scanné pour l'instant.",
+    "qrContent":"Contenu du QR Code scanné ",
+    "scan_qr_code":"Scannez le QR Code ci-dessous",
+    "signaler_absence":"1. Signaler mon absence (Je souhaite signaler que je serai absent pour cette séance.)",
+    "signaler_presence_qr":"2. Enregistrer ma présence en scannant le QR code (Je vais scanner le QR code pour enregistrer ma présence automatiquement.)",
+    "signaler_presence_manuelle":"3. Enregistrer ma présence manuellement (Je souhaite enregistrer ma présence manuellement. Une alerte sera envoyée à mon délégué, qui devra confirmer ma présence avant son enregistrement.)",
     "title_qr":"Générateur de QR Code de Présence",
     "progression_chap":"Progression dans le chapitre",
     "info_objectifs":"Ce chapitre ne contient aucun objectif. Si vous confirmez les modifications, l'état du chapitre sera automatiquement mis à jour. Assurez-vous de vérifier les autres paramètres avant de procéder.",

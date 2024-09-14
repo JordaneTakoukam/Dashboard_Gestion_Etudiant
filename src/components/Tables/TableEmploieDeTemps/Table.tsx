@@ -8,7 +8,7 @@ import HeaderTable from "./HeaderTable";
 import { jours } from "../../../pages/CommonPage/EmploiDeTemp";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
-import { setShowModalElement, setShowModalSignalerAbsence } from "../../../_redux/features/setting";
+import { setShowModalElement, setShowModalPresence, setShowModalSignalerAbsence } from "../../../_redux/features/setting";
 import ButtonCreate from "../common/ButtonCreate";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
@@ -58,7 +58,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         }else{
             if(periode && periode.enseignantPrincipal){
                 if(userRole===roles.enseignant && (currentUser._id===periode.enseignantPrincipal._id || (periode.enseignantSuppleant && currentUser._id===periode.enseignantSuppleant._id))){
-                    dispatch(setShowModalSignalerAbsence());
+                    dispatch(setShowModalPresence());
                 }
 
                 if(userRole===roles.etudiant || userRole===roles.delegue){

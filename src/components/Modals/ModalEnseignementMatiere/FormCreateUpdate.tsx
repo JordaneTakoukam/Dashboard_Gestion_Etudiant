@@ -156,8 +156,8 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
     };
 
     const handleTypeEnseignementChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedCode = e.target.value;
-        const selectedTypeEnseignement = typesEnseignement.find(typeEnseignement => typeEnseignement.code === selectedCode);
+        const selectedLibelle = e.target.value;
+        const selectedTypeEnseignement = typesEnseignement.find(typeEnseignement => lang==='fr'?typeEnseignement.libelleFr === selectedLibelle:typeEnseignement.libelleEn === selectedLibelle);
         if (selectedTypeEnseignement) {
             setTypeEnseignement(selectedTypeEnseignement);
             setErrorTypeEnseignement("");
@@ -201,25 +201,10 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
                     {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement === type._id))
                                     .map(typeEnseignement => (
-                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{lang==='fr'?typeEnseignement.libelleFr:typeEnseignement.libelleEn}</option>
+                                        <option key={typeEnseignement._id} value={lang==='fr'?typeEnseignement?.libelleFr??"":typeEnseignement?.libelleEn??""}>{lang==='fr'?typeEnseignement.libelleFr:typeEnseignement.libelleEn}</option>
                     ))}
                 </select>}
-                {enseignement && <select
-                    value={typeEnseignement ? typeEnseignement.code : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
-                    onChange={handleTypeEnseignementChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                    {enseignement && ( // Vérifie si une matière est déjà sélectionnée dans l'enseignement
-                        <option key={enseignement} value={typeEnseignement?.code??""}>
-                            {lang==='fr'?typeEnseignement?.libelleFr??"":typeEnseignement?.libelleEn??""}
-                        </option>
-                    )}
-                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement === type._id))
-                                    .map(typeEnseignement => (
-                                        <option key={typeEnseignement._id} value={typeEnseignement.code}>{lang==='fr'?typeEnseignement.libelleFr:typeEnseignement.libelleEn}</option>
-                    ))}
-                </select>}
+                
                 {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
                 {/* <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
                 <select

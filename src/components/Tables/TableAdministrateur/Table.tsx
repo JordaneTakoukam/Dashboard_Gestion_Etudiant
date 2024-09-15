@@ -83,7 +83,7 @@ const Table = ({ data, onCreate, onEdit }: TableAdministrateurProps) => {
     const hasNext = currentPage < Math.ceil(count / itemsPerPage);
 
     // Génération des numéros de page
-    const pageNumbers = [];
+    const pageNumbers :number[]= [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
     }

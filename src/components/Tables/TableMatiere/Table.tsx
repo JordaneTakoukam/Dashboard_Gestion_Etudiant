@@ -295,7 +295,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     };
 
     // Render page numbers
-    const pageNumbers = [];
+    const pageNumbers :number[]= [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
@@ -385,7 +385,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 }
                 if (currentUser && currentUser.role === roles.enseignant) {
                     if (selectNiveauId) {
-                        let fetchedMatieres=undefined;
+                        let fetchedMatieres: MatiereReturnGetType | undefined;
                         if(selectedYear && selectedSemestre){
                              fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                         }

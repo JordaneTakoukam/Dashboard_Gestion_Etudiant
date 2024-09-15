@@ -85,7 +85,7 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
     };
 
     // Render page numbers
-    const pageNumbers = [];
+    const pageNumbers :number[]= [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
@@ -330,7 +330,7 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
                    
                     if (selectNiveauId) {
                         
-                        let fetchedMatieres = null
+                        let fetchedMatieres : MatiereReturnGetType | null
                         if(currentUser && currentUser.role===roles.enseignant){
                             fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
                         }else{

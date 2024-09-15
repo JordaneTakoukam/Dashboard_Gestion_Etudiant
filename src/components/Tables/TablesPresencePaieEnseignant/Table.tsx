@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setErrorPagePresencePaie, setPresencePaie, setPresencePaiesLoading } from "../../../_redux/features/presence_paie_slice";
 import { RootState } from "../../../_redux/store";
 import { config } from "../../../config";
-import { formatYear, extractYear, generateYearRange } from "../../../fonctions/fonction";
+import { formatYear, extractYear, generateYearRange, createPDF } from "../../../fonctions/fonction";
 import createToast from "../../../hooks/toastify";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import Pagination from "../../Pagination/Pagination";
@@ -17,7 +17,7 @@ import InputSearch from "../common/SearchTable";
 import BodyTable from "./BodyTable";
 import HeaderTable from "./HeaderTable";
 import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
-import { apiGetPresencesWithTotalHoraire } from "../../../api/api_presence_paie";
+import { apiGetPresencesWithTotalHoraire, apiSearchPresenceEnseignant, generateListPresenceByNiveau } from "../../../api/api_presence_paie";
 
 
 interface TableProps {
@@ -121,15 +121,24 @@ const Table = ({ data}: TableProps) => {
             if(selected === 'PDF'){
                 
 
-                if(section && cycle && niveau && departement){
-                    
-                    
+                if(section && cycle && niveau && departement && niveau._id){
+                    await generateListPresenceByNiveau({ niveauId:niveau._id, annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'pdf' }).then((blob) => {
+                        // Créer un objet URL pour le blob PDF
+                        if (blob) {
+                            createPDF(blob, title);
+                        }
+                    })
                 }
                 
                 
             }else{
-                if(section && cycle && niveau && departement){
-                    
+                if(section && cycle && niveau && departement && niveau._id){
+                    await generateListPresenceByNiveau({ niveauId:niveau._id, annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'xlsx' }).then((blob) => {
+                        // Créer un objet URL pour le blob PDF
+                        if (blob) {
+                            createPDF(blob, title, 'xlsx');
+                        }
+                    })
                    
                 }
             }
@@ -205,7 +214,7 @@ const Table = ({ data}: TableProps) => {
     };
 
     // Render page numbers
-    const pageNumbers = [];
+    const pageNumbers :number[]= [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
@@ -242,93 +251,150 @@ const Table = ({ data}: TableProps) => {
         }        
     }, [filteredCycle]);
     useEffect(() => {
-        const fetchPresencePaie= async () => {
+        const fetchPresencePaie = async () => {
             dispatch(setPresencePaiesLoading(true)); // Définissez le loading à true avant le chargement
             try {
-                const emptyPresencePaie : PresencePaieListGetType={
+                const emptyPresencePaie: PresencePaieListGetType = {
                     presencePaies: [],
                     currentPage: 0,
                     totalItems: 0,
                     totalPages: 0,
                     pageSize: 0
-                }
-                if (selectNiveauId) {
-                    const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({page: currentPage, annee: selectedYear, semestre:selectSemestre, niveauId: selectNiveauId});
-                    if (fetchedPresencePaies) { // Vérifiez si fetchedPresencePaies n'est pas faux, vide ou indéfini
+                };
+    
+                // Assurez-vous que les dépendances sont bien définies avant l'appel de l'API
+                if (selectNiveauId && selectSemestre && selectedYear) {
+                    const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({
+                        page: currentPage,
+                        annee: selectedYear,
+                        semestre: selectSemestre,
+                        niveauId: selectNiveauId
+                    });
+    
+                    // Vérifiez si fetchedPresencePaies n'est pas vide ou indéfini
+                    if (fetchedPresencePaies) {
                         dispatch(setPresencePaie(fetchedPresencePaies));
                     } else {
                         dispatch(setPresencePaie(emptyPresencePaie));
                     }
-                } else{
+                } else {
+                    // Si les critères ne sont pas remplis, renvoyez une liste vide
                     dispatch(setPresencePaie(emptyPresencePaie));
                 }
-                    // Réinitialisez les erreurs s'il y en a
             } catch (error) {
+                // Gérer les erreurs
                 dispatch(setErrorPagePresencePaie(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2)
+                createToast(t('message.erreur'), "", 2);
             } finally {
-                dispatch(setPresencePaiesLoading(false)); // Définissez le loading à false après le chargement
+                // Terminer le chargement
+                dispatch(setPresencePaiesLoading(false));
             }
-        }
+        };
+    
+        // Appeler la fonction dès que les dépendances changent
         fetchPresencePaie();
-    }, [dispatch, selectedYear, currentPage, selectNiveauId, selectSemestre, t]); // Déclencher l'effet lorsque currentPage change
-
+    }, [dispatch, selectedYear, selectSemestre, currentPage, selectNiveauId, t]); // Supprimer la virgule en trop dans les dépendances
+    
+    useEffect(() => {
+        const fetchPresencePaie = async () => {
+            dispatch(setPresencePaiesLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyPresencePaie: PresencePaieListGetType = {
+                    presencePaies: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                };
+    
+                // Assurez-vous que les dépendances sont bien définies avant l'appel de l'API
+                if (selectNiveauId) {
+                    const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({
+                        page: currentPage,
+                        annee: selectedYear,
+                        semestre: selectSemestre,
+                        niveauId: selectNiveauId
+                    });
+    
+                    // Vérifiez si fetchedPresencePaies n'est pas vide ou indéfini
+                    if (fetchedPresencePaies && fetchedPresencePaies.presencePaies.length > 0) {
+                        dispatch(setPresencePaie(fetchedPresencePaies));
+                    } else {
+                        dispatch(setPresencePaie(emptyPresencePaie));
+                    }
+                } else {
+                    dispatch(setPresencePaie(emptyPresencePaie));
+                }
+            } catch (error) {
+                console.error("Error occurred during fetch:", error);
+                dispatch(setErrorPagePresencePaie(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2);
+            } finally {
+                // Terminer le chargement
+                dispatch(setPresencePaiesLoading(false));
+            }
+        };
+    
+        // Appeler la fonction dès que les dépendances changent
+        fetchPresencePaie();
+    }, [dispatch, selectNiveauId, selectedYear, selectSemestre, currentPage, t]);
+    
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<PresencePaieType[]>(data);
     
 
-    const latestQueryEtudiant = useRef('');
-    // useEffect(() => {
-    //     dispatch(setEtudiantsLoading(true));
-    //     latestQueryEtudiant.current = searchText;
-    //     try{
+    const latestQueryPresence = useRef('');
+    useEffect(() => {
+        dispatch(setPresencePaiesLoading(true));
+        latestQueryPresence.current = searchText;
+        try{
             
-    //         const filterEtudiantByContent = async () => {
-    //             if (searchText === '') {
-    //                 // if(isSearch){
-    //                     // sections.length>0?setSection(sections[0]):setSection(undefined);
-    //                     // filterCycleBySection(section?._id);
-    //                     // filterNiveauxByCycle(cycle?._id);
-    //                     const result: EtudiantType[] = data;
-    //                     setFilteredData(result); 
-    //                 // }
-    //             }else{
-    //                 // setSection(undefined);
-    //                 // setCycle(undefined);
-    //                 // setNiveau(undefined);
-    //                 // setFilteredCycle([]);
-    //                 // setFilteredNiveaux([]);
-    //                 let etudiantsResult : EtudiantType[] = [];
-    //                 await apiSearchEtudiant({ searchString:searchText, limit:10 }).then(result=>{
-    //                     if (latestQueryEtudiant.current === searchText) {
-    //                         if(result){
-    //                             etudiantsResult = result.etudiants;
-    //                             setFilteredData(etudiantsResult);
-    //                         }
-    //                       }
+            const filterPresenceByContent = async () => {
+                if (searchText === '') {
+                    // if(isSearch){
+                        // sections.length>0?setSection(sections[0]):setSection(undefined);
+                        // filterCycleBySection(section?._id);
+                        // filterNiveauxByCycle(cycle?._id);
+                        const result: PresencePaieType[] = data;
+                        setFilteredData(result); 
+                    // }
+                }else{
+                    // setSection(undefined);
+                    // setCycle(undefined);
+                    // setNiveau(undefined);
+                    // setSemestre(undefined);
+                    // setFilteredCycle([]);
+                    // setFilteredNiveaux([]);
+                    let presencesResult : PresencePaieType[] = [];
+                    await apiSearchPresenceEnseignant({ searchString:searchText, limit:10 }).then(result=>{
                         
-    //                 })
-    //             }
+                        if (latestQueryPresence.current === searchText) {
+                            if(result){
+                                
+                                presencesResult = result.presencePaies;
+                                setFilteredData(presencesResult);
+                            }
+                          }
+                        
+                    })
+                }
         
                 
-    //         };
-    //         filterEtudiantByContent();
-    //     }catch(e){
-    //         dispatch(setErrorPageEtudiant(t('message.erreur')));
-    //     }finally{
-    //         if (latestQueryEtudiant.current === searchText) {
-    //             dispatch(setEtudiantsLoading(false)); // Définissez le loading à false après le chargement
-    //         }
-    //     }
-    // }, [searchText, isSearch, data]);
+            };
+            filterPresenceByContent();
+        }catch(e){
+            dispatch(setErrorPagePresencePaie(t('message.erreur')));
+        }finally{
+            if (latestQueryPresence.current === searchText) {
+                dispatch(setPresencePaiesLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+    }, [searchText, isSearch, data]);
+   
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {/* {(roles.admin === userRole || roles.superAdmin === userRole) && (<ButtonCreate
-                    title={t('boutton.nouvelle_etudiant')}
-                    onClick={() => { onCreate();dispatch(setShowModal()) }}
-                />)} */}
                 <InputSearch hintText={t('recherche.rechercher')+t('recherche.enseignant')} value={searchText} onSubmit={(text) =>{setIsSearch(true); setSearchText(text)}} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
@@ -442,7 +508,7 @@ const Table = ({ data}: TableProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : filteredData.length === 0 ?
+                                : filteredData && filteredData.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }

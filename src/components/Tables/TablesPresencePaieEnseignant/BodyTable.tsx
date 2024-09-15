@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux"
-import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
+
 
 const BodyTable = ({ data }: { data: PresencePaieType[]}) => {
 

@@ -56,7 +56,7 @@ const Table = ({ data, onCreate, onEdit}: TableObjectifProps) => {
    };
 
    // Render page numbers
-   const pageNumbers = [];
+   const pageNumbers :number[]= [];
    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
        pageNumbers.push(i);
    }

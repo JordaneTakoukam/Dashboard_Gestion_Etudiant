@@ -117,7 +117,7 @@ export function extractYear(yearRange: string) {
 }
 
 export function generateYearRange(currentYear: number, startYear: number) {
-  const yearRange = [];
+  const yearRange : string[] = [];
   for (let year = currentYear; year >= startYear; year--) {
     const nextYear = year + 1;
     yearRange.push(`${year}-${nextYear}`);
@@ -126,7 +126,7 @@ export function generateYearRange(currentYear: number, startYear: number) {
 }
 
 export function generateYearRange2(currentYear: number, startYear: number) {
-  const yearRange = [];
+  const yearRange :string[]= [];
   
   // Ajouter les 5 années suivant l'année courante
   let i=5;

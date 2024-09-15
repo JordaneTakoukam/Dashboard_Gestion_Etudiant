@@ -7,8 +7,7 @@ import { Jour, jours } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { formatYear } from '../../../fonctions/fonction';
-import { apiSignalerAbsence } from '../../../api/discipline/api_discipline';
-import { config } from '../../../config';
+import { apiPresence } from '../../../api/api_presence_paie';
 
 
 
@@ -68,28 +67,9 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
     const handleCreatePeriodeCours = async () => {
         
         if (periodeCours) {
-            let enseignant: UserState | EnseignantType | undefined;
-            if(currentUser.role!==config.roles.enseignant){
-                enseignant = periodeCours.enseignantPrincipal;
-            }
             
-            const formData = new FormData();
-            // formData.append('type', config.typeNotifications.absence);
-            formData.append('user', JSON.stringify(currentUser)); // Assume `currentUser` is an object
-            if(enseignant){
-                formData.append('enseignant', JSON.stringify(enseignant));
-            }
-            formData.append('role', currentUser.role);
-            formData.append('heure_debut_absence', periodeCours.heureDebut);
-            formData.append('heure_fin_absence', periodeCours.heureFin);
-            formData.append('jour_absence', periodeCours.jour.toString());
-            formData.append('semestre', semestre.toString());
-            formData.append('annee', annee.toString());
-            formData.append('niveau', periodeCours.niveau);
-            
-
-           
-            await apiSignalerAbsence(formData).then((e: ReponseApiPros) => {
+            await apiPresence({jour:periodeCours.jour, semestre:periodeCours.semestre, annee:periodeCours.annee, niveau:periodeCours.niveau, 
+                matiere:periodeCours.matiere, enseignant:currentUser, heureDebut:periodeCours.heureDebut, heureFin:periodeCours.heureFin}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();

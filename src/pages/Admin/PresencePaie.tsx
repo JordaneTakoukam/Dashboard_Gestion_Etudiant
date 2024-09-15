@@ -59,7 +59,7 @@ const PresenceManagement = () => {
         };
 
         fetchPresencePaies();
-    }, [dispatch, t]);
+    }, [ t]);
     const handleEditPresencePaie = (presencePaie: PresencePaieType) => {
         setSelectedPresencePaie(presencePaie);
     }

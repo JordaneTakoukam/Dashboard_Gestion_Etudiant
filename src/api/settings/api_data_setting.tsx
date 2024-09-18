@@ -72,4 +72,29 @@ export async function apiUpdateSemestreCourant({semestre}:{semestre:number}): Pr
     }
 }
 
+export async function apiUpdateTauxHoraire({tauxHoraire}:{tauxHoraire:number}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.put(
+            `${apiUrl}/setting/taux-horaire/updateTauxHoraire`, {tauxHoraire},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    tauxHoraire:tauxHoraire,
+                }
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const newTaux = response.data;
+
+        return newTaux;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 

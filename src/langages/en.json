@@ -292,6 +292,7 @@
     "enseignement": "a teaching"
   },
   "boutton": {
+    "appliquer":"Apply",
     "soumettre": "Submit",
     "daccord": "OK",
     "actualiser": "Refresh",

@@ -102,8 +102,6 @@ export function formatDateForInput(dateString: string) {
   return formattedDate;
 }
 
-
-
 export function formatYear(year: number | undefined) {
   if(year){
     return `${year}-${year + 1}`;
@@ -499,8 +497,6 @@ export function createPDF(blob:Blob, title:string, type?:string){
     URL.revokeObjectURL(url);
 }
 
-
-
 export function compareDates(date1: string, date2: string): boolean {
   // Supprimez les parties de temps pour assurer une comparaison précise des dates
   const trimmedDate1 = date1.split('T')[0];
@@ -508,4 +504,16 @@ export function compareDates(date1: string, date2: string): boolean {
 
   // Comparez les deux dates
   return trimmedDate1 === trimmedDate2;
+}
+
+export function calculGrossBonus(totalHoraire : number, tauxHoraire : number) {
+  return (totalHoraire * tauxHoraire);
+}
+
+export function calculIRNC(montantBrut : number) {
+  return ((montantBrut * 11)/100);
+}
+
+export function calculNetBonus(montantBrut : number, irnc: number) {
+  return (montantBrut - irnc);
 }

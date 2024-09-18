@@ -18,6 +18,8 @@ import BodyTable from "./BodyTable";
 import HeaderTable from "./HeaderTable";
 import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 import { apiGetPresencesWithTotalHoraire, apiSearchPresenceEnseignant, generateListPresenceByNiveau } from "../../../api/api_presence_paie";
+import { apiUpdateTauxHoraire } from "../../../api/settings/api_data_setting";
+import { setTauxHoraire } from "../../../_redux/features/data_setting_slice";
 
 
 interface TableProps {
@@ -28,7 +30,7 @@ interface TableProps {
 const Table = ({ data}: TableProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    
+    const tauxHoraire:number=useSelector((state: RootState) => state.dataSetting.dataSetting.tauxHoraire) ?? 0; 
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -61,6 +63,26 @@ const Table = ({ data}: TableProps) => {
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
     const [isSearch, setIsSearch] = useState(false);
+
+    const [taux, setTaux] = useState(tauxHoraire);
+
+    const handleUpdateTauxHoraire = async () => {
+        
+        if(taux!=tauxHoraire){
+            await apiUpdateTauxHoraire(
+                {tauxHoraire:taux}
+            ).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(setTauxHoraire(parseInt(e.data)));
+    
+                } 
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            })
+        }
+
+    }
 
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
@@ -391,6 +413,7 @@ const Table = ({ data}: TableProps) => {
         }
     }, [searchText, isSearch, data]);
    
+   
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
@@ -498,6 +521,30 @@ const Table = ({ data}: TableProps) => {
                     </div>
                 </div>
 
+                {/*Bouton et champ permettant de modifier le taux horaire*/}    
+                <div className="flex justify-start items-center gap-x-4 mt-5">
+                    {/* Champ pour visualiser et modifier le taux horaire */}
+                    <div className="flex flex-col gap-y-1">
+                        <label className="text-sm lg:text-base font-medium">{t('label.taux_horaire')}</label>
+                        <input
+                            type="number"
+                            value={taux} // valeur du taux horaire actuel
+                            onChange={(e) => setTaux(parseInt(e.target.value))} // met à jour la valeur du taux horaire
+                            className="w-full px-3 py-2 text-sm lg:text-base border border-stroke rounded-md focus:ring focus:ring-blue-500 dark:bg-boxdark dark:text-white"
+                            placeholder={t('label.modifierTauxHoraire')}
+                        />
+                    </div>
+
+                    {/* Bouton de modification */}
+                    <div className="flex flex-col gap-y-1 ">
+                        <button
+                            onClick={handleUpdateTauxHoraire} // Fonction pour mettre à jour le taux horaire
+                            className="px-4 py-2 bg-primary text-white text-sm lg:text-base rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        >
+                            {t('boutton.appliquer')}
+                        </button>
+                    </div>
+                </div>
 
 
 

@@ -101,9 +101,9 @@
   "label": {
     "taux_horaire":"Taux horaire",
     "nb_heure":"Nombre d'heure",
-    "montant_brut":"Gratification brut",
+    "montant_brut":"Gratification brute",
     "irnc":"IRNC",
-    "montant_net":"Gratification net",
+    "montant_net":"Gratification nette",
     "noQrScanned":"Aucun QR Code scanné pour l'instant.",
     "qrContent":"Contenu du QR Code scanné ",
     "scan_qr_code":"Scannez le QR Code ci-dessous",
@@ -293,6 +293,7 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    "appliquer":"Appliquer",
     "soumettre": "Soumettre",
     "daccord": "D'accord",
     "actualiser": "Actualiser",

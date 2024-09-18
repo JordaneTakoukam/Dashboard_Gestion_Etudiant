@@ -10,19 +10,21 @@ const initialState: DataSettingSlice = {
         regions: [],
         departements: [],
         communes: [],
-        departementsAcademique:[],
-        promotions:[],
+        departementsAcademique: [],
+        promotions: [],
         sections: [],
         cycles: [],
         niveaux: [],
         sallesDeCours: [],
         typesEnseignement: [],
         etatsEvenement: [],
-        anneeCourante: 2024,
-        premiereAnnee: 2024,
-        semestreCourant : 0,
+        anneeCourante: 2023,
+        premiereAnnee: 2023,
+        semestreCourant: 0,
+        tauxHoraire: 0,
         // roles:[],
         __v: 0,
+        specialites: []
     },
     loading: false,
     error: null,
@@ -63,13 +65,11 @@ const dataSettingSlice = createSlice({
         setSemestreCourant(state, action:PayloadAction<number>){
             state.dataSetting.semestreCourant = action.payload;
         },
+        setTauxHoraire(state, action:PayloadAction<number>){
+            state.dataSetting.tauxHoraire = action.payload;
+        },
 
 
-        //
-        //
-        //
-        //
-        //
         // create
         createSettingItem(state, action: PayloadAction<{
             tableName: keyof DataSettingProps; newItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps | CategorieProps
@@ -81,10 +81,7 @@ const dataSettingSlice = createSlice({
             (state.dataSetting[tableName] as any) = [...table, newItem];
         },
 
-        //
-        //
-        //
-        //
+      
         // update 
         updateSettingItem(state, action: PayloadAction<{ tableName: keyof DataSettingProps; updatedItem: CommonSettingProps | DepartementProps | CommuneProps | NiveauProps | CycleProps | SalleDeCoursProps | CategorieProps }>) {
             const { tableName, updatedItem } = action.payload;
@@ -102,10 +99,6 @@ const dataSettingSlice = createSlice({
         },
 
 
-        //
-        //
-        //
-        //
         // Action pour supprimer un élément dans un tableau en fonction de son ID
         deleteSettingItem(state, action: PayloadAction<{ tableName: keyof DataSettingProps; itemId: string }>) {
             const { tableName, itemId } = action.payload;
@@ -133,7 +126,8 @@ export const {
     setCycles,
     setNiveaux,
     setAnneeCourante,
-    setSemestreCourant
+    setSemestreCourant,
+    setTauxHoraire
     //
 } = dataSettingSlice.actions;
 

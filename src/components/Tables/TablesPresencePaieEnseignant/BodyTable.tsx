@@ -1,9 +1,13 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../../../_redux/store";
+import { calculGrossBonus, calculIRNC, calculNetBonus } from "../../../fonctions/fonction";
 
 
 const BodyTable = ({ data }: { data: PresencePaieType[]}) => {
 
     const dispatch = useDispatch();
+    const tauxHoraire:number=useSelector((state: RootState) => state.dataSetting.dataSetting.tauxHoraire) ?? 0; 
+
 
     return <tbody >
         {data.map((item, index) => (
@@ -28,18 +32,9 @@ const BodyTable = ({ data }: { data: PresencePaieType[]}) => {
                     <h5>{item.enseignant?.prenom || ""}</h5>
                 </td>
 
-                
-
                 {/* gratification/heure */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
-                    <input
-                        type="number"
-                        className="border p-1"
-                        
-                        onChange={(e) =>
-                           console.log(e)
-                        }
-                    />
+                    {tauxHoraire}
                 </td>
 
                 {/* heure dispensé */}
@@ -49,17 +44,17 @@ const BodyTable = ({ data }: { data: PresencePaieType[]}) => {
 
                 {/* montant brut */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{}</h5>
+                    <h5>{calculGrossBonus(item?.totalHoraire || 0, tauxHoraire)}</h5>
                 </td>
 
                 {/*irnc */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{}</h5>
+                    <h5>{calculIRNC(calculGrossBonus(item?.totalHoraire || 0, tauxHoraire))}</h5>
                 </td>
 
                 {/*montant net */}
                 <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark">
-                    <h5>{}</h5>
+                    <h5>{calculNetBonus(calculGrossBonus(item?.totalHoraire || 0, tauxHoraire), calculIRNC(calculGrossBonus(item?.totalHoraire || 0, tauxHoraire)))}</h5>
                 </td>
 
                

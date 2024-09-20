@@ -19,6 +19,7 @@
     "@mui/material": "^6.1.0",
     "@ramonak/react-progress-bar": "^5.2.0",
     "@reduxjs/toolkit": "^2.0.1",
+    "@yudiel/react-qr-scanner": "^2.0.8",
     "apexcharts": "^3.41.0",
     "axios": "^1.7.7",
     "buffer": "^6.0.3",

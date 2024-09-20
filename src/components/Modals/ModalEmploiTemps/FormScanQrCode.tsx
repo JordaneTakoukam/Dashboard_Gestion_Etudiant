@@ -5,7 +5,7 @@ import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Transition, Dialog } from '@headlessui/react';
 import { IoMdClose } from 'react-icons/io';
-import QrScanner from 'react-qr-scanner'
+import { IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner'; // Import du scanner QR
 
 function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const { t } = useTranslation();
@@ -21,19 +21,17 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const [qrData, setQrData] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const handleScan = (data: any | null) => {
-        if (data) {
-            setQrData(data.text);
+    // Mise à jour pour gérer un tableau de codes détectés
+    const handleScan = (detectedBarcodes: IDetectedBarcode[]) => {
+        if (detectedBarcodes && detectedBarcodes.length > 0) {
+            // Extraire le texte du premier code détecté
+            const data = detectedBarcodes[0].rawValue;
+            setQrData(data); // Met à jour l'état avec les données scannées
         }
     };
 
     const handleError = (err: any) => {
-        setError(t('message.erreur'));
-    };
-
-    const previewStyle = {
-        height: 240,
-        width: 320,
+        setError(t('message.erreur')); // Gère les erreurs
     };
 
     return (
@@ -80,19 +78,18 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
 
                                         {/* BODY DE LA BOITE DE DIALOGUE */}
                                         <div className="flex flex-col text-left items-start space-y-2 p-4">
-                                            
 
                                             {/* Scanner QR Code */}
                                             {periodeCours && (
                                                 <div className="mt-4">
                                                     <h4 className="font-bold">{t('label.scan_qr_code')}</h4>
-                                                    <QrScanner
-                                                        delay={300}
-                                                        style={previewStyle}
-                                                        onError={handleError}
-                                                        onScan={handleScan}
-                                                        facingMode="environment"
+
+                                                    {/* Lecteur Code QR ici */}
+                                                    <Scanner
+                                                        onScan={(result) => handleScan(result)} // Gère le scan du QR
+                                                        onError={(err) => handleError(err)}    // Gère les erreurs
                                                     />
+                                                    
                                                     {error && <p className="text-red-500">{error}</p>}
                                                     {qrData ? (
                                                         <p className="mt-4 text-lg">{t('label.qrContent')} : {qrData}</p>

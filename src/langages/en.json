@@ -99,6 +99,7 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+   
     "taux_horaire": "Hourly rate",
     "nb_heure": "Number of hours",
     "montant_brut": "Gross bonus",
@@ -534,7 +535,9 @@
     "vous_etes_pas_autoriser_a_mener_cette_action": "You are not authorized to perform this action",
     "erreur": "An error occurred",
     "serveur_inactif":"The server is currently offline. Please start it.",
-    "erreur_recuperation": "An error occurred while retrieving data!"
+    "erreur_recuperation": "An error occurred while retrieving data!",
+    "generate_qr":"QR code generation in progress",
+    "aucune_caméra":"No camera detected"
   },
   "aucun": {
     "absence_signaler": "No absence reported.",

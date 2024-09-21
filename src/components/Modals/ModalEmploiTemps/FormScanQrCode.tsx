@@ -20,49 +20,9 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
 
     const [qrData, setQrData] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [hasFrontCamera, setHasFrontCamera] = useState<boolean>(true);
 
-    // useEffect(() => {
-    //     const checkCamera = async () => {
-    //         try {
-    //             const devices = await navigator.mediaDevices.enumerateDevices();
-    //             const videoDevices = devices.filter(device => device.kind === 'videoinput');
-                
-    //             // Chercher la caméra avant par son label ou deviceId
-    //             const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front') || device.label.toLowerCase().includes('user'));
-                
-    //             if (frontCamera) {
-    //                 // Utiliser l'ID de la caméra frontale
-    //                 const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: frontCamera.deviceId } });
-    //                 stream.getTracks().forEach(track => track.stop());
-    //                 setHasFrontCamera(true);
-    //             } else {
-    //                 throw new Error('No front camera found');
-    //             }
-    //         } catch (error) {
-    //             console.log(error);
-    //             try {
-    //                 // Si la caméra avant n'est pas disponible, essayer la caméra arrière
-    //                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    //                 stream.getTracks().forEach(track => track.stop());
-    //                 setHasFrontCamera(false); // Utilise la caméra arrière
-    //             } catch (error) {
-    //                 console.error('Aucune caméra disponible:', error);
-    //                 setError(t('message.no_camera'));
-    //                 setHasFrontCamera(false);
-    //                 closeModal(); // Fermer le modal si aucune caméra n'est disponible
-    //             }
-    //         }
-    //     };
-        
-    //     if (isModalOpen) {
-    //         checkCamera();
-    //     }
-    // }, [isModalOpen, t]);
     
-      
-
-    // Gestion du scan
+    
     const handleScan = (detectedBarcodes: IDetectedBarcode[]) => {
         if (detectedBarcodes && detectedBarcodes.length > 0) {
             const data = detectedBarcodes[0].rawValue;
@@ -130,17 +90,13 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                     <Scanner
                                                         onScan={(result) => handleScan(result)}
                                                         onError={(err) => handleError(err)}
-                                                        constraints={{
-                                                            
-                                                                facingMode: true ? 'user' : 'environment',
-                                                            
-                                                        }}
+                                                        
                                                     />
                                                     </div>
                                                     
                                                     {error && <p className="text-red-500">{error}</p>}
                                                     {qrData ? (
-                                                        <p className="mt-4 text-lg">{t('label.qrContent')} : {qrData}</p>
+                                                        <p className="mt-4 text-[8px]"></p>
                                                     ) : (
                                                         <p className="mt-4 text-gray-500">{t('label.noQrScanned')}</p>
                                                     )}

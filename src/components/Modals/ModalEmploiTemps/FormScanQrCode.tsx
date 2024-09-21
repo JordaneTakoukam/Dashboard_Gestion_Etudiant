@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowModalOpenScan } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Transition, Dialog } from '@headlessui/react';
 import { IoMdClose } from 'react-icons/io';
@@ -11,20 +11,60 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const lang = useSelector((state: RootState) => state.setting.language);
+    const lang :string = useSelector((state: RootState) => state.setting.language);
 
-    const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openScan);
+    const isModalOpen:boolean = useSelector((state: RootState) => state.setting.showModal.openScan);
     const closeModal = () => {
         dispatch(setShowModalOpenScan());
     };
 
     const [qrData, setQrData] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [hasFrontCamera, setHasFrontCamera] = useState<boolean>(true);
 
-    // Mise à jour pour gérer un tableau de codes détectés
+    // useEffect(() => {
+    //     const checkCamera = async () => {
+    //         try {
+    //             const devices = await navigator.mediaDevices.enumerateDevices();
+    //             const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+    //             // Chercher la caméra avant par son label ou deviceId
+    //             const frontCamera = videoDevices.find(device => device.label.toLowerCase().includes('front') || device.label.toLowerCase().includes('user'));
+                
+    //             if (frontCamera) {
+    //                 // Utiliser l'ID de la caméra frontale
+    //                 const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: frontCamera.deviceId } });
+    //                 stream.getTracks().forEach(track => track.stop());
+    //                 setHasFrontCamera(true);
+    //             } else {
+    //                 throw new Error('No front camera found');
+    //             }
+    //         } catch (error) {
+    //             console.log(error);
+    //             try {
+    //                 // Si la caméra avant n'est pas disponible, essayer la caméra arrière
+    //                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    //                 stream.getTracks().forEach(track => track.stop());
+    //                 setHasFrontCamera(false); // Utilise la caméra arrière
+    //             } catch (error) {
+    //                 console.error('Aucune caméra disponible:', error);
+    //                 setError(t('message.no_camera'));
+    //                 setHasFrontCamera(false);
+    //                 closeModal(); // Fermer le modal si aucune caméra n'est disponible
+    //             }
+    //         }
+    //     };
+        
+    //     if (isModalOpen) {
+    //         checkCamera();
+    //     }
+    // }, [isModalOpen, t]);
+    
+      
+
+    // Gestion du scan
     const handleScan = (detectedBarcodes: IDetectedBarcode[]) => {
         if (detectedBarcodes && detectedBarcodes.length > 0) {
-            // Extraire le texte du premier code détecté
             const data = detectedBarcodes[0].rawValue;
             setQrData(data); // Met à jour l'état avec les données scannées
         }
@@ -32,6 +72,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
 
     const handleError = (err: any) => {
         setError(t('message.erreur')); // Gère les erreurs
+        console.log(err);
     };
 
     return (
@@ -84,11 +125,18 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                 <div className="mt-4">
                                                     <h4 className="font-bold">{t('label.scan_qr_code')}</h4>
 
-                                                    {/* Lecteur Code QR ici */}
+                                                    {/* Scanner QR Code ici */}
+                                                    <div style={{ height: 240, width:240  }}> {/* Hauteur fixe */}
                                                     <Scanner
-                                                        onScan={(result) => handleScan(result)} // Gère le scan du QR
-                                                        onError={(err) => handleError(err)}    // Gère les erreurs
+                                                        onScan={(result) => handleScan(result)}
+                                                        onError={(err) => handleError(err)}
+                                                        constraints={{
+                                                            
+                                                                facingMode: true ? 'user' : 'environment',
+                                                            
+                                                        }}
                                                     />
+                                                    </div>
                                                     
                                                     {error && <p className="text-red-500">{error}</p>}
                                                     {qrData ? (

@@ -173,6 +173,7 @@ const QRCodeGenerator = () => {
                                 <option key={index} value={semestre}>{semestre}</option>
                             ))}
                         </select>
+                        {errorSemestre && <p className="text-red-500" >{errorSemestre}</p>}
                     </div>
 
                     <div>
@@ -189,6 +190,7 @@ const QRCodeGenerator = () => {
                                 </option>
                             ))}
                         </select>
+                        {errorSection && <p className="text-red-500" >{errorSection}</p>}
                     </div>
 
                     <div>
@@ -205,6 +207,7 @@ const QRCodeGenerator = () => {
                                 </option>
                             ))}
                         </select>
+                        {errorCycle && <p className="text-red-500" >{errorCycle}</p>}
                     </div>
 
                     <div>
@@ -221,6 +224,7 @@ const QRCodeGenerator = () => {
                                 </option>
                             ))}
                         </select>
+                        {errorNiveau && <p className="text-red-500" >{errorNiveau}</p>}
                     </div>
 
                     <div>

@@ -7,11 +7,11 @@ const token = localStorage.getItem(wstjqer);
 
 
 
-export async function apiPresence({ jour, semestre, annee, niveau, matiere, enseignant, heureDebut, heureFin }: PresencePaieType): Promise<ReponseApiPros> {
+export async function apiPresence({ jour, semestre, annee, niveau, matiere, utilisateur, heureDebut, heureFin }: PresencePaieType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { jour, semestre, annee, niveau, matiere, enseignant, heureDebut, heureFin },
+            { jour, semestre, annee, niveau, matiere, utilisateur, heureDebut, heureFin },
             {
                 headers: {
                     'Content-Type': 'application/json',

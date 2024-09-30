@@ -69,7 +69,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
         if (periodeCours) {
             
             await apiPresence({jour:periodeCours.jour, semestre:periodeCours.semestre, annee:periodeCours.annee, niveau:periodeCours.niveau, 
-                matiere:periodeCours.matiere, enseignant:currentUser, heureDebut:periodeCours.heureDebut, heureFin:periodeCours.heureFin}).then((e: ReponseApiPros) => {
+                matiere:periodeCours.matiere, utilisateur:currentUser, heureDebut:periodeCours.heureDebut, heureFin:periodeCours.heureFin}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();

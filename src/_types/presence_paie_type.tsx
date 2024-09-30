@@ -1,6 +1,6 @@
 interface PresencePaieType {
     _id?: string;
-    enseignant:UserState;
+    utilisateur:UserState;
     matiere?:MatiereType;
     niveau?:string;
     heureDebut?:string;

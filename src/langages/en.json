@@ -537,7 +537,8 @@
     "serveur_inactif":"The server is currently offline. Please start it.",
     "erreur_recuperation": "An error occurred while retrieving data!",
     "generate_qr":"QR code generation in progress",
-    "aucune_caméra":"No camera detected"
+    "aucune_caméra":"No camera detected",
+    "qr_code_invalid":"QR code invalid"
   },
   "aucun": {
     "absence_signaler": "No absence reported.",

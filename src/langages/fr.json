@@ -538,7 +538,8 @@
     "serveur_inactif":"Le serveur est actuellement éteint. Merci de le démarrer.",
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !",
     "generate_qr":"Génération du code QR en cours",
-    "aucune caméra":"Aucune caméra détectée"
+    "aucune caméra":"Aucune caméra détectée",
+    "qr_code_invalid":"QR code invalide"
   },
   "aucun": {
     "absence_signaler": "Aucune absence signalée.",

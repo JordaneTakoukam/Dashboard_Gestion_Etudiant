@@ -86,7 +86,7 @@ const EmploiDeTemp = () => {
         <>
             <Breadcrumb pageName={t('menu.emploi')} />
             <Table data={periodes} onCreate={handleAddPeriode} onEdit={handleEditPeriode} />
-            <FormCreateUpdate periodeCours={selectedPeriode} />
+            <FormCreateUpdate periodeCours={selectedPeriode}/>
             <FormAddPause periodeCours={selectedPeriode}/>
             <FormDeletePeriode periodeCours={selectedPeriode} />
             <FormGestionElement periodeCours={selectedPeriode}/>

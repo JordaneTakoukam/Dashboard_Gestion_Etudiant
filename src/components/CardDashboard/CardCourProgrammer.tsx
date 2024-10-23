@@ -36,16 +36,37 @@ export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer, pageIsL
                     </h4>
                 ) :(
                     <div className="w-full">
-                        {listCourProgrammer && listCourProgrammer.map((periode, index) => (
-                            <div key={index} className={index % 2 === 0 ? "border-b border-[#eee] py-0 lg:py-2 px-2 dark:border-strokedark bg-gray-2 dark:bg-black w-full" :
-                            "border-b border-[#eee] py-0 lg:py-2 px-2  dark:border-strokedark w-full"}>
-                                <p>{t('label.horaire')} : {periode.heureDebut+"-"+periode.heureFin}</p>
-                                <p>{t('label.jour')} : {lang === 'fr' ? jours.find(jour=>jour.ordre==periode.jour)?.libelleFr??"" : jours.find(jour=>jour.ordre==periode.jour)?.libelleEn??""}</p>
-                                <p>{t('label.matiere')} : {periode.pause?t('label.pause'):periode.matiere && (lang==='fr'?periode.matiere.libelleFr:periode.matiere.libelleEn)}</p>
-                                {!periode.pause && (<p>{t('label.salle_cour')} : {lang==='fr'?sallesCours.find(salle=>salle._id===periode.salleCours)?.libelleFr??"":sallesCours.find(salle=>salle._id===periode.salleCours)?.libelleEn??""}</p>)}
-                            </div>
-                        ))}
-                    </div>)
+                        {listCourProgrammer && listCourProgrammer.map((periode, index) => {
+                            const jourLibelle = lang === 'fr' 
+                            ? jours.find(jour => jour.ordre === periode.jour)?.libelleFr || "" 
+                            : jours.find(jour => jour.ordre === periode.jour)?.libelleEn || "";
+
+                            const sallesLibelle = periode.sallesCours && periode.sallesCours.length > 0 
+                                ? [...new Set(periode.sallesCours.map(salle => sallesCours?.find(sc => sc._id === salle)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
+                                .filter(libelle => libelle) // Filtrer les valeurs vides ou nulles
+                                    .join('/ ')
+                                : '';
+
+                            // Itération sur les matières
+                            const matieresLibelle = periode.matieres && periode.matieres.length > 0
+                                ? periode.matieres.map(matiere => lang === 'fr' ? matiere.libelleFr : matiere.libelleEn).join('/ ')
+                                : "";
+
+                            return (
+                                <div 
+                                    key={index} 
+                                    className={`border-b border-[#eee] py-0 lg:py-2 px-2 dark:border-strokedark w-full ${
+                                    index % 2 === 0 ? "bg-gray-2 dark:bg-black" : ""
+                                    }`}
+                                >
+                                    <p>{t('label.horaire')} : {periode.heureDebut} - {periode.heureFin}</p>
+                                    <p>{t('label.jour')} : {jourLibelle}</p>
+                                    <p>{t('label.matiere')} : {periode.pause ? t('label.pause') : matieresLibelle}</p>
+                                    {!periode.pause && <p>{t('label.salle_cour')} : {sallesLibelle}</p>}
+                                </div>
+                            );
+                        })}
+                        </div>)
                 }
 
             </div>}

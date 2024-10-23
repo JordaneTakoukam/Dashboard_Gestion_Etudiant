@@ -239,7 +239,7 @@ const Table = ({ data, matieres }: { data: ObjectifType[], matieres:MatiereType[
                     
                 }else if(selected === 'XLSX'){
                     if(currentUser && currentUser.role===roles.enseignant){
-                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
+                        await generateProgressByEnseignant({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx' } ).then((blob)=>{
                             // Créer un objet URL pour le blob PDF
                             if(blob){
                                 createPDF(blob, title, 'xlsx');

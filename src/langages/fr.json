@@ -386,6 +386,7 @@
     "periodes_enseignement": "Filtrer les périodes d'enseignement"
   },
   "form_save": {
+    "ajouter":"Ajouter ",
     "enregistrer": "Enregistrer ",
     "document":"un nouveau document",
     "pause": "une pause",
@@ -448,7 +449,9 @@
     "objectif": "de l'objectif",
     "enseignement": "de l'enseignement",
     "type_ens": "de l'activité pédagogique",
-    "periode_enseignement": "de la période d'enseignement"
+    "periode_enseignement": "de la période d'enseignement",
+    "emploi_temps_debut":"Mettre à jour les informations sur la matière ",
+    "emploi_temps_fin":" dans cette période."
   },
   "form_delete": {
     "supprimer": "Supprimer",
@@ -479,7 +482,9 @@
     "objectif": "de l'objectif",
     "enseignement": "de l'enseignement",
     "type_ens": "de l'activité pédagogique",
-    "periode_enseignement": "de la période d'enseignement"
+    "periode_enseignement": "de la période d'enseignement",
+    "emploi_temps_debut":"Supprimer la matière ",
+    "emploi_temps_fin":" dans cette période."
   },
   "error": {
     "telecharger_doc":"Le fichier est trop grand. La taille maximale est de 2MB.",

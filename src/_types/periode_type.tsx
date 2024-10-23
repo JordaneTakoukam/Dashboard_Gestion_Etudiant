@@ -6,13 +6,13 @@ interface PeriodeType {
     semestre:number,
     annee:number,
     niveau:string,
-    matiere?:MatiereType,
-    typeEnseignement?:string,
+    matieres?:MatiereType[],
+    typesEnseignements?:string[],
     heureDebut:string,
     heureFin:string,
-    salleCours?:string,
-    enseignantPrincipal?:UserState | EnseignantType,
-    enseignantSuppleant?:UserState | EnseignantType,
+    sallesCours?:string[],
+    enseignantsPrincipaux?: EnseignantType[],
+    enseignantsSuppleants?: EnseignantType[],
 }
 
 interface PeriodeInitialData {

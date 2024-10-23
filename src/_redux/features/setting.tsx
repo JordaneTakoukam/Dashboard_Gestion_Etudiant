@@ -4,6 +4,7 @@ interface SettingState {
     [x: string]: any;
     language: string;
     isMobile: boolean | null,
+    periodeIndex : number,
     showModal: {
         create: boolean,
         update: boolean,
@@ -28,6 +29,7 @@ interface SettingState {
 const initialState: SettingState = {
     language: localStorage.getItem('lang')?.toString() || 'fr',
     isMobile: null,
+    periodeIndex:-1,
     showModal: {
         create: false,
         update: false,
@@ -54,6 +56,10 @@ export const settingSlice = createSlice({
     name: "settingSlice",
     initialState,
     reducers: {
+        setPeriodeIndex:(state, action: PayloadAction<number>)=>{
+            state.periodeIndex = action.payload;
+        },
+
         setShowModalCreate: (state) => {
             state.showModal.create = !state.showModal.create;
         },
@@ -133,6 +139,7 @@ export const settingSlice = createSlice({
 });
 
 export const {
+    setPeriodeIndex,
     setShowModalDeleteCustom,
     setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage

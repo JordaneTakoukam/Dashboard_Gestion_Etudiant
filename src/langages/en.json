@@ -386,6 +386,7 @@
     "periodes_enseignement": "Filter teaching periods by:"
   },
   "form_save": {
+  "ajouter":"Add ",
     "enregistrer": "Save ",
     "document":"a new document",
     "pause": "a break",
@@ -448,7 +449,9 @@
     "objectif": "of the objective",
     "enseignement": "of the teaching",
     "type_ens": "of the educational activity",
-    "periode_enseignement": "of the teaching period"
+    "periode_enseignement": "of the teaching period",
+    "emploi_temps_debut":"Update the information for the subject ",
+    "emploi_temps_fin":" in this period."
   },
   "form_delete": {
     "supprimer": "Delete",
@@ -478,7 +481,9 @@
     "objectif": "of the objective",
     "enseignement": "of the teaching",
     "type_ens": "of the educational activity",
-    "periode_enseignement": "of the teaching period"
+    "periode_enseignement": "of the teaching period",
+    "emploi_temps_debut":"Delete the subject ",
+    "emploi_temps_fin":" in this period."
   },
   "error": {
     "telecharger_doc":"The file is too large. The maximum size is 2 MB.",

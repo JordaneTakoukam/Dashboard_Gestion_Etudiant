@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalDelete, setShowModalElement, setShowModalPause } from '../../../_redux/features/setting';
+import { setPeriodeIndex, setShowModal, setShowModalDelete, setShowModalElement, setShowModalPause } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import { Fragment} from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,16 +65,50 @@ function ModalGestionElement({ periodeCours }: { periodeCours: PeriodeType | nul
 
                                         {/* BODY DE LA BOITE DE DIALOGUE */}
                                         {/* <div className='mt-5 md:mt-10'>{children}</div> */}
-                                        <div className="flex flex-col items-start space-y-2 p-4">
-                                            {(!periodeCours || periodeCours && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => { closeModal(); dispatch(setShowModal())} }>
-                                                {(!periodeCours || (periodeCours && !periodeCours._id))?t('form_save.enregistrer')+t('form_save.periode'):t('form_update.enregistrer')+t('form_update.periode')}
+                                        <div className="flex flex-col items-start space-y-2 p-4 items-left">
+                                            {((periodeCours && !periodeCours.pause) || !periodeCours) && (<button className="text-blue-500 hover:underline" onClick={() => { closeModal(); dispatch(setShowModal())} }>
+                                                {periodeCours && periodeCours.matieres?t('form_save.ajouter')+t('form_save.matiere'): t('form_save.enregistrer')+t('form_save.periode')}
                                             </button>)}
+                                            {(periodeCours && periodeCours.matieres && !periodeCours.pause) && (
+                                                periodeCours.matieres.map((matiere, index) => (
+                                                    <button
+                                                        key={matiere._id || index}
+                                                        className="text-blue-500 hover:underline text-left"
+                                                        onClick={async () => {
+                                                            dispatch(setPeriodeIndex(index)); // Assure que l'index est bien mis à jour avant d'ouvrir la modal
+                                                            closeModal(); // Ferme la modal actuelle
+                                                            dispatch(setShowModal()); // Ouvre la nouvelle modal pour la modification
+                                                          }}
+                                                    >
+                                                        {periodeCours && periodeCours.matieres && periodeCours.matieres.length>1? t('form_update.emploi_temps_debut') + (lang === 'fr' ? matiere.libelleFr : matiere.libelleEn) + t('form_update.emploi_temps_fin'):t('form_update.enregistrer')+t('form_update.periode')}
+                                                    </button>
+                                                ))
+                                            )}
                                             {((!periodeCours) || (periodeCours && periodeCours.pause) || (periodeCours && !periodeCours._id)) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalPause())}}>
                                             {(!periodeCours || (periodeCours && !periodeCours._id))?t('form_save.enregistrer')+t('form_save.pause'):t('form_update.enregistrer')+t('form_update.pause')}
                                             </button>)}
-                                            {(periodeCours && periodeCours._id) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalDelete())}}>
-                                                {t('form_delete.suppression')+t('form_delete.periode')}
-                                            </button>)}
+                                            {(periodeCours && periodeCours._id) && (periodeCours && periodeCours.matieres && !periodeCours.pause) && (
+                                                    periodeCours.matieres.map((matiere, index) => (
+                                                        <button
+                                                            key={matiere._id || index}
+                                                            className="text-blue-500 hover:underline text-left"
+                                                            onClick={() => {dispatch(setShowModalDelete()); closeModal(); dispatch((setPeriodeIndex(index))) }}
+                                                        >
+                                                            {periodeCours && periodeCours.matieres && periodeCours.matieres.length>1? t('form_delete.emploi_temps_debut') + (lang === 'fr' ? matiere.libelleFr : matiere.libelleEn) + t('form_delete.emploi_temps_fin'):t('form_delete.suppression')+t('form_delete.periode')}
+                                                        </button>
+                                                    ))
+                                                )}
+                                                {(periodeCours && periodeCours.pause) && (
+                                                    
+                                                        <button
+                                                            className="text-blue-500 hover:underline text-left"
+                                                            onClick={() => { closeModal(); dispatch(setShowModalDelete()) }}
+                                                        >
+                                                            {t('form_delete.suppression')+t('form_delete.periode')}
+                                                        </button>
+                                                    )
+                                                }
+                                            
                                             
                                         </div>
 

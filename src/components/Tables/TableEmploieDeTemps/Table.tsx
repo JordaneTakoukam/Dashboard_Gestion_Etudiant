@@ -41,7 +41,8 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou 
+    const index = useSelector((state: RootState) => state.setting.periodeIndex); // index courant à modifier
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const userNiveaux = useSelector((state: RootState) => state.user.niveaux);
 
@@ -56,8 +57,12 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         if(userRole===roles.admin || userRole===roles.superAdmin){
             dispatch(setShowModalElement());
         }else{
-            if(periode && periode.enseignantPrincipal){
-                if(userRole===roles.enseignant && (currentUser._id===periode.enseignantPrincipal._id || (periode.enseignantSuppleant && currentUser._id===periode.enseignantSuppleant._id))){
+            if(periode && periode.enseignantsPrincipaux){
+                const enseignantsPrincipaux = periode?.enseignantsPrincipaux || [];
+                const enseignantsSuppleants = periode?.enseignantsSuppleants || [];
+                const existEnsP = enseignantsPrincipaux.find(ens=>ens._id === currentUser._id)
+                const existEnsS = enseignantsSuppleants.find(ens=>ens._id === currentUser._id)
+                if(userRole===roles.enseignant && (existEnsP || existEnsS)){
                     dispatch(setShowModalPresence());
                 }
 
@@ -121,22 +126,49 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                     // }
                     
                     if (coursJour) {
+                        const codeTypeEns = typesEnseignement?.find(type => type._id === coursJour.typesEnseignements);
                         
+                        // Itération sur les salles de cours et ajout de leurs libellés
+                        const sallesLibelle = coursJour.sallesCours && coursJour.sallesCours.length > 0 
+                        ? [...new Set(coursJour.sallesCours.map(salle => sallesCours?.find(sc => sc._id === salle)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
+                        .filter(libelle => libelle) // Filtrer les valeurs vides ou nulles
+                            .join('/ ')
+                        : '';
+
                         
-                        const codeTypeEns = typesEnseignement && typesEnseignement.find(type => type._id === coursJour.typeEnseignement);
-                        const codeSalleCours = sallesCours && sallesCours.find(salle => salle._id === coursJour.salleCours);
-                        const enseignantPrincipal = coursJour.enseignantPrincipal;
-                        const enseignantSuppleant = coursJour.enseignantSuppleant;
+                    
+                    
+                        // Itération sur les enseignants principaux
+                        const enseignantsLibelle = coursJour.enseignantsPrincipaux && coursJour.enseignantsPrincipaux.length > 0
+                        ? coursJour.enseignantsPrincipaux.map((ensPrincipal, index) => {
+                            const suppléant = coursJour.enseignantsSuppleants && coursJour.enseignantsSuppleants[index]; // Suppléant correspondant à l'index
+                            const principalLibelle = `${premierElement(ensPrincipal.nom)} ${ensPrincipal.prenom ? premierElement(ensPrincipal.prenom) : ""}`;
+                            const suppléantLibelle = suppléant ? `${premierElement(suppléant.nom)} ${suppléant.prenom ? premierElement(suppléant.prenom) : ""}` : "-";
+                            return `${principalLibelle}/${suppléantLibelle}`;
+                        }).join(', ')
+                        : "-";
+
+                    
+                        // Itération sur les matières
+                        const matieresLibelle = coursJour.matieres && coursJour.matieres.length > 0
+                            ? coursJour.matieres.map(matiere => lang === 'fr' ? matiere.libelleFr : matiere.libelleEn).join('/ ')
+                            : "";
+                    
                         jourCell.textContent = t('label.pause');
-                        if(!coursJour.pause){
-                            jourCell.textContent = `${coursJour.matiere?lang==='fr'?coursJour.matiere.libelleFr:coursJour.matiere.libelleEn:""} - ${enseignantPrincipal?premierElement(enseignantPrincipal.nom):"-"} ${enseignantPrincipal?enseignantPrincipal.prenom?premierElement(enseignantPrincipal.prenom):"":"-"}/${enseignantSuppleant?premierElement(enseignantSuppleant.nom):"-"} ${enseignantSuppleant?enseignantSuppleant.prenom?premierElement(enseignantSuppleant.prenom):"":"-"} - ${codeSalleCours?lang==='fr'?codeSalleCours.libelleFr:codeSalleCours.libelleEn:""}`;
+                    
+                        if (!coursJour.pause) {
+                            jourCell.textContent = `
+                                ${matieresLibelle} - 
+                                ${enseignantsLibelle} - 
+                                ${sallesLibelle}`;
                         }
-                        // if (roles.admin === userRole || roles.superAdmin === userRole) {
-                            jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
-                            jourCell.style.cursor = 'pointer';
-                            jourCell.style.width='100px'
-                        // }
-                    }else{
+                    
+                        // Gestion de l'édition du cours
+                        jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
+                        jourCell.style.cursor = 'pointer';
+                        jourCell.style.width = '100px';
+                    }
+                    else{
                         // if (roles.admin === userRole || roles.superAdmin === userRole) {
                             const heureDebut = horaire.split("-")[0].trim();
                             const heureFin = horaire.split("-")[1].trim();
@@ -149,7 +181,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                                     niveau: selectNiveauId,
                                     heureDebut: heureDebut,
                                     heureFin: heureFin,
-                                    enseignantPrincipal: undefined
+                                    enseignantsPrincipaux: undefined
                                 };
                                 jourCell.onclick = () => ouvrirFormulairePeriode(periode);
                                 jourCell.style.cursor = 'pointer';

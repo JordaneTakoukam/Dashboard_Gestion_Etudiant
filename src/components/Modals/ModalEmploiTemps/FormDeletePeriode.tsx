@@ -1,16 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalDelete } from '../../../_redux/features/setting';
+import { setPeriodeIndex, setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
-import { jours, semestres } from '../../../pages/CommonPage/EmploiDeTemp';
+import { jours } from '../../../pages/CommonPage/EmploiDeTemp';
 import { useTranslation } from 'react-i18next';
-import { apiCreateAbsence, apiDeleteAbsence, apiJustifierAbsence } from '../../../api/discipline/api_discipline';
 import createToast from '../../../hooks/toastify';
-import { ajouterAbsenceEnseignant, modifierAbsenceEnseignant, retirerAbsenceEnseignant } from '../../../_redux/features/absence/discipline_enseignant_slice';
-import { formatYear, nbTotalAbsences } from '../../../fonctions/fonction';
-import { ajouterAbsenceEtudiant, modifierAbsenceEtudiant, retirerAbsenceEtudiant } from '../../../_redux/features/absence/discipline_etudiant_slice';
-import { deletePeriode } from '../../../_redux/features/periode_slice';
+import { formatYear } from '../../../fonctions/fonction';
+import { deletePeriode, updatePeriode } from '../../../_redux/features/periode_slice';
 import { apiDeletePeriode } from '../../../api/api_periode';
 
 
@@ -25,6 +22,8 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const [modalTitle, setModalTitle] = useState(""); // Ajout du titre du modal
     const [isFirstRender, setIsFirstRender] = useState(true);
+    const index = useSelector((state: RootState) => state.setting.periodeIndex); // index courant à modifier
+    const [matiere, setMatiere]=useState<MatiereType>();
     
     useEffect(() => {        
             if (periodeCours) {
@@ -32,12 +31,13 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                     setModalTitle(t('form_delete.suppression')+t('form_delete.pause'));
                 }else{
                     setModalTitle(t('form_delete.suppression')+t('form_delete.periode'));
+                    periodeCours.matieres && setMatiere(periodeCours.matieres[index]);
                 }
             } else {
                 setModalTitle("");
             }
         
-    }, [periodeCours, t]);
+    }, [periodeCours, index, t]);
 
     const closeModal = () => {
         setIsFirstRender(true);
@@ -48,12 +48,35 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
 
     const handleDelete = async () => {
         if (periodeCours?._id != undefined) {
-            await apiDeletePeriode(periodeCours._id).then((e: ReponseApiPros) => {
+            await apiDeletePeriode({periodeId:periodeCours._id, matiereIndex:index}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (periodeCours._id) {
-                        dispatch(deletePeriode({ id: periodeCours._id }));
+                        if((periodeCours.matieres && periodeCours.matieres.length==1) || periodeCours.pause){
+                            dispatch(deletePeriode({ id: periodeCours._id }));
+                        }else{
+                           
+                            dispatch(updatePeriode({
+                                id: e.data._id,
+                                periodeData: {
+                                    _id: e.data._id,
+                                    jour: e.data.jour,
+                                    annee: e.data.annee,
+                                    semestre: e.data.semestre,
+                                    niveau: e.data.niveau,
+                                    matieres: e.data.matieres,
+                                    sallesCours: e.data.sallesCours,
+                                    heureDebut: e.data.heureDebut,
+                                    heureFin: e.data.heureFin,
+                                    typesEnseignements: e.data.typesEnseignements,
+                                    enseignantsPrincipaux: e.data.enseignantsPrincipaux,
+                                    enseignantsSuppleants: e.data.enseignantsSuppleants,
+                                    pause: e.data.pause,
+                                }
+                            }));
+                        }
+                        dispatch(setPeriodeIndex(-1));
                     }
 
                     closeModal();
@@ -83,7 +106,7 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                     <p className=' pb-3'>{t('label.annee')} : {periodeCours?formatYear(periodeCours.annee):""}</p>
                     <p className=' pb-3'>{t('label.semestre')} : {periodeCours?.semestre??""}</p>
                     <p className=' pb-3'>{t('label.jour')} : {periodeCours?lang==='fr'?jours.find(jour=>jour.ordre==periodeCours.jour)?.libelleFr:jours.find(jour=>jour.ordre==periodeCours.jour)?.libelleEn:""}</p>
-                    {!periodeCours?.pause && <p className='pb-3'>{t('label.matiere')} : {(periodeCours&&periodeCours.matiere)?lang==='fr' ?periodeCours.matiere.libelleFr??"":periodeCours.matiere.libelleEn??"":""}</p>}
+                    {!periodeCours?.pause && <p className='pb-3'>{t('label.matiere')} : {matiere?lang==='fr' ?matiere.libelleFr??"":matiere.libelleEn??"":""}</p>}
 
                     <p className=' pb-3'>{t('label.heure_debut')} : {periodeCours?.heureDebut??""}</p>
 

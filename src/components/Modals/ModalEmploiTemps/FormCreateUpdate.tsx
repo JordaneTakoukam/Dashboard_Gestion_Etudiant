@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, } from '../../../_redux/features/setting';
+import { setPeriodeIndex, setShowModal, } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useRef, useState } from 'react';
@@ -15,7 +15,7 @@ import SearchInput from '../../ui/SearchInput';
 
 
 
-function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null }) {
+function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}) {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
@@ -24,6 +24,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const index = useSelector((state: RootState) => state.setting.periodeIndex); // index courant à modifier
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [jour, setJour] = useState<Jour>();
@@ -69,8 +70,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const latestQueryEnsPrincipal = useRef('');
     const latestQueryEnsSuppleant = useRef('');
     const latestQueryMatiere = useRef('');
-    const [selectedEnsPrincipal, setSelectedEnsPrincipal] = useState<UserState | EnseignantType>();
-    const [selectedEnsSuppleant, setSelectedEnsSuppleant] = useState<UserState | EnseignantType>();
+    const [selectedEnsPrincipal, setSelectedEnsPrincipal] = useState<EnseignantType>();
+    const [selectedEnsSuppleant, setSelectedEnsSuppleant] = useState<EnseignantType>();
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
 
     //Rechercher un enseignant principal
@@ -358,22 +359,28 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setNiveau(currentNiveau);
             // const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
             // setMatiere(mat);
-            setSelectedMatiere(periodeCours.matiere);
-            lang==='fr'?setQueryMatiere(periodeCours.matiere?.libelleFr??""):setQueryMatiere(periodeCours.matiere?.libelleEn??"")
-            setSelectedEnsPrincipal(periodeCours.enseignantPrincipal);
-            setQueryEnsPrincipal(`${periodeCours.enseignantPrincipal?.nom??""} ${periodeCours.enseignantPrincipal?.prenom??""}`.trim());
-            setSelectedEnsSuppleant(periodeCours.enseignantSuppleant);
-            setQueryEnsSuppleant(`${periodeCours.enseignantSuppleant?.nom??""} ${periodeCours.enseignantSuppleant?.prenom??""}`.trim());
+            const currentMatiere =  periodeCours.matieres && periodeCours.matieres[index] || undefined
+            const currentEnseignantP = periodeCours.enseignantsPrincipaux && periodeCours.enseignantsPrincipaux[index] || undefined
+            const currentEnseignantS = periodeCours.enseignantsSuppleants && periodeCours.enseignantsSuppleants[index] || undefined
+            const currentSalleCour = periodeCours.sallesCours && periodeCours.sallesCours[index] || ""
+            const currentType = periodeCours.typesEnseignements && periodeCours.typesEnseignements[index] || ""
+            setSelectedMatiere(currentMatiere);
+            lang==='fr'?setQueryMatiere(currentMatiere?.libelleFr??""):setQueryMatiere(currentMatiere?.libelleEn??"")
+            setSelectedEnsPrincipal(currentEnseignantP);
+            setQueryEnsPrincipal(`${currentEnseignantP?.nom??""} ${currentEnseignantP?.prenom??""}`.trim());
+            setSelectedEnsSuppleant(currentEnseignantS);
+            setQueryEnsSuppleant(`${currentEnseignantS?.nom??""} ${currentEnseignantS?.prenom??""}`.trim());
             
-            const salleCours = sallesCours.find(salle => salle._id === periodeCours.salleCours);
+            
+            const salleCours = sallesCours.find(salle => salle._id === currentSalleCour);
             setSalleCours(salleCours);
-            const listeTypesEnseignementDeMatiere = periodeCours.matiere && periodeCours.matiere.typesEnseignement && periodeCours.matiere.typesEnseignement
+            const listeTypesEnseignementDeMatiere = currentMatiere && currentMatiere.typesEnseignement && currentMatiere.typesEnseignement
                 .map(type => type) // Obtenir une liste d'objectIds
                 .map(objectId => typesEnseignement.find(type => type._id === objectId))
                 .filter(type => type !== undefined) as CommonSettingProps[];
                 
             listeTypesEnseignementDeMatiere && setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
-            const typeEnseignement = typesEnseignementMat.find(typeEnseignement => typeEnseignement._id === periodeCours.typeEnseignement);
+            const typeEnseignement = typesEnseignementMat.find(typeEnseignement => typeEnseignement._id === currentType);
             setTypeEnseignement(typeEnseignement);
             setSemestre(periodeCours.semestre);
             setAnnee(periodeCours.annee);
@@ -434,7 +441,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             setErrorEnseignant("");
             setIsFirstRender(false);
         }
-    }, [periodeCours, isFirstRender, currentYear,t]);
+    }, [periodeCours, isFirstRender, currentYear, index,t]);
 
     // useEffect(() => {
 
@@ -457,7 +464,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
             // Vérifier si le type d'enseignement de la période correspond à l'un des types d'enseignement de la matière
             if (periodeCours) {
-                const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === periodeCours.typeEnseignement);
+                const currentType = periodeCours.typesEnseignements && periodeCours.typesEnseignements[index] || ""
+                const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === currentType);
                 if (typeEnseignementPeriode) {
                     setTypeEnseignement(typeEnseignementPeriode);
                 }
@@ -555,157 +563,151 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         setIsDeleting(!isDeleting);
     };
 
-    const handleDelete = async () => {
-        if (periodeCours?._id != undefined) {
-            await apiDeletePeriode(periodeCours._id).then((e: ReponseApiPros) => {
-                if (e.success) {
-                    createToast(e.message[lang as keyof typeof e.message], '', 0);
-
-                    if (periodeCours._id) {
-                        dispatch(deletePeriode({ id: periodeCours._id }));
-                    }
-
-                    closeModal();
-                    setIsDeleting(false); // Réinitialiser le toggle à false après la suppression
-                } else {
-                    createToast(e.message[lang as keyof typeof e.message], '', 2);
-                }
-            }).catch((e) => {
-                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
-            })
-        }
-
-    };
+   
 
     const handleCreatePeriodeCours = async () => {
-        
+        // Validation des champs obligatoires
         if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau || !selectedMatiere || !selectedEnsPrincipal || !semestre 
             || !typeEnseignement || !salleCours) {
-            if (!jour) {
-                setErrorJour(t('error.jour'));
-            }
-            if (!heureDebut) {
-                setErrorHeureDebut(t('error.heure_debut'));
-            }
-            if (!heureFin) {
-                setErrorHeureFin(t('error.heure_fin'));
-            }
-                
-            if (!section) {
-                setErrorSection(t('error.section'));
-            }
-            if (!cycle) {
-                setErrorCycle(t('error.cycle'));
-            }
-            if (!niveau) {
-                setErrorNiveau(t('error.niveau'));
-            }
-
-            if (!selectedMatiere) {
-                setErrorMatiere(t('error.matiere'));
-            }
-
-
-            if (!semestre) {
-                setErrorSemestre(t('error.semestre'));
-            }
-
-            if (!typeEnseignement) {
-                setErrorTypeEnseignement(t('error.type_ens_periode'));
-            }
-
-            if (!selectedEnsPrincipal) {
-                setErrorEnseignant(t('error.enseignant'));
-            }
-
-            if (!salleCours) {
-                setErrorSalle(t('error.salle'));
-            }
-
+            if (!jour) setErrorJour(t('error.jour'));
+            if (!heureDebut) setErrorHeureDebut(t('error.heure_debut'));
+            if (!heureFin) setErrorHeureFin(t('error.heure_fin'));
+            if (!section) setErrorSection(t('error.section'));
+            if (!cycle) setErrorCycle(t('error.cycle'));
+            if (!niveau) setErrorNiveau(t('error.niveau'));
+            if (!selectedMatiere) setErrorMatiere(t('error.matiere'));
+            if (!semestre) setErrorSemestre(t('error.semestre'));
+            if (!typeEnseignement) setErrorTypeEnseignement(t('error.type_ens_periode'));
+            if (!selectedEnsPrincipal) setErrorEnseignant(t('error.enseignant'));
+            if (!salleCours) setErrorSalle(t('error.salle'));
             return;
         }
-
-        if(verifierHeureFinApresDebut(heureDebut, heureFin)){
+    
+        // Vérification si heureFin est après heureDebut
+        if (verifierHeureFinApresDebut(heureDebut, heureFin)) {
             setErrorHeureFin(t('error.debut_sup_fin_periode'));
             return;
         }
-        
-        if ((!periodeCours) || (periodeCours && !periodeCours._id)) {
+    
+        // Si aucune période de cours existante, création d'une nouvelle période
+        if (!periodeCours || (periodeCours && !periodeCours._id) || index == -1) {
             if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
-                await apiCreatePeriode(
-                    {
-                        jour : jour.ordre,
-                        semestre,
-                        annee,
-                        niveau:niveau._id,
-                        matiere : selectedMatiere,
-                        typeEnseignement : typeEnseignement._id,
-                        enseignantPrincipal:selectedEnsPrincipal, 
-                        enseignantSuppleant:selectedEnsSuppleant,
-                        heureDebut,
-                        heureFin,
-                        salleCours:salleCours._id,
-                        pause:false
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(createPeriode({
-                            
-                            periode: {
-                                _id: e.data._id,
-                                jour: e.data.jour,
-                                annee: e.data.annee,
-                                semestre: e.data.semestre,
-                                niveau: e.data.niveau,
-                                matiere: e.data.matiere,
-                                salleCours: e.data.salleCours,
-                                heureDebut: e.data.heureDebut,
-                                heureFin: e.data.heureFin,
-                                pause:e.data.pause,
-                                typeEnseignement: e.data.typeEnseignement,
-                                enseignantPrincipal:e.data.enseignantPrincipal,
-                                enseignantSuppleant:e.data.enseignantSuppleant,
-                                
-                            }
-                            
-                        }));
-
-                        closeModal();
-
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-
-                    }
-                }).catch((e) => {
-                    console.log(e);
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                var matieres = [...periodeCours?.matieres || []];
+                var enseignantsPrincipaux = [...periodeCours?.enseignantsPrincipaux || []];
+                let enseignantsSuppleants = [...periodeCours?.enseignantsSuppleants || []];
+                var typesEnseignements = [...periodeCours?.typesEnseignements || []];
+                var sallesCours = [...periodeCours?.sallesCours || []];
+    
+                // Ajouter les éléments s'ils ne sont pas undefined
+                matieres.push(selectedMatiere);
+    
+                if (selectedEnsPrincipal) {
+                    enseignantsPrincipaux.push(selectedEnsPrincipal);
+                }
+    
+                if (selectedEnsSuppleant) {
+                    enseignantsSuppleants.push(selectedEnsSuppleant);
+                }
+    
+                if (typeEnseignement?._id) {
+                    typesEnseignements.push(typeEnseignement._id);
+                }
+    
+                if (salleCours?._id) {
+                    sallesCours.push(salleCours._id);
+                }
+    
+                // API pour créer une nouvelle période
+                await apiCreatePeriode({
+                    jour: jour.ordre,
+                    semestre,
+                    annee,
+                    niveau: niveau._id,
+                    matieres,
+                    typesEnseignements,
+                    enseignantsPrincipaux,
+                    enseignantsSuppleants,
+                    heureDebut,
+                    heureFin,
+                    sallesCours,
+                    pause: false
                 })
+                    .then((e: ReponseApiPros) => {
+                        if (e.success) {
+                            createToast(e.message[lang as keyof typeof e.message], '', 0);
+                            dispatch(createPeriode({
+                                periode: {
+                                    _id: e.data._id,
+                                    jour: e.data.jour,
+                                    annee: e.data.annee,
+                                    semestre: e.data.semestre,
+                                    niveau: e.data.niveau,
+                                    matieres: e.data.matieres,
+                                    sallesCours: e.data.sallesCours,
+                                    heureDebut: e.data.heureDebut,
+                                    heureFin: e.data.heureFin,
+                                    pause: e.data.pause,
+                                    typesEnseignements: e.data.typesEnseignements,
+                                    enseignantsPrincipaux: e.data.enseignantsPrincipaux,
+                                    enseignantsSuppleants: e.data.enseignantsSuppleants,
+                                }
+                            }));
+                            dispatch(setPeriodeIndex(-1));
+                            closeModal();
+                        } else {
+                            createToast(e.message[lang as keyof typeof e.message], '', 2);
+                        }
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                        createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    });
             }
-        }else{
-            if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal  && niveau._id && salleCours._id && jour.ordre) {
-                await apiUpdatePeriode(
-                    {
-                        jour : jour.ordre,
-                        semestre,
-                        annee,
-                        niveau:niveau._id,
-                        matiere : selectedMatiere,
-                        typeEnseignement : typeEnseignement._id,
-                        enseignantPrincipal:selectedEnsPrincipal, 
-                        enseignantSuppleant:selectedEnsSuppleant,
-                        heureDebut,
-                        heureFin,
-                        salleCours:salleCours._id,
-                        _id:periodeCours._id,
-                        pause:false,
+        } else {
+            // Mise à jour d'une période existante
+            if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
+                var matieres = [...periodeCours?.matieres || []];
+                var enseignantsPrincipaux = [...periodeCours?.enseignantsPrincipaux || []];
+                let enseignantsSuppleants = [...periodeCours?.enseignantsSuppleants || []];
+                var typesEnseignements = [...periodeCours?.typesEnseignements || []];
+                var sallesCours = [...periodeCours?.sallesCours || []];
+    
+                // Mise à jour des éléments avec les nouveaux choix
+                matieres[index] = selectedMatiere;
+                enseignantsPrincipaux[index] = selectedEnsPrincipal;
+    
+                if (selectedEnsSuppleant) {
+                    enseignantsSuppleants[index] = selectedEnsSuppleant;
+                } else {
+                    const supp = enseignantsSuppleants.length > index ? enseignantsSuppleants[index] : undefined;
+                    if (supp) {
+                        enseignantsSuppleants = enseignantsSuppleants.filter(e => e._id !== supp._id);
                     }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(
-                            updatePeriode({
+                }
+    
+                typesEnseignements[index] = typeEnseignement._id;
+                sallesCours[index] = salleCours._id;
+    
+                // API pour mettre à jour la période
+                await apiUpdatePeriode({
+                    jour: jour.ordre,
+                    semestre,
+                    annee,
+                    niveau: niveau._id,
+                    matieres,
+                    typesEnseignements,
+                    enseignantsPrincipaux,
+                    enseignantsSuppleants,
+                    heureDebut,
+                    heureFin,
+                    sallesCours,
+                    _id: periodeCours._id,
+                    pause: false,
+                })
+                    .then((e: ReponseApiPros) => {
+                        if (e.success) {
+                            createToast(e.message[lang as keyof typeof e.message], '', 0);
+                            dispatch(updatePeriode({
                                 id: e.data._id,
                                 periodeData: {
                                     _id: e.data._id,
@@ -713,27 +715,29 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,
                                     niveau: e.data.niveau,
-                                    matiere: e.data.matiere,
-                                    salleCours: e.data.salleCours,
+                                    matieres: e.data.matieres,
+                                    sallesCours: e.data.sallesCours,
                                     heureDebut: e.data.heureDebut,
                                     heureFin: e.data.heureFin,
-                                    typeEnseignement: e.data.typeEnseignement,
-                                    enseignantPrincipal:e.data.enseignantPrincipal,
-                                    enseignantSuppleant:e.data.enseignantSuppleant,
-                                    pause:e.data.pause,
+                                    typesEnseignements: e.data.typesEnseignements,
+                                    enseignantsPrincipaux: e.data.enseignantsPrincipaux,
+                                    enseignantsSuppleants: e.data.enseignantsSuppleants,
+                                    pause: e.data.pause,
                                 }
                             }));
-                        closeModal();
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-                    }
-                }).catch((e) => {
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
+                            dispatch(setPeriodeIndex(-1));
+                            closeModal();
+                        } else {
+                            createToast(e.message[lang as keyof typeof e.message], '', 2);
+                        }
+                    })
+                    .catch((e) => {
+                        createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    });
             }
         }
-        
-    }
+    };
+    
     
 
     return (

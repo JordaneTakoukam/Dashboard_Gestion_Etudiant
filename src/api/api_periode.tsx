@@ -6,11 +6,11 @@ const api = `${apiUrl}/periode`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreatePeriode({ jour, semestre, annee, niveau, matieres, typesEnseignements, enseignantsPrincipaux, enseignantsSuppleants, heureDebut, heureFin, sallesCours, pause }: PeriodeType): Promise<ReponseApiPros> {
+export async function apiCreatePeriode({ jour, semestre, annee, niveau, enseignements, heureDebut, heureFin, pause }: PeriodeType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { jour, semestre, annee, niveau, matieres, typesEnseignements, enseignantsPrincipaux, enseignantsSuppleants, heureDebut, heureFin, sallesCours, pause },
+            { jour, semestre, annee, niveau, enseignements, heureDebut, heureFin, pause },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,11 +26,11 @@ export async function apiCreatePeriode({ jour, semestre, annee, niveau, matieres
     }
 }
 
-export async function apiUpdatePeriode({ _id, jour, semestre, annee, niveau, matieres, typesEnseignements, enseignantsPrincipaux, enseignantsSuppleants, heureDebut, heureFin, sallesCours, pause }: PeriodeType): Promise<ReponseApiPros> {
+export async function apiUpdatePeriode({ _id, jour, semestre, annee, niveau, enseignements, heureDebut, heureFin, pause }: PeriodeType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { jour, semestre, annee, niveau, matieres, enseignantsPrincipaux, enseignantsSuppleants, typesEnseignements, heureDebut, heureFin, sallesCours, pause },
+            { jour, semestre, annee, niveau, enseignements, heureDebut, heureFin, pause },
             {
                 headers: {
                     'Content-Type': 'application/json',

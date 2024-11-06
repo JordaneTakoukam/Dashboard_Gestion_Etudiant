@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModal, setShowModalDelete, setShowModalPresence, setShowModalPause, setShowModalSignalerAbsence, setShowModalOpenScan, setShowModalPresenceManuelle } from '../../../_redux/features/setting';
+import { setShowModal, setShowModalDelete, setShowModalPresence, setShowModalPause, setShowModalSignalerAbsence, setShowModalOpenScan, setShowModalPresenceManuelle, setPeriodeIndex } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import { Fragment} from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +66,40 @@ function ModalGestionPresence({ periodeCours }: { periodeCours: PeriodeType | nu
                                         {/* BODY DE LA BOITE DE DIALOGUE */}
                                         {/* <div className='mt-5 md:mt-10'>{children}</div> */}
                                         <div className="flex flex-col text-left items-start space-y-2 p-4">
-                                            {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => { closeModal(); dispatch(setShowModalSignalerAbsence());   } }>
+                                            {(periodeCours && periodeCours._id) && periodeCours.enseignements && !periodeCours.pause && (
+                                                periodeCours.enseignements.map((matiere, index) => (
+                                                    <button
+                                                        key={index}
+                                                        className="text-blue-500 hover:underline text-left"
+                                                        onClick={() => {closeModal(); dispatch(setShowModalSignalerAbsence()); dispatch((setPeriodeIndex(index))) }}
+                                                    >
+                                                        {periodeCours && periodeCours.enseignements && periodeCours.enseignements.length>1? t('label.signaler_absence') +" : "+ (lang === 'fr' ? matiere.matiere.libelleFr : matiere.matiere.libelleEn) :t('label.signaler_absence')}
+                                                    </button>
+                                                ))
+                                            )}
+                                            {(periodeCours && periodeCours._id) && periodeCours.enseignements && !periodeCours.pause && (
+                                                periodeCours.enseignements.map((matiere, index) => (
+                                                    <button
+                                                        key={index}
+                                                        className="text-blue-500 hover:underline text-left"
+                                                        onClick={() => {closeModal(); dispatch(setShowModalOpenScan()); dispatch((setPeriodeIndex(index))) }}
+                                                    >
+                                                        {periodeCours && periodeCours.enseignements && periodeCours.enseignements.length>1? t('label.signaler_presence_qr') +" : "+ (lang === 'fr' ? matiere.matiere.libelleFr : matiere.matiere.libelleEn):t('label.signaler_presence_qr')}
+                                                    </button>
+                                                ))
+                                            )}
+                                            {(periodeCours && periodeCours._id) && periodeCours.enseignements && !periodeCours.pause && (
+                                                periodeCours.enseignements.map((matiere, index) => (
+                                                    <button
+                                                        key={index}
+                                                        className="text-blue-500 hover:underline text-left"
+                                                        onClick={() => {closeModal(); dispatch(setShowModalPresenceManuelle()); dispatch((setPeriodeIndex(index))) }}
+                                                    >
+                                                        {periodeCours && periodeCours.enseignements && periodeCours.enseignements.length>1? t('label.signaler_presence_manuelle') +" : "+ (lang === 'fr' ? matiere.matiere.libelleFr : matiere.matiere.libelleEn):t('label.signaler_presence_manuelle')}
+                                                    </button>
+                                                ))
+                                            )}
+                                            {/* {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => { closeModal(); dispatch(setShowModalSignalerAbsence());   } }>
                                                 {t('label.signaler_absence')}
                                             </button>)}
                                             {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalOpenScan())}}>
@@ -74,7 +107,7 @@ function ModalGestionPresence({ periodeCours }: { periodeCours: PeriodeType | nu
                                             </button>)}
                                             {((periodeCours && periodeCours._id) && !periodeCours.pause) && (<button className="text-blue-500 hover:underline" onClick={() => {closeModal(); dispatch(setShowModalPresenceManuelle())}}>
                                                 {t('label.signaler_presence_manuelle')}
-                                            </button>)}
+                                            </button>)} */}
                                             
                                         </div>
 

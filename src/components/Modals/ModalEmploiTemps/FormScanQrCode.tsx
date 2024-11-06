@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalOpenScan } from '../../../_redux/features/setting';
+import { setPeriodeIndex, setShowModalOpenScan } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,10 +14,12 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const lang: string = useSelector((state: RootState) => state.setting.language);
+    const index = useSelector((state: RootState) => state.setting.periodeIndex); // index courant à modifier
     const isModalOpen: boolean = useSelector((state: RootState) => state.setting.showModal.openScan);
     const utilisateur = useSelector((state: RootState) => state.user); // Supposant que tu as l'utilisateur dans ton state
     const closeModal = () => {
         dispatch(setShowModalOpenScan());
+        dispatch(setPeriodeIndex(-1))
         setError('')
     };
 
@@ -75,7 +77,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
             const jour = periodeCours?.jour || 0; // Jour actuel
             const heureDebut = periodeCours ? periodeCours.heureDebut : '00:00'; // Exemple de l'heure de début
             const heureFin = periodeCours ? periodeCours.heureFin : '00:00'; // Exemple de l'heure de fin
-            const matiere = periodeCours ? periodeCours.matiere : undefined; // Exemple de matière
+            const matiere = periodeCours && periodeCours.enseignements && index != -1 ? periodeCours.enseignements[index].matiere : undefined; // Exemple de matière
 
             setLoading(true);
 

@@ -41,16 +41,16 @@ export const CardCourProgrammer = ({ additionalStyle,listCourProgrammer, pageIsL
                             ? jours.find(jour => jour.ordre === periode.jour)?.libelleFr || "" 
                             : jours.find(jour => jour.ordre === periode.jour)?.libelleEn || "";
 
-                            const sallesLibelle = periode.sallesCours && periode.sallesCours.length > 0 
-                                ? [...new Set(periode.sallesCours.map(salle => sallesCours?.find(sc => sc._id === salle)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
+                            const sallesLibelle = periode.enseignements && periode.enseignements.length > 0 
+                                ? [...new Set(periode.enseignements.map(e => sallesCours?.find(sc => sc._id === e.salleCours)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
                                 .filter(libelle => libelle) // Filtrer les valeurs vides ou nulles
                                     .join('/ ')
                                 : '';
 
                             // Itération sur les matières
-                            const matieresLibelle = periode.matieres && periode.matieres.length > 0
-                                ? periode.matieres.map(matiere => lang === 'fr' ? matiere.libelleFr : matiere.libelleEn).join('/ ')
-                                : "";
+                            const matieresLibelle = periode.enseignements && periode.enseignements.length > 0
+                                ? periode.enseignements.map(e => lang === 'fr' ? e.matiere.libelleFr : e.matiere.libelleEn).join('/ ')
+                                : '';
 
                             return (
                                 <div 

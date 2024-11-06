@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalSignalerAbsence, } from '../../../_redux/features/setting';
+import { setPeriodeIndex, setShowModalSignalerAbsence, } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ import { config } from '../../../config';
 function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const index = useSelector((state: RootState) => state.setting.periodeIndex); // index courant à modifier
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -52,6 +53,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
         if (isFirstRender) {
             setIsDeleting(false);
+            dispatch(setPeriodeIndex(-1));
             setIsFirstRender(false);
         }
     }, [periodeCours, isFirstRender, t]);
@@ -76,7 +78,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         if (periodeCours) {
             let enseignant: UserState | EnseignantType | undefined;
             if(currentUser.role!==config.roles.enseignant){
-                enseignant = periodeCours.enseignantPrincipal;
+                const enseignantPrincipal = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].enseignantPrincipal:undefined
+                enseignant = enseignantPrincipal;
             }
             
             const formData = new FormData();

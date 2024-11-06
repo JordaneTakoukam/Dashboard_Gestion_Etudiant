@@ -57,43 +57,60 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         if(userRole===roles.admin || userRole===roles.superAdmin){
             dispatch(setShowModalElement());
         }else{
-            if(periode && periode.enseignantsPrincipaux){
-                const enseignantsPrincipaux = periode?.enseignantsPrincipaux || [];
-                const enseignantsSuppleants = periode?.enseignantsSuppleants || [];
-                const existEnsP = enseignantsPrincipaux.find(ens=>ens._id === currentUser._id)
-                const existEnsS = enseignantsSuppleants.find(ens=>ens._id === currentUser._id)
-                if(userRole===roles.enseignant && (existEnsP || existEnsS)){
+            // if(periode && periode.enseignantsPrincipaux){
+            //     const enseignantsPrincipaux = periode?.enseignantsPrincipaux || [];
+            //     const enseignantsSuppleants = periode?.enseignantsSuppleants || [];
+            //     const existEnsP = enseignantsPrincipaux.find(ens=>ens._id === currentUser._id)
+            //     const existEnsS = enseignantsSuppleants.find(ens=>ens._id === currentUser._id)
+            //     if(userRole===roles.enseignant && (existEnsP || existEnsS)){
+            //         dispatch(setShowModalPresence());
+            //     }
+
+            //     if(userRole===roles.etudiant || userRole===roles.delegue){
+            //         dispatch(setShowModalSignalerAbsence());   
+            //     }
+                
+            // }
+
+            if (periode && periode.enseignements) {
+                // Parcours des matières de la période
+                const enseignements = periode.enseignements || [];
+                
+                // Recherche si l'enseignant est principal ou suppléant dans l'une des matières
+                const existEnsP = enseignements.some(e => e.enseignantPrincipal._id === currentUser._id);
+                const existEnsS = enseignements.some(e => e.enseignantSuppleant?._id === currentUser._id);
+            
+                // Si l'utilisateur est un enseignant et existe dans les enseignants principaux ou suppléants
+                if (userRole === roles.enseignant && (existEnsP || existEnsS)) {
                     dispatch(setShowModalPresence());
                 }
-
-                if(userRole===roles.etudiant || userRole===roles.delegue){
-                    dispatch(setShowModalSignalerAbsence());   
+            
+                // Si l'utilisateur est un étudiant ou un délégué
+                if (userRole === roles.etudiant || userRole === roles.delegue) {
+                    dispatch(setShowModalSignalerAbsence());
                 }
-                
             }
+            
         }
         
         
     };
     
 
-    
-    
     useEffect(() => {
-        
-        
         const table = document.getElementById('myTable') as HTMLTableElement;
-        
-        //Trie des évènement par date de début la plus récente
+        // Trie des évènements par date de début la plus récente
         const sortedPeriodes = [...data].sort((a, b) => {
             const heureDebutA = convertirHeureVersMinutes(a.heureDebut);
             const heureDebutB = convertirHeureVersMinutes(b.heureDebut);
             return heureDebutA - heureDebutB;
         });
+    
         if (table) {
             table.innerHTML = '';
             const groupedPeriodes: { [key: string]: PeriodeType[] } = {};
-            //Les évènements de la même période de cours sont groupés entre eux
+    
+            // Les évènements de la même période de cours sont groupés entre eux
             sortedPeriodes.forEach((periode) => {
                 const horaire = `${periode.heureDebut} - ${periode.heureFin}`;
                 if (!groupedPeriodes[horaire]) {
@@ -101,98 +118,206 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 }
                 groupedPeriodes[horaire].push(periode);
             });
+    
             Object.entries(groupedPeriodes).forEach(([horaire, periodes], index) => {
                 const row = table.insertRow();
-                
+    
                 const classNames = index % 2 === 0 ?
-                        "border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black" :
-                        "border-b border-[#eee] py-0 px-0 dark:border-strokedark";
-                    row.className = classNames;
+                    "border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black" :
+                    "border-b border-[#eee] py-0 px-0 dark:border-strokedark";
+                row.className = classNames;
                 const horaireCell = row.insertCell();
                 horaireCell.textContent = horaire;
-                horaireCell.style.width = '90px'
+                horaireCell.style.width = '90px';
+    
                 jours.forEach((jour) => {
                     const jourCell = row.insertCell();
-                    const coursJour = periodes.find((cours) => cours.jour == jour.ordre); // Modifier cette ligne
-                    jourCell.style.textAlign='center';
-                    // if (roles.admin === userRole  || roles.superAdmin === userRole) {
-                        jourCell.onmouseover = () => {
-                            jourCell.style.backgroundColor = '#afeeee';
-                        };
-                        
-                        jourCell.onmouseout = () => {
-                            jourCell.style.backgroundColor = '';
-                        };
-                    // }
-                    
+                    const coursJour = periodes.find((cours) => cours.jour == jour.ordre);
+    
+                    jourCell.style.textAlign = 'center';
+                    jourCell.onmouseover = () => {
+                        jourCell.style.backgroundColor = '#afeeee';
+                    };
+                    jourCell.onmouseout = () => {
+                        jourCell.style.backgroundColor = '';
+                    };
+    
                     if (coursJour) {
-                        const codeTypeEns = typesEnseignement?.find(type => type._id === coursJour.typesEnseignements);
-                        
-                        // Itération sur les salles de cours et ajout de leurs libellés
-                        const sallesLibelle = coursJour.sallesCours && coursJour.sallesCours.length > 0 
-                        ? [...new Set(coursJour.sallesCours.map(salle => sallesCours?.find(sc => sc._id === salle)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
-                        .filter(libelle => libelle) // Filtrer les valeurs vides ou nulles
-                            .join('/ ')
-                        : '';
-
-                        
-                    
-                    
-                        // Itération sur les enseignants principaux
-                        const enseignantsLibelle = coursJour.enseignantsPrincipaux && coursJour.enseignantsPrincipaux.length > 0
-                        ? coursJour.enseignantsPrincipaux.map((ensPrincipal, index) => {
-                            const suppléant = coursJour.enseignantsSuppleants && coursJour.enseignantsSuppleants[index]; // Suppléant correspondant à l'index
-                            const principalLibelle = `${premierElement(ensPrincipal.nom)} ${ensPrincipal.prenom ? premierElement(ensPrincipal.prenom) : ""}`;
-                            const suppléantLibelle = suppléant ? `${premierElement(suppléant.nom)} ${suppléant.prenom ? premierElement(suppléant.prenom) : ""}` : "-";
-                            return `${principalLibelle}/${suppléantLibelle}`;
-                        }).join(', ')
-                        : "-";
-
-                    
                         // Itération sur les matières
-                        const matieresLibelle = coursJour.matieres && coursJour.matieres.length > 0
-                            ? coursJour.matieres.map(matiere => lang === 'fr' ? matiere.libelleFr : matiere.libelleEn).join('/ ')
-                            : "";
-                    
+                        const matieresLibelle = coursJour.enseignements && coursJour.enseignements.length > 0
+                            ? coursJour.enseignements.map(e => lang === 'fr' ? e.matiere.libelleFr : e.matiere.libelleEn).join('/ ')
+                            : '';
+    
+                        // Itération sur les enseignants principaux et suppléants
+                        const enseignantsLibelle = coursJour.enseignements && coursJour.enseignements.length > 0
+                            ? coursJour.enseignements.map(e => {
+                                const enseignantPrincipal = e.enseignantPrincipal;
+                                const enseignantSuppleant = e.enseignantSuppleant;
+                                const principalLibelle = `${premierElement(enseignantPrincipal.nom)} ${enseignantPrincipal.prenom ? premierElement(enseignantPrincipal.prenom) : ""}`;
+                                const suppléantLibelle = enseignantSuppleant ? `${premierElement(enseignantSuppleant.nom)} ${enseignantSuppleant.prenom ? premierElement(enseignantSuppleant.prenom) : ""}` : "-";
+                                return `${principalLibelle}/${suppléantLibelle}`;
+                            }).join(', ')
+                            : "-";
+    
+                        // Itération sur les salles de cours
+                        
+                        const sallesLibelle = coursJour.enseignements && coursJour.enseignements.length > 0 
+                            ? [...new Set(coursJour.enseignements.map(e => sallesCours?.find(sc => sc._id === e.salleCours)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
+                            .filter(libelle => libelle) // Filtrer les valeurs vides ou nulles
+                                .join('/ ')
+                            : '';
                         jourCell.textContent = t('label.pause');
-                    
+    
                         if (!coursJour.pause) {
                             jourCell.textContent = `
                                 ${matieresLibelle} - 
                                 ${enseignantsLibelle} - 
                                 ${sallesLibelle}`;
                         }
-                    
+    
                         // Gestion de l'édition du cours
                         jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
                         jourCell.style.cursor = 'pointer';
                         jourCell.style.width = '100px';
-                    }
-                    else{
-                        // if (roles.admin === userRole || roles.superAdmin === userRole) {
-                            const heureDebut = horaire.split("-")[0].trim();
-                            const heureFin = horaire.split("-")[1].trim();
-                            if(selectNiveauId){
-                                const periode : PeriodeType={
-                                    pause: false,
-                                    jour: jour.ordre,
-                                    semestre: selectedSemestre,
-                                    annee: selectedYear,
-                                    niveau: selectNiveauId,
-                                    heureDebut: heureDebut,
-                                    heureFin: heureFin,
-                                    enseignantsPrincipaux: undefined
-                                };
-                                jourCell.onclick = () => ouvrirFormulairePeriode(periode);
-                                jourCell.style.cursor = 'pointer';
-                                jourCell.style.width='100px'
-                            }
-                        // }
+                    } else {
+                        const heureDebut = horaire.split("-")[0].trim();
+                        const heureFin = horaire.split("-")[1].trim();
+                        if (selectNiveauId) {
+                            const periode: PeriodeType = {
+                                pause: false,
+                                jour: jour.ordre,
+                                semestre: selectedSemestre,
+                                annee: selectedYear,
+                                niveau: selectNiveauId,
+                                heureDebut: heureDebut,
+                                heureFin: heureFin,
+                                enseignements: [],  // Assurez-vous d'inclure la structure correcte
+                            };
+                            jourCell.onclick = () => ouvrirFormulairePeriode(periode);
+                            jourCell.style.cursor = 'pointer';
+                            jourCell.style.width = '100px';
+                        }
                     }
                 });
             });
         }
     }, [data]);
+    
+    
+    // useEffect(() => {
+        
+        
+    //     const table = document.getElementById('myTable') as HTMLTableElement;
+        
+    //     //Trie des évènement par date de début la plus récente
+    //     const sortedPeriodes = [...data].sort((a, b) => {
+    //         const heureDebutA = convertirHeureVersMinutes(a.heureDebut);
+    //         const heureDebutB = convertirHeureVersMinutes(b.heureDebut);
+    //         return heureDebutA - heureDebutB;
+    //     });
+    //     if (table) {
+    //         table.innerHTML = '';
+    //         const groupedPeriodes: { [key: string]: PeriodeType[] } = {};
+    //         //Les évènements de la même période de cours sont groupés entre eux
+    //         sortedPeriodes.forEach((periode) => {
+    //             const horaire = `${periode.heureDebut} - ${periode.heureFin}`;
+    //             if (!groupedPeriodes[horaire]) {
+    //                 groupedPeriodes[horaire] = [];
+    //             }
+    //             groupedPeriodes[horaire].push(periode);
+    //         });
+    //         Object.entries(groupedPeriodes).forEach(([horaire, periodes], index) => {
+    //             const row = table.insertRow();
+                
+    //             const classNames = index % 2 === 0 ?
+    //                     "border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black" :
+    //                     "border-b border-[#eee] py-0 px-0 dark:border-strokedark";
+    //                 row.className = classNames;
+    //             const horaireCell = row.insertCell();
+    //             horaireCell.textContent = horaire;
+    //             horaireCell.style.width = '90px'
+    //             jours.forEach((jour) => {
+    //                 const jourCell = row.insertCell();
+    //                 const coursJour = periodes.find((cours) => cours.jour == jour.ordre); // Modifier cette ligne
+    //                 jourCell.style.textAlign='center';
+    //                 // if (roles.admin === userRole  || roles.superAdmin === userRole) {
+    //                     jourCell.onmouseover = () => {
+    //                         jourCell.style.backgroundColor = '#afeeee';
+    //                     };
+                        
+    //                     jourCell.onmouseout = () => {
+    //                         jourCell.style.backgroundColor = '';
+    //                     };
+    //                 // }
+                    
+    //                 if (coursJour) {
+    //                     const codeTypeEns = typesEnseignement?.find(type => type._id === coursJour.typesEnseignements);
+                        
+    //                     // Itération sur les salles de cours et ajout de leurs libellés
+    //                     const sallesLibelle = coursJour.sallesCours && coursJour.sallesCours.length > 0 
+    //                     ? [...new Set(coursJour.sallesCours.map(salle => sallesCours?.find(sc => sc._id === salle)?.[lang === 'fr' ? 'libelleFr' : 'libelleEn'] || ''))]
+    //                     .filter(libelle => libelle) // Filtrer les valeurs vides ou nulles
+    //                         .join('/ ')
+    //                     : '';
+
+                        
+                    
+                    
+    //                     // Itération sur les enseignants principaux
+    //                     const enseignantsLibelle = coursJour.enseignantsPrincipaux && coursJour.enseignantsPrincipaux.length > 0
+    //                     ? coursJour.enseignantsPrincipaux.map((ensPrincipal, index) => {
+    //                         const suppléant = coursJour.enseignantsSuppleants && coursJour.enseignantsSuppleants[index]; // Suppléant correspondant à l'index
+    //                         const principalLibelle = `${premierElement(ensPrincipal.nom)} ${ensPrincipal.prenom ? premierElement(ensPrincipal.prenom) : ""}`;
+    //                         const suppléantLibelle = suppléant ? `${premierElement(suppléant.nom)} ${suppléant.prenom ? premierElement(suppléant.prenom) : ""}` : "-";
+    //                         return `${principalLibelle}/${suppléantLibelle}`;
+    //                     }).join(', ')
+    //                     : "-";
+
+                    
+    //                     // Itération sur les matières
+    //                     const matieresLibelle = coursJour.matieres && coursJour.matieres.length > 0
+    //                         ? coursJour.matieres.map(matiere => lang === 'fr' ? matiere.libelleFr : matiere.libelleEn).join('/ ')
+    //                         : "";
+                    
+    //                     jourCell.textContent = t('label.pause');
+                    
+    //                     if (!coursJour.pause) {
+    //                         jourCell.textContent = `
+    //                             ${matieresLibelle} - 
+    //                             ${enseignantsLibelle} - 
+    //                             ${sallesLibelle}`;
+    //                     }
+                    
+    //                     // Gestion de l'édition du cours
+    //                     jourCell.onclick = () => ouvrirFormulairePeriode(coursJour);
+    //                     jourCell.style.cursor = 'pointer';
+    //                     jourCell.style.width = '100px';
+    //                 }
+    //                 else{
+    //                     // if (roles.admin === userRole || roles.superAdmin === userRole) {
+    //                         const heureDebut = horaire.split("-")[0].trim();
+    //                         const heureFin = horaire.split("-")[1].trim();
+    //                         if(selectNiveauId){
+    //                             const periode : PeriodeType={
+    //                                 pause: false,
+    //                                 jour: jour.ordre,
+    //                                 semestre: selectedSemestre,
+    //                                 annee: selectedYear,
+    //                                 niveau: selectNiveauId,
+    //                                 heureDebut: heureDebut,
+    //                                 heureFin: heureFin,
+    //                                 enseignantsPrincipaux: undefined
+    //                             };
+    //                             jourCell.onclick = () => ouvrirFormulairePeriode(periode);
+    //                             jourCell.style.cursor = 'pointer';
+    //                             jourCell.style.width='100px'
+    //                         }
+    //                     // }
+    //                 }
+    //             });
+    //         });
+    //     }
+    // }, [data]);
 
     
     function convertirHeureVersMinutes(heure: string): number {

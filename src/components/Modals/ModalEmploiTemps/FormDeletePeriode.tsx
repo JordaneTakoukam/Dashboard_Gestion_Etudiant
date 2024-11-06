@@ -31,7 +31,7 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                     setModalTitle(t('form_delete.suppression')+t('form_delete.pause'));
                 }else{
                     setModalTitle(t('form_delete.suppression')+t('form_delete.periode'));
-                    periodeCours.matieres && setMatiere(periodeCours.matieres[index]);
+                    index!=-1 && periodeCours.enseignements && setMatiere(periodeCours.enseignements[index].matiere);
                 }
             } else {
                 setModalTitle("");
@@ -53,7 +53,7 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
                     if (periodeCours._id) {
-                        if((periodeCours.matieres && periodeCours.matieres.length==1) || periodeCours.pause){
+                        if((periodeCours.enseignements && periodeCours.enseignements.length==1) || periodeCours.pause){
                             dispatch(deletePeriode({ id: periodeCours._id }));
                         }else{
                            
@@ -65,13 +65,9 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,
                                     niveau: e.data.niveau,
-                                    matieres: e.data.matieres,
-                                    sallesCours: e.data.sallesCours,
+                                    enseignements: e.data.enseignements,
                                     heureDebut: e.data.heureDebut,
                                     heureFin: e.data.heureFin,
-                                    typesEnseignements: e.data.typesEnseignements,
-                                    enseignantsPrincipaux: e.data.enseignantsPrincipaux,
-                                    enseignantsSuppleants: e.data.enseignantsSuppleants,
                                     pause: e.data.pause,
                                 }
                             }));

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowModalPresenceManuelle } from '../../../_redux/features/setting';
+import { setPeriodeIndex, setShowModalPresenceManuelle } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import { apiPresence } from '../../../api/api_presence_paie';
 function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+    const index = useSelector((state: RootState) => state.setting.periodeIndex); // index courant à modifier
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -41,7 +42,8 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
             setHeureFin(periodeCours.heureFin);
             setSemestre(periodeCours.semestre);
             setAnnee(periodeCours.annee);
-            const libelle =  lang === 'fr'?periodeCours.matiere?.libelleFr || "":periodeCours.matiere?.libelleEn || ""
+            const matiere = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].matiere:undefined
+            const libelle =  lang === 'fr'?matiere?.libelleFr || "":matiere?.libelleEn || ""
             setMatiere(libelle)
         } else {
         }
@@ -57,6 +59,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
 
     const closeModal = () => {
         setIsFirstRender(true);
+        dispatch(setPeriodeIndex(-1))
         dispatch(setShowModalPresenceManuelle());
     };
 
@@ -67,15 +70,17 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
     const handleCreatePeriodeCours = async () => {
         
         if (periodeCours) {
-            
+            const matiere = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].matiere:undefined
             await apiPresence({jour:periodeCours.jour, semestre:periodeCours.semestre, annee:periodeCours.annee, niveau:periodeCours.niveau, 
-                matiere:periodeCours.matiere, utilisateur:currentUser, heureDebut:periodeCours.heureDebut, heureFin:periodeCours.heureFin}).then((e: ReponseApiPros) => {
+                matiere:matiere, utilisateur:currentUser, heureDebut:periodeCours.heureDebut, heureFin:periodeCours.heureFin}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();
+                    
                 } else {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);
                 }
+
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
             })

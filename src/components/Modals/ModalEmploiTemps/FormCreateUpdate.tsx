@@ -357,13 +357,13 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
             setSection(currentSection);
             setCycle(currentCycle);
             setNiveau(currentNiveau);
-            // const mat = matieres.find(matiere => periodeCours.matiere && (matiere._id === periodeCours.matiere._id));
+            // const mat = matieres.find(matiere => periodeCours.enseignements && (matiere._id === periodeCours.matiere._id));
             // setMatiere(mat);
-            const currentMatiere =  periodeCours.matieres && periodeCours.matieres[index] || undefined
-            const currentEnseignantP = periodeCours.enseignantsPrincipaux && periodeCours.enseignantsPrincipaux[index] || undefined
-            const currentEnseignantS = periodeCours.enseignantsSuppleants && periodeCours.enseignantsSuppleants[index] || undefined
-            const currentSalleCour = periodeCours.sallesCours && periodeCours.sallesCours[index] || ""
-            const currentType = periodeCours.typesEnseignements && periodeCours.typesEnseignements[index] || ""
+            const currentMatiere =  index!=-1 && periodeCours.enseignements && periodeCours.enseignements[index].matiere || undefined
+            const currentEnseignantP = index!=-1 &&  periodeCours.enseignements && periodeCours.enseignements[index].enseignantPrincipal || undefined
+            const currentEnseignantS = index!=-1 &&  periodeCours.enseignements && periodeCours.enseignements[index].enseignantSuppleant || undefined
+            const currentSalleCour = index!=-1 &&  periodeCours.enseignements && periodeCours.enseignements[index].salleCours || ""
+            const currentType = index!=-1 &&  periodeCours.enseignements && periodeCours.enseignements[index].typeEnseignement || ""
             setSelectedMatiere(currentMatiere);
             lang==='fr'?setQueryMatiere(currentMatiere?.libelleFr??""):setQueryMatiere(currentMatiere?.libelleEn??"")
             setSelectedEnsPrincipal(currentEnseignantP);
@@ -464,7 +464,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
 
             // Vérifier si le type d'enseignement de la période correspond à l'un des types d'enseignement de la matière
             if (periodeCours) {
-                const currentType = periodeCours.typesEnseignements && periodeCours.typesEnseignements[index] || ""
+                const currentType = periodeCours.enseignements && periodeCours.enseignements[index].typeEnseignement || ""
                 const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === currentType);
                 if (typeEnseignementPeriode) {
                     setTypeEnseignement(typeEnseignementPeriode);
@@ -592,44 +592,28 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
         // Si aucune période de cours existante, création d'une nouvelle période
         if (!periodeCours || (periodeCours && !periodeCours._id) || index == -1) {
             if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
-                var matieres = [...periodeCours?.matieres || []];
-                var enseignantsPrincipaux = [...periodeCours?.enseignantsPrincipaux || []];
-                let enseignantsSuppleants = [...periodeCours?.enseignantsSuppleants || []];
-                var typesEnseignements = [...periodeCours?.typesEnseignements || []];
-                var sallesCours = [...periodeCours?.sallesCours || []];
+                const enseignements = [...(periodeCours?.enseignements || [])];
+               
     
                 // Ajouter les éléments s'ils ne sont pas undefined
-                matieres.push(selectedMatiere);
+                enseignements.push({
+                    matiere:selectedMatiere,
+                    enseignantPrincipal:selectedEnsPrincipal,
+                    enseignantSuppleant:selectedEnsSuppleant,
+                    salleCours:salleCours._id,
+                    typeEnseignement:typeEnseignement._id,
+                });
     
-                if (selectedEnsPrincipal) {
-                    enseignantsPrincipaux.push(selectedEnsPrincipal);
-                }
-    
-                if (selectedEnsSuppleant) {
-                    enseignantsSuppleants.push(selectedEnsSuppleant);
-                }
-    
-                if (typeEnseignement?._id) {
-                    typesEnseignements.push(typeEnseignement._id);
-                }
-    
-                if (salleCours?._id) {
-                    sallesCours.push(salleCours._id);
-                }
-    
+
                 // API pour créer une nouvelle période
                 await apiCreatePeriode({
                     jour: jour.ordre,
                     semestre,
                     annee,
                     niveau: niveau._id,
-                    matieres,
-                    typesEnseignements,
-                    enseignantsPrincipaux,
-                    enseignantsSuppleants,
+                    enseignements,
                     heureDebut,
                     heureFin,
-                    sallesCours,
                     pause: false
                 })
                     .then((e: ReponseApiPros) => {
@@ -642,14 +626,10 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,
                                     niveau: e.data.niveau,
-                                    matieres: e.data.matieres,
-                                    sallesCours: e.data.sallesCours,
+                                    enseignements: e.data.enseignements,
                                     heureDebut: e.data.heureDebut,
                                     heureFin: e.data.heureFin,
                                     pause: e.data.pause,
-                                    typesEnseignements: e.data.typesEnseignements,
-                                    enseignantsPrincipaux: e.data.enseignantsPrincipaux,
-                                    enseignantsSuppleants: e.data.enseignantsSuppleants,
                                 }
                             }));
                             dispatch(setPeriodeIndex(-1));
@@ -666,41 +646,23 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
         } else {
             // Mise à jour d'une période existante
             if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
-                var matieres = [...periodeCours?.matieres || []];
-                var enseignantsPrincipaux = [...periodeCours?.enseignantsPrincipaux || []];
-                let enseignantsSuppleants = [...periodeCours?.enseignantsSuppleants || []];
-                var typesEnseignements = [...periodeCours?.typesEnseignements || []];
-                var sallesCours = [...periodeCours?.sallesCours || []];
-    
-                // Mise à jour des éléments avec les nouveaux choix
-                matieres[index] = selectedMatiere;
-                enseignantsPrincipaux[index] = selectedEnsPrincipal;
-    
-                if (selectedEnsSuppleant) {
-                    enseignantsSuppleants[index] = selectedEnsSuppleant;
-                } else {
-                    const supp = enseignantsSuppleants.length > index ? enseignantsSuppleants[index] : undefined;
-                    if (supp) {
-                        enseignantsSuppleants = enseignantsSuppleants.filter(e => e._id !== supp._id);
-                    }
-                }
-    
-                typesEnseignements[index] = typeEnseignement._id;
-                sallesCours[index] = salleCours._id;
-    
+                const enseignements = [...(periodeCours?.enseignements || [])];
+                const newEnseignement ={matiere:selectedMatiere, 
+                                        enseignantPrincipal:selectedEnsPrincipal,
+                                        enseignantSuppleant:selectedEnsSuppleant,
+                                        salleCours:salleCours._id,
+                                        typeEnseignement:typeEnseignement._id
+                                    }
+                enseignements[index] = newEnseignement;
                 // API pour mettre à jour la période
                 await apiUpdatePeriode({
                     jour: jour.ordre,
                     semestre,
                     annee,
                     niveau: niveau._id,
-                    matieres,
-                    typesEnseignements,
-                    enseignantsPrincipaux,
-                    enseignantsSuppleants,
+                    enseignements,
                     heureDebut,
                     heureFin,
-                    sallesCours,
                     _id: periodeCours._id,
                     pause: false,
                 })
@@ -715,13 +677,9 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,
                                     niveau: e.data.niveau,
-                                    matieres: e.data.matieres,
-                                    sallesCours: e.data.sallesCours,
+                                    enseignements: e.data.enseignements,
                                     heureDebut: e.data.heureDebut,
                                     heureFin: e.data.heureFin,
-                                    typesEnseignements: e.data.typesEnseignements,
-                                    enseignantsPrincipaux: e.data.enseignantsPrincipaux,
-                                    enseignantsSuppleants: e.data.enseignantsSuppleants,
                                     pause: e.data.pause,
                                 }
                             }));

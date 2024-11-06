@@ -167,7 +167,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                         />
                                                     </div>
 
-                                                    {loading && <p className="text-blue-500">{t('message.loading')}</p>}
+                                                    {loading && <p className="text-blue-500">{t('message.enregistrement')}</p>}
                                                     {error && <p className="text-red-500">{error}</p>}
                                                 </div>
                                             )}

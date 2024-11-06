@@ -127,7 +127,7 @@
     "notifications":"Notifications",
     "marquer_tous_lu":"Mark all as read",
     "marquer_lu":"Mark as read",
-    "message.telecharger":"Please apply a filter before downloading the list. Select filter criteria to refine your search and try again.",
+    "message_telecharger":"Please apply a filter before downloading the list. Select filter criteria to refine your search and try again.",
     "recherche":"Search...",
     "notif_chapitre": "New chapter awaiting approval",
     "notif_objective": "New objective awaiting approval",
@@ -543,7 +543,10 @@
     "erreur_recuperation": "An error occurred while retrieving data!",
     "generate_qr":"QR code generation in progress",
     "aucune_caméra":"No camera detected",
-    "qr_code_invalid":"QR code invalid"
+    "qr_code_invalid":"QR code invalid",
+    "enregistrement":"Recording in progress...",
+    "generation":"Generation in progress..."
+
   },
   "aucun": {
     "absence_signaler": "No absence reported.",

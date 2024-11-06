@@ -230,7 +230,7 @@ const QRCodeGenerator = () => {
                     <div>
                         {loading ? (
                             <button className="bg-primary py-2 px-4 w-full text-white rounded-lg" disabled>
-                                {t('message.generating')}
+                                {t('message.generation')}
                             </button>
                         ) : (
                             <button

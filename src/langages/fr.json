@@ -544,7 +544,9 @@
     "erreur_recuperation": "Une erreur s'est produite lors de la récupération des données !",
     "generate_qr":"Génération du code QR en cours",
     "aucune caméra":"Aucune caméra détectée",
-    "qr_code_invalid":"QR code invalide"
+    "qr_code_invalid":"QR code invalide",
+    "enregistrement":"Enregistrement en cours...",
+    "generation":"Génération en cours..."
   },
   "aucun": {
     "absence_signaler": "Aucune absence signalée.",

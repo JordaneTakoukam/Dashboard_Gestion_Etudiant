@@ -210,7 +210,8 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
         setShowAddRowButton(false);
     };
 
-    const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
     // Fonction pour basculer la visibilité des CustomDropDown
@@ -222,7 +223,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
-    const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemester);
+    
    
 
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
@@ -424,6 +425,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                     totalPages: 0,
                     pageSize: 0
                 };
+                
                 if (selectNiveauId) {
                     const fetchedPeriodes = await getPeriodesByNiveau({ niveauId: selectNiveauId, annee: selectedYear, semestre: selectedSemestre });
                     dispatch(setPeriodes(fetchedPeriodes));

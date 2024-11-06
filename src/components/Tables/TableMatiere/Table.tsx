@@ -403,14 +403,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 }else{
                     if (selectNiveauId) {
                         const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
-                        // if (currentUser && currentUser.role === roles.enseignant) {
-                        //     if(selectedYear && selectedSemestre){
-                        //         fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre });
-                        //     }
-                        // } else {
-                        //     fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre });
-                        // }
-
+                        
                         if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
                             dispatch(setMatieres(fetchedMatieres));
                         } else {
@@ -439,8 +432,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             }
         }
         fetchMatieres();
-    }, [section, selectNiveauId, currentPage, t]); // Déclencher l'effet lorsque currentPage change
-    // [dispatch, currentPage, selectedYear, selectedSemestre, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+    // }, [section, selectNiveauId, currentPage, t]); // Déclencher l'effet lorsque currentPage change
+    },[dispatch, currentPage, selectedYear, selectedSemestre, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
     
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section

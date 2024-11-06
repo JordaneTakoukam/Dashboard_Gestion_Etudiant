@@ -72,7 +72,7 @@ const EmploiDeTemp = () => {
         };
 
         fetchPeriodes();
-    }, [dispatch,currentYear, t]);
+    }, [dispatch,currentYear, currentSemester, t]);
 
     const handleEditPeriode = (periode: PeriodeType) => {
         setSelectedPeriode(periode);

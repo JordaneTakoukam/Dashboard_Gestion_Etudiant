@@ -10,6 +10,7 @@ import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import progressionPeriodeEnseignementReducer from "./features/progession_periode_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
 import objectifReducer from "./features/objectif_slice.tsx";
+import permissionReducer from "./features/permission_slice.tsx";
 import documentUploadReducer from "./features/document_upload_slice.tsx";
 import AdminReducer from "./features/admin_slice.tsx";
 import EnseignantReducer from "./features/enseignant_slice.tsx";
@@ -31,6 +32,7 @@ const store = configureStore({
     periodeEnseignementSlice: periodeEnseignementReducer,
     chapitreSlice: chapitreReducer,
     objectifSlice: objectifReducer,
+    permissionSlice: permissionReducer,
     documentUploadSlice: documentUploadReducer,
     progressionMatiereSlice: progressionMatiereReducer,
     progressionPeriodeEnseignementSlice: progressionPeriodeEnseignementReducer,

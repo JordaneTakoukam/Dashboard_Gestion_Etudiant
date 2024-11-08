@@ -41,6 +41,7 @@ import Documents from '../pages/CommonPage/Documents';
 import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
 import QRCodeGenerator from '../pages/Admin/QRCode';
 import PresencePaie from '../pages/Admin/PresencePaie';
+import Permissions from '../pages/Admin/Permissions';
 
 
 
@@ -303,6 +304,11 @@ const coreRoutes = [
     title: 'Communes',
     component: Communes,
   },
+  {
+    path: '/parametres/permissions',
+    title: 'Permissions',
+    component: Permissions,
+  }
 
 ];
 

@@ -44,6 +44,7 @@
     "profil": "Mon profil"
   },
   "sub_menu": {
+    "permission":"Permissions",
     "presence_paie":"Présence et Paie",
     "absence_reporting": "Absences signalées",
     "liste_etudiant": "Liste des étudiants",
@@ -192,8 +193,11 @@
     "personnel_fr": "Personnel en français",
     "personnel_en": "Personnel en anglais",
     "description": "Description/Observations",
+    "descrip":"Description",
     "description_fr": "Description/Observations en francais",
     "description_en": "Description/Observations en anglais",
+    "descrip_fr":"Description en français",
+    "descrip_en":"Description en anglais",
     "date_debut": "Date de début",
     "date_fin": "Date de fin",
     "heure_debut": "Heure de début",
@@ -270,6 +274,7 @@
   },
   "recherche": {
     "rechercher": "Rechercher ",
+    "permission":"une permission",
     "etudiant": "un étudiant",
     "enseignant": "un enseignant",
     "matiere": "une matière",
@@ -389,6 +394,7 @@
     "ajouter":"Ajouter ",
     "enregistrer": "Enregistrer ",
     "document":"un nouveau document",
+    "permission":"une permission",
     "pause": "une pause",
     "etudiant": "un nouvel étudiant",
     "enseignant": "un nouvel enseignant",
@@ -420,6 +426,7 @@
     "annee_semestre": "Modifier l'année ou le semestre courant",
     "etat_absence_just": "Modifier l'état de l'absence justifier en non justifier pour l'étudiant : ",
     "etat_absence_non_just": "Modifier l'état de l'absence non justifier en justifier pour l'étudiant : ",
+    "permission":"de la permission",
     "pause": "de la pause",
     "roles": "Modifier le rôle de l'étudiant",
     "absence": "Ajouter une absence : ",
@@ -456,6 +463,7 @@
   "form_delete": {
     "supprimer": "Supprimer",
     "suppression": "Suppression ",
+    "permission":"de la permission",
     "pause": "de la pause",
     "absence": "Supprimer une absence : ",
     "document":"du document",

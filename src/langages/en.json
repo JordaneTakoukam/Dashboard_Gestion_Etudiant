@@ -44,6 +44,7 @@
     "profil": "My Profile"
   },
   "sub_menu": {
+    "permission":"Permissions",
     "presence_paie":"Attendance and Pay",
     "absence_reporting": "Reported Absences",
     "liste_etudiant": "Student List",
@@ -191,8 +192,11 @@
     "personnel_fr": "Personnel in french",
     "personnel_en": "Personnel in english",
     "description": "Description/Observations",
+    "descrip":"Description",
     "description_fr": "Description/Observations in french",
     "description_en": "Description/Observations in english",
+    "descrip_fr":"Description in french",
+    "descrip_en":"Description in english",
     "date_debut": "Start Date",
     "date_fin": "End Date",
     "heure_debut": "Start Time",
@@ -269,6 +273,7 @@
   },
   "recherche": {
     "rechercher": "Search ",
+    "permission":"a permission",
     "etudiant": "a student",
     "enseignant": "a teacher",
     "matiere": "a subject",
@@ -389,6 +394,7 @@
   "ajouter":"Add ",
     "enregistrer": "Save ",
     "document":"a new document",
+    "permission":"a permission",
     "pause": "a break",
     "etudiant": "a new student",
     "enseignant": "a new teacher",
@@ -420,6 +426,7 @@
     "annee_semestre": "Modify the current year or semester",
     "etat_absence_just": "Change the status of the justified absence to unjustified for the student : ",
     "etat_absence_non_just": "Change the status of the unjustified absence to justified for the student : ",
+    "permission":"of the permission",
     "pause": "of the break",
     "roles": "Modify the role of the student",
     "absence": "Add an absence:",
@@ -456,6 +463,7 @@
   "form_delete": {
     "supprimer": "Delete",
     "suppression": "Deletion",
+    "permission":"of the permission",
     "pause": "of the break",
     "absence": "Delete an absence:",
     "document":"of the document",

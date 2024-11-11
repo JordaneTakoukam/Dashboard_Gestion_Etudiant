@@ -25,7 +25,10 @@ const initialState: UserState = {
     photo_profil: '',
     status: '',
     abscence: null,
-    historique_connexion: []
+    historique_connexion: [],
+    nationalite: null,
+    diplomeEntre: null,
+    specialite: null
 };
 
 // Création du Slice pour l'utilisateur

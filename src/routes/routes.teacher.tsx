@@ -14,6 +14,7 @@ import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
 //import Matieres from '../pages/CommonPage/Matieres';
 // import Parametres from '../pages/Admin/Administration';
 import MonProfil from '../pages/CommonPage/Profil';
+import UserPermissions from '../pages/CommonPage/UserPermissions';
 
 
 
@@ -120,6 +121,11 @@ const coreRoutes = [
     title: 'Mon profil',
     component: MonProfil,
   },
+  {
+    path: '/user/permissions',
+    title: 'Permissions utilisateur',
+    component: UserPermissions,
+  }
 
   // parametres
   // {

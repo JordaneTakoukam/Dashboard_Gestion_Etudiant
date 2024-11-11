@@ -1,6 +1,9 @@
 import { config } from "../config";
 import CryptoJS from 'crypto-js';
 import { jours } from "../pages/CommonPage/EmploiDeTemp";
+import { t } from "i18next";
+import { apiGetRolePermissions } from "../api/api_permission";
+import createToast from "../hooks/toastify";
 
 
 
@@ -517,3 +520,63 @@ export function calculIRNC(montantBrut : number) {
 export function calculNetBonus(montantBrut : number, irnc: number) {
   return (montantBrut - irnc);
 }
+
+ // Fonction pour récupérer les permissions par défaut à partir des fichiers JSON
+ export async function loadDefaultPermissions(role : string, lang:string) {
+  let defaultPermissions:{_id:string, permission:string}[] = [];
+  
+  // Charger le fichier approprié en fonction du rôle de l'utilisateur
+  try {
+    
+    await apiGetRolePermissions({ role: role }).then((e: ReponseApiPros) => {
+      if(e.success){
+        defaultPermissions = e.data;
+      }else{
+        createToast(e.message[lang as keyof typeof e.message], '', 2);
+      }
+    }).catch((e) => {
+        console.error("Erreur lors du chargement des permissions par défaut :", e);
+        createToast(t('message.erreur'), "", 2);
+    })
+  } catch (e) {
+      console.error("Erreur lors du chargement des permissions par défaut :", e);
+      createToast(t('message.erreur'), "", 2);
+  }
+  return defaultPermissions;
+};
+
+// Fonction pour comparer les permissions et créer la liste finale
+export async function createFinalPermissionList(
+    userPermissions: { is_granted: boolean; permission: { nom: string } }[],
+    role: string,
+    lang: string
+  ): Promise<string[]> {
+  // Charger les permissions par défaut en fonction du rôle
+  const defaultPermissions: { _id: string; permission: string }[] = await loadDefaultPermissions(role, lang);
+
+  // Créer une liste finale des permissions
+  const finalPermissions: string[] = [];
+
+  // Ajouter les permissions personnalisées de l'utilisateur avec is_granted: true
+  userPermissions.forEach((userPermission) => {
+    if (userPermission.is_granted) {
+      finalPermissions.push(userPermission.permission.nom);
+    }
+  });
+
+  // Ajouter les permissions par défaut qui ne sont pas dans les permissions personnalisées avec is_granted: false
+  defaultPermissions.forEach((defaultPermission) => {
+    const permissionExists = userPermissions.some(
+      (userPermission) =>
+        userPermission.permission.nom === defaultPermission.permission && !userPermission.is_granted
+    );
+
+    // Ajouter la permission par défaut si elle n'est pas présente dans les permissions personnalisées avec is_granted: false
+    if (!permissionExists) {
+      finalPermissions.push(defaultPermission.permission);
+    }
+  });
+
+  return finalPermissions;
+}
+

@@ -19,7 +19,7 @@ const ListeDesEtudiants = () => {
     const dispatch = useDispatch();
     const [selectedEtudiant, setSelectedEtudiant] = useState<EtudiantType | null>(null);
 
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];

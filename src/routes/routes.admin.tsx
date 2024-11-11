@@ -42,6 +42,7 @@ import ProgressionChapitre from '../pages/Admin/ProgressionChapitre';
 import QRCodeGenerator from '../pages/Admin/QRCode';
 import PresencePaie from '../pages/Admin/PresencePaie';
 import Permissions from '../pages/Admin/Permissions';
+import UserPermissions from '../pages/CommonPage/UserPermissions';
 
 
 
@@ -308,6 +309,12 @@ const coreRoutes = [
     path: '/parametres/permissions',
     title: 'Permissions',
     component: Permissions,
+  },
+  
+  {
+    path: '/user/permissions',
+    title: 'Permissions utilisateur',
+    component: UserPermissions,
   }
 
 ];

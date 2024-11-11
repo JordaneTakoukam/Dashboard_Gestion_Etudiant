@@ -21,6 +21,7 @@
     "francais": "French",
     "anglais": "English",
     "profil": "My Profile",
+    "permission":"My permissions",
     "deconnexion": "Log Out"
   },
   "menu": {
@@ -100,7 +101,7 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
-   
+    "permissions":"Permissions",
     "taux_horaire": "Hourly rate",
     "nb_heure": "Number of hours",
     "montant_brut": "Gross bonus",

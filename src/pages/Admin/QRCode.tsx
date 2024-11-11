@@ -140,7 +140,12 @@ const QRCodeGenerator = () => {
         const imgHeight = 160;
         const x = (pdfWidth - imgWidth) / 2;
         const y = (pdfHeight - imgHeight) / 2;
-        doc.text('QR Code de Présence', pdfWidth / 2, 20, { align: 'center' });
+        let labelQR = "";
+        if(section && cycle && niveau){
+            const labelSection = section.code!=="" || section.code?section.code:lang==='fr'?section.libelleFr:section.libelleEn;
+            labelQR = labelSection+cycle?.code+niveau?.code;
+        }
+        doc.text(`QR Code de Présence ${labelQR}`, pdfWidth / 2, 20, { align: 'center' });
         doc.addImage(qrCodeDataUrl, 'PNG', x, y, imgWidth, imgHeight);
         doc.save('QRCode_Presence.pdf');
     };

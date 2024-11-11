@@ -6,7 +6,7 @@ import ImageTeacher from './../../images/user/teacher.png';
 import ImageDelegate from './../../images/user/delegate.png';
 import ImageStudent from './../../images/user/student.png';
 import { logoutFunction } from '../../api/auth/logout';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from "./../../_redux/store";
 import { config, serveurUrl } from '../../config';
 import { BiLogOutCircle } from "react-icons/bi";
@@ -14,12 +14,14 @@ import { BiLogOutCircle } from "react-icons/bi";
 import { RxPerson } from "react-icons/rx";
 import { useTranslation } from 'react-i18next';
 import Loading from '../ui/loading';
+import { setSelectedUserPermission } from '../../_redux/features/setting';
 
 
 const DropdownUser = () => {
   // const pageIsLoading = useSelector((state: RootState) => state.setting.pageIsLoading);
   const pageIsLoading = false;
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const roles = config.roles;
 
   const userState = useSelector((state: RootState) => state.user);
@@ -133,6 +135,22 @@ const DropdownUser = () => {
 
             </div>
             {t('header.profil')}
+          </NavLink>
+
+
+        </ul>
+
+        <ul className="flex flex-col  border-b border-stroke   dark:border-strokedark">
+          <NavLink
+            to="/user/permissions"
+            onClick={() => {dispatch(setSelectedUserPermission(undefined)); setDropdownOpen(false) }}
+            className="flex items-center gap-3.5 py-3 pt-3 px-5 text-sm font-medium duration-300 ease-in-out lg:text-base hover:bg-gray dark:hover:bg-black"
+          >
+            <div className='text-lg text-[23px]'>
+              <RxPerson />
+
+            </div>
+            { t('header.permission')}
           </NavLink>
 
 

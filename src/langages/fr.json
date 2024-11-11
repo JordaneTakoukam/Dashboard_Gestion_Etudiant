@@ -21,6 +21,7 @@
     "francais": "Français",
     "anglais": "Anglais",
     "profil": "Mon profil",
+    "permission":"Mes permissions",
     "deconnexion": "Se déconnecter"
   },
   "menu": {
@@ -100,7 +101,7 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
-    
+    "permissions":"Permissions",
     "taux_horaire":"Taux horaire",
     "nb_heure":"Nombre d'heure",
     "montant_brut":"Gratification brute",

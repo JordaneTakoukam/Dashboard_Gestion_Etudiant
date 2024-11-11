@@ -21,7 +21,7 @@ import { setMinimumUser, setRole, setUser } from './_redux/features/user_slice.j
 import Loading from './components/ui/loading.js';
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from './_redux/features/data_setting_slice.js';
 import { apiGetAllSettings } from './api/settings/api_data_setting.js';
-import { setSaveDeviceType } from './_redux/features/setting.js';
+import { setSaveDeviceType, setUserPermission } from './_redux/features/setting.js';
 import ChoisirCompte from './pages/ChoisirCompte/ChoisirCompte.js';
 import { io } from 'socket.io-client';
 import { RootState } from './_redux/store.js';
@@ -30,6 +30,10 @@ import { getCurrentUserData } from './api/api_user.js';
 import VerificationCode from './pages/Authentication/verification_code.js';
 import { addNotification, setNewNotification, setNotifications } from './_redux/features/notification_slice.js';
 import { getNotifications } from './api/api_notification.js';
+import { apiGetRolePermissions, apiGetUserPermissions } from './api/api_permission.js';
+import createToast from './hooks/toastify.js';
+import { useTranslation } from 'react-i18next';
+import { createFinalPermissionList } from './fonctions/fonction.js';
 
 function App() {
 
@@ -52,6 +56,9 @@ function App() {
   const sommesRoutesDelegateStudent = [...routeStudent, ...routeDelegate];
   const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
   const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
+  const lang:string = useSelector((state: RootState) => state.setting.language); // fr ou en
+  const {t}=useTranslation();
+
 
 
 
@@ -78,6 +85,9 @@ function App() {
     updateAuthStatus();
 
   }, []);
+ 
+
+
 
 
   useEffect(() => {
@@ -103,8 +113,23 @@ function App() {
               }).catch((e) => {
                 setLoading(false);
               })
+
+              await apiGetUserPermissions({ userId: userId }).then((e: ReponseApiPros) => {
+                if(e.success){
+                  createFinalPermissionList(e.data, role, lang).then(finalPermissions => {
+                      dispatch(setUserPermission(finalPermissions));
+                  });
+                  
+                }else{
+                  createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+              }).catch((e) => {
+                
+                createToast(t('message.erreur'), "", 2);
+              })
             } catch (e) {
               setLoading(false);
+              createToast(t('message.erreur'), "", 2);
             }
           }
         }
@@ -124,7 +149,7 @@ function App() {
     handleAuthentication();
   }, [isAuth]);
 
-
+ 
   useEffect(() => {
     // recuperer les settings 
     const fetchSettingsData = async () => {

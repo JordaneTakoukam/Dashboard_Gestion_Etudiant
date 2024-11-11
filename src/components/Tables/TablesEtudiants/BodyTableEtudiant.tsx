@@ -1,15 +1,23 @@
 import { useDispatch } from "react-redux"
-import { capitalizeFirstLetter } from "../../../fonctions/fonction"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete, setShowModalUpdate, setShowRoleModal } from "../../../_redux/features/setting"
+import { setSelectedUserPermission, setSelectedUserRole, setShowModal, setShowModalDelete, setShowRoleModal } from "../../../_redux/features/setting"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+import { config } from "../../../config"
 
 const BodyTableEtudiant = ({ data, onEdit, onAddRole }: { data: EtudiantType[], onEdit: (etudiant: EtudiantType) => void, onAddRole: (etudiant: EtudiantType) => void }) => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {t}=useTranslation();
-
+    const dispatchRole = (etudiant: EtudiantType) => {
+        if(etudiant.roles && etudiant.roles.some(et=> et.toString() === config.roles.delegue)){
+            dispatch(setSelectedUserRole(config.roles.delegue));
+            return;
+        }
+        dispatch(setSelectedUserRole(config.roles.etudiant))
+    }
     return <tbody>
         {data && data.map((item, index) => (
             <tr key={index + 1} className="font-medium text-black dark:text-white text-[12px] md:text-[14px]">
@@ -56,6 +64,10 @@ const BodyTableEtudiant = ({ data, onEdit, onAddRole }: { data: EtudiantType[], 
                             {
                                 "name": t('label.roles'),
                                 "handleClick": () => { onAddRole(item) ; dispatch(setShowRoleModal());}
+                            },
+                            {
+                                "name": t('label.permissions'),
+                                "handleClick": () => {dispatchRole(item);dispatch(setSelectedUserPermission(item)); navigate('/user/permissions')}
                             },
                         ]}
                     />

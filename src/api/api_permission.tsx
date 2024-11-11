@@ -26,6 +26,26 @@ export async function apiCreatePermission({ nom, libelleFr, libelleEn, descripti
     }
 }
 
+export async function apiGrantedPermission({ userId, permissionName, isGranted }:{userId:string, permissionName:string, isGranted:boolean}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/grantedPermission`,
+            {userId, permissionName, isGranted},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error('Error creating section:', error);
+        throw error;
+    }
+}
+
 export async function apiUpdatePermission({ _id, nom, libelleFr, libelleEn, descriptionFr, descriptionEn }: PermissionType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
@@ -92,6 +112,70 @@ export async function getPermissionsWithPagination({page, langue }: { page: numb
         throw error;
     }
 }
+
+export async function getPermissions({langue }: { langue:string }): Promise<PermissionReturnGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getPermissions`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: {
+                    langue:langue
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const matieres: PermissionReturnGetType = response.data.data;
+        
+        return matieres;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiGetUserPermissions({ userId}: { userId:string}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getUserPermissions/${userId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+       
+        return response.data;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function apiGetRolePermissions({ role}: { role:string}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/getRolePermissions/${role}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                }
+            },
+        );
+       
+        return response.data;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
 
 export async function apiSearchPermission({ searchString, langue, limit}: { langue:string, searchString: string, limit:number}): Promise<PermissionReturnGetType> {
     try {

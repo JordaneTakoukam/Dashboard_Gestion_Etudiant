@@ -5,6 +5,9 @@ interface SettingState {
     language: string;
     isMobile: boolean | null,
     periodeIndex : number,
+    userPermissions:string[],
+    selectedUserPermission:any,
+    selectedUserRole:string,
     showModal: {
         create: boolean,
         update: boolean,
@@ -30,6 +33,9 @@ const initialState: SettingState = {
     language: localStorage.getItem('lang')?.toString() || 'fr',
     isMobile: null,
     periodeIndex:-1,
+    userPermissions:[],
+    selectedUserPermission:undefined,
+    selectedUserRole:"",
     showModal: {
         create: false,
         update: false,
@@ -56,6 +62,26 @@ export const settingSlice = createSlice({
     name: "settingSlice",
     initialState,
     reducers: {
+        setSelectedUserPermission:(state, action: PayloadAction<any>)=>{
+            state.selectedUserPermission = action.payload;
+        },
+
+        setSelectedUserRole:(state, action: PayloadAction<string>)=>{
+            state.selectedUserRole = action.payload;
+        },
+
+        setUserPermission:(state, action: PayloadAction<string[]>)=>{
+            state.userPermissions = action.payload;
+        },
+        
+        addUserPemission(state, action: PayloadAction<string>) {
+            state.userPermissions.unshift(action.payload);
+        },
+        
+        removeUserPemission(state, action: PayloadAction<string>) {
+            state.userPermissions = state.userPermissions.filter(up => up !== action.payload);
+        },
+
         setPeriodeIndex:(state, action: PayloadAction<number>)=>{
             state.periodeIndex = action.payload;
         },
@@ -144,7 +170,7 @@ export const {
     setShowModalCustom,
     setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage
     , setSaveDeviceType,setShowRoleModal, setShowModalPeriode, setShowModalElement, setShowModalPresence, setShowModalOpenScan, setShowModalPause, setShowModalNotificationDetails,
-    setCurrentIndexUserRole,setShowModalSignalerAbsence, setShowModalPresenceManuelle
+    setCurrentIndexUserRole,setShowModalSignalerAbsence, setShowModalPresenceManuelle, setUserPermission, addUserPemission, removeUserPemission, setSelectedUserPermission, setSelectedUserRole
 } = settingSlice.actions;
 
 // export const changeLanguage = createAction<string>('setting/changeLanguage');

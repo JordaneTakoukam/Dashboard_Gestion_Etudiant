@@ -6,6 +6,7 @@ import routeAdmin from './routes/routes.admin.js'
 import routeTeacher from './routes/routes.teacher.js'
 import routeStudent from './routes/routes.student.js'
 import routeDelegate from './routes/route.delegate.js'
+import route from './routes/routes.js';
 import { NotFound, NotFoundIsAuth } from './pages/NotFound/NotFound.js';
 import DashBoardAmin from './pages/Admin/Dashboard_admin.js';
 import DashboardTeacher from './pages/Enseignant/Dashboard_teacher.js';
@@ -52,11 +53,13 @@ function App() {
   const [isAuth, setIsAuth] = useState<{ value: any; status: boolean }>({ value: 'default', status: false });
 
   const [userLog, setUserLog] = useState<UserState>();
+  const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
   const sommesRoutesDelegateStudent = [...routeStudent, ...routeDelegate];
   const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
   const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
   const lang:string = useSelector((state: RootState) => state.setting.language); // fr ou en
+  
   const {t}=useTranslation();
 
 
@@ -117,6 +120,7 @@ function App() {
               await apiGetUserPermissions({ userId: userId }).then((e: ReponseApiPros) => {
                 if(e.success){
                   createFinalPermissionList(e.data, role, lang).then(finalPermissions => {
+                      setUserPermissions(finalPermissions);
                       dispatch(setUserPermission(finalPermissions));
                   });
                   
@@ -301,7 +305,7 @@ function App() {
 
           {/* Menu de gauche pour les differents roles  */}
           <Route element={isAuth.value !== null && isAuth.status ?
-            <Layout isMobileOrTablet={isMobileOrTablet} /> : <Navigate to={'/signin'} />} >
+            <Layout isMobileOrTablet={isMobileOrTablet} userPermissions={userPermissions}/> : <Navigate to={'/signin'} />} >
 
             {/*  Page de droites   */}
             {/* page dashboard est celle selectionner par defaut */}
@@ -314,8 +318,25 @@ function App() {
 
             } />
             {/* autres pagges pour chaque type de compte */}
-            {
-              (userRole === roles.superAdmin) ?
+            { (userPermissions)?
+              (
+                route.map((route, index) => {
+                  const { path, component: Component } = route;
+                  return (
+                    <Route
+                      key={index}
+                      path={path}
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <Component />
+                        </Suspense>
+                      }
+                    />
+                  );
+                })
+              )
+            
+              :(userRole === roles.superAdmin) ?
                 (
                   routeAdmin.map((route, index) => {
                     const { path, component: Component } = route;

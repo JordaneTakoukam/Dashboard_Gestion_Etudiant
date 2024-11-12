@@ -7,16 +7,18 @@ import { RootState } from '../_redux/store';
 import { config } from '../config';
 import SidebarTeacher from '../components/Sidebar/SidebarTeacher';
 import SidebarStudent from '../components/Sidebar/SidebarStudent';
+import Sidebar from '../components/Sidebar/Sidebar';
 
 interface LayoutProps {
     isMobileOrTablet: boolean;
+    userPermissions? : string[];
 }
-const Layout = ({ isMobileOrTablet }: LayoutProps) => {
+const Layout = ({ isMobileOrTablet, userPermissions }: LayoutProps) => {
     const [sidebarOpen, setSidebarOpen] = useState(isMobileOrTablet);
 
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
-
+    console.log(userPermissions)
 
 
     return (
@@ -25,11 +27,13 @@ const Layout = ({ isMobileOrTablet }: LayoutProps) => {
             <div className="flex h-screen overflow-hidden">
                 {/* <!-- ===== Sidebar Start ===== --> */}
                 {
-                    (roles.superAdmin === userRole || roles.admin === userRole) ?
-                        <SidebarAdmin sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> :
-                        roles.enseignant === userRole ?
-                            <SidebarTeacher sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> :
-                            <SidebarStudent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+                   (userPermissions && userPermissions.length>0)? 
+                        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} userPermissions={userPermissions}/>: 
+                            (roles.superAdmin === userRole || roles.admin === userRole) ?
+                                <SidebarAdmin sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> :
+                                    roles.enseignant === userRole ?
+                                        <SidebarTeacher sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> :
+                                            <SidebarStudent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
                 }
                 {/* <!-- ===== Sidebar End ===== --> */}

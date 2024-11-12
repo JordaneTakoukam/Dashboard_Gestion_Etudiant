@@ -19,8 +19,8 @@ const UserPermissions = () => {
 
     const { data: { permissions } } = useSelector((state: RootState) => state.permissionSlice);
     const selectedUserPermission = useSelector((state: RootState) => state.setting.selectedUserPermission);
-    const selectedUserRole = useSelector((state: RootState) => state.setting.selectedUserRole);
-    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const selectedUserRole : string = useSelector((state: RootState) => state.setting.selectedUserRole);
+    const lang : string = useSelector((state: RootState) => state.setting.language); // fr ou en
     const currentUser = useSelector((state: RootState) => state.user);
 
     const handleEditUserPermission = (permission: PermissionType) => {

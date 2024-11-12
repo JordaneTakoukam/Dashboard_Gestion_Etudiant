@@ -127,9 +127,9 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             {/* Discipline etudiant */}
                             <li>
                                 <NavLink
-                                    to="/teacher/discipline-students"
-                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/teacher/discipline-students' ||
-                                        pathname.includes('/teacher/discipline-students')) &&
+                                    to="/students/disciplines"
+                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/students/disciplines' ||
+                                        pathname.includes('/students/disciplines')) &&
                                         'bg-graydark dark:bg-meta-4 text-secondary'
                                         }`}
                                 >

@@ -580,3 +580,10 @@ export async function createFinalPermissionList(
   return finalPermissions;
 }
 
+export function getNavLinkClass (isActive: boolean){ 
+  return  `group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ${isActive ? 'text-secondary' : ''}`;
+}
+
+
+
+

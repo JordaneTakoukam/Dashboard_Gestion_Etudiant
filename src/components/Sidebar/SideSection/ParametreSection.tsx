@@ -28,7 +28,7 @@ const ParametreSidebarLink = ({
     const hasGradePermission = userPermissions.includes('gerer_grades');
     const hasCategoryPermission = userPermissions.includes('gerer_categories');
     const hasRegionPermission = userPermissions.includes('gerer_regions');
-    const hasDepartmentPermission = userPermissions.includes('gerer_departements');
+    const hasDepartmentPermission = userPermissions.includes('gerer_departements_region');
     const hasCommunePermission = userPermissions.includes('gerer_communes');
     const hasPermissionPermission = userPermissions.includes('gerer_permissions');
 

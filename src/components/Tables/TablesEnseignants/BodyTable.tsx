@@ -1,10 +1,17 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
+import { setSelectedUserPermission, setSelectedUserRole, setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
+import { SelectButton } from "../common/composants/SelectButton";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { config } from "../../../config";
 
 const BodyTable = ({ data, onEdit }: { data: EnseignantType[], onEdit: (enseigant: EnseignantType) => void }) => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const {t}=useTranslation();
+   
 
     return <tbody >
         {data.map((item, index) => (
@@ -46,7 +53,16 @@ const BodyTable = ({ data, onEdit }: { data: EnseignantType[], onEdit: (enseigan
 
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-1 px-0 dark:border-strokedark flex justify-center items-center">
+                    <SelectButton
+                        listPage={[
+                           
+                            {
+                                "name": t('label.permissions'),
+                                "handleClick": () => {dispatch(setSelectedUserRole(config.roles.enseignant));dispatch(setSelectedUserPermission(item)); navigate('/user/permissions')}
+                            },
+                        ]}
+                    />
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);

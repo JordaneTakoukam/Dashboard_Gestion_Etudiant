@@ -18,7 +18,6 @@ const Layout = ({ isMobileOrTablet, userPermissions }: LayoutProps) => {
 
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
-    console.log(userPermissions)
 
 
     return (

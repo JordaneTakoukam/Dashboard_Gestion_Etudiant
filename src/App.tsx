@@ -35,6 +35,8 @@ import { apiGetRolePermissions, apiGetUserPermissions } from './api/api_permissi
 import createToast from './hooks/toastify.js';
 import { useTranslation } from 'react-i18next';
 import { createFinalPermissionList } from './fonctions/fonction.js';
+import ProtectedRoute from './components/protectRoutes.js';
+import AccessDenied from './pages/CommonPage/AccesRefuse.js';
 
 function App() {
 
@@ -120,6 +122,7 @@ function App() {
               await apiGetUserPermissions({ userId: userId }).then((e: ReponseApiPros) => {
                 if(e.success){
                   createFinalPermissionList(e.data, role, lang).then(finalPermissions => {
+                      
                       setUserPermissions(finalPermissions);
                       dispatch(setUserPermission(finalPermissions));
                   });
@@ -301,6 +304,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/choose-account" element={<ChoisirCompte />} />
           <Route path="/verification-code/:id" element={<VerificationCode />} />
+          <Route path="/unauthorized" element={<AccessDenied />} />
 
 
           {/* Menu de gauche pour les differents roles  */}
@@ -321,14 +325,18 @@ function App() {
             { (userPermissions)?
               (
                 route.map((route, index) => {
-                  const { path, component: Component } = route;
+                  const { path, component: Component, permissions } = route;
                   return (
                     <Route
                       key={index}
                       path={path}
                       element={
                         <Suspense fallback={<Loading />}>
-                          <Component />
+                          {permissions && <ProtectedRoute
+                            component={<Component/>}
+                            userPermissions={userPermissions}
+                            requiredPermission={permissions}
+                          />}
                         </Suspense>
                       }
                     />

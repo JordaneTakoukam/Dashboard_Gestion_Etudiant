@@ -75,8 +75,7 @@ const Objectifs = () => {
     
     return (
         <>
-            {/* <Breadcrumb pageName={t('sub_menu.objectifs')} isObjectif={true} isChapitre={false} returnWithChapitre={returnWithChapitre}/>
-            <Table data={chapitreSelectionnee?.objectifs}  onCreate={handleAddObjectif} onEdit={handleEditObejctif} chapitre={chapitreSelectionnee} onEditMatiere={onEditMatiere} onEditChapitre={onEditChapitre}/> */}
+            
             <Breadcrumb isObjectif={true} pageName={t('sub_menu.objectifs')}/>
             <Table data={objectifs}  onCreate={handleAddObjectif} onEdit={handleEditObejctif} />
 
@@ -86,44 +85,5 @@ const Objectifs = () => {
         </>
     );
 };
-// interface ObjectifsProps {
-//     chapitreSelectionnee?: ChapitreType | null; 
-//     matiereCourant?:MatiereType|null;
-//     returnWithChapitre?:()=>void;
-//     onEditMatiere: (matiere : MatiereType) => void;
-//     onEditChapitre: (chapitre : ChapitreType) => void;
-// }
-
-// const Objectifs = ({ chapitreSelectionnee, matiereCourant, returnWithChapitre, onEditMatiere, onEditChapitre }: ObjectifsProps) => {
-//     const [selectedObjectif, setSelectedObjectif] = useState<ObjectifType | null>(null);
-//     const selectedMatiere = useSelector((state: RootState) => state.matiereSlice.selectedMatiere);
-//     const handleEditObejctif = (objectif: ObjectifType) => {
-//         setSelectedObjectif(objectif);
-//     }
-//     const {t}=useTranslation();
-//     const handleAddObjectif = () => {
-//         setSelectedObjectif(null);
-//     }
-//     const navigate = useNavigate();
-//     useEffect(() => {
-//         if (selectedMatiere === undefined) {
-//             navigate('/subjects/list-subjects/')
-//         }
-//     }, [selectedMatiere])
-    
-    
-//     return (
-//         <>
-//             {/* <Breadcrumb pageName={t('sub_menu.objectifs')} isObjectif={true} isChapitre={false} returnWithChapitre={returnWithChapitre}/>
-//             <Table data={chapitreSelectionnee?.objectifs}  onCreate={handleAddObjectif} onEdit={handleEditObejctif} chapitre={chapitreSelectionnee} onEditMatiere={onEditMatiere} onEditChapitre={onEditChapitre}/> */}
-//             <Breadcrumb pageName={t('sub_menu.objectifs')}/>
-//             <Table data={chapitreSelectionnee?.objectifs}  onCreate={handleAddObjectif} onEdit={handleEditObejctif} onEditMatiere={onEditMatiere} />
-
-//             <FormCreateUpdate objectif={selectedObjectif} chapitre={chapitreSelectionnee} matiere={matiereCourant}/>
-//             <FormDelete objectif={selectedObjectif}  chapitre={chapitreSelectionnee} matiere={matiereCourant}/>
-
-//         </>
-//     );
-// };
 
 export default Objectifs;

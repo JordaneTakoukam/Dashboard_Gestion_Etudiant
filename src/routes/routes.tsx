@@ -43,6 +43,7 @@ import QRCodeGenerator from '../pages/Admin/QRCode';
 import PresencePaie from '../pages/Admin/PresencePaie';
 import Permissions from '../pages/Admin/Permissions';
 import UserPermissions from '../pages/CommonPage/UserPermissions';
+import AccessDenied from '../pages/CommonPage/AccesRefuse';
 
 
 
@@ -52,11 +53,13 @@ const coreRoutes = [
     path: '/students/student-list',
     title: 'Liste des étudiants',
     component: ListeDesEtudiants,
+    permissions:["gerer_etudiants"]
   },
   {
     path: '/students/disciplines',
     title: 'Disciplines des étudiants',
     component: DisciplineEtudiants,
+    permissions:["consulter_liste_etudiant"]
   },
 
 
@@ -65,26 +68,31 @@ const coreRoutes = [
     path: '/teachers/teacher-list',
     title: 'Liste des enseignants',
     component: ListeDesEnseignant,
+    permissions:["gerer_enseignants"]
   },
   {
     path: '/teachers/disciplines',
     title: 'Disciplines des enseignants',
     component: DisciplineDesEnseignants,
+    permissions:["consulter_liste_enseignant"]
   },
   {
     path: '/teachers/presence-paie',
     title: 'Présence et Paie',
     component: PresencePaie,
+    permissions:["consulter_presence_enseignant"]
   },
   {
     path: '/students/disciplines',
     title: 'Disciplines des etudiant',
     component: DisciplineDesEtudiants,
+    permissions:["consulter_liste_etudiant"]
   },
   {
     path: '/teachers/disciplines/manage',
     title: 'Disciplines des étudiants',
     component: GererAbsencesEnseignant,
+    permissions:["consulter_liste_enseignant"]
   },
   //  absence signaler
   {
@@ -97,6 +105,7 @@ const coreRoutes = [
     path: '/students/disciplines/manage',
     title: 'Disciplines des étudiants',
     component: GererAbsencesEtudiant,
+    permissions:["consulter_liste_etudiant"]
   },
 
   {
@@ -111,36 +120,42 @@ const coreRoutes = [
     path: '/subjects/subject-list',
     title: 'Liste des matières',
     component: ListeDesMatieres,
+    permissions:["gerer_matieres", "consulter_liste_matieres"]
   },
 
   {
     path: '/subjects/chapitres/manage',
     title: 'Liste des chapitres',
     component: Chapitres,
+    permissions:["gerer_chapitres"]
   },
 
   {
     path: '/subjects/objectifs/manage',
     title: 'Liste des objectifs',
     component: Objectifs,
+    permissions:["gerer_objectifs"]
   },
 
   {
     path: '/subjects/enseignements/manage',
     title: 'Liste des enseignements',
     component: Enseignements,
+    permissions:["gerer_activites_pedagogiques"]
   },
 
   {
     path: '/subjects/progression-par-chapitre',
     title: 'Progréssion',
     component: ProgressionChapitre,
+    permissions:["gerer_progression_cours_chapitre", "consulter_progression_cours_chapitre"]
   },
 
   {
     path: '/subjects/progressions-par-matiere',
     title: 'Progréssion par matiere',
     component: ProgressionMatiere,
+    permissions:["gerer_progression_cours_objectif", "consulter_progression_cours_objectif"]
   },
   
 
@@ -148,74 +163,63 @@ const coreRoutes = [
     path: '/subjects/progressions-par-periode',
     title: 'Progréssion par période',
     component: ProgressionPeriode,
+    permissions:["consulter_progression_periodes_enseignements"]
   },
 
   {
     path: '/subjects/periodes_enseignement',
     title: 'Periodes d\'enseignement',
     component: ListeDesPeriodesEnseignement,
+    permissions:["gerer_periodes_enseignements"]
   },
 
   {
     path: '/subjects/periodes_enseignement/enseignements/manage',
     title: 'Liste des enseignements d\'une periode d\'enseignement',
     component: EnseignementsPeriode,
+    permissions:["gerer_periodes_enseignements"]
   },
   // salles de cours
   {
     path: '/classrooms',
     title: 'classrooms',
     component: SallesDeCours,
+    permissions:["gerer_salles"]
   },
 
-  //sondages
-  {
-    path: '/sondages/rubriques',
-    title: 'Rubriques',
-    component: Rubriques
-  },
-  {
-    path: '/sondages/groupe_de_question',
-    title: 'Groupe de questions',
-    component: GroupeQuestions
-  },
-  {
-    path: '/sondages/questions',
-    title: 'Questions',
-    component: Questions
-  },
-  {
-    path: '/sondages/liste_sondage',
-    title: 'Liste des sondages',
-    component: ListeDesSondages
-  },
+  
 
   // structuraction academique
   {
     path: '/academic-levels/departements',
     title: 'Département académique',
     component: DepartementsAcademique,
+    permissions:["gerer_departements"]
   },
   {
     path: '/academic-levels/sections',
     title: 'Sections',
     component: Sections,
+    permissions:["gerer_sections"]
   },
   
   {
     path: '/academic-levels/grades',
     title: 'Cycles',
     component: Cycles,
+    permissions:["gerer_cycles"]
   },
   {
     path: '/academic-levels/levels',
     title: 'Niveaux',
     component: Niveaux,
+    permissions:["gerer_niveaux"]
   },
   {
     path: '/academic-levels/promotions',
     title: 'Promotions',
     component: Promotions,
+    permissions:["gerer_promotions"]
   },
 
   // emploi de temps
@@ -223,6 +227,7 @@ const coreRoutes = [
     path: '/schedules',
     title: 'Emploi de temps',
     component: EmploiDeTemp,
+    permissions:["gerer_emplois_du_temps", "consulter_emplois_du_temps"]
   },
 
   // calendrier academique
@@ -230,6 +235,7 @@ const coreRoutes = [
     path: '/academic-calendar',
     title: 'Calendrier académique',
     component: CalendrierAcademique,
+    permissions:["gerer_calendrier_academique", "consulter_calendrier_academique"]
   },
 
   // documents
@@ -237,6 +243,7 @@ const coreRoutes = [
     path: '/documents',
     title: 'Documents',
     component: Documents,
+    permissions:["gerer_documents", "consulter_liste_documents"]
   },
 
   // parametres
@@ -245,6 +252,7 @@ const coreRoutes = [
     path: '/parametres/profile',
     title: 'Mon profil',
     component: MonProfil,
+    permissions:["gerer_profil"]
   },
 
   {
@@ -252,68 +260,84 @@ const coreRoutes = [
     title: 'Liste des administrateurs',
     // component: Administration,
     component: ListeDesAdministrateur,
+    permissions:["gerer_administrateurs"]
   },
   {
     path: '/parametres/qr-code',
     title: 'QR Code',
-    // component: Administration,
     component: QRCodeGenerator,
+    permissions:["gerer_qr_code"]
   },
 
-  {
-    path: '/parametres/current-year-semester',
-    title: 'Année et Semestre courant',
-    component: AnneeSemestre,
-  },
+  // {
+  //   path: '/parametres/current-year-semester',
+  //   title: 'Année et Semestre courant',
+  //   component: AnneeSemestre,
+  // },
 
   {
     path: '/parametres/services',
     title: 'Services',
     component: Services,
+    permissions:["gerer_services"]
   },
 
   {
     path: '/parametres/fonctions',
     title: 'Fonctions',
     component: Fonctions,
+    permissions:["gerer_fonctions"]
   },
 
   {
     path: '/parametres/grades',
     title: 'Grades',
     component: Grades,
+    permissions:["gerer_grades"]
   },
 
   {
     path: '/parametres/categories',
     title: 'Catégories',
     component: Categories,
+    permissions:["gerer_categories"]
   },
 
   {
     path: '/parametres/regions',
     title: 'Régions',
     component: Regions,
+    permissions:["gerer_regions"]
   },
   {
     path: '/parametres/departements',
     title: 'Départements',
     component: Departements,
+    permissions:["gerer_departements_region"]
   },
   {
     path: '/parametres/communes',
     title: 'Communes',
     component: Communes,
+    permissions:["gerer_communes"]
   },
   {
     path: '/parametres/permissions',
     title: 'Permissions',
     component: Permissions,
+    permissions:["gerer_permissions"]
   },
   
   {
     path: '/user/permissions',
     title: 'Permissions utilisateur',
+    component: UserPermissions,
+    permissions:["consulter_permissions"]
+  },
+
+  {
+    path: '/unauthorized',
+    title: 'Accès refusés',
     component: UserPermissions,
   }
 

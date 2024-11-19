@@ -1,10 +1,15 @@
 import { useDispatch } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
-import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
+import { setSelectedUserPermission, setSelectedUserRole, setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
+import { useNavigate } from "react-router-dom";
+import { t } from "i18next";
+import { config } from "../../../config";
+import { SelectButton } from "../common/composants/SelectButton";
 
 const BodyTable = ({ data, onEdit }: { data: AdminType[], onEdit: (admin: AdminType) => void }) => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     return <tbody>
         {data.map((item, index) => (
@@ -46,7 +51,15 @@ const BodyTable = ({ data, onEdit }: { data: AdminType[], onEdit: (admin: AdminT
 
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                <td className="border-b border-[#eee] py-1 px-0 dark:border-strokedark flex justify-center items-center">
+                    <SelectButton
+                        listPage={[
+                            {
+                                "name": t('label.permissions'),
+                                "handleClick": () => {dispatch(setSelectedUserRole(config.roles.admin));dispatch(setSelectedUserPermission(item)); navigate('/user/permissions')}
+                            },
+                        ]}
+                    />
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);

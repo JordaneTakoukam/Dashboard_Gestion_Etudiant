@@ -13,6 +13,7 @@ import { PageNoData } from "../../components/_Global/PageNoData";
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from "../../_redux/features/data_setting_slice";
 import { apiGetAllSettings } from "../../api/settings/api_data_setting";
 import { setShowModal } from "../../_redux/features/setting";
+import Loading from "../../components/ui/loading";
 
 export interface Commune {
     id?: number;
@@ -55,7 +56,7 @@ const Communes = () => {
 
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                    <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         communes.length === 0 ?

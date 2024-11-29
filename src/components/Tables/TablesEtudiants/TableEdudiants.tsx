@@ -69,11 +69,9 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
                 setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
-                filterNiveauxByCycle(cycle?._id)
             }else{
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
-                filterNiveauxByCycle(undefined);
                 setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
@@ -242,7 +240,13 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                 
         }        
     }, [filteredCycle]);
+    const [isInitialMount, setIsInitialMount] = useState(true);
     useEffect(() => {
+        if (isInitialMount) {
+            setIsInitialMount(false);
+            return;
+        }
+
         const fetchEtudiants = async () => {
             dispatch(setEtudiantsLoading(true)); // Définissez le loading à true avant le chargement
             try {

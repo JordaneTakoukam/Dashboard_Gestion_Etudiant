@@ -16,6 +16,7 @@ import LoadingOnTable from "../common/LoadingOnTable";
 import createToast from "../../../hooks/toastify";
 import NoDataTable from "../common/NoDataTable";
 import Download from "../common/Download";
+import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -55,7 +56,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     const [niveau, setNiveau] = useState<NiveauProps>();
 
 
-    const listSemestre = [1, 2, 3]
     const listAnnee = generateYearRange(currentYear, firstYear);
 
     const [annee, setAnnee] = useState<string | undefined>(`${firstYear}/${firstYear + 1}`);
@@ -423,7 +423,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
-                                items={listSemestre}
+                                items={semestres}
                                 defaultValue={semestre}
                                 onSelect={handleSemestreSelect}
                             />
@@ -472,7 +472,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
-                                items={listSemestre}
+                                items={semestres}
                                 defaultValue={semestre}
                                 onSelect={handleSemestreSelect}
                             />

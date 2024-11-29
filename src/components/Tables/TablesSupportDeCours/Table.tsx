@@ -1,37 +1,36 @@
-import { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { FaFilter, FaSort } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { setErrorPagePresencePaie, setPresencePaie, setPresencePaiesLoading } from "../../../_redux/features/presence_paie_slice";
-import { RootState } from "../../../_redux/store";
-import { config } from "../../../config";
-import { formatYear, extractYear, generateYearRange, createPDF } from "../../../fonctions/fonction";
-import createToast from "../../../hooks/toastify";
-import CustomDropDown2 from "../../DropDown/CustomDropDown2";
-import Pagination from "../../Pagination/Pagination";
-import CustomButtonDownload from "../common/CustomButtomDownload";
-import Download from "../common/Download";
+import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
-import BodyTable from "./BodyTable";
-import HeaderTable from "./HeaderTable";
-import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
-import { apiGetPresencesWithTotalHoraire, apiSearchPresenceEnseignant, generateListPresenceByNiveau } from "../../../api/api_presence_paie";
-import { apiUpdateTauxHoraire } from "../../../api/settings/api_data_setting";
-import { setTauxHoraire } from "../../../_redux/features/data_setting_slice";
+import { setShowModal } from "../../../_redux/features/setting";
+import { useEffect, useRef, useState } from "react";
+import { FaFilter, FaSort } from "react-icons/fa6";
 
+import { RootState } from "../../../_redux/store"
+import { config } from "../../../config"
+import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import { useTranslation } from "react-i18next";
+import createToast from "../../../hooks/toastify";
+import Pagination from "../../Pagination/Pagination";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
+import { setErrorPageSupportDeCours, setSupportDeCours, setSupportDeCoursLoading } from "../../../_redux/features/support_cours_slice";
+import { apiGetSupportDeCours, apiSearchSupportDeCours } from "../../../api/api_support_cours";
+import HeaderTable from "./HeaderTable";
+import BodyTable from "./BodyTable";
 
 interface TableProps {
-    data: PresencePaieType[];
-    
+    data: SupportDeCoursType[];
+    onCreate:()=>void;
+    onEdit: (support : SupportDeCoursType) => void;
 }
 
-const Table = ({ data}: TableProps) => {
+const Table = ({ data, onCreate, onEdit}: TableProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const tauxHoraire:number=useSelector((state: RootState) => state.dataSetting.dataSetting.tauxHoraire) ?? 0; 
+    
     const userRole = useSelector((state: RootState) => state.user.role);
+    const currentUser = useSelector((state: RootState) => state.user);
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -40,17 +39,16 @@ const Table = ({ data}: TableProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const departements = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
-    const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    const [selectSemestre, setSelectSemestre] = useState(currentSemestre);
-    const pageIsLoading = useSelector((state: RootState) => state.presencePaieSlice.pageIsLoading);
+    
+    const pageIsLoading = useSelector((state: RootState) => state.supportDeCoursSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSupportPermission = userPermissions.includes('gerer_supports_cours_formateurs') || userPermissions.includes('gerer_supports_cours_etudiants');
     
     const [section, setSection] = sections.length>0?useState<SectionProps | undefined>(sections[0]):useState<SectionProps | undefined>();;
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [semestre, setSemestre] = useState<number | undefined>(currentSemestre);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
@@ -64,26 +62,6 @@ const Table = ({ data}: TableProps) => {
     const [searchText, setSearchText] = useState<string>('');
     const [isSearch, setIsSearch] = useState(false);
 
-    const [taux, setTaux] = useState(tauxHoraire);
-
-    const handleUpdateTauxHoraire = async () => {
-        
-        if(taux!=tauxHoraire){
-            await apiUpdateTauxHoraire(
-                {tauxHoraire:taux}
-            ).then((e: ReponseApiPros) => {
-                if (e.success) {
-                    createToast(e.message[lang as keyof typeof e.message], '', 0);
-                    dispatch(setTauxHoraire(parseInt(e.data)));
-    
-                } 
-            }).catch((e) => {
-                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-            })
-        }
-
-    }
-
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
@@ -92,12 +70,10 @@ const Table = ({ data}: TableProps) => {
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
                 setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
-                // filterNiveauxByCycle(cycle?._id)
             }else{
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
-                // filterNiveauxByCycle(undefined);
-                // setFilteredNiveaux([]);
+                setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
         }else{
@@ -129,51 +105,6 @@ const Table = ({ data}: TableProps) => {
             setNiveau(undefined);
         }
     };
-
-    
-    const handleDownloadSelect = async (selected: string) => {
-        
-        try{
-            setIsDownload(true);
-            let title = "presence_paie_"+formatYear(selectedYear);
-            if(lang !== 'fr'){
-                title = "attendance_pay_"+formatYear(selectedYear);
-            }
-            const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
-            if(selected === 'PDF'){
-                
-
-                if(section && cycle && niveau && departement && niveau._id){
-                    await generateListPresenceByNiveau({ niveauId:niveau._id, annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'pdf' }).then((blob) => {
-                        // Créer un objet URL pour le blob PDF
-                        if (blob) {
-                            createPDF(blob, title);
-                        }
-                    })
-                }
-                
-                
-            }else{
-                if(section && cycle && niveau && departement && niveau._id){
-                    await generateListPresenceByNiveau({ niveauId:niveau._id, annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'xlsx' }).then((blob) => {
-                        // Créer un objet URL pour le blob PDF
-                        if (blob) {
-                            createPDF(blob, title, 'xlsx');
-                        }
-                    })
-                   
-                }
-            }
-        } catch (error) {
-            
-            createToast(t('message.erreur'), "", 2);
-        }finally {
-            setIsDownload(false);
-        }
-        
-    };
-
-    
 
 
     const handleAnneeSelect = (selected: String | undefined) => {
@@ -214,19 +145,11 @@ const Table = ({ data}: TableProps) => {
         }
     };
 
-    const handleSemestreSelect = (selected: number | undefined) => {
-        if (selected) {
-            setSelectSemestre(selected)
-            setSemestre(selected);
-        }
-
-    };
-
     
 
      // variable pour la pagination
-    const itemsPerPage =  useSelector((state: RootState) => state.presencePaieSlice.data.pageSize); // nombre d'éléments maximum par page
-    const count = useSelector((state: RootState) => state.presencePaieSlice.data.totalItems);
+    const itemsPerPage =  useSelector((state: RootState) => state.supportDeCoursSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.supportDeCoursSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
@@ -272,129 +195,74 @@ const Table = ({ data}: TableProps) => {
                 
         }        
     }, [filteredCycle]);
+    const [isInitialMount, setIsInitialMount] = useState(true);
     useEffect(() => {
-        const fetchPresencePaie = async () => {
-            dispatch(setPresencePaiesLoading(true)); // Définissez le loading à true avant le chargement
+        if (isInitialMount) {
+            setIsInitialMount(false);
+            return;
+        }
+
+        const fetchSupportDeCourss = async () => {
+            dispatch(setSupportDeCoursLoading(true)); // Définissez le loading à true avant le chargement
             try {
-                const emptyPresencePaie: PresencePaieListGetType = {
-                    presencePaies: [],
+                const emptySupportDeCourss : SupportDeCoursListGetType={
+                    supportsDeCours: [],
                     currentPage: 0,
                     totalItems: 0,
                     totalPages: 0,
                     pageSize: 0
-                };
-    
-                // Assurez-vous que les dépendances sont bien définies avant l'appel de l'API
-                if (selectNiveauId && selectSemestre && selectedYear) {
-                    const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({
-                        page: currentPage,
-                        annee: selectedYear,
-                        semestre: selectSemestre,
-                        niveauId: selectNiveauId
-                    });
-    
-                    // Vérifiez si fetchedPresencePaies n'est pas vide ou indéfini
-                    if (fetchedPresencePaies) {
-                        dispatch(setPresencePaie(fetchedPresencePaies));
-                    } else {
-                        dispatch(setPresencePaie(emptyPresencePaie));
-                    }
-                } else {
-                    // Si les critères ne sont pas remplis, renvoyez une liste vide
-                    dispatch(setPresencePaie(emptyPresencePaie));
                 }
-            } catch (error) {
-                // Gérer les erreurs
-                dispatch(setErrorPagePresencePaie(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2);
-            } finally {
-                // Terminer le chargement
-                dispatch(setPresencePaiesLoading(false));
-            }
-        };
-    
-        // Appeler la fonction dès que les dépendances changent
-        fetchPresencePaie();
-    }, [dispatch, selectedYear, selectSemestre, currentPage, selectNiveauId, t]); // Supprimer la virgule en trop dans les dépendances
-    
-    useEffect(() => {
-        const fetchPresencePaie = async () => {
-            dispatch(setPresencePaiesLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                const emptyPresencePaie: PresencePaieListGetType = {
-                    presencePaies: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
-                };
-    
-                // Assurez-vous que les dépendances sont bien définies avant l'appel de l'API
+                let type = undefined;
+                if(userRole === config.roles.etudiant || userRole === config.roles.delegue){
+                    type = 1;
+                }
                 if (selectNiveauId) {
-                    const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({
-                        page: currentPage,
-                        annee: selectedYear,
-                        semestre: selectSemestre,
-                        niveauId: selectNiveauId
-                    });
-    
-                    // Vérifiez si fetchedPresencePaies n'est pas vide ou indéfini
-                    if (fetchedPresencePaies && fetchedPresencePaies.presencePaies.length > 0) {
-                        dispatch(setPresencePaie(fetchedPresencePaies));
+                    const fetchedSupportDeCourss = await apiGetSupportDeCours({ niveau: selectNiveauId, page: currentPage, annee:selectedYear, type:type });
+                    if (fetchedSupportDeCourss) { // Vérifiez si fetchedSupportDeCourss n'est pas faux, vide ou indéfini
+                        dispatch(setSupportDeCours(fetchedSupportDeCourss));
+                       
                     } else {
-                        dispatch(setPresencePaie(emptyPresencePaie));
+                        
+                        dispatch(setSupportDeCours(emptySupportDeCourss));
                     }
-                } else {
-                    dispatch(setPresencePaie(emptyPresencePaie));
+                } else{
+                    dispatch(setSupportDeCours(emptySupportDeCourss));
                 }
+                    // Réinitialisez les erreurs s'il y en a
             } catch (error) {
-                console.error("Error occurred during fetch:", error);
-                dispatch(setErrorPagePresencePaie(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2);
+                dispatch(setErrorPageSupportDeCours(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
             } finally {
-                // Terminer le chargement
-                dispatch(setPresencePaiesLoading(false));
+                dispatch(setSupportDeCoursLoading(false)); // Définissez le loading à false après le chargement
             }
-        };
-    
-        // Appeler la fonction dès que les dépendances changent
-        fetchPresencePaie();
-    }, [dispatch, selectNiveauId, selectedYear, selectSemestre, currentPage, t]);
-    
+        }
+        fetchSupportDeCourss();
+    }, [dispatch, selectedYear, currentPage, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
+
     // modifier les données de la page lors de la recherche ou de la sélection de la section
-    const [filteredData, setFilteredData] = useState<PresencePaieType[]>(data);
+    const [filteredData, setFilteredData] = useState<SupportDeCoursType[]>(data);
     
 
-    const latestQueryPresence = useRef('');
+    const latestQuerySupportDeCours = useRef('');
     useEffect(() => {
-        dispatch(setPresencePaiesLoading(true));
-        latestQueryPresence.current = searchText;
+        dispatch(setSupportDeCoursLoading(true));
+        latestQuerySupportDeCours.current = searchText;
         try{
             
-            const filterPresenceByContent = async () => {
+            const filterSupportDeCoursByContent = async () => {
                 if (searchText === '') {
-                    // if(isSearch){
-                        // sections.length>0?setSection(sections[0]):setSection(undefined);
-                        // filterCycleBySection(section?._id);
-                        // filterNiveauxByCycle(cycle?._id);
-                        const result: PresencePaieType[] = data;
-                        setFilteredData(result); 
-                    // }
+                    
+                    const result: SupportDeCoursType[] = data;
+                    setFilteredData(result); 
                 }else{
-                    // setSection(undefined);
-                    // setCycle(undefined);
-                    // setNiveau(undefined);
-                    // setSemestre(undefined);
-                    // setFilteredCycle([]);
-                    // setFilteredNiveaux([]);
-                    let presencesResult : PresencePaieType[] = [];
-                    await apiSearchPresenceEnseignant({ searchString:searchText, limit:10 }).then(result=>{
-                        
-                        if (latestQueryPresence.current === searchText) {
-                            if(result){
-                                
-                                presencesResult = result.presencePaies;
-                                setFilteredData(presencesResult);
+                    
+                    let supportsResult : SupportDeCoursType[] = [];
+                    await apiSearchSupportDeCours({role:userRole, userId:currentUser._id, langue:lang, recherche:searchText, limit:10 }).then(result=>{
+                        if (latestQuerySupportDeCours.current === searchText) {
+                            if(result){(undefined);
+                    // setFilteredCycle([]
+                                supportsResult = result.supportsDeCours;
+                                setFilteredData(supportsResult);
                             }
                           }
                         
@@ -403,29 +271,31 @@ const Table = ({ data}: TableProps) => {
         
                 
             };
-            filterPresenceByContent();
+            filterSupportDeCoursByContent();
         }catch(e){
-            dispatch(setErrorPagePresencePaie(t('message.erreur')));
+            dispatch(setErrorPageSupportDeCours(t('message.erreur')));
         }finally{
-            if (latestQueryPresence.current === searchText) {
-                dispatch(setPresencePaiesLoading(false)); // Définissez le loading à false après le chargement
+            if (latestQuerySupportDeCours.current === searchText) {
+                dispatch(setSupportDeCoursLoading(false)); // Définissez le loading à false après le chargement
             }
         }
     }, [searchText, isSearch, data]);
-   
-   
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.enseignant')} value={searchText} onSubmit={(text) =>{setIsSearch(true); setSearchText(text)}} />
+                {(hasManageSupportPermission) && (<ButtonCreate
+                    title={t('boutton.nouveau_support')}
+                    onClick={() => { onCreate();dispatch(setShowModal()) }}
+                />)}
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.support_de_cours')} value={searchText} onSubmit={(text) =>{setIsSearch(true); setSearchText(text)}} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.enseignant')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.support_de_cours')} </h1>
                 {/* version mobile */}
                 <div className="block lg:hidden">
                     <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
@@ -462,13 +332,6 @@ const Table = ({ data}: TableProps) => {
                                 defaultValue={niveau} // ou spécifie une valeur par défaut
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
-                            />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                selectedItem={semestre}
-                                items={semestres}
-                                defaultValue={semestre}
-                                onSelect={handleSemestreSelect}
                             />
                         </div>
                     )}
@@ -510,43 +373,9 @@ const Table = ({ data}: TableProps) => {
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
-                            <CustomDropDown2<number>
-                                title={t('label.semestre')}
-                                selectedItem={semestre}
-                                items={semestres}
-                                defaultValue={semestre}
-                                onSelect={handleSemestreSelect}
-                            />
                         </div>
                     </div>
                 </div>
-                <div className="mt-5">
-    <label className="text-sm lg:text-base font-medium">{t('label.taux_horaire')}</label>   
-</div>
-
-{/* Bouton et champ permettant de modifier le taux horaire */}    
-<div className="flex flex-col md:flex-row justify-start items-center gap-y-4 md:gap-x-4 mt-2">
-    {/* Champ pour visualiser et modifier le taux horaire */}
-    <div className="flex flex-col gap-y-1 w-full md:w-auto">
-        <input
-            type="number"
-            value={taux} // valeur du taux horaire actuel
-            onChange={(e) => setTaux(parseInt(e.target.value))} // met à jour la valeur du taux horaire
-            className="w-full px-3 py-2 text-sm lg:text-base border border-stroke rounded-md focus:ring focus:ring-blue-500 dark:bg-boxdark dark:text-white"
-            placeholder={t('label.modifierTauxHoraire')}
-        />
-    </div>
-
-    {/* Bouton de modification */}
-    <div className="flex flex-col gap-y-1 w-full md:w-auto">
-        <button
-            onClick={handleUpdateTauxHoraire} // Fonction pour mettre à jour le taux horaire
-            className="w-full md:w-auto px-4 py-2 bg-primary text-white text-sm lg:text-base rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-            {t('boutton.appliquer')}
-        </button>
-    </div>
-</div>
 
 
 
@@ -558,7 +387,7 @@ const Table = ({ data}: TableProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : filteredData && filteredData.length === 0 ?
+                                : filteredData.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -566,7 +395,7 @@ const Table = ({ data}: TableProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} />
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit}/>
                         }
 
 
@@ -592,12 +421,7 @@ const Table = ({ data}: TableProps) => {
 
             </div>
 
-            {/* bouton downlod Download */}
-            <div className="mt-7 mb-10">
-                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
-
-            </div>
-
+           
         </div>
     );
 };

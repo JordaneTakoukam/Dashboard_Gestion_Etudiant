@@ -8,6 +8,7 @@ import { getPeriodesEnseignement } from "../../api/api_periode_enseignement";
 import { setErrorPagePeriodeEnseignement, setPeriodeEnseignementLoading, setPeriodeEnseignements } from "../../_redux/features/progession_periode_slice";
 import Table from "../../components/Tables/TableProgressionPeriode/Table";
 import { config } from "../../config";
+import Loading from "../../components/ui/loading";
 
 const ProgressionMatiere = () => {
     const { t } = useTranslation();
@@ -23,6 +24,7 @@ const ProgressionMatiere = () => {
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const niveauxEns: InscriptionType[] = currentUser.niveaux;
     const roles = config.roles;
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
     useEffect(() => {
         const fetchPeriodeEnseignements = async () => {
             dispatch(setPeriodeEnseignementLoading(true)); // Définissez le loading à true avant le chargement
@@ -65,7 +67,11 @@ const ProgressionMatiere = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.progression_periode')} />
-            <Table data={periodes && periodes[0]} periodes={periodes} />
+            {
+                settingIsLoading ?
+                    <Loading /> :
+                        <Table data={periodes && periodes[0]} periodes={periodes} />    
+            }
         </>
     );
 };

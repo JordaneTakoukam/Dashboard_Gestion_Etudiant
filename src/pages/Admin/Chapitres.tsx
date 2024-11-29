@@ -23,7 +23,7 @@ const Chapitres = () => {
     const navigate = useNavigate();
     useEffect(() => {
         if (selectedMatiere === undefined) {
-            navigate('subjects/subject-list')
+            navigate('/subjects/subject-list')
         }
     }, [selectedMatiere])
     const handleEditChapitre = (chapitre: ChapitreType) => {

@@ -9,6 +9,10 @@ type ProtectedRouteProps = {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ component, requiredPermission, userPermissions }) => {
   // Vérifier si l'utilisateur possède au moins une des permissions requises
+  if(!userPermissions || (userPermissions && userPermissions.length==0)){
+    userPermissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
+  }
+  
   const hasPermission = requiredPermission.some(permission => userPermissions.includes(permission));
 
   return hasPermission ? component : <Navigate to="/unauthorized" replace />;

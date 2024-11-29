@@ -26,7 +26,6 @@ function ModalProgressionChapitre({ chapitre }: ModalProgressionChapitreProps) {
     const [isFirstRender, setIsFirstRender] = useState(true);
 
     useEffect(() => {
-        console.log(chapitre)
         if (chapitre?.objectifs) {
             const initialSelectedObjectifs = chapitre.objectifs.reduce((acc, objectif) => {
                 if (objectif._id) {

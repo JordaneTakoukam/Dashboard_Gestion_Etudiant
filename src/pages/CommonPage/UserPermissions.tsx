@@ -77,7 +77,6 @@ const UserPermissions = () => {
         const fetchPermissions = async () => {
             await apiGetUserPermissions({ userId: userId }).then((e: ReponseApiPros) => {
                 if(e.success){
-                    console.log(e.data)
 
                     createFinalPermissionList(e.data, role, lang).then(finalPermissions => {
                         dispatch(setUserPermission(finalPermissions));
@@ -87,8 +86,9 @@ const UserPermissions = () => {
                     createToast(e.message[lang as keyof typeof e.message], '', 2);
                 }
                 }).catch((e) => {
-                
-                    createToast(t('message.erreur'), "", 2);
+                    if(selectedUserPermission && selectedUserRole){
+                        createToast(t('message.erreur'), "", 2);
+                    }
                 })
         }
         fetchPermissions();

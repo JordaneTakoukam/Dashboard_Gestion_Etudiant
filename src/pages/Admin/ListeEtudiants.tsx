@@ -28,8 +28,10 @@ const ListeDesEtudiants = () => {
 
 
     const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
+    
 
     useEffect(() => {
+        
         const fetchEtudiants = async () => {
             dispatch(setEtudiantsLoading(true)); // Définissez le loading à true avant le chargement
             try {
@@ -78,13 +80,13 @@ const ListeDesEtudiants = () => {
             <Breadcrumb pageName={t('sub_menu.liste_etudiant')} />
             {
                 settingIsLoading ?
-                    <div className=" pt-30 lg:pt-50"><Loading /></div> :
-                    <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
+                    <Loading /> :
+                        <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
             }
             {/* Boite de dialogue */}
             <ModalCreateEtudiant etudiant={selectedEtudiant} />
             <ModalDeleteEtudiant etudiant={selectedEtudiant} />{/*Supprimer un étudiant */}
-            <ModalRole etudiant={selectedEtudiant} />{/*Supprimer un étudiant */}
+            <ModalRole etudiant={selectedEtudiant} />{/*Modifier le rôle d'un étudiant */}
         </>
     );
 };

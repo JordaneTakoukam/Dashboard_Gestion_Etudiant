@@ -14,7 +14,7 @@ import { config } from '../../config';
 import { format } from 'date-fns'; // Pour formater la date
 import FormDelete from '../../components/Modals/ModalDocument/FormDelete';
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo en octets
+export const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 Mo en octets
 
 const DocumentUploadUpload = () => {
   const [file, setFile] = useState<File | null>(null);

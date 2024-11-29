@@ -1,28 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { config } from '../../config';
-import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
-import React from 'react';
-import { RxDashboard } from "react-icons/rx";
-import { IoIosArrowDown } from "react-icons/io";
-import { PiStudentFill } from "react-icons/pi";
-import { GiTeacher } from "react-icons/gi";
-import { GiLevelEndFlag } from "react-icons/gi";
-import { TbSchool } from "react-icons/tb";
-import { IoSettingsOutline } from "react-icons/io5";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { LuBookMarked } from "react-icons/lu";
-import { FaCalendarAlt, FaDownload } from "react-icons/fa";
-import { FaFile, FaRegCopyright } from "react-icons/fa6";
+import { FaRegCopyright } from "react-icons/fa6";
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import LogoNavbar from './LogoNavbar';
-import { RootState } from '../../_redux/store';
 import StudentSidebarLink from './SideSection/EtudiantSection';
 import TeacherSidebarLink from './SideSection/EnseignantSection';
 import MatiereSidebarLink from './SideSection/MatiereSection';
 import ParametreSidebarLink from './SideSection/ParametreSection';
-import { CalendrierAcaLink, DashboardLink, DocumentLink, EmploiTempsLink, SalleCourLink } from './SideSection/SidebarLink';
+import { AbsencesLink, CalendrierAcaLink, DashboardLink, DocumentLink, EmploiTempsLink, SalleCourLink } from './SideSection/SidebarLink';
 import AcademicLevelSidebarLink from './SideSection/AcademiqueSection';
 import PedagogieSidebarLink from './SideSection/PedagogieSection';
 
@@ -143,6 +130,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, userPermissions }: SidebarProps)
 
                             {/* ! Enseignant */}
 
+                            {/*Liste Absences utilisateur */}
+                            {userPermissions && <AbsencesLink
+                                userPermissions={userPermissions}
+                                t={t}
+                            />}
+
+                            {/* ! Liste Absences utilisateur */}
+
 
                             {/* Matieres : list group */}
                             {userPermissions && <MatiereSidebarLink
@@ -154,12 +149,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, userPermissions }: SidebarProps)
                             {/* ! Matieres */}
 
                             {/* Pedagogie*/}
-                            {/* {userPermissions && <PedagogieSidebarLink
+                            {userPermissions && <PedagogieSidebarLink
                                 userPermissions={userPermissions}
                                 sidebarExpanded={sidebarExpanded}
                                 setSidebarExpanded={setSidebarExpanded}
                                 t={t}
-                            />} */}
+                            />}
                             {/* ! Pedagogie */}
 
 

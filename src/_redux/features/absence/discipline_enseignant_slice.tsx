@@ -73,7 +73,6 @@ const disciplineEnseignantSlice = createSlice({
         modifierAbsenceEnseignant(state, action: PayloadAction<AbsenceType>) {
     
             const enseignant = state.selected.user;
-            console.log(enseignant)
             if (enseignant && enseignant.absences) {
                 enseignant.absences = enseignant.absences.filter(absence => absence._id !== action.payload._id);
                 enseignant.absences.unshift(action.payload);
@@ -84,7 +83,12 @@ const disciplineEnseignantSlice = createSlice({
             const { absenceId } = action.payload;
             const enseignant = state.selected.user;
             if (enseignant) {
+                
                 enseignant.absences = enseignant.absences.filter(absence => absence._id !== absenceId);
+                const findEnseignant = state.data.enseignants.find(e=>e._id===enseignant._id); 
+                if(findEnseignant){
+                    findEnseignant.absences = findEnseignant.absences.filter(absence => absence._id !== absenceId);
+                }
             }
         }
 

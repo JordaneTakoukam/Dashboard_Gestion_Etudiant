@@ -15,6 +15,7 @@ import { apiGetAbsencesWithEnseignantsByFilter, apiSearchUserDiscipline, generat
 import LoadingOnTable from "../common/LoadingOnTable";
 import createToast from "../../../hooks/toastify";
 import Download from "../common/Download";
+import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
 
 interface TableDisciplineProps {
     data: UserDiscipline[];
@@ -39,19 +40,19 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
 
 
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
-    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
+    const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const selectedSemestre = useSelector((state: RootState) => state.enseignantDisciplineSlice.selected.semestre)
     const [selectSemestre, setSelectSemestre]=useState(currentSemestre);
     const [selectedYear, setSelectYear]=useState(currentYear);
+    
 
-
-    const listSemestre = [1, 2, 3]
     const listAnnee = generateYearRange(currentYear, firstYear);
 
     const [annee, setAnnee] = useState<string | undefined>(`${firstYear}/${firstYear + 1}`);
     const [semestre, setSemestre] = useState<number | undefined>(selectedSemestre ? selectedSemestre : currentSemestre);
+    
 
     const handleAnneeSelect = (selected: string | undefined) => {
         if (selected) {
@@ -80,24 +81,6 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     // recherche
     const [searchText, setSearchText] = useState<string>('');
     const [filteredData, setFilteredData] = useState<UserDiscipline[]>(data);
-
-    // Filtrer les matières en fonction de la langue
-    // const filterEnseignantByContent = (enseignants: UserDiscipline[]) => {
-    //     if (searchText === '') {
-    //         const result: UserDiscipline[] = enseignants;
-    //         return result;
-    //     }
-    //     return enseignants.filter(enseignant => {
-    //         const prenom = enseignant?.prenom || "";
-    //         // Vérifie si le code ou le libellé contient le texte de recherche
-    //         return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-    //     });
-    // };
-
-    // useEffect(() => {
-    //     const result = filterEnseignantByContent(data);
-    //     setFilteredData(result);
-    // }, [searchText, data]);
 
     const latestQueryDiscipline = useRef('');
    
@@ -176,19 +159,11 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
             dispatch(setSemestreDisciplineEns(semestre));
         }
 
-
-
-        if (isInitialMount) {
-            setIsInitialMount(false);
-            return;
-        }
-
-
         const fetchEnseignantWithAbsences = async () => {
             dispatch(setEnseignantsDisciplineLoadingOnTable(true));
 
             try {
-                if (semestre) {
+                // if (selectSemestre) {
                     const fetchedEnseignants = await apiGetAbsencesWithEnseignantsByFilter({
                         page: currentPage, semestre: selectSemestre, annee: selectedYear
                     });
@@ -199,7 +174,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                     } else {
                         dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
                     }
-                }
+                // }
             } catch (error) {
                 dispatch(setErrorPageEnseignantDiscipline(t('message.erreur')));
             } finally {
@@ -209,7 +184,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
 
         fetchEnseignantWithAbsences();
 
-    }, [data.length, annee, semestre, currentPage, t]);
+    }, [dispatch, selectedYear, selectSemestre, currentPage, t]);
 
 
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
@@ -273,7 +248,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
-                                items={listSemestre}
+                                items={semestres}
                                 defaultValue={semestre}
                                 onSelect={handleSemestreSelect}
                             />
@@ -296,7 +271,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
                             <CustomDropDown2<number>
                                 title={t('label.semestre')}
                                 selectedItem={semestre}
-                                items={listSemestre}
+                                items={semestres}
                                 defaultValue={semestre}
                                 onSelect={handleSemestreSelect}
                             />

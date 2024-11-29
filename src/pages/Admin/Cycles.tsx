@@ -12,6 +12,7 @@ import { apiGetAllSettings } from "../../api/settings/api_data_setting";
 import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../components/_Global/PageErreur";
 import { PageNoData } from "../../components/_Global/PageNoData";
+import Loading from "../../components/ui/loading";
 
 export interface Cycle {
     id?: number,
@@ -56,7 +57,7 @@ const Cycles = () => {
             <Breadcrumb pageName={t('sub_menu.cycles')} />
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                    <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         cycles.length === 0 ?

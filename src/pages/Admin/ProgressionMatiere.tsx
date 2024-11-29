@@ -10,6 +10,7 @@ import { setErrorPageMatiere, setMatiereLoading, setMatieres } from "../../_redu
 import { config } from "../../config";
 import { setObjectifLoading, setObjectifs, setErrorPageObjectif } from "../../_redux/features/objectif_slice";
 import { getObjectifByMatiereWithPagination } from "../../api/api_objectif";
+import Loading from "../../components/ui/loading";
 
 const ProgressionMatiere = () => {
     const { t } = useTranslation();
@@ -26,6 +27,7 @@ const ProgressionMatiere = () => {
     const currentUser:UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
 
     useEffect(() => {
         const fetchMatieres = async () => {
@@ -117,7 +119,11 @@ const ProgressionMatiere = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.progression')} />
-            <Table data={objectifs} matieres={matieres}/>
+            {
+                settingIsLoading ?
+                    <Loading /> :
+                        <Table data={objectifs} matieres={matieres}/>
+            }
         </>
     );
 };

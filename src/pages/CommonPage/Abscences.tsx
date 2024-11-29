@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import Table from "../../components/Tables/TableAbsences/Table";
 import { updateUserAbsences } from "../../_redux/features/user_slice";
 import { apiGetAbsencesByUserAndFilter } from "../../api/discipline/api_discipline";
+import Loading from "../../components/ui/loading";
 
 
 const Abscences = () => {
@@ -24,6 +25,7 @@ const Abscences = () => {
     const userRole = useSelector((state: RootState) => state.user.role);
     const currentUser = useSelector((state: RootState) => state.user);
     const roles = config.roles;
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
     const handleAbsencesChange=(absences:AbsenceType[])=>{
         setAbsences(absences);
         console.log(absences)
@@ -32,7 +34,6 @@ const Abscences = () => {
         const fetchData = async () => {
             try {
                 const absences = await apiGetAbsencesByUserAndFilter({ userId: currentUser._id, annee: currentYear, semestre: currentSemester });
-                console.log("iscall")
                 if (absences) {
                     dispatch(updateUserAbsences(absences));
                     setAbsences(absences)
@@ -52,9 +53,14 @@ const Abscences = () => {
     return (
         <>
             <Breadcrumb pageName={`Abscences ${roles.enseignant === userRole ? "de l'enseignant" : roles.etudiant === userRole ? "" : ""}`} />
-            {/* <Breadcrumb pageName={t('menu.absences')} /> */}
-            {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={currentUser} absences={absences} onEdit={handleEditHourUser} handleAbsencesChange={handleAbsencesChange}/>} 
-            {userRole===roles.enseignant && <Table data={currentUser} absences={absences} onEdit={handleEditHourUser} handleAbsencesChange={handleAbsencesChange}/>}
+            
+            {
+                settingIsLoading ?
+                    <Loading /> :
+                        <Table data={currentUser} absences={absences} onEdit={handleEditHourUser} handleAbsencesChange={handleAbsencesChange}/>
+            } 
+            {/* {(userRole===roles.etudiant || userRole===roles.delegue) && <Table data={currentUser} absences={absences} onEdit={handleEditHourUser} handleAbsencesChange={handleAbsencesChange}/>} 
+            {userRole===roles.enseignant && <Table data={currentUser} absences={absences} onEdit={handleEditHourUser} handleAbsencesChange={handleAbsencesChange}/>} */}
 
             <FormCreateUpdate user={currentUser} isSignaled={true} isHourRemove={false} />
         </>

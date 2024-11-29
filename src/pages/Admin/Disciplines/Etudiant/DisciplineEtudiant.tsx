@@ -129,24 +129,13 @@ const DisciplineDesEtudiants = () => {
         <>
             <Breadcrumb pageName={t('sub_menu.discipline')} />
             {
-                // pageIsLoading ?
-                //     <LoadingTable /> :
-                //     pageError ?
-                //         <PageErreur onRefresh={handleRefresh} /> :
-
-                settingIsLoading ? <div className=" pt-30 lg:pt-50"><Loading /></div> :
-
-                    <div>
-                        {/* <SectionRefresh refreshFunction={handleRefresh} />: */}
-
+                settingIsLoading ? 
+                    <Loading /> :
                         <Table data={etudiants} onEdit={handleEditHourEtudiant} />
-                        <ModalCreateUpdateAbsence isStudent={true} user={etudiantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
-
-                    </div>
-
             }
 
             {/* Boite de dialogue */}
+            <ModalCreateUpdateAbsence isStudent={true} user={etudiantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
         </>
     );
 };

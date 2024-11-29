@@ -60,25 +60,14 @@ const PresenceManagement = () => {
 
         fetchPresencePaies();
     }, [ t]);
-    const handleEditPresencePaie = (presencePaie: PresencePaieType) => {
-        setSelectedPresencePaie(presencePaie);
-    }
-
-    // Fonction pour gérer l'ajout d'un nouvel étudiant
-    const handleAddPresencePaie = () => {
-        setSelectedPresencePaie(null);
-    }
-
-    const handleAddRole = (presencePaie: PresencePaieType) => {
-        setSelectedPresencePaie(presencePaie);
-    };
+    
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.presence_paie')} />
             {
                 settingIsLoading ?
-                    <div className=" pt-30 lg:pt-50"><Loading /></div> :
-                    <Table data={presencePaies}  />
+                    <Loading /> :
+                        <Table data={presencePaies}  />
             }
             
         </>

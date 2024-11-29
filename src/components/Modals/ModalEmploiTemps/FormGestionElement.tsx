@@ -25,7 +25,7 @@ function ModalGestionElement({ periodeCours }: { periodeCours: PeriodeType | nul
         <>
             <div>
                 <Transition show={isModalOpen} as={Fragment}>
-                    <Dialog open={isModalOpen} as="div" className="relative z-999999 " onClose={() => { }}>
+                    <Dialog open={isModalOpen} as="div" className="relative z-999999 " onClose={() => closeModal}>
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -67,7 +67,7 @@ function ModalGestionElement({ periodeCours }: { periodeCours: PeriodeType | nul
                                         {/* <div className='mt-5 md:mt-10'>{children}</div> */}
                                         <div className="flex flex-col items-start space-y-2 p-4 items-left">
                                             {((periodeCours && !periodeCours.pause) || !periodeCours) && (<button className="text-blue-500 hover:underline" onClick={() => { closeModal(); dispatch(setShowModal())} }>
-                                                {periodeCours && periodeCours.enseignements?t('form_save.ajouter')+t('form_save.matiere'): t('form_save.enregistrer')+t('form_save.periode')}
+                                                {periodeCours && periodeCours.enseignements && periodeCours.enseignements.length>0?t('form_save.ajouter')+t('form_save.matiere'): t('form_save.enregistrer')+t('form_save.periode')}
                                             </button>)}
                                             {(periodeCours && periodeCours.enseignements && !periodeCours.pause) && (
                                                 periodeCours.enseignements.map((matiere, index) => (

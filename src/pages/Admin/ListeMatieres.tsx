@@ -101,10 +101,9 @@ const ListeDesMatieres = () => {
             <Breadcrumb pageName={t('sub_menu.liste_matiere')} />
 
 
-            {settingIsLoading ? <div className=" pt-30 lg:pt-50"><Loading /></div> :
-
-                <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} />
-
+            {settingIsLoading ? 
+                <Loading /> :
+                    <Table data={matieres} onCreate={handleAddMatiere} onEdit={handleEditMatiere} />
             }
 
             <FormCreateUpdate matiere={selectedMatiere} />

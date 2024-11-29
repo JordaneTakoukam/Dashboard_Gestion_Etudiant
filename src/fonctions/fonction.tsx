@@ -266,6 +266,7 @@ export function formatDateWithLang(date:string, lang:string):string{
 
 export function nbTotalAbsences(listeAbsences: AbsenceType[]|undefined): string {
   // Vérifier si la liste d'absences est vide
+
   if(listeAbsences){
     
     if (listeAbsences.length === 0) {
@@ -274,7 +275,7 @@ export function nbTotalAbsences(listeAbsences: AbsenceType[]|undefined): string 
 
     // Initialiser la somme totale d'heures à 0
     let totalHours = 0;
-
+    
     // Parcourir chaque absence dans la liste
     listeAbsences.forEach(absence => {
       // Extraire les heures de début et de fin de l'absence

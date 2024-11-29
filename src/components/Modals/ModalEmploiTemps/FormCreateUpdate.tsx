@@ -463,7 +463,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
             setTypesEnseignementMat(listeTypesEnseignementDeMatiere);
 
             // Vérifier si le type d'enseignement de la période correspond à l'un des types d'enseignement de la matière
-            if (periodeCours) {
+            if (periodeCours && periodeCours.enseignements && periodeCours.enseignements.length>0) {
                 const currentType = periodeCours.enseignements && periodeCours.enseignements[index].typeEnseignement || ""
                 const typeEnseignementPeriode = listeTypesEnseignementDeMatiere.find(type => type._id === currentType);
                 if (typeEnseignementPeriode) {

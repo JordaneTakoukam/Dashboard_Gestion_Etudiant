@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { setErrorPageEvenement, setEvenementLoading, setEvenements } from "../../_redux/features/evenement_slice";
 import Table from "../../components/Tables/TableEvenement/Table";
-import { SectionRefresh } from "../../components/ui/SectionRefresh";
+import Loading from "../../components/ui/loading";
 
 const CalendrierAcademique = () => {
     const { t } = useTranslation();
@@ -59,14 +59,16 @@ const CalendrierAcademique = () => {
     const handleAddEvenement = () => {
         setSelectedEvenement(null);
     }
-
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     return (
         <>
             <Breadcrumb pageName={t('menu.calendrier')} />
-            {/* <SectionRefresh refreshFunction={() => fetchEvenements()} /> */}
 
             {/* Affichez le tableau uniquement lorsque les données sont chargées avec succès */}
-            <Table data={evenements} onCreate={handleAddEvenement} onEdit={handleEditEvenement} refresh={() => fetchEvenements()} />
+            {settingIsLoading ? 
+                <Loading /> :
+                    <Table data={evenements} onCreate={handleAddEvenement} onEdit={handleEditEvenement} refresh={() => fetchEvenements()} />
+            }
             <FormCreateUpdate evenement={selectedEvenement} />
             <FormDelete evenement={selectedEvenement} />
         </>

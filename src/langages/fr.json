@@ -42,7 +42,8 @@
     "discipline_etudiant": "Discipline des étudiants",
     "discipline_enseignant": "Discipline des enseignants",
     "absences": "Absences",
-    "profil": "Mon profil"
+    "profil": "Mon profil",
+    "pedagogie":"Pédagogie"
   },
   "sub_menu": {
     "permission":"Permissions",
@@ -77,7 +78,8 @@
     "enseignements": "Enseignements",
     "type_ens": "Activité pédagogique",
     "periodes_enseignement": "Périodes d'enseignement",
-    "enseignement_periode": "Enseignements de la période"
+    "enseignement_periode": "Enseignements de la période",
+    "supports_de_cours":"Supports de cours"
   },
   "tableau_de_bord": {
     "title": "Tableau de bord",
@@ -101,6 +103,19 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "type_fichier":"Type de fichier",
+    "taille_fichier":"Taille du fichier",
+    "telecharger":"Télécharger",
+    "details":"Détails",
+    "etudiant":"Etudiant",
+    "titre":"Titre",
+    "titre_fr":"Titre en français",
+    "titre_en":"Titre en anglais",
+    "type":"Type",
+    "date_ajout":"Date d'ajout",
+    "publier_par":"Publié par",
+    "supports_de_cours":"Supports de cours",
+    "support_de_cours":"Support de cours",
     "permissions":"Permissions",
     "taux_horaire":"Taux horaire",
     "nb_heure":"Nombre d'heure",
@@ -275,6 +290,7 @@
   },
   "recherche": {
     "rechercher": "Rechercher ",
+    "support_de_cours":"Un support de cours",
     "permission":"une permission",
     "etudiant": "un étudiant",
     "enseignant": "un enseignant",
@@ -349,6 +365,7 @@
   },
   "select_par_defaut": {
     "selectionnez": "Sélectionnez ",
+    "type":"un type",
     "statut":"un statut",
     "section": "une section",
     "departementAcademique": "un département académique",
@@ -389,11 +406,13 @@
     "commune": "Filtrer la liste des communes suivant :",
     "categorie": "Filtrer la liste des catégories suivant :",
     "absence": "Filtrer mes absences suivant : ",
-    "periodes_enseignement": "Filtrer les périodes d'enseignement"
+    "periodes_enseignement": "Filtrer les périodes d'enseignement",
+    "support_de_cours":"Filtrer la liste des supports de cours suivant :"
   },
   "form_save": {
     "ajouter":"Ajouter ",
     "enregistrer": "Enregistrer ",
+    "support_de_cours":"un support de cours",
     "document":"un nouveau document",
     "permission":"une permission",
     "pause": "une pause",
@@ -434,6 +453,7 @@
     "signaler": "Signaler mon absence",
     "signaler_presence":"Enregistrer ma présence",
     "enregistrer": "Mettre à jour les informations ",
+    "support_de_cours":"du support de cours",
     "etudiant": "de l'étudiant",
     "enseignant": "de l'enseignant",
     "administrateur": "de l'administrateur",
@@ -468,6 +488,7 @@
     "pause": "de la pause",
     "absence": "Supprimer une absence : ",
     "document":"du document",
+    "support_de_cours":"du support de cours",
     "etudiant": "de l'étudiant",
     "enseignant": "de l'enseignant",
     "administrateur": "de l'administrateur",
@@ -501,6 +522,10 @@
     "libelle": "Le champ libellé est obligatoire.",
     "libelle_fr": "Le champ libellé en français est obligatoire.",
     "libelle_en": "Le champ libellé en anglais est obligatoire.",
+    "titre_fr": "Le champ titre en français est obligatoire.",
+    "titre_en": "Le champ titre en anglais est obligatoire.",
+    "fichier": "Veuillez sélectionner un fichier.",
+    "type": "Le champ type est obligatoire.",
     "phase_activite":"Le champ phase d'activités est obligatoire.",
     "phase_activite_fr":"Le champ phase d'activités en français est obligatoire.",
     "phase_activite_en":"Le champ phase d'activités en anglais est obligatoire.",
@@ -574,7 +599,8 @@
     "region": "Aucune région",
     "promotion": "Aucune promotion",
     "departement": "Aucun département",
-    "commune": "Aucune commune"
+    "commune": "Aucune commune", 
+    "salle":"Aucune salle de cours"
   },
   "ajouter_votre_premier": {
     "administrateur": "Ajouter votre premier administrateur",
@@ -592,7 +618,8 @@
     "region": "Ajouter votre première région",
     "promotion": "Ajouter une nouvelle promotion",
     "departement": "Ajouter votre premier département",
-    "commune": "Ajouter votre première commune"
+    "commune": "Ajouter votre première commune",
+    "salle":"Ajouter votre première salle de cours"
   },
   "gestion_absence": {
     "nom_et_prenom": "Nom et prénom",

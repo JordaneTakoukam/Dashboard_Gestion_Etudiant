@@ -12,6 +12,7 @@ interface SettingState {
         create: boolean,
         update: boolean,
         delete: boolean,
+        details:boolean,
         open: boolean,
         notificationDetails:boolean,
         openSignalerAbsence:boolean,
@@ -40,6 +41,7 @@ const initialState: SettingState = {
         create: false,
         update: false,
         delete: false,
+        details:false,
         open: false,
         notificationDetails:false,
         openSignalerAbsence:false,
@@ -100,6 +102,9 @@ export const settingSlice = createSlice({
         },
         setShowModalDelete: (state) => {
             state.showModal.delete = !state.showModal.delete;
+        },
+        setShowModalDetails: (state) => {
+            state.showModal.details = !state.showModal.details;
         },
 
         setShowModalNotificationDetails: (state) => {
@@ -168,7 +173,7 @@ export const {
     setPeriodeIndex,
     setShowModalDeleteCustom,
     setShowModalCustom,
-    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModal, setShowModalToDOSondage
+    setShowLanguage, setShowModalCreate, setShowModalUpdate, setShowModalDelete, setShowModalDetails, setShowModal, setShowModalToDOSondage
     , setSaveDeviceType,setShowRoleModal, setShowModalPeriode, setShowModalElement, setShowModalPresence, setShowModalOpenScan, setShowModalPause, setShowModalNotificationDetails,
     setCurrentIndexUserRole,setShowModalSignalerAbsence, setShowModalPresenceManuelle, setUserPermission, addUserPemission, removeUserPemission, setSelectedUserPermission, setSelectedUserRole
 } = settingSlice.actions;

@@ -23,7 +23,6 @@ const SidebarLink = ({
     t
 }: SidebarLinkProps) => {
     const { pathname } = useLocation();
-
     // Vérifie si l'utilisateur a au moins une des permissions nécessaires
     const hasPermission = permissionsRequired.some(permission => userPermissions.includes(permission));
 
@@ -35,7 +34,7 @@ const SidebarLink = ({
                 <NavLink
                     to={to}
                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                        (pathname === to || pathname.includes(to) ) ? 'bg-graydark dark:bg-meta-4 text-secondary' : ''
+                        (pathname === to ) ? 'bg-graydark dark:bg-meta-4 text-secondary' : ''
                     }`}
                 >
                     <div className="w-6">
@@ -105,6 +104,18 @@ export const DocumentLink = ({ userPermissions, t }: { userPermissions: string[]
         icon={<FaFile />}
         label="menu.document"
         permissionsRequired={["gerer_documents", "consulter_liste_documents"]}
+        userPermissions={userPermissions}
+        t={t}
+    />
+);
+
+// Composant pour les absences
+export const AbsencesLink = ({ userPermissions, t }: { userPermissions: string[], t: (key: string) => string }) => (
+    <SidebarLink
+        to="/absences"
+        icon={<FaFile />}
+        label="menu.absences"
+        permissionsRequired={["consulter_liste_absence"]}
         userPermissions={userPermissions}
         t={t}
     />

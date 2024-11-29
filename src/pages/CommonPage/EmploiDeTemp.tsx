@@ -15,6 +15,7 @@ import FormCreateUpdateAbsenceSignaler from "../../components/Modals/ModalAbsenc
 import FormGestionPresence from "../../components/Modals/ModalEmploiTemps/FormGestionPresence";
 import FormScanQrCode from "../../components/Modals/ModalEmploiTemps/FormScanQrCode";
 import FormSignalerPresence from "../../components/Modals/ModalAbsence/FormSignalerPresence";
+import Loading from "../../components/ui/loading";
 
 
 
@@ -81,11 +82,15 @@ const EmploiDeTemp = () => {
     const handleAddPeriode = () => {
         setSelectedPeriode(null);
     };
-
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     return (
         <>
             <Breadcrumb pageName={t('menu.emploi')} />
-            <Table data={periodes} onCreate={handleAddPeriode} onEdit={handleEditPeriode} />
+            {settingIsLoading ? 
+                <Loading /> :
+                    <Table data={periodes} onCreate={handleAddPeriode} onEdit={handleEditPeriode} />
+            }
+            
             <FormCreateUpdate periodeCours={selectedPeriode}/>
             <FormAddPause periodeCours={selectedPeriode}/>
             <FormDeletePeriode periodeCours={selectedPeriode} />

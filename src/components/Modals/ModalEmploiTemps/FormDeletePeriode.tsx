@@ -30,8 +30,10 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                 if(periodeCours.pause){
                     setModalTitle(t('form_delete.suppression')+t('form_delete.pause'));
                 }else{
-                    setModalTitle(t('form_delete.suppression')+t('form_delete.periode'));
-                    index!=-1 && periodeCours.enseignements && setMatiere(periodeCours.enseignements[index].matiere);
+                    if(periodeCours.enseignements && periodeCours.enseignements.length>0){
+                        setModalTitle(t('form_delete.suppression')+t('form_delete.periode'));
+                        index!=-1 && periodeCours.enseignements && setMatiere(periodeCours.enseignements[index].matiere);
+                    }
                 }
             } else {
                 setModalTitle("");

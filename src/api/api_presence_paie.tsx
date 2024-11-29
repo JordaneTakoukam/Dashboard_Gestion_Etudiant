@@ -86,6 +86,7 @@ export async function generateListPresenceByNiveau({ niveauId, annee, semestre, 
         throw error;
     }
 }
+
 export async function apiSearchPresenceEnseignant({ searchString, limit }: { searchString: string, limit:number }): Promise<PresencePaieListGetType> {
    
     try {

@@ -45,13 +45,14 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
     // let matiere:Matiere=listMatieres[0];
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    const firstYear=2022; 
+    const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.chapitreSlice.pageIsLoading);
+    
     const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
@@ -106,11 +107,9 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
             if (result.length > 0) {
                 setSelectIdCycle(result[0]._id);
                 setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
-                filterNiveauxByCycle(cycle?._id)
             }else{
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
-                filterNiveauxByCycle(undefined);
                 setFilteredNiveaux([]);
             }
             setFilteredCycle(result);
@@ -328,7 +327,7 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
                 try {
                     
                    
-                    if (selectNiveauId) {
+                    if (selectNiveauId && selectedSemestre && selectedYear) {
                         
                         let fetchedMatieres : MatiereReturnGetType | null
                         if(currentUser && currentUser.role===roles.enseignant){
@@ -391,6 +390,7 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
     }, [matieres, dispatch, t, data]);
 
     useEffect(() => {
+        
         const fetchChapitres = async () => {
             dispatch(setChapitreLoading(true)); // Définissez le loading à true avant le chargement
             try {
@@ -427,7 +427,9 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
                 dispatch(setChapitreLoading(false)); // Définissez le loading à false après le chargement
             }
         }
+        
         fetchChapitres();
+        
     }, [currentPage, matiere]); // Déclencher l'effet lorsque currentPage change
 
 
@@ -565,7 +567,7 @@ const Table = ({ data, matieres, onEdit }: { data: ChapitreType[], matieres:Mati
                     <table className="w-full table-auto">
                         {/* en tete du tableau */}
                         {
-                            pageIsLoading ?
+                            pageIsLoading  ?
                                 <LoadingTable />:
                                  data.length==0?
                                     <NoDataTable/> :

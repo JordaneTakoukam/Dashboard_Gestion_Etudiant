@@ -12,12 +12,14 @@ import { PageNoData } from "../../components/_Global/PageNoData";
 import { setDataSetting, setErrorDataSetting, setLoadingDataSetting } from "../../_redux/features/data_setting_slice";
 import { apiGetAllSettings } from "../../api/settings/api_data_setting";
 import { setShowModal } from "../../_redux/features/setting";
+import Loading from "../../components/ui/loading";
 
 
 const Sections = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
+    
     const [selectedSection, setSelectedSection] = useState<SectionProps | null>(null);
     const handleEditSection = (section: SectionProps) => {
         setSelectedSection(section);
@@ -50,7 +52,7 @@ const Sections = () => {
 
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                    <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         sections.length === 0 ?

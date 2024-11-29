@@ -9,6 +9,7 @@ import {getPeriodesEnseignementWithPagination } from "../../api/api_periode_ense
 import Table from "../../components/Tables/TablePeriodeEnseignement/Table";
 import FormCreateUpdate from "../../components/Modals/ModalPeriodeEnseignement/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalPeriodeEnseignement/FormDelete";
+import Loading from "../../components/ui/loading";
 
 
 
@@ -19,11 +20,12 @@ const ListeDesPeriodesEnseignement = () => {
     const [selectedPeriodeEnseignement, setSelectedPeriodeEnseignement] = useState<PeriodeEnseignementType | null>(null);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     const currentNiveauId =niveaux && niveaux.length>0 && niveaux[0]._id;
-    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const openEnseignementsPeriode = useSelector((state: RootState) => state.setting.showModal.openPeriode);
     // Utilisez useSelector pour accéder à l'état du reducer
     const { data: { periodes } } = useSelector((state: RootState) => state.periodeEnseignementSlice);
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
 
     useEffect(() => {
         const fetchPeriodeEnseignements = async () => {
@@ -68,7 +70,11 @@ const ListeDesPeriodesEnseignement = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.periodes_enseignement')}/>
-            <Table data={periodes} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement}/>
+            {
+                settingIsLoading ?
+                    <Loading /> :
+                        <Table data={periodes} onCreate={handleAddPeriodeEnseignement} onEdit={handleEditPeriodeEnseignement}/>
+            }
             
             <FormCreateUpdate periodeEnseignement={selectedPeriodeEnseignement}/>
             <FormDelete periodeEnseignement={selectedPeriodeEnseignement}/>

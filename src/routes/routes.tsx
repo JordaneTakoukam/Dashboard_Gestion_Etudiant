@@ -44,6 +44,8 @@ import PresencePaie from '../pages/Admin/PresencePaie';
 import Permissions from '../pages/Admin/Permissions';
 import UserPermissions from '../pages/CommonPage/UserPermissions';
 import AccessDenied from '../pages/CommonPage/AccesRefuse';
+import SupportDeCours from '../pages/CommonPage/SupportDeCours';
+import Abscences from '../pages/CommonPage/Abscences';
 
 
 
@@ -82,12 +84,7 @@ const coreRoutes = [
     component: PresencePaie,
     permissions:["consulter_presence_enseignant"]
   },
-  {
-    path: '/students/disciplines',
-    title: 'Disciplines des etudiant',
-    component: DisciplineDesEtudiants,
-    permissions:["consulter_liste_etudiant"]
-  },
+ 
   {
     path: '/teachers/disciplines/manage',
     title: 'Disciplines des étudiants',
@@ -106,6 +103,13 @@ const coreRoutes = [
     title: 'Disciplines des étudiants',
     component: GererAbsencesEtudiant,
     permissions:["consulter_liste_etudiant"]
+  },
+
+  {
+    path: '/absences',
+    title: 'Liste des abscences',
+    component: Abscences,
+    permissions:["consulter_liste_absence"]
   },
 
   {
@@ -336,10 +340,11 @@ const coreRoutes = [
   },
 
   {
-    path: '/unauthorized',
-    title: 'Accès refusés',
-    component: UserPermissions,
-  }
+    path: '/pedagogies/course-materials',
+    title: 'Pédagogies',
+    component: SupportDeCours,
+    permissions:["gerer_supports_cours_formateurs", "gerer_supports_cours_etudiants", "consulter_supports_cours_formateurs", "consulter_supports_cours_etudiants"]
+  },
 
 ];
 

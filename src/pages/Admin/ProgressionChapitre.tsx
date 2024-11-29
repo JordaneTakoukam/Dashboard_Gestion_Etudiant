@@ -11,6 +11,7 @@ import { config } from "../../config";
 import { setChapitreLoading, setChapitres, setErrorPageChapitre } from "../../_redux/features/chapitre_slice";
 import { getChapitreByMatiereWithPagination } from "../../api/api_chapitre";
 import ModalProgressionChapitre from "../../components/Modals/ModalProgressionChapitre/FormProgressionChapitre";
+import Loading from "../../components/ui/loading";
 
 
 const ProgressionChapitre = () => {
@@ -33,6 +34,7 @@ const ProgressionChapitre = () => {
         setSelectedChapitre(chapitre);
         
     }
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
 
     useEffect(() => {
         const fetchMatieres = async () => {
@@ -84,7 +86,7 @@ const ProgressionChapitre = () => {
 
         fetchMatieres();
     }, [dispatch]);
-
+    
     useEffect(() => {
 
         const fetchChapitres = async () => {
@@ -124,7 +126,11 @@ const ProgressionChapitre = () => {
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.progression_chap')} />
-            <Table data={chapitres} matieres={matieres} onEdit={handleEditChapitre}/>
+            {
+                settingIsLoading ?
+                    <Loading /> :
+                        <Table data={chapitres} matieres={matieres} onEdit={handleEditChapitre}/>
+            }       
             <ModalProgressionChapitre chapitre={selectedChapitre}/>
         </>
     );

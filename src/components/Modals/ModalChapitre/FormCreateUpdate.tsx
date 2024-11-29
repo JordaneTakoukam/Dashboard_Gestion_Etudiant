@@ -6,7 +6,6 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
 import { apiCreateChapitre, apiUpdateChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
-import { ajouterChapitre, modifierChapitre } from '../../../_redux/features/matiere_slice';
 import { createChapitre, updateChapitre } from '../../../_redux/features/chapitre_slice';
 import { semestres } from '../../../pages/CommonPage/EmploiDeTemp';
 import { formatYear } from '../../../fonctions/fonction';

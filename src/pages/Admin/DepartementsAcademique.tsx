@@ -12,6 +12,7 @@ import { setShowModal } from "../../_redux/features/setting";
 import Table from "../../components/Tables/TableDepartementAcademique/Table";
 import FormCreateUpdate from "../../components/Modals/ModalDepartementAcademique/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalDepartementAcademique/FormDelete";
+import Loading from "../../components/ui/loading";
 
 
 const DepartementsAcademique = () => {
@@ -50,7 +51,7 @@ const DepartementsAcademique = () => {
 
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                    <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         departementsAcademique.length === 0 ?

@@ -42,7 +42,8 @@
     "discipline_etudiant": "Student Discipline",
     "discipline_enseignant": "Teacher Discipline",
     "absences": "Absences",
-    "profil": "My Profile"
+    "profil": "My Profile",
+    "pedagogie":"Pedagogy"
   },
   "sub_menu": {
     "permission":"Permissions",
@@ -77,7 +78,8 @@
     "enseignements": "Teachings",
     "type_ens": "Educational Activity",
     "periodes_enseignement": "Teaching Periods",
-    "enseignement_periode": "Teachings of the Period"
+    "enseignement_periode": "Teachings of the Period",
+    "supports_de_cours":"Course materials"
   },
   "tableau_de_bord": {
     "title": "Dashboard",
@@ -101,6 +103,19 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "type_fichier": "Type of file",
+    "taille_fichier": "File size",
+    "telecharger":"Download",
+    "details":"Details",
+    "etudiant":"Student",
+    "titre":"Title",
+    "titre_fr":"Title in french",
+    "titre_en":"Title in english",
+    "type":"Type",
+    "date_ajout":"Date added",
+    "publier_par":"Published by",
+    "supports_de_cours":"Course materials",
+    "support_de_cours":"Course material",
     "permissions":"Permissions",
     "taux_horaire": "Hourly rate",
     "nb_heure": "Number of hours",
@@ -274,6 +289,7 @@
   },
   "recherche": {
     "rechercher": "Search ",
+    "support_de_cours":"a course material",
     "permission":"a permission",
     "etudiant": "a student",
     "enseignant": "a teacher",
@@ -348,6 +364,7 @@
   },
   "select_par_defaut": {
   "selectionnez": "Select ",
+  "type":"a type",
   "statut":"a status",
   "section": "a section",
   "departementAcademique":"an academic department",
@@ -389,11 +406,13 @@
     "commune": "Filter the list of communes by:",
     "categorie": "Filter the list of categories by :",
     "absence": "Filter my absences by:",
-    "periodes_enseignement": "Filter teaching periods by:"
+    "periodes_enseignement": "Filter teaching periods by:",
+    "support_de_cours":"Filter the list of course materials by:"
   },
   "form_save": {
   "ajouter":"Add ",
     "enregistrer": "Save ",
+    "support_de_cours":"a new course material",
     "document":"a new document",
     "permission":"a permission",
     "pause": "a break",
@@ -435,6 +454,7 @@
     "signaler_presence": "Register my presence",
     "enregistrer": "Update information",
     "etudiant": "of the student",
+    "support_de_cours":"of the course material",
     "enseignant": "of the teacher",
     "administrateur": "of the administrator",
     "matiere": "of the subject",
@@ -468,6 +488,7 @@
     "pause": "of the break",
     "absence": "Delete an absence:",
     "document":"of the document",
+    "support_de_cours":"of the course material",
     "etudiant": "of the student",
     "enseignant": "of the teacher",
     "administrateur": "of the administrator",
@@ -500,6 +521,10 @@
     "libelle": "The label field is required.",
     "libelle_fr": "The label in french field is required.",
     "libelle_en": "The label in english field is required.",
+    "titre_fr": "The French title field is required",
+    "titre_en": "The English title field is required",
+    "fichier": "Please select a file.",
+    "type": "The type field is required.",
     "phase_activite":"The activities phase field is required.",
     "phase_activite_fr":"The activities phase in french field is required",
     "phase_activite_en":"The activities phase in english field is required",
@@ -574,7 +599,8 @@
     "region": "No region",
     "promotion": "No promotion",
     "departement": "No department",
-    "commune": "No commune"
+    "commune": "No commune",
+    "salle":"No classroom"
   },
   "ajouter_votre_premier": {
     "administrateur": "Add your first administrator",
@@ -592,7 +618,8 @@
     "region": "Add your first region",
     "promotion": "Add your first promotion",
     "departement": "Add your first department",
-    "commune": "Add your first commune"
+    "commune": "Add your first commune",
+    "salle":"Add your first classroom"
   },
   "gestion_absence": {
     "nom_et_prenom": "Name and surname",

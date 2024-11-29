@@ -12,6 +12,7 @@ import { PageErreur } from "../../components/_Global/PageErreur";
 import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { setShowModal } from "../../_redux/features/setting";
 import Table from "../../components/Tables/TablePromotion/Table";
+import Loading from "../../components/ui/loading";
 
 const Promotions = () => {
     const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const Promotions = () => {
     const [selectedPromotion, setSelectedPromotion] = useState<PromotionProps | null>(null);
 
     // data depuis le store de redux
-    const currentTear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante)??2023; 
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante)??2023; 
     const promotions = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions);
 
     const handleCreate = () => {
@@ -50,7 +51,7 @@ const Promotions = () => {
             <Breadcrumb pageName={t('sub_menu.promotions')} />
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                    <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         promotions.length === 0 ?

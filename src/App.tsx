@@ -122,7 +122,7 @@ function App() {
               await apiGetUserPermissions({ userId: userId }).then((e: ReponseApiPros) => {
                 if(e.success){
                   createFinalPermissionList(e.data, role, lang).then(finalPermissions => {
-                      
+                      localStorage.setItem('userPermissions', JSON.stringify(finalPermissions));
                       setUserPermissions(finalPermissions);
                       dispatch(setUserPermission(finalPermissions));
                   });

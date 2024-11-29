@@ -8,7 +8,7 @@ import { apiGetEnseignantsWithPagination } from "../../api/other_users/api_ensei
 import Table from "../../components/Tables/TablesEnseignants/Table";
 import ModalCreateEnseignant from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
 import ModalDeleteEnseignant from "../../components/Modals/ModalEnseignant/FormDelete";
-import { setShowModal } from "../../_redux/features/setting";
+import Loading from "../../components/ui/loading";
 
 
 
@@ -17,29 +17,13 @@ const ListeDesEnseignants = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantSlice);
+    const { data: { enseignants } } = useSelector((state: RootState) => state.enseignantSlice);
     const [selectedEnseignant, setSelectedEnseignant] = useState<EnseignantType | null>(null);
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading) ?? [];
 
 
     // Utilisez useSelector pour accéder à l'état du reducer
 
-
-    const fetchEnseignants = async () => {
-        try {
-            dispatch(setEnseignantsLoading(true));
-            const fetchedEnseignants = await apiGetEnseignantsWithPagination({ page: 1 });
-            if (fetchedEnseignants) {
-                dispatch(setErrorPageEnseignant(null));
-                dispatch(setEnseignant(fetchedEnseignants));
-            } else {
-                dispatch(setErrorPageEnseignant(t('message.erreur')));
-            }
-        } catch (error) {
-            dispatch(setErrorPageEnseignant(t('message.erreur')));
-        } finally {
-            dispatch(setEnseignantsLoading(false));
-        }
-    };
 
     const handleEditEnseignant = (enseignant: EnseignantType) => {
         setSelectedEnseignant(enseignant);
@@ -50,27 +34,36 @@ const ListeDesEnseignants = () => {
         setSelectedEnseignant(null);
     }
 
-
-    const handleRefresh = async () => {
-        await fetchEnseignants();
-    };
-
-    const handleCreate = () => {
-        setSelectedEnseignant(null);
-        dispatch(setShowModal())
-    }
-
     useEffect(() => {
-        if (enseignants.length === 0) {
-            fetchEnseignants();
-        }
-    }, [dispatch]);
+        const fetchEnseignants = async () => {
+            try {
+                dispatch(setEnseignantsLoading(true));
+                const fetchedEnseignants = await apiGetEnseignantsWithPagination({ page: 1 });
+                if (fetchedEnseignants) {
+                    dispatch(setErrorPageEnseignant(null));
+                    dispatch(setEnseignant(fetchedEnseignants));
+                } else {
+                    dispatch(setErrorPageEnseignant(t('message.erreur')));
+                }
+            } catch (error) {
+                dispatch(setErrorPageEnseignant(t('message.erreur')));
+            } finally {
+                dispatch(setEnseignantsLoading(false));
+            }
+        };
 
+        fetchEnseignants();
+    }, [dispatch, t]);
+    
 
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.liste_enseignant')} />
-            <Table data={enseignants} onCreate={handleAddEnseignant} onEdit={handleEditEnseignant} />
+            {
+                settingIsLoading ?
+                    <Loading /> :
+                        <Table data={enseignants} onCreate={handleAddEnseignant} onEdit={handleEditEnseignant} />
+            }
 
             {/* Boite de dialogue */}
             <ModalCreateEnseignant enseignant={selectedEnseignant} />

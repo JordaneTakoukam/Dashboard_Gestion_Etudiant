@@ -10,9 +10,10 @@ import { PageNoData } from "../../../../components/_Global/PageNoData";
 import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
 import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
 import { useNavigate } from 'react-router-dom';
-import { setEnseignantDiscipline, setEnseignantSelected, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline } from "../../../../_redux/features/absence/discipline_enseignant_slice";
+import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantSelected, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/absence/discipline_enseignant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
 import { setShowModal } from "../../../../_redux/features/setting";
+import Loading from "../../../../components/ui/loading";
 
 const DisciplineDesEnseignants = () => {
     const dispatch = useDispatch();
@@ -82,6 +83,8 @@ const DisciplineDesEnseignants = () => {
 
 
     useEffect(() => {
+        dispatch(setAnneeDisciplineEns(currentYear));
+        dispatch(setSemestreDisciplineEns(currentSemestre));
         const fetchData = async () => {
             if (enseignants.length === 0) {
                 dispatch(setEnseignantsDisciplineLoading(true));
@@ -95,35 +98,21 @@ const DisciplineDesEnseignants = () => {
 
         fetchData();
 
-    }, [enseignants.length, loadingSetting]);
+    // }, [enseignants.length, loadingSetting]);
+    }, [dispatch, t]);
 
-
+    const settingIsLoading = useSelector((state: RootState) => state.dataSetting.loading);
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.discipline')} />
             {
-                pageIsLoading ?
-                    <LoadingTable /> :
-                    pageError ?
-                        <PageErreur onRefresh={handleRefresh} /> :
-                        enseignants.length === 0 ?
-                            <PageNoData
-                                titrePage={t('aucun.enseignant')}
-                                titreBouton={t('ajouter_votre_premier.enseignant')}
-                                showModalCreate={() => { navigate("/teachers/teacher-list") }}
-                                refreshFunction={handleRefresh}
-                            />
-                            :
-                            <div>
-                                {/* <SectionRefresh refreshFunction={handleRefresh} /> */}
-
-                                <Table data={enseignants} onEdit={handleEditHourEnseignant} />
-                                <ModalCreateUpdateAbsence isStudent={false} user={enseignantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
-                            </div>
-
+                settingIsLoading ? 
+                    <Loading /> :
+                        <Table data={enseignants} onEdit={handleEditHourEnseignant} />
             }
 
             {/* Boite de dialogue */}
+            <ModalCreateUpdateAbsence isStudent={false} user={enseignantCustomSelected} isHourRemove={isHourRemove} isJustify={isJustify} />
         </>
     );
 };

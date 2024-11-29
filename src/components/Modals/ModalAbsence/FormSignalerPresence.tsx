@@ -42,9 +42,11 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
             setHeureFin(periodeCours.heureFin);
             setSemestre(periodeCours.semestre);
             setAnnee(periodeCours.annee);
-            const matiere = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].matiere:undefined
-            const libelle =  lang === 'fr'?matiere?.libelleFr || "":matiere?.libelleEn || ""
-            setMatiere(libelle)
+            if(periodeCours.enseignements && periodeCours.enseignements.length>0){
+                const matiere = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].matiere:undefined
+                const libelle =  lang === 'fr'?matiere?.libelleFr || "":matiere?.libelleEn || ""
+                setMatiere(libelle)
+            }
         } else {
         }
 

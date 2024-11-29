@@ -1,12 +1,7 @@
 import { useEffect } from "react";
-import {useSelector } from "react-redux";
-import { RootState } from "../../_redux/store";
-import { useNavigate } from "react-router-dom";
 
 
-const AccessDenied = () => {
-    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en    
-    
+const AccessDenied = () => {    
         
     useEffect(() => {
         // Modifier le code d'état HTTP

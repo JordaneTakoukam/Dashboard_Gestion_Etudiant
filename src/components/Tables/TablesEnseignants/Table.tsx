@@ -37,7 +37,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    const currentYear:number=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
+    const currentYear:number=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const grades = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
     const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
@@ -175,30 +175,6 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         }
     };
 
-    // Filtrer les matières en fonction de la langue
-    // const filterEnseignantByContent = async (enseignants: EnseignantType[]) => {
-    //     if (searchText === '') {
-    //         const result: EnseignantType[] = enseignants;
-    //         return result;
-    //     }
-    //     let enseignantsResult : EnseignantType[] = [];
-    //     await apiSearchEnseignant({ searchString: searchText }).then(result=>{
-    //         if(result){
-    //             enseignantsResult = result.enseignants;
-    //         }
-    //     })
-
-    //     return enseignantsResult;
-    //         // Vérifiez si la requête actuelle correspond toujours à la dernière requête
-        
-    //     // return enseignants.filter(enseignant => {
-    //     //     const prenom = enseignant?.prenom || "";
-    //     //     // Vérifie si le code ou le libellé contient le texte de recherche
-    //     //     return enseignant.nom.toLowerCase().includes(searchText.toLowerCase()) || prenom.toLowerCase().includes(searchText.toLowerCase());
-    //     // });
-    // };
-
-
 
     // variable pour la pagination
     const itemsPerPage =  useSelector((state: RootState) => state.enseignantSlice.data.pageSize); // nombre d'éléments maximum par page
@@ -231,10 +207,10 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const pageIsLoadingOnTable = useSelector((state: RootState) => state.enseignantSlice.pageIsLoadingOnTable);
     const [isDownload, setIsDownload]=useState(false);
     useEffect(() => {
-        if (isInitialMount) {
-            setIsInitialMount(false);
-            return;
-        }
+        // if (isInitialMount) {
+        //     setIsInitialMount(false);
+        //     return;
+        // }
 
         const fetchEnseignants = async () => {
             dispatch(setEnseignantsLoadingOnTable(true)); // Définissez le loading à true avant le chargement
@@ -280,7 +256,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
         fetchEnseignants();
 
-    }, [dispatch, grade, categorie, service, fonction, currentPage, t]); // Déclencher l'effet lorsque currentPage change
+    }, [dispatch, grade, categorie, service, fonction, currentPage, t]); // Déclencher l'effet
 
     // modifier les données de la page lors de la recherche ou de la sélection de la grade
     const [filteredData, setFilteredData] = useState<EnseignantType[]>(data);
@@ -437,8 +413,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
 
 
                 {/* DEBUT DU TABLE */}
-                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8 relative min-h-[250px]">
-                    <table className="w-full table-auto ">
+                <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
+                    <table className="w-full table-auto">
                         {/* en tete du tableau */}
 
                         {

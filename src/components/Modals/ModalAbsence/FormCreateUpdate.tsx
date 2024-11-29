@@ -34,7 +34,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
     const [motif, setMotif] = useState("");
     const [etat, setEtat] = useState(1);
     const [finPeriode, setFinPeriode] = useState('');
-    const [semestre, setSemestre] = useState<string>(semestreCourant.toString());
+    const [semestre, setSemestre] = useState<number>(semestreCourant);
 
 
     const [errorDate, setErrorDate] = useState("");
@@ -64,7 +64,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
         setDate("");
         setDebutPeriode("");
         setFinPeriode("");
-        setSemestre('1');
+        setSemestre(semestre);
 
         if (isJustify) {
             if (user?.user) {
@@ -119,7 +119,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
 
 
     const handleSemestreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSemestre((event.target.value));
+        setSemestre((parseInt(event.target.value)));
         setErrorSemestre("");
     };
 
@@ -163,7 +163,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                     {
                         _id: user.absence?._id,
                         userId: user?.user?._id,
-                        semestre: parseInt(semestre),
+                        semestre: semestre,
                         annee: anneeAcademique,
                         dateAbsence: date,
                         heureDebut: debutPeriode,
@@ -215,7 +215,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                 await apiCreateAbsence(
                     {
                         userId: user?.user?._id,
-                        semestre: parseInt(semestre),
+                        semestre: semestre,
                         annee: anneeAcademique,
                         dateAbsence: date,
                         heureDebut: debutPeriode,

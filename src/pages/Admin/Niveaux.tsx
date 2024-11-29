@@ -13,6 +13,7 @@ import { apiGetAllSettings } from "../../api/settings/api_data_setting";
 import { PageNoData } from "../../components/_Global/PageNoData";
 import { PageErreur } from "../../components/_Global/PageErreur";
 import LoadingTable from "../../components/Tables/common/LoadingTable";
+import Loading from "../../components/ui/loading";
 
 export interface Niveau {
     id?: number;
@@ -27,6 +28,7 @@ const Niveaux = () => {
     const { t } = useTranslation();
     const [selectedNiveau, setSelectedNiveau] = useState<NiveauProps | null>(null);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
+    
     const handleEditNiveau = (niveau: NiveauProps) => {
         setSelectedNiveau(niveau);
     }
@@ -61,7 +63,7 @@ const Niveaux = () => {
 
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         niveaux.length === 0 ?

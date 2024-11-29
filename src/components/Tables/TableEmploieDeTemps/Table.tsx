@@ -50,6 +50,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
     const roles = config.roles;
     const ouvrirFormulairePeriode = (periode?: PeriodeType) => {
         if(periode){
+            
             onEdit(periode);
         }else{
             onCreate();
@@ -87,7 +88,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
             
                 // Si l'utilisateur est un étudiant ou un délégué
                 if (userRole === roles.etudiant || userRole === roles.delegue) {
-                    dispatch(setShowModalSignalerAbsence());
+                    dispatch(setShowModalPresence());
                 }
             }
             

@@ -15,6 +15,7 @@ import { RxPerson } from "react-icons/rx";
 import { useTranslation } from 'react-i18next';
 import Loading from '../ui/loading';
 import { setSelectedUserPermission, setSelectedUserRole } from '../../_redux/features/setting';
+import { FaUserShield } from 'react-icons/fa6';
 
 
 const DropdownUser = () => {
@@ -147,7 +148,7 @@ const DropdownUser = () => {
             className="flex items-center gap-3.5 py-3 pt-3 px-5 text-sm font-medium duration-300 ease-in-out lg:text-base hover:bg-gray dark:hover:bg-black"
           >
             <div className='text-lg text-[23px]'>
-              <RxPerson />
+              <FaUserShield />
 
             </div>
             { t('header.permission')}

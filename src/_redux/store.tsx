@@ -20,6 +20,7 @@ import EtudiantDisciplineReducer from "./features/absence/discipline_etudiant_sl
 import EtudiantReducer from "./features/etudiant_slice.tsx";
 import SignalementAbsence from "./features/absence/signalement_absence.tsx";
 import notificationReducer from './features/notification_slice.tsx';
+import SupportDeCoursReducer from "./features/support_cours_slice.tsx";
 
 const store = configureStore({
   reducer: {
@@ -44,6 +45,7 @@ const store = configureStore({
     enseignantDisciplineSlice: EnseignanDisciplineReducer,
     etudiantDisciplineSlice: EtudiantDisciplineReducer,
     etudiantSlice: EtudiantReducer,
+    supportDeCoursSlice:SupportDeCoursReducer,
 
 
     signalementAbsence: SignalementAbsence,

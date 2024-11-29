@@ -12,6 +12,7 @@ import { PageNoData } from "../../components/_Global/PageNoData";
 import { PageErreur } from "../../components/_Global/PageErreur";
 import LoadingTable from "../../components/Tables/common/LoadingTable";
 import { setShowModal } from "../../_redux/features/setting";
+import Loading from "../../components/ui/loading";
 
 
 export const Departements = () => {
@@ -51,7 +52,7 @@ export const Departements = () => {
 
             {
                 pageIsLoading ?
-                    <LoadingTable /> :
+                    <Loading /> :
                     pageError ?
                         <PageErreur onRefresh={handleRefresh} /> :
                         departements.length === 0 ?

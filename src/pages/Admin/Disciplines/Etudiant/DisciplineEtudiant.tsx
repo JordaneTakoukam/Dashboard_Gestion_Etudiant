@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { setEtudiantDiscipline, setEtudiantsDisciplineLoading, setErrorPageEtudiantDiscipline, setSemestreDisciplineEns, setEtudiantselected } from "../../../../_redux/features/absence/discipline_etudiant_slice";
 import { generateYearRange } from "../../../../fonctions/fonction";
 import { apiGetAbsencesWithEtudiantsByFilter } from "../../../../api/discipline/api_discipline";
-import Table from "../../../../components/Tables/TablesDisciplineEtudiants/Table";
+import Table from "../../../../components/Tables/TableDisciplineEtudiants/Table";
 import { setAnneeDisciplineEns } from "../../../../_redux/features/absence/discipline_enseignant_slice";
 import Loading from "../../../../components/ui/loading";
 import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";

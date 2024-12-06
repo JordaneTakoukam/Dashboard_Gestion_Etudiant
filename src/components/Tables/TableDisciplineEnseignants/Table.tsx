@@ -187,7 +187,7 @@ const Table = ({ data, onEdit }: TableDisciplineProps) => {
     }, [dispatch, selectedYear, selectSemestre, currentPage, t]);
 
 
-    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const lang:string = useSelector((state: RootState) => state.setting.language); // fr ou en
     const handleDownloadSelect = async (selected: string) => {
         // setFormatToDownload(selected);
             try{

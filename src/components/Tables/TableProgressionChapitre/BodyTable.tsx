@@ -1,19 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
-import { config } from "../../../config";
 import { setShowModal } from "../../../_redux/features/setting";
 
 const BodyTable = ({ data, onEdit}: { data: ChapitreType[], onEdit: (chapitre:ChapitreType) => void}) => {
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-    
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageProgressionPermission = userPermissions.includes('gerer_progression_cours_chapitre');
 
     const handleCheckboxChange = async (chapitreIndex: number) => {
-        onEdit(data[chapitreIndex]);
-        dispatch(setShowModal());
+        if(hasManageProgressionPermission){
+            onEdit(data[chapitreIndex]);
+            dispatch(setShowModal())
+        }
     };
+    
 
     return (
         <tbody>
@@ -25,7 +26,7 @@ const BodyTable = ({ data, onEdit}: { data: ChapitreType[], onEdit: (chapitre:Ch
                     </td>
                     {/* Case à cocher pour l'état de l'chapitre */}
                     <td className="border-b border-[#eee] py-0 lg:py-4 px-4 dark:border-strokedark bg-gray-2 dark:bg-black">
-                        <input className="cursor-pointer" type="checkbox" checked={chapitre.etat === 1} onChange={() => handleCheckboxChange(indexChapitre)} />
+                        <input className={`${(!hasManageProgressionPermission) ? '' : 'cursor-pointer'}`} type="checkbox" checked={chapitre.etat === 1} onChange={() => handleCheckboxChange(indexChapitre)} />
                     </td>
                 </tr>
             ))}

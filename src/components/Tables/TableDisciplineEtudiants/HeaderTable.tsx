@@ -1,7 +1,11 @@
 import { useTranslation } from "react-i18next"
+import { useSelector } from "react-redux";
+import { RootState } from "../../../_redux/store";
 
 const HeaderTableDisciplineEtudiant = () => {
     const {t}=useTranslation();
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageStudentDisciplinePermission = userPermissions.includes('consulter_liste_etudiant');
     return (
 
         <thead className=''>
@@ -42,9 +46,9 @@ const HeaderTableDisciplineEtudiant = () => {
 
 
                 {/* Actions  */}
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
+                {hasManageStudentDisciplinePermission && <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
                     {t('label.actions')}
-                </th>
+                </th>}
             </tr>
         </thead>
     )

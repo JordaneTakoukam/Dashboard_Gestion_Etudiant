@@ -48,9 +48,8 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
-    const [filteredSemestre, setFilteredSemestre]=useState([]);
-    const pageError = useSelector((state: RootState) => state.dataSetting.error);
-    // const niveauxEnseignantIds = currentUser?.niveaux.map(inscription => inscription.niveau) ?? [];
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSubjectPermission = userPermissions.includes('gerer_matieres');
 
     // // Filtrer les niveaux de l'utilisateur enseignant
     // const niveauxEnseignant = niveaux.filter(niveau => niveau._id && niveauxEnseignantIds.includes(niveau._id));
@@ -119,24 +118,6 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     };
     const [formatToDownload, setFormatToDownload] = useState("");
 
-    const fetchAllMatieres = async () => {
-        try {
-            
-
-            if (selectNiveauId) {
-                const fetchedMatieres = await getMatieresByNiveau({ niveauId: selectNiveauId, annee:selectedYear, semestre:selectedSemestre, langue:lang });
-                return fetchedMatieres.matieres;
-            }else{
-                alert(t("label.message_telecharger"));
-            }
-            // Réinitialisez les erreurs s'il y en a
-        } catch (error) {
-            dispatch(setErrorPageMatiere(t('message.erreur')));
-            createToast(t('message.erreur'), "", 2)
-        } finally {
-            dispatch(setMatiereLoading(false)); // Définissez le loading à false après le chargement
-        }
-    }
 
     const handleDownloadSelect = async (selected: string) => {
         setFormatToDownload(selected);
@@ -150,7 +131,18 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             if(selectNiveauId && section && cycle && niveau && departement){
                 if(selected === 'PDF'){
                     
-                    
+                    if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
+                        if(selectedYear){
+                            await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
+                                // Créer un objet URL pour le blob PDF
+                                if(blob){
+                                    createPDF(blob, title);
+                                }
+                            })
+                        }else{
+                            alert(t("label.message_telecharger"));
+                        }
+                    }else{
                         if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
                             await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
                                 // Créer un objet URL pour le blob PDF
@@ -158,32 +150,11 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                                     createPDF(blob, title);
                                 }
                             })
-                        }else{
-                            // if(section && cycle && niveau && departement && selectedYear && selectedSemestre){
-                            if(selectedYear){
-                                await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
-                                    // Créer un objet URL pour le blob PDF
-                                    if(blob){
-                                        createPDF(blob, title);
-                                    }
-                                })
-                            }else{
-                                alert(t("label.message_telecharger"));
-                            }
-                            // }
                         }
-                    
+                    }
                     
                 }else{
-                    if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
-                        await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx' } ).then((blob)=>{
-                            // Créer un objet URL pour le blob PDF
-                            if(blob){
-                                createPDF(blob, title, 'xlsx');
-                            }
-                        })
-                    }else{
-                        // if(section && cycle && niveau && departement && selectedYear && selectedSemestre){
+                    if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
                         if(selectedYear){
                             await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx'}).then((blob)=>{
                                 // Créer un objet URL pour le blob PDF
@@ -194,8 +165,17 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                         }else{
                             alert(t("label.message_telecharger"));
                         }
-                        // }
+                    }else{
+                        if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
+                            await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx' } ).then((blob)=>{
+                                // Créer un objet URL pour le blob PDF
+                                if(blob){
+                                    createPDF(blob, title, 'xlsx');
+                                }
+                            })
+                        }
                     }
+                    
                 }
             }else{
                 alert(t("label.message_telecharger"));
@@ -269,17 +249,6 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     };
 
     // Filtrer les matières en fonction de la langue
-    const filterMatiereByContent = (matieres: MatiereType[]) => {
-        if (searchText === '') {
-            const result: MatiereType[] = matieres;
-            return result;
-        }
-        return matieres.filter(matiere => {
-            const libelle = lang === 'fr' ? matiere.libelleFr : matiere.libelleEn;
-            // Vérifie si le code ou le libellé contient le texte de recherche
-            return matiere.code.toLowerCase().includes(searchText.toLowerCase()) || libelle.toLowerCase().includes(searchText.toLowerCase());
-        });
-    };
 
 
 
@@ -320,6 +289,18 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         setFilteredSection(sections);
     }, []);
     useEffect(() => {
+        if(hasManageSubjectPermission){
+            if (!selectSectionId) {
+                if (sections && sections.length > 0) {
+                    // filterCycleBySection(sections[0]._id);
+                    // setSection(sections[0]);
+                }
+            } else {
+                setFilteredCycle([]);
+                filterCycleBySection(selectSectionId);
+            }
+            return;
+        }
         if (currentUser && currentUser.role === roles.enseignant) {
             setSelectedYear(currentYear);
             setSelectedSemestre(currentSemestre);
@@ -339,16 +320,6 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                 if (sections && sections.length > 0) {
                     filterCycleBySection(sections[0]._id);
                     setSection(sections[0]);
-                }
-            } else {
-                setFilteredCycle([]);
-                filterCycleBySection(selectSectionId);
-            }
-        }else{
-            if (!selectSectionId) {
-                if (sections && sections.length > 0) {
-                    // filterCycleBySection(sections[0]._id);
-                    // setSection(sections[0]);
                 }
             } else {
                 setFilteredCycle([]);
@@ -383,24 +354,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                     totalPages: 0,
                     pageSize: 0
                 }
-                if (currentUser && currentUser.role === roles.enseignant) {
-                    if (selectNiveauId) {
-                        let fetchedMatieres: MatiereReturnGetType | undefined;
-                        if(selectedYear && selectedSemestre){
-                             fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
-                        }
-                        
-
-                        if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
-                            dispatch(setMatieres(fetchedMatieres));
-                        } else {
-
-                            dispatch(setMatieres(emptyMatieres));
-                        }
-                    } else{
-                        dispatch(setMatieres(emptyMatieres));
-                    }
-                }else{
+                if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
                     if (selectNiveauId) {
                         const fetchedMatieres = await getMatieresByNiveauWithPagination({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear, semestre: selectedSemestre, langue:lang });
                         
@@ -422,7 +376,27 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             dispatch(setMatieres(emptyMatieres));
                         }
                     }
+                }else{
+                    if (currentUser && currentUser.role === roles.enseignant) {
+                        if (selectNiveauId) {
+                            let fetchedMatieres: MatiereReturnGetType | undefined;
+                            if(selectedYear && selectedSemestre){
+                                 fetchedMatieres = await getMatieresByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, langue:lang });
+                            }
+                            
+    
+                            if (fetchedMatieres) { // Vérifiez si fetchedMatieres n'est pas faux, vide ou indéfini
+                                dispatch(setMatieres(fetchedMatieres));
+                            } else {
+    
+                                dispatch(setMatieres(emptyMatieres));
+                            }
+                        } else{
+                            dispatch(setMatieres(emptyMatieres));
+                        }
+                    }
                 }
+                
                 // Réinitialisez les erreurs s'il y en a
             } catch (error) {
                 dispatch(setErrorPageMatiere(t('message.erreur')));
@@ -439,11 +413,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
     // modifier les données de la page lors de la recherche ou de la sélection de la section
     const [filteredData, setFilteredData] = useState<MatiereType[]>(data);
 
-    // useEffect(() => {
-    //     const result = filterMatiereByContent(data);
-    //     setFilteredData(result);
-    // }, [searchText, data]);
-
+   
     useEffect(() => {
 
         if(searchText === ''){
@@ -461,44 +431,14 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             
             const filterMatiereByContent = async () => {
                 if (searchText === '') {
-                    if(currentUser.role === roles.enseignant){
-                        // sections.length>0?setSection(sections[0]):setSection(undefined);
-                        // filterCycleBySection(section?._id);
-                        // setCycle(filteredCycle[0]);
-                        // filterNiveauxByCycle(cycle?._id);
-                        // setNiveau(filteredNiveaux[0]);
-                    }else{
-                        // if(refreshFilter){
-                        //     handleRefreshFilters();
-                        // }
-                    }
+                    
                     
                     const result: MatiereType[] = data;
                     setFilteredData(result); 
                 }else{
-                    if(currentUser.role === roles.enseignant){
-                        // setSection(undefined);
-                        // setCycle(undefined);
-                        // setNiveau(undefined);
-                        // setFilteredCycle([]);
-                        // setFilteredNiveaux([]);
-                    }else{
-                        // handleRefreshFilters();
-                    }
+                    
                     let matieresResult : MatiereType[] = [];
-                    if(currentUser.role === roles.enseignant){
-                        if(selectedYear){
-                            await apiSearchMatiereByEnseignant({ searchString:searchText, limit:10, langue:lang, enseignantId:currentUser._id, annee:selectedYear }).then(result=>{
-                                if (latestQueryMatiere.current === searchText) {
-                                    if(result){
-                                        matieresResult = result.matieres;
-                                        setFilteredData(matieresResult);
-                                    }
-                                }
-                                
-                            })
-                        }
-                    }else{
+                    if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
                         await apiSearchMatiere({ searchString:searchText, limit:10, langue:lang }).then(result=>{
                             if (latestQueryMatiere.current === searchText) {
                                 if(result){
@@ -508,10 +448,23 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
                             }
                             
                         })
+                    }else{
+                        if(currentUser.role === roles.enseignant){
+                            if(selectedYear){
+                                await apiSearchMatiereByEnseignant({ searchString:searchText, limit:10, langue:lang, enseignantId:currentUser._id, annee:selectedYear }).then(result=>{
+                                    if (latestQueryMatiere.current === searchText) {
+                                        if(result){
+                                            matieresResult = result.matieres;
+                                            setFilteredData(matieresResult);
+                                        }
+                                    }
+                                    
+                                })
+                            }
+                        }
                     }
-                }
-        
-                
+                    
+                }                
             };
             filterMatiereByContent();
         }catch(e){
@@ -538,7 +491,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {(roles.admin === currentUser.role || roles.superAdmin === currentUser.role) && (<ButtonCreate
+                {hasManageSubjectPermission && (<ButtonCreate
                     onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.matiere')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
@@ -548,7 +501,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.matiere')} 
-                {(currentUser && currentUser.role !== roles.enseignant  && currentUser.role !== roles.etudiant && currentUser.role !== roles.delegue) && (<Bouton
+                {hasManageSubjectPermission && (<Bouton
                     iconeSmall={true}
                     circle={true}
                     typeRefresh={true}
@@ -682,7 +635,7 @@ const Table = ({ data, onCreate, onEdit}: TableMatiereProps) => {
 
                 {/* Pagination */}
 
-                {((searchText ==='') && (currentUser && currentUser.role!==roles.enseignant) && (filteredData && filteredData.length>0)) && <Pagination
+                {((searchText ==='') && (hasManageSubjectPermission) && (filteredData && filteredData.length>0)) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

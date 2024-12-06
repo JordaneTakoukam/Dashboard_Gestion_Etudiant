@@ -8,7 +8,7 @@ import createToast from "../../hooks/toastify";
 import Loading from "../../components/ui/loading";
 import { config } from "../../config";
 import { apiGetSupportDeCours } from "../../api/api_support_cours";
-import Table from "../../components/Tables/TablesSupportDeCours/Table";
+import Table from "../../components/Tables/TableSupportDeCours/Table";
 import ModalRole from "../../components/Modals/ModalEtudiant/ModalRole";
 import ModalCreateSupportDeCours from "../../components/Modals/ModalSupportDeCours/FormCreateUpdate";
 import ModalDeleteSupportDeCours from "../../components/Modals/ModalSupportDeCours/FormDelete";

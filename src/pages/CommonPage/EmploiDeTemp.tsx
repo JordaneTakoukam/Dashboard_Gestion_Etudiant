@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
-import Table from "../../components/Tables/TableEmploieDeTemps/Table";
+import Table from "../../components/Tables/TableEmploiDeTemps/Table";
 import FormCreateUpdate from "../../components/Modals/ModalEmploiTemps/FormCreateUpdate";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";

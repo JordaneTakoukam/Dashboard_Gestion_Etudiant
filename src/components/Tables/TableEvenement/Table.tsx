@@ -10,7 +10,6 @@ import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store";
-import { config } from "../../../config";
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import Pagination from "../../Pagination/Pagination";
@@ -40,6 +39,8 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const promotions = useSelector((state: RootState) => state.dataSetting.dataSetting.promotions) ?? [];
     const [promotion, setPromotion] = useState<PromotionProps | undefined>();
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageCalendarPermission = userPermissions.includes('gerer_calendrier_academique');
     
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -111,8 +112,6 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
    
       
 
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
 
     // variable pour la pagination
     const itemsPerPage =  useSelector((state: RootState) => state.evenementSlice.data.pageSize); // nombre d'éléments maximum par page
@@ -242,7 +241,7 @@ const Table = ({ data, onCreate, onEdit, refresh }: TableEvenementProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {(roles.admin === userRole || roles.superAdmin === userRole) && (<ButtonCreate
+                {(hasManageCalendarPermission) && (<ButtonCreate
                     title={t('boutton.nouvel_evenement')}
                     onClick={() => { onCreate(); dispatch(setShowModal()) }}
                 />)}

@@ -131,14 +131,14 @@ const coreRoutes = [
     path: '/subjects/chapitres/manage',
     title: 'Liste des chapitres',
     component: Chapitres,
-    permissions:["gerer_chapitres"]
+    permissions:["gerer_chapitres","consulter_liste_chapitres"]
   },
 
   {
     path: '/subjects/objectifs/manage',
     title: 'Liste des objectifs',
     component: Objectifs,
-    permissions:["gerer_objectifs"]
+    permissions:["gerer_objectifs", "consulter_liste_objectifs"]
   },
 
   {

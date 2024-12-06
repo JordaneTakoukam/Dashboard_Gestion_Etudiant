@@ -3,7 +3,8 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { RxDashboard } from 'react-icons/rx';
 import { AiOutlineSchedule } from 'react-icons/ai';
 import { TbSchool } from 'react-icons/tb';
-import { FaCalendarAlt, FaFile } from 'react-icons/fa';
+import { FaCalendarAlt, FaCalendarTimes, FaFile } from 'react-icons/fa';
+import { FaDoorOpen } from 'react-icons/fa6';
 
 interface SidebarLinkProps {
     to: string;
@@ -65,7 +66,7 @@ export const DashboardLink = ({ userPermissions, t }: { userPermissions: string[
 export const SalleCourLink = ({ userPermissions, t }: { userPermissions: string[], t: (key: string) => string }) => (
     <SidebarLink
         to="/classrooms"
-        icon={<TbSchool />}
+        icon={<FaDoorOpen />}
         label="menu.salles"
         permissionsRequired={["gerer_salles"]}
         userPermissions={userPermissions}
@@ -113,7 +114,7 @@ export const DocumentLink = ({ userPermissions, t }: { userPermissions: string[]
 export const AbsencesLink = ({ userPermissions, t }: { userPermissions: string[], t: (key: string) => string }) => (
     <SidebarLink
         to="/absences"
-        icon={<FaFile />}
+        icon={<FaCalendarTimes />}
         label="menu.absences"
         permissionsRequired={["consulter_liste_absence"]}
         userPermissions={userPermissions}

@@ -6,6 +6,8 @@ import { RootState } from "../../../_redux/store";
 const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (enseignement: MatiereEnseignement) => void }) => {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const dispatch = useDispatch();
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSubjectTeachingPeriodPermission = userPermissions.includes('gerer_matiere_periode_enseignement');
     // const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
 
     return <tbody>
@@ -33,7 +35,7 @@ const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (en
                 </td>
                 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
+                {hasManageSubjectTeachingPeriodPermission && <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);
@@ -44,7 +46,7 @@ const BodyTable = ({ data, onEdit }: { data?: MatiereEnseignement[], onEdit: (en
                             dispatch(setShowModalDelete())
                         }}
                     />
-                </td>
+                </td>}
             </tr>
         ))}
     </tbody>

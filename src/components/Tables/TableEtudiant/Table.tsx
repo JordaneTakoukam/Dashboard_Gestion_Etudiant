@@ -7,8 +7,8 @@ import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
-import HeaderTableEtudiant from "./HeaderTableEtudiant";
-import BodyTableEtudiant from "./BodyTableEtudiant";
+import HeaderTable from "./HeaderTable";
+import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
@@ -60,6 +60,8 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
     const [isSearch, setIsSearch] = useState(false);
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageStudentPermission = userPermissions.includes('gerer_etudiants');
 
     // filtrer les donnee a partir de l'id de la section selectionner
     const filterCycleBySection = (sectionId: string | undefined) => {
@@ -332,7 +334,7 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {(roles.admin === userRole || roles.superAdmin === userRole) && (<ButtonCreate
+                {hasManageStudentPermission && (<ButtonCreate
                     title={t('boutton.nouvelle_etudiant')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}
@@ -437,13 +439,13 @@ const Table = ({ data, onCreate,onAddRole, onEdit}: TableEtudiantProps) => {
                                 <LoadingTable />
                                 : filteredData.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTableEtudiant />
+                                    <HeaderTable />
                         }
 
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTableEtudiant data={filteredData} onEdit={onEdit} onAddRole={onAddRole}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} onAddRole={onAddRole}/>
                         }
 
 

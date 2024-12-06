@@ -5,7 +5,7 @@ import { setErrorPageEnseignant, setEnseignant, setEnseignantsLoading } from "..
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import { apiGetEnseignantsWithPagination } from "../../api/other_users/api_enseignant";
-import Table from "../../components/Tables/TablesEnseignants/Table";
+import Table from "../../components/Tables/TableEnseignant/Table";
 import ModalCreateEnseignant from "../../components/Modals/ModalEnseignant/FormCreateUpdate";
 import ModalDeleteEnseignant from "../../components/Modals/ModalEnseignant/FormDelete";
 import Loading from "../../components/ui/loading";

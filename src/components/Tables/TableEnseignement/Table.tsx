@@ -25,13 +25,11 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignementProps) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const selectedPeriode = useSelector((state: RootState) => state.periodeEnseignementSlice.selectedPeriode);
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSubjectTeachingPeriodPermission = userPermissions.includes('gerer_matiere_periode_enseignement');
 
-    const handlePageClick = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
     const [searchText, setSearchText] = useState<string>('');
     const [filteredData, setFilteredData] = useState<MatiereEnseignement[] | undefined>(data);
     // Filtrer les matières en fonction de la langue
@@ -69,10 +67,10 @@ const Table = ({ data, onCreate, onEdit}: TableEnseignementProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <ButtonCreate
+                {hasManageSubjectTeachingPeriodPermission && <ButtonCreate
                     title={t('boutton.nouveau_enseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
-                />
+                />}
                 <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.enseignement'))} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}

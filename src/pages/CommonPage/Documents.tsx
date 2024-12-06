@@ -25,6 +25,8 @@ const DocumentUploadUpload = () => {
   const { data: { documentUploads } } = useSelector((state: RootState) => state.documentUploadSlice);
   const lang = useSelector((state: RootState) => state.setting.language);
   const currentUser: UserState = useSelector((state: RootState) => state.user);
+  const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSupportPermission = userPermissions.includes('gerer_documents');
 
   // Variables pour la pagination
   const itemsPerPage = useSelector((state: RootState) => state.documentUploadSlice.data.pageSize); // nombre d'éléments maximum par page
@@ -138,7 +140,7 @@ const DocumentUploadUpload = () => {
   return (
     <>
       <div className="document-upload-container h-full">
-        {(currentUser.role===config.roles.superAdmin || currentUser.role===config.roles.admin) && <div
+        {hasManageSupportPermission && <div
           className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
         >
           <input

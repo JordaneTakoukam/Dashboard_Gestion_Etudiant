@@ -2,9 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store"
-import { config } from "../../../config"
-import { useState } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
 import { setMatiereSelected } from "../../../_redux/features/matiere_slice"
@@ -20,32 +18,17 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
     // const [selectedMatiere, setSelectedMatiere] = useState<MatiereType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSubjectPermission = userPermissions.includes('gerer_matieres');
+    const hasManageChapterPermission = userPermissions.includes('gerer_chapitres') || userPermissions.includes('consulter_liste_chapitres');
+    const hasManageObjectivePermission = userPermissions.includes('gerer_objectifs') || userPermissions.includes('consulter_liste_objectifs')
+    const hasManageActPedPermission = userPermissions.includes('gerer_activites_pedagogiques');
+    const hasUpdateSubjectPermission = userPermissions.includes('modifier_information_matiere');
     
     const {t}=useTranslation();
-    // const onMoreActionsClick = (actionName: string) => {
-    //     switch (actionName) {
-    //         case 'Ajouter un chapitre':
-    //             if (selectedMatiere) {
-    //                 onAddChap(selectedMatiere);
-    //             }
-    //             // dispatch(setShowModalChapitre())
-    //             break;
-    //         case 'Ajouter un objectif':
-    //             // Logic to add an objective                    
-
-
-    //             break;
-    //         case 'Ajouter une compétence':
-    //             // Logic to add a competency
-    //             break;
-    //         default:
-    //             console.error(`Unknown action: ${actionName}`);
-    //     }
-    // };
-
+  
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
+    
     function nombreDeChapitres(matiere: MatiereType) {
         // Vérifier si la matière existe et si elle a une liste de chapitres
         if (matiere && matiere.chapitres && Array.isArray(matiere.chapitres)) {
@@ -88,6 +71,7 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
 
         return volumeTotal;
     }
+    
 
 
 
@@ -121,50 +105,65 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyMatiereProps) => {
 
                 {/* Action  bouton pour edit*/}
                 <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
-                    {(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) && <SelectButton
-                        listPage={[
-                            {
-                                "name": t('label.types_ens'),
-                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/enseignements/manage')}
-                            },
-                            {
-                                "name": t('label.chapitres'),
-                                "handleClick": () => { dispatch(setMatiereSelected(item));navigate('/subjects/chapitres/manage') }
-                            },
-                            {
-                                "name": t('label.objectifs'),
-                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
-                            }
-                        ]}
-                    />}
-                    {(roles.etudiant === userRole || roles.delegue === userRole) && <SelectButton
-                        listPage={[
-                            {
-                                "name": t('label.chapitres'),
-                                "handleClick": () => { dispatch(setMatiereSelected(item));navigate('/subjects/chapitres/manage') }
-                            },
-                            {
-                                "name": t('label.objectifs'),
-                                "handleClick": () => {dispatch(setMatiereSelected(item));navigate('/subjects/objectifs/manage') }
-                            }
-                        ]}
-                    />}
+                    {(hasManageActPedPermission || hasManageChapterPermission || hasManageObjectivePermission) && (() => {
+                        // Construire dynamiquement la liste des pages en fonction des permissions
+                        const listPage = [];
+
+                        if (hasManageActPedPermission) {
+                            listPage.push({
+                                name: t('label.types_ens'),
+                                handleClick: () => {
+                                    dispatch(setMatiereSelected(item));
+                                    navigate('/subjects/enseignements/manage');
+                                },
+                            });
+                        }
+
+                        if (hasManageChapterPermission) {
+                            listPage.push({
+                                name: t('label.chapitres'),
+                                handleClick: () => {
+                                    dispatch(setMatiereSelected(item));
+                                    navigate('/subjects/chapitres/manage');
+                                },
+                            });
+                        }
+
+                        if (hasManageObjectivePermission) {
+                            listPage.push({
+                                name: t('label.objectifs'),
+                                handleClick: () => {
+                                    dispatch(setMatiereSelected(item));
+                                    navigate('/subjects/objectifs/manage');
+                                },
+                            });
+                        }
+
+                        return listPage.length > 0 ? (
+                            <SelectButton listPage={listPage} />
+                        ) : null;
+                    })()}
+                    
                     <ButtonCrudTable
-                        onClickEdit={(roles.admin === userRole || roles.superAdmin === userRole || roles.enseignant === userRole) ?() => {
-                            onEdit(item);
-                            dispatch(setShowModal())
-                        }:undefined}
-                        onClickDelete={(roles.admin === userRole || roles.superAdmin === userRole) ? () => {
-                            onEdit(item);
-                            dispatch(setShowModalDelete())
-                        } : undefined}
-
-                    // onClickOpenChapitres={() => onAddChap(item)}
+                        onClickEdit={
+                            (hasUpdateSubjectPermission)
+                                ? () => {
+                                    onEdit(item);
+                                    dispatch(setShowModal());
+                                }
+                                : undefined
+                        }
+                        onClickDelete={
+                            hasManageSubjectPermission
+                                ? () => {
+                                    onEdit(item);
+                                    dispatch(setShowModalDelete());
+                                }
+                                : undefined
+                        }
                     />
-
-
-
                 </td>
+
             </tr>
         ))}
     </tbody>

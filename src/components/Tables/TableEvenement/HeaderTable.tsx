@@ -1,13 +1,11 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../../_redux/store";
-import { config } from "../../../config";
 import { useTranslation } from "react-i18next";
 
 const HeaderTable = () => {
     const {t}=useTranslation();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
-
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageCalendarPermission = userPermissions.includes('gerer_calendrier_academique');
     return (
 
         <thead className=''>
@@ -49,7 +47,7 @@ const HeaderTable = () => {
                 </th>
 
                 {/* Actions  */}
-                {(roles.admin === userRole || roles.superAdmin === userRole) && (<th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
+                {hasManageCalendarPermission && (<th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
                     {t('label.actions')}
                 </th>)}
             </tr>

@@ -3,7 +3,6 @@ import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
@@ -16,7 +15,6 @@ interface BodyPeriodeEnseignementProps {
 }
 
 const BodyTable = ({ data, onEdit }: BodyPeriodeEnseignementProps) => {
-    const [selectedPeriodeEnseignement, setSelectedPeriodeEnseignement] = useState<PeriodeEnseignementType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
     
@@ -24,6 +22,9 @@ const BodyTable = ({ data, onEdit }: BodyPeriodeEnseignementProps) => {
     const dispatch = useDispatch();
     const userRole = useSelector((state: RootState) => state.user.role);
     const roles = config.roles;
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageTeachingPeriodPermission = userPermissions.includes('gerer_periodes_enseignements');
+    const hasManageSubjectTeachingPeriodPermission = userPermissions.includes('gerer_matiere_periode_enseignement');
 
     return <tbody>
         {data && data.map((item, index) => (
@@ -49,15 +50,15 @@ const BodyTable = ({ data, onEdit }: BodyPeriodeEnseignementProps) => {
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
-                    <SelectButton
+                {hasManageTeachingPeriodPermission && <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                    {hasManageSubjectTeachingPeriodPermission && <SelectButton
                         listPage={[
                            {
                                 "name": t('label.enseignements'),
                                 "handleClick": () => {dispatch(setPeriodeSelected(item));navigate('/subjects/periodes_enseignement/enseignements/manage')}
                             }
                         ]}
-                    />
+                    />}
                     <ButtonCrudTable
                         onClickEdit={() => {
                             onEdit(item);
@@ -71,7 +72,7 @@ const BodyTable = ({ data, onEdit }: BodyPeriodeEnseignementProps) => {
                         // onClickOpenChapitres={() => onAddEnseignement(item)} 
                     />
                     
-                </td>
+                </td>}
             </tr>
         ))}
     </tbody>

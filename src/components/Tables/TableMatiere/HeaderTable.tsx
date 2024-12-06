@@ -1,7 +1,15 @@
 import { useTranslation } from "react-i18next"
+import { useSelector } from "react-redux";
+import { RootState } from "../../../_redux/store";
 
 const HeaderTable = () => {
     const {t}=useTranslation();
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageSubjectPermission = userPermissions.includes('gerer_matieres');
+    const hasManageChapterPermission = userPermissions.includes('gerer_chapitres') || userPermissions.includes('consulter_liste_chapitres');
+    const hasManageObjectivePermission = userPermissions.includes('gerer_objectifs') || userPermissions.includes('consulter_liste_objectifs')
+    const hasManageActPedPermission = userPermissions.includes('gerer_activites_pedagogiques');
+    const hasUpdateSubjectPermission = userPermissions.includes('modifier_information_matiere');
     return (
 
         <thead className=''>
@@ -33,9 +41,9 @@ const HeaderTable = () => {
                 </th>
 
                 {/* Actions  */}
-                <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
+                {(hasManageSubjectPermission || hasManageChapterPermission ||hasManageObjectivePermission|| hasManageActPedPermission || hasUpdateSubjectPermission) &&  <th className="min-w-[60px] py-2 px-4 font-medium text-gray-2 dark:text-white">
                     {t('label.actions')}
-                </th>
+                </th>}
             </tr>
         </thead>
     )

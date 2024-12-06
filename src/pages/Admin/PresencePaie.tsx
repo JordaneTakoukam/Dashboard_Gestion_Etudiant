@@ -6,7 +6,7 @@ import { RootState } from "../../_redux/store";
 import Breadcrumb from "../../components/Breadcrumb";
 import Loading from "../../components/ui/loading";
 import createToast from "../../hooks/toastify";
-import Table from "../../components/Tables/TablesPresencePaieEnseignant/Table";
+import Table from "../../components/Tables/TablePresencePaieEnseignant/Table";
 import { apiGetPresencesWithTotalHoraire } from "../../api/api_presence_paie";
 
 

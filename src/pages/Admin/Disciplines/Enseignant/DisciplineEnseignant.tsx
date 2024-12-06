@@ -1,27 +1,21 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../../../components/Breadcrumb";
-import Table from "../../../../components/Tables/TablesDisciplineEnseignants/Table";
+import Table from "../../../../components/Tables/TableDisciplineEnseignants/Table";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../_redux/store";
-import LoadingTable from "../../../../components/Tables/common/LoadingTable";
-import { PageErreur } from "../../../../components/_Global/PageErreur";
-import { PageNoData } from "../../../../components/_Global/PageNoData";
 import { apiGetAbsencesWithEnseignantsByFilter } from "../../../../api/discipline/api_discipline";
 import ModalCreateUpdateAbsence from "../../../../components/Modals/ModalAbsence/FormCreateUpdate";
-import { useNavigate } from 'react-router-dom';
 import { setAnneeDisciplineEns, setEnseignantDiscipline, setEnseignantSelected, setEnseignantsDisciplineLoading, setErrorPageEnseignantDiscipline, setSemestreDisciplineEns } from "../../../../_redux/features/absence/discipline_enseignant_slice";
-import { generateYearRange } from "../../../../fonctions/fonction";
 import { setShowModal } from "../../../../_redux/features/setting";
 import Loading from "../../../../components/ui/loading";
 
 const DisciplineDesEnseignants = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const [isJustify, setJustify] = useState(false);
     const [isHourRemove, setHourRemove] = useState(false);
-    const { data: { enseignants }, pageIsLoading, pageError } = useSelector((state: RootState) => state.enseignantDisciplineSlice);
+    const { data: { enseignants } } = useSelector((state: RootState) => state.enseignantDisciplineSlice);
 
     const [selectedEtudiant, setSelectedEtudiant] = useState<UserDiscipline | undefined>();
     const [enseignantCustomSelected, setEnseignantCustomSelected] = useState<CustomEtudiantSelect>({ absence: undefined, user: selectedEtudiant })
@@ -51,7 +45,6 @@ const DisciplineDesEnseignants = () => {
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const firstYear = useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    const currentPlageDate: string[] = generateYearRange(currentYear, firstYear);
 
 
     const loadingSetting = useSelector((state: RootState) => state.dataSetting.loading);
@@ -77,9 +70,6 @@ const DisciplineDesEnseignants = () => {
         }
     };
 
-    const handleRefresh = async () => {
-        await fetchEnseignants();
-    };
 
 
     useEffect(() => {

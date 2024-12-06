@@ -3,14 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonCrudTable from "../common/ButtonActionTable";
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting";
 import { RootState } from "../../../_redux/store";
-import { config } from "../../../config";
 
 const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement: EvenementType) => void }) => {
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
     const lang = useSelector((state: RootState) => state.setting.language);
     const etats = useSelector((state: RootState) => state.dataSetting.dataSetting.etatsEvenement) ?? [];
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageCalendarPermission = userPermissions.includes('gerer_calendrier_academique');
 
     // State pour stocker la valeur de l'état sélectionné pour chaque événement
     const [selectedEtatMap, setSelectedEtatMap] = useState<{ [key: string]: CommonSettingProps | undefined }>({});
@@ -68,11 +67,11 @@ const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement
                     </td>
 
                     {/* État */}
-                    {(roles.admin === userRole || roles.superAdmin === userRole) ? (
+                    {hasManageCalendarPermission ? (
                         <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                             <select
                                 value={selectedEtatMap[item.code] ? lang === 'fr' ? selectedEtatMap[item.code]?.libelleFr : selectedEtatMap[item.code]?.libelleEn : ""}
-                                onChange={(e) => handleEtatSelect(selectedEtatMap[item.code], item.code)}
+                                onChange={() => handleEtatSelect(selectedEtatMap[item.code], item.code)}
                                 className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             >
                                 {etats.map(etat => (
@@ -87,7 +86,7 @@ const BodyTable = ({ data, onEdit }: { data: EvenementType[], onEdit: (evenement
                     )}
 
                     {/* Action  bouton pour edit*/}
-                    {(roles.admin === userRole || roles.superAdmin === userRole) && (
+                    {hasManageCalendarPermission && (
                         <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark">
                             <ButtonCrudTable
                                 onClickEdit={() => {

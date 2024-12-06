@@ -10,7 +10,6 @@ import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store"
-import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
 import { useTranslation } from "react-i18next";
 import createToast from "../../../hooks/toastify";
@@ -29,8 +28,6 @@ interface TablePeriodeEnseignementProps {
 const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-    const userRole = useSelector((state: RootState) => state.user.role);
-    const roles = config.roles;
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
@@ -41,6 +38,8 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const pageIsLoading = useSelector((state: RootState) => state.periodeEnseignementSlice.pageIsLoading);
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageTeachingPeriodPermission = userPermissions.includes('gerer_periodes_enseignements');
     const [isDownload, setIsDownload]=useState(false);
     // Fonction pour basculer la visibilité des CustomDropDown
     const toggleDropdownVisibility = () => {
@@ -297,7 +296,7 @@ const Table = ({ data, onCreate, onEdit}: TablePeriodeEnseignementProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {(roles.admin === userRole || roles.superAdmin === userRole) && (<ButtonCreate
+                {hasManageTeachingPeriodPermission && (<ButtonCreate
                     title={t('boutton.nouvelle_periodeEnseignement')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
                 />)}

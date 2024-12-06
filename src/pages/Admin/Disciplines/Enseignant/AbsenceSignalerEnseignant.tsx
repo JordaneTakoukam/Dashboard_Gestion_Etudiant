@@ -5,7 +5,7 @@ import Breadcrumb from "../../../../components/Breadcrumb";
 import LoadingTable from "../../../../components/Tables/common/LoadingTable";
 import { PageErreur } from "../../../../components/_Global/PageErreur";
 import { PageNoData } from "../../../../components/_Global/PageNoData";
-import TableSignalementAbsence from "../../../../components/Tables/TablesDisciplineEnseignants/Table_signalement_absence";
+import TableSignalementAbsence from "../../../../components/Tables/TableDisciplineEnseignants/Table_signalement_absence";
 import { r_enseig } from "../../../../config";
 
 

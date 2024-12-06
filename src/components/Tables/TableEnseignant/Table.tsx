@@ -5,8 +5,7 @@ import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
 import CustomButtonDownload from "../common/CustomButtomDownload";
-import HeaderTableEnseignant from "./HeaderTable";
-import BodyTableEnseignant from "./BodyTable";
+
 import { RootState } from "../../../_redux/store"
 import { config } from "../../../config"
 import CustomDropDown2 from "../../DropDown/CustomDropDown2";
@@ -20,6 +19,8 @@ import { createPDF } from "../../../fonctions/fonction";
 import Download from "../common/Download";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
+import BodyTable from "./BodyTable";
+import HeaderTable from "./HeaderTable";
 
 interface TableEnseignantProps {
     data: EnseignantType[];
@@ -42,6 +43,8 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
     const categories = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
     const fonctions = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageTeacherPermission = userPermissions.includes('gerer_enseignants');
 
     // state save
     const selectSave = useSelector((state: RootState) => state.enseignantSlice.selected);
@@ -309,7 +312,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {(roles.admin === userRole || roles.superAdmin === userRole) && (
+                {hasManageTeacherPermission && (
                     <ButtonCreate onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""} />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.enseignant')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
@@ -422,7 +425,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                                 <LoadingTable />
                                 : filteredData.length === 0 ?
                                     <NoDataTable /> :
-                                    <HeaderTableEnseignant />
+                                    <HeaderTable />
                         }
                         
 
@@ -430,7 +433,7 @@ const Table = ({ data, onCreate, onEdit }: TableEnseignantProps) => {
                         {/* corp du tableau*/}
                         {
                             
-                            <BodyTableEnseignant data={filteredData} onEdit={onEdit} />
+                            <BodyTable data={filteredData} onEdit={onEdit} />
                         }
 
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import ModalDeleteEtudiant from "../../components/Modals/ModalEtudiant/DialogDeleteEtudiant";
-import TableEtudiant from "../../components/Tables/TablesEtudiants/TableEdudiants";
+import Table from "../../components/Tables/TableEtudiant/Table";
 import { useTranslation } from "react-i18next";
 import { setErrorPageEtudiant, setEtudiant, setEtudiantsLoading } from "../../_redux/features/etudiant_slice";
 import { useDispatch, useSelector } from "react-redux";
@@ -81,7 +81,7 @@ const ListeDesEtudiants = () => {
             {
                 settingIsLoading ?
                     <Loading /> :
-                        <TableEtudiant data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
+                        <Table data={etudiants} onCreate={handleAddEtudiant} onAddRole={handleAddRole} onEdit={handleEditEtudiant} />
             }
             {/* Boite de dialogue */}
             <ModalCreateEtudiant etudiant={selectedEtudiant} />

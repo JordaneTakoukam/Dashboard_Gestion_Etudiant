@@ -46,6 +46,7 @@ import UserPermissions from '../pages/CommonPage/UserPermissions';
 import AccessDenied from '../pages/CommonPage/AccesRefuse';
 import SupportDeCours from '../pages/CommonPage/SupportDeCours';
 import Abscences from '../pages/CommonPage/Abscences';
+import Devoirs from '../pages/CommonPage/Devoirs';
 
 
 
@@ -341,9 +342,16 @@ const coreRoutes = [
 
   {
     path: '/pedagogies/course-materials',
-    title: 'Pédagogies',
+    title: 'Supports de cours',
     component: SupportDeCours,
     permissions:["gerer_supports_cours_formateurs", "gerer_supports_cours_etudiants", "consulter_supports_cours_formateurs", "consulter_supports_cours_etudiants"]
+  },
+
+  {
+    path: '/pedagogies/exercise-book',
+    title: 'Cahier d\'exercice',
+    component: Devoirs,
+    permissions:["gerer_cahiers_exercices", "consulter_cahiers_exercices"]
   },
 
 ];

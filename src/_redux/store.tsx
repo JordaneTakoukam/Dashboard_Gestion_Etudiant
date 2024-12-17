@@ -5,10 +5,12 @@ import dataSettingReducer from "./features/data_setting_slice.tsx";
 import evenementReducer from "./features/evenement_slice.tsx";
 import periodeReducer from "./features/periode_slice.tsx";
 import matiereReducer from "./features/matiere_slice.tsx";
+import devoirReducer from "./features/devoir_slice.tsx";
 import periodeEnseignementReducer from "./features/periode_enseignement_slice.tsx";
 import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import progressionPeriodeEnseignementReducer from "./features/progession_periode_slice.tsx";
 import chapitreReducer from "./features/chapitre_slice.tsx";
+import questionReducer from "./features/question_slice.tsx";
 import objectifReducer from "./features/objectif_slice.tsx";
 import permissionReducer from "./features/permission_slice.tsx";
 import documentUploadReducer from "./features/document_upload_slice.tsx";
@@ -37,6 +39,8 @@ const store = configureStore({
     documentUploadSlice: documentUploadReducer,
     progressionMatiereSlice: progressionMatiereReducer,
     progressionPeriodeEnseignementSlice: progressionPeriodeEnseignementReducer,
+    questionSlice: questionReducer,
+    devoirSlice: devoirReducer,
 
     // 
     admin: AdminReducer,

@@ -28,7 +28,7 @@ const PedagogieSidebarLink: React.FC<PedagogieSidebarLinkProps> = ({
 
     const menuItems = [
         { permission: hasSupportPermission, path: '/pedagogies/course-materials', label: t('sub_menu.supports_de_cours') },
-        { permission: hasExerciseBookPermission, path: '/pedagogies/cahiers-exercices', label: t('sub_menu.cahiers_exercices') },
+        { permission: hasExerciseBookPermission, path: '/pedagogies/exercise-book', label: t('sub_menu.cahiers_exercices') },
         { permission: hasPedagogicalGuidePermission, path: '/pedagogies/guide-pedagogique', label: t('sub_menu.guide_pedagogique') }
     ];
 

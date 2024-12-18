@@ -95,7 +95,7 @@ const Devoirs = () => {
     
     return (
         <>
-            <Breadcrumb pageName={t('sub_menu.liste_devoir')} />
+            <Breadcrumb pageName={t('sub_menu.cahier_exercice')} />
 
 
             {settingIsLoading ? 

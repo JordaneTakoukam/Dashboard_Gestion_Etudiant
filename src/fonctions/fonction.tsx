@@ -105,12 +105,27 @@ export function formatDateForInput(dateString: string) {
   return formattedDate;
 }
 
+export function formatDateTimeForInput(dateString: string) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  // Récupère les composants de l'heure
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  const formattedTime = `${hours}:${minutes}`
+  const formattedDate = `${year}-${month}-${day}`;
+  return `${formattedDate}T${formattedTime}`;
+}
+
 export function formatYear(year: number | undefined) {
   if(year){
     return `${year}-${year + 1}`;
   }
   return undefined;
 }
+
 
 export function extractYear(yearRange: string) {
   const parts = yearRange.split('-');
@@ -263,6 +278,44 @@ export function formatDateWithLang(date:string, lang:string):string{
   }
   return formattedDate;
 }
+
+export function formatDatetime(datetime: string, lang: string): string {
+  // Crée un objet Date à partir de la chaîne datetime
+  const dateObj = new Date(datetime);
+
+  // Vérifie si la date est valide
+  if (isNaN(dateObj.getTime())) {
+      throw new Error("Date invalide");
+  }
+
+  // Récupère les composants de la date
+  const year = dateObj.getFullYear();
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // +1 car les mois sont indexés à partir de 0
+  const day = dateObj.getDate().toString().padStart(2, '0');
+
+  // Récupère les composants de l'heure
+  const hours = dateObj.getHours().toString().padStart(2, '0');
+  const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+
+  // Formate la date en fonction de la langue
+  let formattedDate = `${year}-${month}-${day}`; // Format par défaut (en-US)
+  if (lang === 'fr') {
+      formattedDate = `${day}-${month}-${year}`; // Format français
+  }
+
+  // Formate l'heure en fonction de la langue
+  let formattedTime = `${hours}:${minutes}`;
+  if (lang === 'en') {
+      const period = parseInt(hours) >= 12 ? 'PM' : 'AM';
+      const hours12 = ( parseInt(hours) % 12 || 12).toString().padStart(2, '0');
+      formattedTime = `${hours12}:${minutes} ${period}`; // Format anglais avec AM/PM
+  }
+
+  return `${formattedDate} à ${formattedTime}`;
+}
+
+
+
 
 export function nbTotalAbsences(listeAbsences: AbsenceType[]|undefined): string {
   // Vérifier si la liste d'absences est vide

@@ -46,6 +46,7 @@
     "pedagogie":"Pédagogie"
   },
   "sub_menu": {
+    "cahier_exercice":"Cahier d'exercice",
     "permission":"Permissions",
     "presence_paie":"Présence et Paie",
     "absence_reporting": "Absences signalées",
@@ -103,6 +104,21 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "note_sur":"Nombre total de points",
+    "oui":"Oui",
+    "non":"Non",
+    "deadline":"Délai",
+    "tentatives_max":"Nombre de tentatives maximales",
+    "ordre_aleatoire":"Afficher les questions dans un ordre aléatoire",
+    "note_apres_soumission":"Afficher la note après soumission du devoir",
+    "correction_apres_soumission":"Afficher la correction après soumission du devoir",
+    "note_apres_deadline":"Afficher la note après délai d'envoi du devoir",
+    "correction_apres_deadline":"Afficher la correction après délai d'envoi du devoir",
+    "effectuer_devoir":"Effectuer le devoir",
+    "statistiques":"Statistiques",
+    "questions":"Questions",
+    "question":"Question",
+    "nombre_question":"Nombre de questions",
     "type_fichier":"Type de fichier",
     "taille_fichier":"Taille du fichier",
     "telecharger":"Télécharger",
@@ -290,7 +306,8 @@
   },
   "recherche": {
     "rechercher": "Rechercher ",
-    "support_de_cours":"Un support de cours",
+    "devoir": "un devoir",
+    "support_de_cours":"un support de cours",
     "permission":"une permission",
     "etudiant": "un étudiant",
     "enseignant": "un enseignant",
@@ -391,6 +408,7 @@
   },
   "filtre": {
     "filtrer": "Filtrer",
+    "devoir": "Filtrer la liste des devoirs suivant :",
     "objectif": "Filtrer la liste des objectifs de la matière suivant :",
     "chapitre": "Filtrer la liste des chapitres de la matière suivant :",
     "etudiant": "Filtrer la liste des étudiants suivant :",
@@ -412,6 +430,7 @@
   "form_save": {
     "ajouter":"Ajouter ",
     "enregistrer": "Enregistrer ",
+    "devoir":"un devoir",
     "support_de_cours":"un support de cours",
     "document":"un nouveau document",
     "permission":"une permission",
@@ -442,6 +461,7 @@
     "periode_enseignement": "une période d'enseignement"
   },
   "form_update": {
+    "devoir":"du devoir",
     "progression_chap":"Mettre à jours la progression",
     "annee_semestre": "Modifier l'année ou le semestre courant",
     "etat_absence_just": "Modifier l'état de l'absence justifier en non justifier pour l'étudiant : ",
@@ -484,6 +504,7 @@
   "form_delete": {
     "supprimer": "Supprimer",
     "suppression": "Suppression ",
+    "devoir":"du devoir",
     "permission":"de la permission",
     "pause": "de la pause",
     "absence": "Supprimer une absence : ",
@@ -517,6 +538,14 @@
     "emploi_temps_fin":" dans cette période."
   },
   "error": {
+    "note_sur":"Le champ nombre total de points est obligatoire.",
+    "deadline":"Le champ délai est obligatoire.",
+    "tentatives_max":"Le champ nombre de tentatives maximales est obligatoire.",
+    "ordre_aleatoire":"Veuillez sélectionner si l'ordre des questions doit être aléatoire.",
+    "note_apres_soumission":"Veuillez sélectionner s'il faut afficher la note après soumission du devoir.",
+    "correction_apres_soumission":"Veuillez sélectionner s'il faut afficher la correction après soumission du devoir.",
+    "note_apres_deadline":"Veuillez sélectionner s'il faut afficher la note après délai d'envoi du devoir.",
+    "correction_apres_deadline":"Veuillez sélectionner s'il faut afficher la correction après délai d'envoi du devoir.",
     "telecharger_doc":"Le fichier est trop grand. La taille maximale est de 2MB.",
     "code": "Le champ code est obligatoire.",
     "libelle": "Le champ libellé est obligatoire.",

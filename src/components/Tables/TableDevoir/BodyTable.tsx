@@ -6,25 +6,24 @@ import { useNavigate } from "react-router-dom"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
 import { setDevoirSelected } from "../../../_redux/features/devoir_slice"
-import { formatDateWithLang } from "../../../fonctions/fonction"
+import { formatDatetime } from "../../../fonctions/fonction"
 
 interface BodyDevoirProps {
     data: DevoirType[];
     onEdit: (devoir: DevoirType) => void;
-    semestre:number|undefined;
-    annee:number|undefined
 }
 
-const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
+const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
     // const [selectedDevoir, setSelectedDevoir] = useState<DevoirType>();
     const navigate = useNavigate();
     const lang = useSelector((state: RootState) => state.setting.language);
     const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
-    // const hasManageSubjectPermission = userPermissions.includes('gerer_devoirs');
-    // const hasManageChapterPermission = userPermissions.includes('gerer_questions') || userPermissions.includes('consulter_liste_questions');
-    // const hasManageObjectivePermission = userPermissions.includes('gerer_objectifs') || userPermissions.includes('consulter_liste_objectifs')
-    // const hasManageActPedPermission = userPermissions.includes('gerer_activites_pedagogiques');
-    // const hasUpdateSubjectPermission = userPermissions.includes('modifier_information_devoir');
+    
+    const hasManageHomeworkPermission = userPermissions.includes('gerer_cahiers_exercices');
+    const hasSeeHomeworkPermission = userPermissions.includes('consulter_cahiers_exercices');
+    const hasManageQuestionPermission = userPermissions.includes('gerer_questions');
+    const hasSeeStatPermission = userPermissions.includes('consulter_statistiques');
+    const hasCompleteAssPermission = userPermissions.includes('effectuer_devoir');
     
     const {t}=useTranslation();
   
@@ -68,16 +67,18 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
 
                 {/* date de fin */}
                 <td className="border-b border-[#eee] py-0  px-4 dark:border-strokedark bg-gray-2 dark:bg-black ">
-                    <h5>{formatDateWithLang(item.deadline, lang)}</h5>
+                    <h5>{formatDatetime(item.deadline, lang)}</h5>
                 </td>
 
                 {/* Action  bouton pour edit*/}
-                <td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
-                    {(true) && (() => {
+                {(hasManageHomeworkPermission || hasSeeHomeworkPermission || hasManageQuestionPermission || hasSeeStatPermission 
+                    || hasCompleteAssPermission) && (<td className="border-b border-[#eee] py-0 px-0 dark:border-strokedark flex justify-center items-center">
+                    {(hasManageHomeworkPermission || hasSeeHomeworkPermission) && (() => {
                         // Construire dynamiquement la liste des pages en fonction des permissions
                         const listPage = [];
 
-                        if (true) {
+                        if (hasManageHomeworkPermission || hasSeeHomeworkPermission || hasManageQuestionPermission || hasSeeStatPermission 
+                            || hasCompleteAssPermission) {
                             listPage.push({
                                 name: t('label.details'),
                                 handleClick: () => {
@@ -86,7 +87,7 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
                             });
                         }
 
-                        if (true) {
+                        if (hasManageQuestionPermission) {
                             listPage.push({
                                 name: t('label.questions'),
                                 handleClick: () => {
@@ -96,7 +97,7 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
                             });
                         }
 
-                        if (true) {
+                        if (hasCompleteAssPermission) {
                             listPage.push({
                                 name: t('label.effectuer_devoir'),
                                 handleClick: () => {
@@ -105,9 +106,9 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
                             });
                         }
 
-                        if (true) {
+                        if (hasSeeStatPermission) {
                             listPage.push({
-                                name: t('label.statistique'),
+                                name: t('label.statistiques'),
                                 handleClick: () => {
                                     alert("Fonctionnalité pas encore disponible")
                                 },
@@ -119,7 +120,7 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
                         ) : null;
                     })()}
                     
-                    <ButtonCrudTable
+                    {hasManageHomeworkPermission && <ButtonCrudTable
                         onClickEdit={
                             (true)
                                 ? () => {
@@ -136,8 +137,8 @@ const BodyTable = ({ data, semestre,annee, onEdit }: BodyDevoirProps) => {
                                 }
                                 : undefined
                         }
-                    />
-                </td>
+                    />}
+                </td>)}
 
             </tr>
         ))}

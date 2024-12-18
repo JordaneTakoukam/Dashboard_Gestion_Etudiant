@@ -46,6 +46,7 @@
     "pedagogie":"Pedagogy"
   },
   "sub_menu": {
+    "cahier_exercice":"Exercise book",
     "permission":"Permissions",
     "presence_paie":"Attendance and Pay",
     "absence_reporting": "Reported Absences",
@@ -103,6 +104,21 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "note_sur":"Total number of points",
+    "oui":"Yes",
+    "non":"No",
+    "deadline":"Deadline",
+    "tentatives_max":"Maximum number of attempts",
+    "ordre_aleatoire":"Display the questions in random order",
+    "note_apres_soumission":"Display the grade after the assignment has been submitted",
+    "correction_apres_soumission":"Display the correction after the assignment has been submitted",
+    "note_apres_deadline":"Display the grade after the assignment deadline",
+    "correction_apres_deadline":"Display the correction after the assignment deadline",
+    "effectuer_devoir":"Perform the assignment",
+    "statistiques":"Statistics",
+    "questions":"Questions",
+    "question":"Question",
+    "nombre_question":"Number of questions",
     "type_fichier": "Type of file",
     "taille_fichier": "File size",
     "telecharger":"Download",
@@ -289,6 +305,7 @@
   },
   "recherche": {
     "rechercher": "Search ",
+    "devoir": "an assignment",
     "support_de_cours":"a course material",
     "permission":"a permission",
     "etudiant": "a student",
@@ -391,6 +408,7 @@
 
   "filtre": {
     "filtrer": "Filter",
+    "devoir":"Filter the list of the following assignment:",
     "objectif": "Filter the list of the following subject objectives:",
     "chapitre": "Filter the list of the following subject chapters:",
     "etudiant": "Filter the list of students by:",
@@ -410,8 +428,9 @@
     "support_de_cours":"Filter the list of course materials by:"
   },
   "form_save": {
-  "ajouter":"Add ",
+    "ajouter":"Add ",
     "enregistrer": "Save ",
+    "devoir":"a new assignment",
     "support_de_cours":"a new course material",
     "document":"a new document",
     "permission":"a permission",
@@ -442,6 +461,7 @@
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
+    "devoir":"of the assignment",
     "progression_chap":"Update progression",
     "annee_semestre": "Modify the current year or semester",
     "etat_absence_just": "Change the status of the justified absence to unjustified for the student : ",
@@ -484,6 +504,7 @@
   "form_delete": {
     "supprimer": "Delete",
     "suppression": "Deletion",
+    "devoir":"of the assignment",
     "permission":"of the permission",
     "pause": "of the break",
     "absence": "Delete an absence:",
@@ -516,6 +537,14 @@
     "emploi_temps_fin":" in this period."
   },
   "error": {
+    "note_sur":"The total number of points field is required.",
+    "deadline":"The deadline field is required.",
+    "tentatives_max":"The maximum number of attempts field is required.",
+    "ordre_aleatoire":"Please select whether the order of the questions should be random.",
+    "note_apres_soumission":"Please select whether to display the grade after the assignment has been submitted.",
+    "correction_apres_soumission":"Please select whether the correction should be displayed after the assignment has been submitted.",
+    "note_apres_deadline":"Please select whether the grade should be displayed after the assignment deadline.",
+    "correction_apres_deadline":"Please select whether to display the correction after the assignment deadline.",
     "telecharger_doc":"The file is too large. The maximum size is 2 MB.",
     "code": "The code field is required.",
     "libelle": "The label field is required.",

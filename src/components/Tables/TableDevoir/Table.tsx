@@ -6,7 +6,6 @@ import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
 import { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort } from "react-icons/fa6";
-import CustomButtonDownload from "../common/CustomButtomDownload";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
 import { RootState } from "../../../_redux/store"
@@ -17,10 +16,7 @@ import { setErrorPageDevoir, setDevoirLoading, setDevoirs } from "../../../_redu
 import { apiSearchDevoir, apiSearchDevoirByEnseignant, getDevoirsByEnseignantPaginated, getDevoirsByNiveauPaginated } from "../../../api/api_devoir";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
-import Download from "../common/Download";
-import { createPDF, extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
-import Bouton from "../../ui/Bouton";
-import { semestres } from "../../../pages/CommonPage/EmploiDeTemp";
+import { extractYear, formatYear, generateYearRange } from "../../../fonctions/fonction";
 
 interface TableDevoirProps {
     data: DevoirType[];
@@ -39,7 +35,6 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     const pageIsLoading = useSelector((state: RootState) => state.devoirSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     const [section, setSection] = useState<SectionProps>();
@@ -49,7 +44,7 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
-    const hasManageSubjectPermission = userPermissions.includes('gerer_devoirs');
+    const hasManageHomeworkPermission = userPermissions.includes('gerer_cahiers_exercices');
 
     // // Filtrer les niveaux de l'utilisateur enseignant
     // const niveauxEnseignant = niveaux.filter(niveau => niveau._id && niveauxEnseignantIds.includes(niveau._id));
@@ -67,7 +62,6 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
     const [filteredCycle, setFilteredCycle] = useState<CycleProps[]>([]);
     const [filteredNiveaux, setFilteredNiveaux] = useState<NiveauProps[]>([]);
     const [searchText, setSearchText] = useState<string>('');
-    const [refreshFilter, setRefreshFilter] = useState<boolean>(false);
 
 
 
@@ -198,7 +192,6 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
                 sections.length>0 && filterCycleBySection(sections[0]._id);
                 setSelectedSemestre(currentSemestre);
                 setSearchText('');
-                setRefreshFilter(false);
             }
         }
     };
@@ -215,7 +208,6 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
             filterCycleBySection(selected._id);
             setSection(selected);
             setSearchText('');
-            setRefreshFilter(false);
         }
     };
 
@@ -391,15 +383,7 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
     const [filteredData, setFilteredData] = useState<DevoirType[]>(data);
 
    
-    useEffect(() => {
-
-        if(searchText === ''){
-            setRefreshFilter(false);
-        }else{
-            setRefreshFilter(true);
-        }
-    }, [searchText]);
-
+    
     const latestQueryDevoir = useRef('');
     useEffect(() => {
         dispatch(setDevoirLoading(true));
@@ -415,12 +399,15 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
                 }else{
                     
                     let devoirsResult : DevoirType[] = [];
-                    if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
+                    if(hasManageHomeworkPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
+                        
                         await apiSearchDevoir({ searchString:searchText, limit:10, langue:lang }).then(result=>{
                             if (latestQueryDevoir.current === searchText) {
                                 if(result){
                                     devoirsResult = result.devoirs;
                                     setFilteredData(devoirsResult);
+                                }else{
+                                    setFilteredData(devoirsResult)
                                 }
                             }
                             
@@ -428,11 +415,13 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
                     }else{
                         if(currentUser.role === roles.enseignant){
                             if(selectedYear){
-                                await apiSearchDevoirByEnseignant({ searchString:searchText, limit:10, langue:lang, enseignantId:currentUser._id, annee:selectedYear }).then(result=>{
+                                await apiSearchDevoirByEnseignant({ searchString:searchText, limit:10, langue:lang, enseignantId:currentUser._id }).then(result=>{
                                     if (latestQueryDevoir.current === searchText) {
                                         if(result){
                                             devoirsResult = result.devoirs;
                                             setFilteredData(devoirsResult);
+                                        }else{
+                                            setFilteredData(devoirsResult)
                                         }
                                     }
                                     
@@ -459,7 +448,7 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                {hasManageSubjectPermission && (<ButtonCreate
+                {hasManageHomeworkPermission && (<ButtonCreate
                     onClick={() => { onCreate(); dispatch(setShowModal()); } } title={""}                />)}
                 <InputSearch hintText={t('recherche.rechercher') + t('recherche.devoir')} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
@@ -571,7 +560,7 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} annee={selectedYear} semestre={selectedSemestre} />
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit} />
                         }
 
 
@@ -582,7 +571,7 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
 
                 {/* Pagination */}
 
-                {((searchText ==='') && (hasManageSubjectPermission) && (filteredData && filteredData.length>0)) && <Pagination
+                {((searchText ==='') && (hasManageHomeworkPermission) && (filteredData && filteredData.length>0)) && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}

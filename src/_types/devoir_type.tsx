@@ -12,6 +12,7 @@ interface DevoirType {
     deadline: string;
     ordreAleatoire: boolean; // Si les questions doivent être affichées aléatoirement
     tentativesMax: number; // Nombre maximum de tentatives autorisées
+    noteSur:number;
     feedbackConfig: {
         afficherNoteApresSoumission: boolean; // Montrer la note après soumission
         afficherCorrectionApresSoumission: boolean; // Montrer la correction après soumission

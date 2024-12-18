@@ -6,11 +6,11 @@ const api = `${apiUrl}/devoir`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateDevoir({titre_fr, titre_en, description_fr, description_en, utilisateur, niveau, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee}: DevoirType): Promise<ReponseApiPros> {
+export async function apiCreateDevoir({titre_fr, titre_en, description_fr, description_en, utilisateur, niveau, noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee}: DevoirType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { titre_fr, titre_en, description_fr, description_en, utilisateur, niveau, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
+            { titre_fr, titre_en, description_fr, description_en, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,12 +26,12 @@ export async function apiCreateDevoir({titre_fr, titre_en, description_fr, descr
     }
 }
 
-export async function apiUpdateDevoir({ _id, titre_fr, titre_en, description_fr, description_en, utilisateur, niveau, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee }: DevoirType): Promise<ReponseApiPros> {
+export async function apiUpdateDevoir({ _id, titre_fr, titre_en, description_fr, description_en, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee }: DevoirType): Promise<ReponseApiPros> {
     
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            {titre_fr, titre_en, description_fr, description_en, utilisateur, niveau, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
+            {titre_fr, titre_en, description_fr, description_en, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export async function apiSearchDevoir({ searchString, langue, limit }: { langue:
     }
 }
 
-export async function apiSearchDevoirByEnseignant({ searchString, langue, limit, enseignantId, annee }: { langue:string, searchString: string, limit:number, enseignantId:string, annee:number }): Promise<DevoirReturnGetType> {
+export async function apiSearchDevoirByEnseignant({ searchString, langue, limit, enseignantId }: { langue:string, searchString: string, limit:number, enseignantId:string }): Promise<DevoirReturnGetType> {
    
     try {
         const response: AxiosResponse<any> = await axios.get(
@@ -103,7 +103,6 @@ export async function apiSearchDevoirByEnseignant({ searchString, langue, limit,
                 params:{
                     limit:limit,
                     enseignantId:enseignantId,
-                    annee:annee
                 }
             },
         );

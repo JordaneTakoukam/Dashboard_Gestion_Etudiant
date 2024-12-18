@@ -4,6 +4,7 @@ interface QuestionType {
     text_fr: string;
     text_en: string;
     type: string;
+    nbPoint:number;
     options_fr: string[]; // Utilisé pour les QCM
     options_en: string[], // Utilisé pour les QCM
     reponseCorrect_fr: string, // La réponse correcte

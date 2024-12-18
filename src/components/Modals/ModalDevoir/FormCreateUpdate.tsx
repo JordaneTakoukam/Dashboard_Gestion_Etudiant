@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { apiCreateDevoir, apiUpdateDevoir } from '../../../api/api_devoir';
 import createToast from '../../../hooks/toastify';
 import { createDevoir, setPage, updateDevoir } from '../../../_redux/features/devoir_slice';
-import { formatYear } from '../../../fonctions/fonction';
+import { formatDateTimeForInput, formatYear } from '../../../fonctions/fonction';
 
 
 function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
@@ -26,6 +26,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
     const [deadline, setDeadline] = useState("");
     const [ordreAleatoire, setOrdreAleatoire] = useState(false);
     const [tentativesMax, setTentativesMax] = useState(1);
+    const [noteSur, setNoteSur] = useState(20);
     const [noteApresSoumission, setNoteApresSoumission] = useState(false);
     const [correctionApresSoumission, setCorrectionApresSoumission] = useState(false);
     const [noteApresDeadline, setNoteApresDeadline] = useState(true); 
@@ -43,6 +44,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
     const [errorDeadline, setErrorDeadline] = useState("");
     const [errorOrdreAleatoire, setErrorOrdreAleatoire] = useState("");
     const [errorTentativesMax, setErrorTentativesMax] = useState("");
+    const [errorNoteSur, setErrorNoteSur] = useState("");
     const [errorNoteApresSoumission, setErrorNoteApresSoumission] = useState("");
     const [errorCorrectionApresSoumission, setErrorCorrectionApresSoumission] = useState("");
     const [errorNoteApresDeadline, setErrorNoteApresDeadline] = useState(""); 
@@ -92,9 +94,10 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
             setTitreEn(devoir.titre_en)
             setDescriptionFr(devoir?.description_fr || "")
             setDescriptionEn(devoir?.description_en || "")
-            setDeadline(devoir.deadline)
+            setDeadline(formatDateTimeForInput(devoir.deadline))
             setOrdreAleatoire(devoir.ordreAleatoire)
             setTentativesMax(devoir.tentativesMax)
+            setNoteSur(devoir.noteSur);
             setNoteApresSoumission(devoir.feedbackConfig.afficherNoteApresSoumission)
             setCorrectionApresSoumission(devoir.feedbackConfig.afficherCorrectionApresSoumission)
             setNoteApresDeadline(devoir.feedbackConfig.afficherNoteApresDeadline)
@@ -113,6 +116,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
             setDeadline("")
             setOrdreAleatoire(false)
             setTentativesMax(1)
+            setNoteSur(20)
             setNoteApresSoumission(false)
             setCorrectionApresSoumission(false)
             setNoteApresDeadline(true)
@@ -134,6 +138,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
             setErrorDeadline("");
             setErrorOrdreAleatoire("");
             setErrorTentativesMax("");
+            setErrorNoteSur("");
             setErrorNoteApresSoumission("");
             setErrorCorrectionApresSoumission("");
             setErrorNoteApresDeadline("");
@@ -151,6 +156,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
         setErrorDeadline("");
         setErrorOrdreAleatoire("");
         setErrorTentativesMax("");
+        setErrorNoteSur("");
         setErrorNoteApresSoumission("");
         setErrorCorrectionApresSoumission("");
         setErrorNoteApresDeadline("");
@@ -222,15 +228,15 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
 
 
     const handleCreateUpdate = async () => {
-        if (!titreFr || !titreEn || !section || !cycle || !niveau || !deadline
-            || !ordreAleatoire || !tentativesMax || !noteApresSoumission
-            || !correctionApresSoumission || !noteApresDeadline || !correctionApresDeadline) {
+        if (!titreFr || !titreEn || !section || !cycle || !niveau || !deadline || !noteSur
+            || ordreAleatoire == undefined || !tentativesMax || noteApresSoumission == undefined
+            || correctionApresSoumission == undefined || noteApresDeadline == undefined || correctionApresDeadline == undefined) {
         
             if (!titreFr) {
-                setErrorTitreFr(t('error._fr'));
+                setErrorTitreFr(t('error.titre_fr'));
             }
             if (!titreEn) {
-                setErrorTitreEn(t('error._en'));
+                setErrorTitreEn(t('error.titre_en'));
             }
             if (!section) {
                 setErrorSection(t('error.section'));
@@ -242,35 +248,41 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                 setErrorNiveau(t('error.niveau'));
             }
 
+            if(!noteSur){
+                setErrorNoteSur(t('error.note_sur'));
+            }
+
             if(!deadline){
-                setErrorDeadline('error.deadline');
+                setErrorDeadline(t('error.deadline'));
             }
             
-            if(!ordreAleatoire){
-                setErrorOrdreAleatoire('error.ordre_aleatoire');
+            if(ordreAleatoire == undefined){
+                setErrorOrdreAleatoire(t('error.ordre_aleatoire'));
             } 
             
             if(!tentativesMax){
-                setErrorTentativesMax('error.tentatives_max');
+                setErrorTentativesMax(t('error.tentatives_max'));
             } 
             
-            if(!noteApresSoumission){
-                setErrorNoteApresDeadline('error.note_apres_soumission');
+            if(noteApresSoumission == undefined){
+                setErrorNoteApresDeadline(t('error.note_apres_soumission'));
             }
             
-            if(!correctionApresSoumission){
-                setErrorCorrectionApresSoumission('error.correction_apres_soumission')
+            if(correctionApresSoumission == undefined){
+                setErrorCorrectionApresSoumission(t('error.correction_apres_soumission'));
             }
             
-            if(!noteApresDeadline){
-                setErrorNoteApresDeadline('error.note_apres_deadline');
+            if(noteApresDeadline == undefined){
+                setErrorNoteApresDeadline(t('error.note_apres_deadline'));
             }
             
-            if(!correctionApresDeadline){
-                setErrorCorrectionApresDeadline('error.correction_apres_deadline')
+            if(correctionApresDeadline == undefined){
+                setErrorCorrectionApresDeadline(t('error.correction_apres_deadline'));
             }
             return;
         }
+        console.log(tentativesMax);
+        console.log(noteSur);
         if (!devoir) {
             if (niveau && niveau._id) {
                 await apiCreateDevoir(
@@ -278,6 +290,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                         titre_fr:titreFr,
                         titre_en:titreEn,
                         niveau:niveau._id, 
+                        noteSur,
                         utilisateur:currentUser,
                         description_fr:descriptionFr, 
                         description_en:descriptionEn, 
@@ -303,6 +316,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                                 titre_fr:e.data.titre_fr,
                                 titre_en:e.data.titre_en,
                                 niveau:e.data.niveau, 
+                                noteSur:e.data.noteSur,
                                 utilisateur:e.data.utilisateur,
                                 description_fr:e.data.description_fr, 
                                 description_en:e.data.description_en, 
@@ -333,7 +347,8 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                     {
                         titre_fr:titreFr,
                         titre_en:titreEn,
-                        niveau:niveau._id, 
+                        niveau:niveau._id,
+                        noteSur, 
                         utilisateur:currentUser,
                         description_fr:descriptionFr, 
                         description_en:descriptionEn, 
@@ -361,6 +376,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                                     titre_fr:e.data.titre_fr,
                                     titre_en:e.data.titre_en,
                                     niveau:e.data.niveau, 
+                                    noteSur:e.data.noteSur,
                                     utilisateur:e.data.utilisateur,
                                     description_fr:e.data.description_fr, 
                                     description_en:e.data.description_en, 
@@ -400,6 +416,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={formatYear(currentYear)}
+                    readOnly
                     
                 />
                 {/* {errorCode && <p className="text-red-500" >{errorCode}</p>} */}
@@ -419,14 +436,14 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                     onChange={(e) => { setTitreEn(e.target.value); setErrorTitreEn("") }}
                 />
                 {errorTitreEn && <p className="text-red-500">{errorTitreEn}</p>}
-                <label>{t('label.description_fr')}</label>
+                <label>{t('label.descrip_fr')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
                     value={descriptionFr}
                     onChange={(e) => { setDescriptionFr(e.target.value); }}
                 />
-                <label>{t('label.description_en')}</label>
+                <label>{t('label.descrip_en')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="text"
@@ -469,10 +486,18 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                     ))}
                 </select>
                 {errorNiveau && <p className="text-red-500">{errorNiveau}</p>}
+                <label>{t('label.note_sur')}</label><label className="text-red-500"> *</label>
+                <input
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                    type="number"
+                    value={noteSur}
+                    onChange={(e) => { setNoteSur(parseInt(e.target.value)); setErrorNoteSur("")}}
+                />
+                {errorNoteSur && <p className="text-red-500">{errorNoteSur}</p>}
                 <label>{t('label.deadline')}</label><label className="text-red-500"> *</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    type="date"
+                    type="datetime-local"
                     value={deadline}
                     onChange={(e) => {setDeadline(e.target.value); setErrorDeadline("")}}
                 />

@@ -183,44 +183,44 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
         
         
         if (!question) {
-            // if (devoir && devoir._id) {
-            //     await apiCreateQuestion(
-            //         {
-            //             type, 
-            //             textFr,
-            //             textEn,
-            //             nbPoint,
-            //             options,
-            //             devoir, 
-            //         }
-            //     ).then((e: ReponseApiPros) => {
-            //         if (e.success) {
-            //             dispatch(createQuestion({
+            if (devoir && devoir._id) {
+                await apiCreateQuestion(
+                    {
+                        type, 
+                        textFr,
+                        textEn,
+                        nbPoint,
+                        options,
+                        devoir, 
+                    }
+                ).then((e: ReponseApiPros) => {
+                    if (e.success) {
+                        dispatch(createQuestion({
                             
-            //                 question: {
-            //                     _id: e.data._id,
-            //                     type : e.data.type, 
-            //                     textFr: e.data.textFr, 
-            //                     textEn: e.data.textEn, 
-            //                     nbPoint: e.data.nbPoint,
-            //                     options:e.data.options,
-            //                     devoir:e.data.devoir, 
-            //                 }
+                            question: {
+                                _id: e.data._id,
+                                type : e.data.type, 
+                                textFr: e.data.textFr, 
+                                textEn: e.data.textEn, 
+                                nbPoint: e.data.nbPoint,
+                                options:e.data.options,
+                                devoir:e.data.devoir, 
+                            }
                             
-            //             }));
-            //             // dispatch(ajouterQuestion({...e.data}))
-            //             createToast(e.message[lang as keyof typeof e.message], '', 0);    
-            //             closeModal();
+                        }));
+                        // dispatch(ajouterQuestion({...e.data}))
+                        createToast(e.message[lang as keyof typeof e.message], '', 0);    
+                        closeModal();
 
-            //         } else {
-            //             createToast(e.message[lang as keyof typeof e.message], '', 2);
+                    } else {
+                        createToast(e.message[lang as keyof typeof e.message], '', 2);
 
-            //         }
-            //     }).catch((e) => {
+                    }
+                }).catch((e) => {
                     
-            //         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-            //     })
-            // }
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                })
+            }
         }else{
             if (devoir && devoir._id) {
                 await apiUpdateQuestion(

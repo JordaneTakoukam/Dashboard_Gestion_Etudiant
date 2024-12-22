@@ -1,150 +1,170 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonCreate from "../common/ButtonCreate";
 import LoadingTable from "../common/LoadingTable";
 import NoDataTable from "../common/NoDataTable";
 import InputSearch from "../common/SearchTable";
 import { setShowModal } from "../../../_redux/features/setting";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HeaderTable from "./HeaderTable";
 import BodyTable from "./BodyTable";
-import { FaFilter, FaSort } from "react-icons/fa6";
-import { Question } from "../../../pages/Admin/Questions";
-import { GroupeQuestion, groupequestions } from "../../../pages/Admin/GroupeQuestions";
-import { Rubrique, rubriques } from "../../../pages/Admin/Rubriques";
-import CustomDropDown2 from "../../DropDown/CustomDropDown2";
+import { useTranslation } from "react-i18next";
+import { RootState } from "../../../_redux/store";
+import { setQuestionLoading, setQuestions, setErrorPageQuestion } from "../../../_redux/features/question_slice";
+import { apiSearchQuestion, obtenirQuestionsDevoir } from "../../../api/api_question";
+import createToast from "../../../hooks/toastify";
+import Pagination from "../../Pagination/Pagination";
 
 interface TableQuestionProps {
-    data: Question[];
+    data: QuestionType[];
     onCreate:()=>void;
-    onEdit: (question:Question) => void;
+    onEdit: (question:QuestionType) => void;
 }
 
 
-const Table = ({ data, onCreate, onEdit }: TableQuestionProps) => {
-    const pageIsLoading = false;
+const Table = ({ data, onCreate, onEdit}: TableQuestionProps) => {
+    const {t}=useTranslation();
+    const pageIsLoading = useSelector((state: RootState) => state.questionSlice.pageIsLoading);
+    const userPermissions = useSelector((state: RootState) => state.setting.userPermissions) ?? [];
+    const hasManageQuestionPermission = userPermissions.includes('gerer_questions');
+
+
     const dispatch = useDispatch();
 
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-
-    // Fonction pour basculer la visibilité des CustomDropDown
-    const toggleDropdownVisibility = () => {
-        setIsDropdownVisible(!isDropdownVisible);
-    };
-
-    // const [filtreAnnee, setFiltreAnnee] = useState(""); // contient la valeur qui a ete selectionner sur le bouton filtre annee
-    const [filtreRubrique, setFiltreRubrique] = useState("");
-    const [filtreGroupeQuestion, setFiltreGroupeQuestion] = useState("");
-    // const [filtreQuestion, setFiltreQuestion] = useState("");
-    // const [formatToDownload, setFormatToDownload] = useState("");
-
-    // const handleAnneeSelect = (selected: string) => {
-    //     setFiltreAnnee(selected);
-    //     console.log(selected)
-    // };
     
-    const handleRubriqueSelect = (selected: Rubrique | undefined) => {
-        // setFiltreRubrique(selected);
-        console.log(selected);
-    };
-
-    const handleGroupeQuestionSelect = (selected: GroupeQuestion | undefined) => {
-        // setFiltreGroupeQuestion(selected);
-        console.log(selected);
-    };
-
-    // const handleQuestionSelect = (selected: string) => {
-    //     setFiltreQuestion(selected);
-    //     console.log(selected);
-    // };
-    // const handleDownloadSelect = (selected: string) => {
-    //     setFormatToDownload(selected);
-    //     console.log(selected);
-    //     // methode pour download
-    // };
-
-
     // variable pour la pagination
-    //
-    const itemsPerPage = 10; // nombre delements maximum par page
+    const itemsPerPage =  useSelector((state: RootState) => state.questionSlice.data.pageSize); // nombre d'éléments maximum par page
+    const count = useSelector((state: RootState) => state.questionSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
+    const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+    
     const handlePageClick = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
 
+    // Render page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const hasPrevious = currentPage > 1;
+    const hasNext = currentPage < Math.ceil(count / itemsPerPage);
+
+    const startItem = indexOfFirstItem + 1;
+    const endItem = Math.min(count, indexOfLastItem);
+    
+    const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const selectedDevoir = useSelector((state: RootState) => state.devoirSlice.selectedDevoir);
+    const [searchText, setSearchText] = useState<string>('');
+    const [isSearch, setIsSearch] = useState<boolean>(false);
+
+    useEffect(() => {
+
+        const fetchQuestions = async () => {
+            dispatch(setQuestionLoading(true)); // Définissez le loading à true avant le chargement
+            try {
+                const emptyQuestions: QuestionReturnGetType = {
+                    questions: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                if(selectedDevoir && selectedDevoir._id){
+                    const fetchedQuestions = await obtenirQuestionsDevoir({ devoirId: selectedDevoir._id, page: currentPage});
+                        
+                    if (fetchedQuestions) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
+                        dispatch(setQuestions(fetchedQuestions));
+                    } else {
+                        dispatch(setQuestions(emptyQuestions));
+                    }
+                }else {
+                    dispatch(setQuestions(emptyQuestions));
+                }
+                
+                // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                dispatch(setErrorPageQuestion(t('message.erreur')));
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                dispatch(setQuestionLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+        fetchQuestions();
+    }, [dispatch, selectedDevoir, currentPage, t]); // Déclencher l'effet lorsque currentPage change
+    const [filteredData, setFilteredData] = useState<QuestionType[]>(data);
+   
+    useEffect(() => {
+        if(searchText!==''){
+             setIsSearch(true);
+        }else{
+             setIsSearch(false);
+        }
+     }, [searchText]);
+
+    const latestQueryQuestion = useRef('');
+    useEffect(() => {
+        dispatch(setQuestionLoading(true));
+        latestQueryQuestion.current = searchText;
+        try{
+            
+            const filterQuestionByContent = async () => {
+                if (searchText === '') {
+                    const result: QuestionType[] = data;
+                    setFilteredData(result); 
+                }else{
+                    let questionsResult : QuestionType[] = [];
+                    if(selectedDevoir && selectedDevoir._id){
+                        await apiSearchQuestion({ searchString:searchText, limit:10, langue:lang, devoirId:selectedDevoir?._id}).then(result=>{
+                            if (latestQueryQuestion.current === searchText) {
+                                if(result){
+                                    questionsResult = result.questions;
+                                    setFilteredData(questionsResult);
+                                }
+                            }
+                            
+                        })
+                    }else{
+                        const result: QuestionType[] = data;
+                        setFilteredData(result); 
+                    }
+                }
+        
+                
+            };
+            filterQuestionByContent();
+        }catch(e){
+            dispatch(setErrorPageQuestion(t('message.erreur')));
+        }finally{
+            if (latestQueryQuestion.current === searchText) {
+                dispatch(setQuestionLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+    }, [searchText, data]);
+
+
+    
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <ButtonCreate
-                    title="Nouvelle question"
+                {(hasManageQuestionPermission) && <ButtonCreate
+                    title={t('boutton.nouveau_question')}
                     onClick={() => { onCreate();dispatch(setShowModal()) }}
-                />
-                <InputSearch hintText="Rechercher une question" onSubmit={() => { }} />
+                />}
+                <InputSearch hintText={t('recherche.rechercher')+t(t('recherche.question'))} value={searchText} onSubmit={(text) => setSearchText(text)} />
             </div>
             {/*! bouton creer ajouter un nouvel ... et search bar */}
 
 
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>Filtrer la liste des questions suivant : </h1>
-                <div className="block lg:hidden">
-                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> Filtrer</p><FaSort /> </button>
-                    {isDropdownVisible && (
-                        <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
-                            <CustomDropDown2<Rubrique>
-                                title="Rubrique"
-                                items={rubriques}
-                                defaultValue={rubriques[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(rubrique: Rubrique) => `${rubrique.libelle}`}
-                                onSelect={handleRubriqueSelect}
-                            />
-                            <CustomDropDown2<GroupeQuestion>
-                                title="Groupe de question"
-                                items={groupequestions}
-                                defaultValue={groupequestions[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(groupequestion: GroupeQuestion) => `${groupequestion.libelle}`}
-                                onSelect={handleGroupeQuestionSelect}
-                            />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Rubrique" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleRubriqueSelect} />
-                            <CustomDropDown title="GroupeQuestion" items={['GroupeQuestion A', 'GroupeQuestion B']} defaultValue="GroupeQuestion A" onSelect={handleGroupeQuestionSelect} /> */}
-                            {/* <CustomDropDown title="Question" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleQuestionSelect} /> */}
-                        </div>
-                    )}
-                </div>
-
-                <div className="hidden lg:block">
-                    <div className="flex  justify-start items-center  flex-col lg:flex-row    mb-5  mt-1 gap-x-4 verflow-x-auto ">
-                        <div className="flex flex-wrap  w-full lg:w-auto gap-x-6">
-                            <CustomDropDown2<Rubrique>
-                                title="Rubrique"
-                                items={rubriques}
-                                defaultValue={rubriques[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(rubrique: Rubrique) => `${rubrique.libelle}`}
-                                onSelect={handleRubriqueSelect}
-                            />
-                            <CustomDropDown2<GroupeQuestion>
-                                title="Groupe de question"
-                                items={groupequestions}
-                                defaultValue={groupequestions[0]} // ou spécifie une valeur par défaut
-                                displayProperty={(groupequestion: GroupeQuestion) => `${groupequestion.libelle}`}
-                                onSelect={handleGroupeQuestionSelect}
-                            />
-                            {/* <CustomDropDown title="Année" items={['2023-2024', '2022-2023', '2021-2022']} defaultValue="2023-2024" onSelect={handleAnneeSelect} /> */}
-                            {/* <CustomDropDown title="Rubrique" items={['Douane', 'Impôt']} defaultValue="Douane" onSelect={handleRubriqueSelect} />
-                            <CustomDropDown title="GroupeQuestion" items={['GroupeQuestion A', 'GroupeQuestion B']} defaultValue="GroupeQuestion A" onSelect={handleGroupeQuestionSelect} /> */}
-                            {/* <CustomDropDown title="Question" items={['1ère année', '2ème année']} defaultValue="1ère année" onSelect={handleQuestionSelect} /> */}
-                        </div>
-                    </div>
-                </div>
-
-
-
-
+                
+                {selectedDevoir && (<div>
+                    {lang === 'fr' ? selectedDevoir.titreFr : selectedDevoir.titreEn}
+                </div>)}
+                
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
@@ -152,7 +172,7 @@ const Table = ({ data, onCreate, onEdit }: TableQuestionProps) => {
                         {
                             pageIsLoading ?
                                 <LoadingTable />
-                                : data.length === 0 ?
+                                : filteredData?.length === 0 ?
                                     <NoDataTable /> :
                                     <HeaderTable />
                         }
@@ -160,7 +180,7 @@ const Table = ({ data, onCreate, onEdit }: TableQuestionProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={data} onEdit={onEdit}/>
+                            !pageIsLoading && <BodyTable data={filteredData} onEdit={onEdit}/>
                         }
 
 
@@ -171,7 +191,18 @@ const Table = ({ data, onCreate, onEdit }: TableQuestionProps) => {
 
                 {/* Pagination */}
 
-                <h1>Pagination ici</h1>
+                { searchText==='' && filteredData && filteredData.length>0 && <Pagination
+                    count={count}
+                    itemsPerPage={itemsPerPage}
+                    startItem={startItem}
+                    endItem={endItem}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    currentPage={currentPage}
+                    pageNumbers={pageNumbers}
+                    handlePageClick={handlePageClick}
+                />}
+
 
             </div>
 

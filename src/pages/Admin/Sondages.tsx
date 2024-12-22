@@ -1,12 +1,8 @@
 import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
-import Table from "../../components/Tables/TableSondage/Table";
-import { Niveau } from "./Niveaux";
-import FormCreateUpdate from "../../components/Modals/ModalSondage/FormCreateUpdate";
 import FormDelete from "../../components/Modals/ModalSondage/FormDelete";
 import { Rubrique } from "./Rubriques";
 import { Cycle } from "./Cycles";
-import FormSondage from "../../components/Modals/ModalSondage/FormSondage";
 
 export interface Sondage {
     id? : number;
@@ -44,7 +40,7 @@ const ListeDesSondages = () => {
             {/* <Table data={sondages} onCreate={handleAddSondage} onEdit={handleEditSondage} toDo={handletoDoSondage} /> */}
             
             {/* <FormCreateUpdate sondage={selectedSondage}/> */}
-            <FormSondage sondage={selectedSondage}/>
+        
             <FormDelete sondage={selectedSondage}/>
         </>
     );

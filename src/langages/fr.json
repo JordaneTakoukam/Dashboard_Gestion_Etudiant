@@ -46,6 +46,7 @@
     "pedagogie":"Pédagogie"
   },
   "sub_menu": {
+    "questions":"Questions",
     "cahier_exercice":"Cahier d'exercice",
     "permission":"Permissions",
     "presence_paie":"Présence et Paie",
@@ -104,6 +105,18 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "vrai_faux":"Vrai ou Faux",
+    "qcm":"QCM",
+    "nombre_point":"Nombre de points",
+    "text":"Texte",
+    "text_fr":"Texte en français",
+    "text_en":"Texte en anglais",
+    "reponse_correct_fr":"Réponse correcte en français",
+    "reponse_correct_en":"Réponse correcte en anglais",
+    "options":"Options",
+    "option":"Option",
+    "option_fr":"Option en francais",
+    "option_en":"Option en anglais",
     "note_sur":"Nombre total de points",
     "oui":"Oui",
     "non":"Non",
@@ -307,6 +320,7 @@
   "recherche": {
     "rechercher": "Rechercher ",
     "devoir": "un devoir",
+    "question":"une question",
     "support_de_cours":"un support de cours",
     "permission":"une permission",
     "etudiant": "un étudiant",
@@ -333,6 +347,7 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    "ajouter_option":"Ajouter une option",
     "appliquer":"Appliquer",
     "soumettre": "Soumettre",
     "daccord": "D'accord",
@@ -431,6 +446,7 @@
     "ajouter":"Ajouter ",
     "enregistrer": "Enregistrer ",
     "devoir":"un devoir",
+    "question":"une question",
     "support_de_cours":"un support de cours",
     "document":"un nouveau document",
     "permission":"une permission",
@@ -462,6 +478,7 @@
   },
   "form_update": {
     "devoir":"du devoir",
+    "question":"de la question",
     "progression_chap":"Mettre à jours la progression",
     "annee_semestre": "Modifier l'année ou le semestre courant",
     "etat_absence_just": "Modifier l'état de l'absence justifier en non justifier pour l'étudiant : ",
@@ -505,6 +522,7 @@
     "supprimer": "Supprimer",
     "suppression": "Suppression ",
     "devoir":"du devoir",
+    "question":"de la question",
     "permission":"de la permission",
     "pause": "de la pause",
     "absence": "Supprimer une absence : ",
@@ -538,6 +556,14 @@
     "emploi_temps_fin":" dans cette période."
   },
   "error": {
+    "somme_pourcentage_positif": "La somme des pourcentages positifs doit être égale à 100%.",
+    "somme_pourcentage_negatif":"La somme des pourcentages négatifs doit être supérieure ou égale à -100%.",
+    "text_fr":"Le champ texte en français est obligatoire.",
+    "text_en":"Le champ texte en anglais est obligatoire.",
+    "nombre_point":"Le champ nombre de point est obligatoire.",
+    "reponse_correct_fr":"Le champ réponse correcte en français est obligatoire.",
+    "reponse_correct_en":"Le champ réponse correcte en anglais est obligatoire.",
+    "options":"Au moins 2 options de réponse sont obligatoire.",
     "note_sur":"Le champ nombre total de points est obligatoire.",
     "deadline":"Le champ délai est obligatoire.",
     "tentatives_max":"Le champ nombre de tentatives maximales est obligatoire.",

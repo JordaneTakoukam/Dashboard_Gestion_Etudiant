@@ -6,11 +6,11 @@ const api = `${apiUrl}/devoir/question`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateQuestion({ text_fr,text_en,type,options_fr,options_en,reponseCorrect_fr,reponseCorrect_en, devoir }: QuestionType): Promise<ReponseApiPros> {
+export async function apiCreateQuestion({ textFr,textEn,type,options,nbPoint, devoir }: QuestionType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { text_fr,text_en,type,options_fr,options_en,reponseCorrect_fr,reponseCorrect_en, devoir },
+            { textFr,textEn,type,options,nbPoint, devoir },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,11 +26,11 @@ export async function apiCreateQuestion({ text_fr,text_en,type,options_fr,option
     }
 }
 
-export async function apiUpdateQuestion({ _id, text_fr,text_en,type,options_fr,options_en,reponseCorrect_fr,reponseCorrect_en, devoir }: QuestionType): Promise<ReponseApiPros> {
+export async function apiUpdateQuestion({ _id, textFr,textEn,type,options,nbPoint, devoir }: QuestionType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            { text_fr,text_en,type,options_fr,options_en,reponseCorrect_fr,reponseCorrect_en, devoir },
+            { textFr,textEn,type,options,nbPoint, devoir },
             {
                 headers: {
                     'Content-Type': 'application/json',

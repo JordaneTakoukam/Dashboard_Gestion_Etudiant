@@ -92,7 +92,7 @@ const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
                                 name: t('label.questions'),
                                 handleClick: () => {
                                     dispatch(setDevoirSelected(item));
-                                    navigate('/subjects/questions/manage');
+                                    navigate('/pedagogies/questions/manage');
                                 },
                             });
                         }

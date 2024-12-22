@@ -46,6 +46,7 @@
     "pedagogie":"Pedagogy"
   },
   "sub_menu": {
+    "questions":"Questions",
     "cahier_exercice":"Exercise book",
     "permission":"Permissions",
     "presence_paie":"Attendance and Pay",
@@ -104,6 +105,18 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "vrai_faux":"True or False",
+    "qcm":"MCQ",
+    "nombre_point":"Number of points",
+    "text":"Text",
+    "text_fr":"Text in french",
+    "text_en":"Text in english",
+    "reponse_correct_fr":"Correct answer in french",
+    "reponse_correct_en":"Correct answer in english",
+    "options":"Options",
+    "option":"Option",
+    "option_fr":"Option in french",
+    "option_en":"Option in english",
     "note_sur":"Total number of points",
     "oui":"Yes",
     "non":"No",
@@ -306,6 +319,7 @@
   "recherche": {
     "rechercher": "Search ",
     "devoir": "an assignment",
+    "question":"a question",
     "support_de_cours":"a course material",
     "permission":"a permission",
     "etudiant": "a student",
@@ -334,6 +348,7 @@
   "boutton": {
     "appliquer":"Apply",
     "soumettre": "Submit",
+    "ajouter_option":"Add an option",
     "daccord": "OK",
     "actualiser": "Refresh",
     "rafraichir_la_page": "Refresh the page",
@@ -431,6 +446,7 @@
     "ajouter":"Add ",
     "enregistrer": "Save ",
     "devoir":"a new assignment",
+    "question":"a new question",
     "support_de_cours":"a new course material",
     "document":"a new document",
     "permission":"a permission",
@@ -462,6 +478,7 @@
   },
   "form_update": {
     "devoir":"of the assignment",
+    "question":"of the question",
     "progression_chap":"Update progression",
     "annee_semestre": "Modify the current year or semester",
     "etat_absence_just": "Change the status of the justified absence to unjustified for the student : ",
@@ -505,6 +522,7 @@
     "supprimer": "Delete",
     "suppression": "Deletion",
     "devoir":"of the assignment",
+    "question":"of the question",
     "permission":"of the permission",
     "pause": "of the break",
     "absence": "Delete an absence:",
@@ -537,6 +555,14 @@
     "emploi_temps_fin":" in this period."
   },
   "error": {
+    "somme_pourcentage_positif":"The sum of positive percentages must equal 100%.",
+    "somme_pourcentage_negatif":"The sum of negative percentages must be greater than or equal to -100%.",
+    "text_fr":"The text in french field is required.",
+    "text_en":"The text in english field is required.",
+    "nombre_point":"The number of points field is required.",
+    "reponse_correct_fr":"The correct answer field in french is required.",
+    "reponse_correct_en":"The correct answer field in english is required.",
+    "options":"At least 2 response options are required.",
     "note_sur":"The total number of points field is required.",
     "deadline":"The deadline field is required.",
     "tentatives_max":"The maximum number of attempts field is required.",

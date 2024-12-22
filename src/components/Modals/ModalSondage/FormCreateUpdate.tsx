@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { Sondage } from '../../../pages/Admin/Sondages';
 // import { Section, sections } from '../../../pages/Admin/Sections';
 import { Cycle, cycles } from '../../../pages/Admin/Cycles';
-import { Matiere, matieres } from '../../../pages/Admin/ListeMatieres';
 import { Rubrique, allRubriques } from '../../../pages/Admin/Rubriques';
 
 

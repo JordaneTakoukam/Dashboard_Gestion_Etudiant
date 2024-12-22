@@ -20,7 +20,6 @@ import Regions from '../pages/Admin/Regions';
 import Communes from '../pages/Admin/Communes';
 import Rubriques from '../pages/Admin/Rubriques';
 import GroupeQuestions from '../pages/Admin/GroupeQuestions';
-import Questions from '../pages/Admin/Questions';
 import ListeDesSondages from '../pages/Admin/Sondages';
 import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
 import { Departements } from '../pages/Admin/Departements';
@@ -179,11 +178,7 @@ const coreRoutes = [
     title: 'Groupe de questions',
     component: GroupeQuestions
   },
-  {
-    path: '/sondages/questions',
-    title: 'Questions',
-    component: Questions
-  },
+  
   {
     path: '/sondages/liste_sondage',
     title: 'Liste des sondages',

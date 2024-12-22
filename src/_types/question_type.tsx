@@ -1,14 +1,15 @@
 // Définir le type de données pour un question
 interface QuestionType {
     _id?: string;
-    text_fr: string;
-    text_en: string;
+    textFr: string;
+    textEn: string;
     type: string;
     nbPoint:number;
-    options_fr: string[]; // Utilisé pour les QCM
-    options_en: string[], // Utilisé pour les QCM
-    reponseCorrect_fr: string, // La réponse correcte
-    reponseCorrect_en: string, // La réponse correcte
+    options:{
+        textFr:string,
+        textEn:string,
+        pourcentage:number
+    }[]; 
     devoir: DevoirType
 }
 

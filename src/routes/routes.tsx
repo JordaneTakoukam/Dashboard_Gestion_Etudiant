@@ -11,24 +11,18 @@ import Sections from '../pages/Admin/Sections';
 import CalendrierAcademique from '../pages/CommonPage/CalendrierAcademique';
 import EmploiDeTemp from '../pages/CommonPage/EmploiDeTemp';
 import MonProfil from '../pages/CommonPage/Profil';
-import AnneeSemestre from '../pages/Admin/AnneeSemestreCourant';
 import Services from '../pages/Admin/Services';
 import Fonctions from '../pages/Admin/Fonctions';
 import Grades from '../pages/Admin/Grades';
 import Categories from '../pages/Admin/Categories';
 import Regions from '../pages/Admin/Regions';
 import Communes from '../pages/Admin/Communes';
-import Rubriques from '../pages/Admin/Rubriques';
-import GroupeQuestions from '../pages/Admin/GroupeQuestions';
-import Questions from '../pages/Admin/Questions';
-import ListeDesSondages from '../pages/Admin/Sondages';
 import ListeDesAdministrateur from '../pages/Admin/ListeAdministrateurs';
 import { Departements } from '../pages/Admin/Departements';
 import ListeDesPeriodesEnseignement from '../pages/Admin/PeriodeEnseignement';
 import Chapitres from '../pages/Admin/Chapitres';
 import ProgressionPeriode from '../pages/Admin/ProgressionPeriode';
 import GererAbsencesEnseignant from '../pages/Admin/Disciplines/Enseignant/GererAbsencesEnseignant';
-import DisciplineDesEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';
 import AbsenceSignalerEnseignant from '../pages/Admin/Disciplines/Enseignant/AbsenceSignalerEnseignant';
 import AbsenceSignalerEtudiant from '../pages/Admin/Disciplines/Etudiant/AbsenceSignalerEtudiant';
 import GererAbsencesEtudiant from '../pages/Admin/Disciplines/Etudiant/GererAbsencesEtudiant';
@@ -43,10 +37,10 @@ import QRCodeGenerator from '../pages/Admin/QRCode';
 import PresencePaie from '../pages/Admin/PresencePaie';
 import Permissions from '../pages/Admin/Permissions';
 import UserPermissions from '../pages/CommonPage/UserPermissions';
-import AccessDenied from '../pages/CommonPage/AccesRefuse';
 import SupportDeCours from '../pages/CommonPage/SupportDeCours';
 import Abscences from '../pages/CommonPage/Abscences';
 import Devoirs from '../pages/CommonPage/Devoirs';
+import Questions from '../pages/CommonPage/Questions';
 
 
 
@@ -352,6 +346,13 @@ const coreRoutes = [
     title: 'Cahier d\'exercice',
     component: Devoirs,
     permissions:["gerer_cahiers_exercices", "consulter_cahiers_exercices"]
+  },
+
+  {
+    path: '/pedagogies/questions/manage',
+    title: 'Liste des questions',
+    component: Questions,
+    permissions:["gerer_questions","consulter_liste_questions"]
   },
 
 ];

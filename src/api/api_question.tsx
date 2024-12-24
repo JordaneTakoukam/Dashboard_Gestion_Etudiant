@@ -66,11 +66,11 @@ export async function apiDeleteQuestion(questionId: string): Promise<ReponseApiP
     }
 }
 
-export async function obtenirQuestionsDevoir({ devoirId, page }: { devoirId: string, page: number}): Promise<QuestionReturnGetType> {
+export async function obtenirQuestionsDevoirAvecPagination({ devoirId, page }: { devoirId: string, page: number}): Promise<QuestionReturnGetType> {
     const pageSize: number = 10;
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/obtenirQuestionsDevoir/${devoirId}`,
+            `${api}/obtenirQuestionsDevoirAvecPagination/${devoirId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,6 +79,28 @@ export async function obtenirQuestionsDevoir({ devoirId, page }: { devoirId: str
                 params: {
                     page: page,
                     pageSize: pageSize,
+                },
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const devoirs: QuestionReturnGetType = response.data.data;
+        
+        return devoirs;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}
+
+export async function obtenirQuestionsDevoir({ devoirId }: { devoirId: string}): Promise<QuestionReturnGetType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/obtenirQuestionsDevoir/${devoirId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
                 },
             },
         );

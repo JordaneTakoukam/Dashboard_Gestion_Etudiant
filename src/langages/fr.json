@@ -46,6 +46,7 @@
     "pedagogie":"Pédagogie"
   },
   "sub_menu": {
+    "test":"Test",
     "questions":"Questions",
     "cahier_exercice":"Cahier d'exercice",
     "permission":"Permissions",
@@ -105,6 +106,17 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "effacer_choix":" Effacer les choix",
+    "points":"Points",
+    "repondu":"Répondu",
+    "points_obtenus":"Points obtenus",
+    "navigation":"Navigation",
+    "nouvelle_tentative":"Nouvelle tentative",
+    "tentatives_restantes":"restantes",
+    "plus_tentatives":"Plus de tentatives disponibles.",
+    "soumettre_test":"Soumettre le test",
+    "note_finale":"Note finale",
+
     "vrai_faux":"Vrai ou Faux",
     "qcm":"QCM",
     "nombre_point":"Nombre de points",

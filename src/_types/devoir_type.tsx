@@ -2,10 +2,10 @@
 // Définir le type de données pour un événement
 interface DevoirType {
     _id?: string;
-    titre_fr: string;
-    titre_en: string;
-    description_fr?: string;
-    description_en?: string;
+    titreFr: string;
+    titreEn: string;
+    descriptionFr?: string;
+    descriptionEn?: string;
     utilisateur: UserState
     niveau: string
     questions?: QuestionType[]; // Référence aux questions

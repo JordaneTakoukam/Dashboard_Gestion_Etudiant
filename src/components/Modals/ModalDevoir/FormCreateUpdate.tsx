@@ -90,10 +90,10 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
             currentSection && filterCycleBySection(currentSection._id);
             currentCycle && filterNiveauByCycle(currentCycle._id);
-            setTitreFr(devoir.titre_fr)
-            setTitreEn(devoir.titre_en)
-            setDescriptionFr(devoir?.description_fr || "")
-            setDescriptionEn(devoir?.description_en || "")
+            setTitreFr(devoir.titreFr)
+            setTitreEn(devoir.titreEn)
+            setDescriptionFr(devoir?.descriptionFr || "")
+            setDescriptionEn(devoir?.descriptionEn || "")
             setDeadline(formatDateTimeForInput(devoir.deadline))
             setOrdreAleatoire(devoir.ordreAleatoire)
             setTentativesMax(devoir.tentativesMax)
@@ -287,13 +287,13 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
             if (niveau && niveau._id) {
                 await apiCreateDevoir(
                     {
-                        titre_fr:titreFr,
-                        titre_en:titreEn,
+                        titreFr:titreFr,
+                        titreEn:titreEn,
                         niveau:niveau._id, 
                         noteSur,
                         utilisateur:currentUser,
-                        description_fr:descriptionFr, 
-                        description_en:descriptionEn, 
+                        descriptionFr:descriptionFr, 
+                        descriptionEn:descriptionEn, 
                         tentativesMax, 
                         feedbackConfig:{
                             afficherNoteApresSoumission:noteApresSoumission,
@@ -313,13 +313,13 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                             
                             devoir: {
                                 _id: e.data._id,
-                                titre_fr:e.data.titre_fr,
-                                titre_en:e.data.titre_en,
+                                titreFr:e.data.titreFr,
+                                titreEn:e.data.titreEn,
                                 niveau:e.data.niveau, 
                                 noteSur:e.data.noteSur,
                                 utilisateur:e.data.utilisateur,
-                                description_fr:e.data.description_fr, 
-                                description_en:e.data.description_en, 
+                                descriptionFr:e.data.descriptionFr, 
+                                descriptionEn:e.data.descriptionEn, 
                                 tentativesMax:e.data.tentativesMax, 
                                 feedbackConfig:e.data.feedbackConfig,
                                 deadline:e.data.deadline, 
@@ -345,13 +345,13 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
             if (niveau && niveau._id) {
                 await apiUpdateDevoir(
                     {
-                        titre_fr:titreFr,
-                        titre_en:titreEn,
+                        titreFr:titreFr,
+                        titreEn:titreEn,
                         niveau:niveau._id,
                         noteSur, 
                         utilisateur:currentUser,
-                        description_fr:descriptionFr, 
-                        description_en:descriptionEn, 
+                        descriptionFr:descriptionFr, 
+                        descriptionEn:descriptionEn, 
                         tentativesMax, 
                         feedbackConfig:{
                             afficherNoteApresSoumission:noteApresSoumission,
@@ -373,13 +373,13 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                                 id: e.data._id,
                                 devoirData: {
                                     _id: e.data._id,
-                                    titre_fr:e.data.titre_fr,
-                                    titre_en:e.data.titre_en,
+                                    titreFr:e.data.titreFr,
+                                    titreEn:e.data.titreEn,
                                     niveau:e.data.niveau, 
                                     noteSur:e.data.noteSur,
                                     utilisateur:e.data.utilisateur,
-                                    description_fr:e.data.description_fr, 
-                                    description_en:e.data.description_en, 
+                                    descriptionFr:e.data.descriptionFr, 
+                                    descriptionEn:e.data.descriptionEn, 
                                     tentativesMax:e.data.tentativesMax, 
                                     feedbackConfig:e.data.feedbackConfig,
                                     deadline:e.data.deadline, 

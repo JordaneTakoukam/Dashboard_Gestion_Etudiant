@@ -46,6 +46,7 @@
     "pedagogie":"Pedagogy"
   },
   "sub_menu": {
+    "test":"Test",
     "questions":"Questions",
     "cahier_exercice":"Exercise book",
     "permission":"Permissions",
@@ -105,6 +106,17 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    
+    "effacer_choix": "Clear selections",
+    "points": "Points",
+    "repondu": "Answered",
+    "points_obtenus": "Points obtained",
+    "navigation": "Navigation",
+    "nouvelle_tentative": "New attempt",
+    "tentatives_restantes": "remaining attempts",
+    "plus_tentatives": "No more attempts available.",
+    "soumettre_test": "Submit the test",
+    "note_finale": "Final score",
     "vrai_faux":"True or False",
     "qcm":"MCQ",
     "nombre_point":"Number of points",

@@ -6,11 +6,11 @@ const api = `${apiUrl}/devoir`;
 
 const token = localStorage.getItem(wstjqer);
 
-export async function apiCreateDevoir({titre_fr, titre_en, description_fr, description_en, utilisateur, niveau, noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee}: DevoirType): Promise<ReponseApiPros> {
+export async function apiCreateDevoir({titreFr, titreEn, descriptionFr, descriptionEn, utilisateur, niveau, noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee}: DevoirType): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { titre_fr, titre_en, description_fr, description_en, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
+            { titreFr, titreEn, descriptionFr, descriptionEn, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,12 +26,12 @@ export async function apiCreateDevoir({titre_fr, titre_en, description_fr, descr
     }
 }
 
-export async function apiUpdateDevoir({ _id, titre_fr, titre_en, description_fr, description_en, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee }: DevoirType): Promise<ReponseApiPros> {
+export async function apiUpdateDevoir({ _id, titreFr, titreEn, descriptionFr, descriptionEn, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee }: DevoirType): Promise<ReponseApiPros> {
     
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${_id}`,
-            {titre_fr, titre_en, description_fr, description_en, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
+            {titreFr, titreEn, descriptionFr, descriptionEn, utilisateur, niveau,noteSur, questions, deadline, ordreAleatoire, tentativesMax, feedbackConfig, annee },
             {
                 headers: {
                     'Content-Type': 'application/json',

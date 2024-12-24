@@ -10,7 +10,7 @@ import BodyTable from "./BodyTable";
 import { useTranslation } from "react-i18next";
 import { RootState } from "../../../_redux/store";
 import { setQuestionLoading, setQuestions, setErrorPageQuestion } from "../../../_redux/features/question_slice";
-import { apiSearchQuestion, obtenirQuestionsDevoir } from "../../../api/api_question";
+import { apiSearchQuestion, obtenirQuestionsDevoirAvecPagination } from "../../../api/api_question";
 import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 
@@ -72,7 +72,7 @@ const Table = ({ data, onCreate, onEdit}: TableQuestionProps) => {
                     pageSize: 0
                 }
                 if(selectedDevoir && selectedDevoir._id){
-                    const fetchedQuestions = await obtenirQuestionsDevoir({ devoirId: selectedDevoir._id, page: currentPage});
+                    const fetchedQuestions = await obtenirQuestionsDevoirAvecPagination({ devoirId: selectedDevoir._id, page: currentPage});
                         
                     if (fetchedQuestions) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
                         dispatch(setQuestions(fetchedQuestions));

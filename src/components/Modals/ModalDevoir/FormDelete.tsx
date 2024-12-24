@@ -47,7 +47,7 @@ function ModalDelete({ devoir }: { devoir : DevoirType|null}) {
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
             >
-                <h1>{t('form_delete.suppression')+t('form_delete.devoir')} : {devoir ? (lang === 'fr' ? devoir.titre_fr : devoir.titre_en) : ""}</h1>
+                <h1>{t('form_delete.suppression')+t('form_delete.devoir')} : {devoir ? (lang === 'fr' ? devoir.titreFr : devoir.titreEn) : ""}</h1>
             </CustomDialogModal>
         </>
     );

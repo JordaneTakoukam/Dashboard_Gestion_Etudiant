@@ -52,7 +52,7 @@ const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
 
                 {/* code */}
                 <td className="border-b border-[#eee] py-0  px-4 dark:border-strokedark">
-                    <h5>{lang === 'fr' ? item.titre_fr : item.titre_en}</h5>
+                    <h5>{lang === 'fr' ? item.titreFr : item.titreEn}</h5>
                 </td>
 
                 {/* utilisateur */}
@@ -97,11 +97,12 @@ const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
                             });
                         }
 
-                        if (hasCompleteAssPermission) {
+                        if (true) {
                             listPage.push({
                                 name: t('label.effectuer_devoir'),
                                 handleClick: () => {
-                                    alert("Fonctionnalité pas encore disponible")
+                                    dispatch(setDevoirSelected(item));
+                                    navigate('/pedagogies/tests/manage');
                                 },
                             });
                         }

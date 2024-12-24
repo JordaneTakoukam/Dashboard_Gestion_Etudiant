@@ -6,6 +6,8 @@ interface BreadcrumbProps {
   pageName: string;
   isDashboard?: boolean;
   isChapitre?: boolean;
+  isQuestion?: boolean;
+  isTest?:boolean;
   isObjectif?: boolean;
   isPeriodeEnseignement?: boolean;
   isEnseignement?: boolean;
@@ -24,18 +26,17 @@ const Breadcrumb = ({
   isDashboard = false,
   isChapitre = false,
   isObjectif = false,
+  isQuestion = false,
+  isTest = false,
   isEnseignement = false,
   isPeriodeEnseignement = false,
-  returnWithMatiere,
-  returnWithChapitre,
-  returnWithPeriodeEnseignement,
 }: BreadcrumbProps) => {
   const { t } = useTranslation();
 
   const navigate = useNavigate();
 
   const handleMatiere = () => {
-    navigate('subjects/subject-list');
+    navigate('/subjects/subject-list');
   };
 
   const handlePeriodeEnseigenement = () => {
@@ -48,6 +49,10 @@ const Breadcrumb = ({
 
   const handleDisciplneEtudiant = () => {
     navigate('/students/disciplines/');
+  };
+  
+  const handleExercice = () => {
+    navigate('/pedagogies/exercise-book');
   };
 
   return (
@@ -116,6 +121,24 @@ const Breadcrumb = ({
               </span>
             </li>
           )}
+
+          {isQuestion && (
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline' to={"/pedagogies/exercise-book"} onClick={handleExercice}>{t('sub_menu.cahier_exercice')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
+            </li>
+          )}
+
+          {/* {isTest && (
+            <li>
+              <span className='flex'>
+                <Link className='hover:underline' to={"/pedagogies/exercise-book"} onClick={handleExercice}>{t('sub_menu.cahier_exercice')}</Link>
+                <span className='ml-2'> /</span>
+              </span>
+            </li>
+          )} */}
 
           {!isDashboard && <li className="text-primary">{reduceWord(pageName, 15)}</li>}
         </ol>

@@ -9,7 +9,7 @@ import { RootState } from "../../_redux/store";
 import { useNavigate } from "react-router-dom";
 import { setQuestionLoading, setQuestions, setErrorPageQuestion } from "../../_redux/features/question_slice";
 import createToast from "../../hooks/toastify";
-import { obtenirQuestionsDevoir } from "../../api/api_question";
+import { obtenirQuestionsDevoirAvecPagination } from "../../api/api_question";
 
 const Questions = () => {
     const selectedDevoir = useSelector((state: RootState) => state.devoirSlice.selectedDevoir);
@@ -49,7 +49,7 @@ const Questions = () => {
                     pageSize: 0
                 }
                 if(selectedDevoir && selectedDevoir._id){
-                    const fetchedQuestions = await obtenirQuestionsDevoir({ devoirId: selectedDevoir._id, page: 1});
+                    const fetchedQuestions = await obtenirQuestionsDevoirAvecPagination({ devoirId: selectedDevoir._id, page: 1});
                         
                     if (fetchedQuestions) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
                         dispatch(setQuestions(fetchedQuestions));

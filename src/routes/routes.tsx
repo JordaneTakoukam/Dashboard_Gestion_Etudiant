@@ -41,6 +41,7 @@ import SupportDeCours from '../pages/CommonPage/SupportDeCours';
 import Abscences from '../pages/CommonPage/Abscences';
 import Devoirs from '../pages/CommonPage/Devoirs';
 import Questions from '../pages/CommonPage/Questions';
+import TestPage from '../pages/CommonPage/Test';
 
 
 
@@ -353,6 +354,13 @@ const coreRoutes = [
     title: 'Liste des questions',
     component: Questions,
     permissions:["gerer_questions","consulter_liste_questions"]
+  },
+
+  {
+    path: '/pedagogies/tests/manage',
+    title: 'Tests',
+    component: TestPage,
+    permissions:["gerer_questions"]
   },
 
 ];

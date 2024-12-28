@@ -97,7 +97,7 @@ const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
                             });
                         }
 
-                        if (true) {
+                        if (hasCompleteAssPermission) {
                             listPage.push({
                                 name: t('label.effectuer_devoir'),
                                 handleClick: () => {

@@ -360,7 +360,7 @@ const coreRoutes = [
     path: '/pedagogies/tests/manage',
     title: 'Tests',
     component: TestPage,
-    permissions:["gerer_questions"]
+    permissions:["effectuer_devoir"]
   },
 
 ];

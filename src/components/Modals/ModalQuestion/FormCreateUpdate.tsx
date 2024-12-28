@@ -139,7 +139,7 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
             }
 
         });
-        console.log(newErrors);
+        
         const totalPourcentagePositif = options
             .filter(opt => opt.pourcentage > 0)
             .reduce((sum, opt) => sum + opt.pourcentage, 0);
@@ -147,6 +147,7 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
             .filter(opt => opt.pourcentage < 0)
             .reduce((sum, opt) => sum + opt.pourcentage, 0);
         if (!type || !textFr || !textEn || !nbPoint || newErrors || (!options.length || (options.length && options.length < 2)) || totalPourcentagePositif !== 100 || totalPourcentageNegatif < -100) {
+            console.log(newErrors);
             if (!type) {
                 setErrorType(t('error.type'));
             }

@@ -36,6 +36,35 @@ interface DevoirInitialData {
     selectedDevoir:DevoirType|undefined;
 }
 
+interface DevoirStatsInitialData {
+    data: {
+        devoir: {
+            _id?:string, 
+            titreFr: string,
+            titreEn: string,
+            noteSur: number,
+        },
+        nombreParticipants: number,
+        meilleureNote: number,
+        pireNote: number,
+        noteMoyenne: number,
+        etudiants : 
+        {
+            etudiant:UserState
+            meilleureScore: number,
+            nombreTentatives: number,
+        }[]
+    
+        // currentPage: number;
+        // totalPages: number;
+        // totalItems: number;
+        // pageSize : number;
+    };
+    pageIsLoading: boolean;
+    pageError: string | null;
+}
+
+
 interface CreateDevoirPayload {
     devoir: DevoirType; // Données de l'événement à créer
 }
@@ -56,4 +85,29 @@ interface DevoirReturnGetType {
     totalItems: number;
     totalPages: number;
     pageSize : number;
+}
+
+interface DevoirStatsReturnGetType {
+        devoir: {
+            _id?:string, 
+            titreFr: string,
+            titreEn: string,
+            noteSur: number,
+        },
+        nombreParticipants: number,
+        meilleureNote: number,
+        pireNote: number,
+        noteMoyenne: number,
+        etudiants : 
+        {
+            etudiant:UserState
+            meilleureScore: number,
+            nombreTentatives: number,
+        }[]
+    
+        // currentPage: number;
+        // totalPages: number;
+        // totalItems: number;
+        // pageSize : number;
+    
 }

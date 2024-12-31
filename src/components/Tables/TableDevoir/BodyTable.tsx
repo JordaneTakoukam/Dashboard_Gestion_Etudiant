@@ -111,7 +111,8 @@ const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
                             listPage.push({
                                 name: t('label.statistiques'),
                                 handleClick: () => {
-                                    alert("Fonctionnalité pas encore disponible")
+                                    dispatch(setDevoirSelected(item));
+                                    navigate('/pedagogies/statistics');
                                 },
                             });
                         }

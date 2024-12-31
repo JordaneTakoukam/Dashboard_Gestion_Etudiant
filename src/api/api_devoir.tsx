@@ -172,10 +172,10 @@ export async function getDevoirsByEnseignantPaginated({ enseignantId, annee, pag
     }
 }
 
-export async function voirStatistiquesDevoir({ devoirId}: {devoirId: string}): Promise<ReponseApiPros> {
+export async function getDevoirStats({ devoirId}: {devoirId: string}): Promise<DevoirStatsReturnGetType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/voirStatistiquesDevoir/${devoirId}`,
+            `${api}/getDevoirStats/${devoirId}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ export async function voirStatistiquesDevoir({ devoirId}: {devoirId: string}): P
         );
 
         // Extraction de tous les objets de paramètres de la réponse
-        const devoirs: ReponseApiPros = response.data.data;
+        const devoirs: DevoirStatsReturnGetType = response.data;
         
         return devoirs;
     } catch (error) {

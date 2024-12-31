@@ -42,6 +42,7 @@ import Abscences from '../pages/CommonPage/Abscences';
 import Devoirs from '../pages/CommonPage/Devoirs';
 import Questions from '../pages/CommonPage/Questions';
 import TestPage from '../pages/CommonPage/Test';
+import DevoirStatsPage from '../pages/CommonPage/DevoirStats';
 
 
 
@@ -361,6 +362,13 @@ const coreRoutes = [
     title: 'Tests',
     component: TestPage,
     permissions:["effectuer_devoir"]
+  },
+
+  {
+    path: '/pedagogies/statistics',
+    title: 'Statistique',
+    component: DevoirStatsPage,
+    permissions:["consulter_statistiques"]
   },
 
 ];

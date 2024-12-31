@@ -46,6 +46,7 @@
     "pedagogie":"Pédagogie"
   },
   "sub_menu": {
+    "statistiques":"Statistiques",
     "test":"Test",
     "questions":"Questions",
     "cahier_exercice":"Cahier d'exercice",
@@ -106,6 +107,14 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "liste_etudiants":"Liste des étudiants",
+    "note":"Note",
+    "tentatives_effectuees":"Tentatives effectuées",
+    "nombre_participant":"Nombre de participants",
+    "meilleur_note":"Meilleure note",
+    "pire_note":"Pire note",
+    "note_moyenne":"Note moyenne",
+    "stats_devoir":"Statistiques du Devoir",
     "effacer_choix":" Effacer les choix",
     "points":"Points",
     "repondu":"Répondu",

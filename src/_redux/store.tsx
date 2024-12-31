@@ -6,6 +6,7 @@ import evenementReducer from "./features/evenement_slice.tsx";
 import periodeReducer from "./features/periode_slice.tsx";
 import matiereReducer from "./features/matiere_slice.tsx";
 import devoirReducer from "./features/devoir_slice.tsx";
+import devoirStatsReducer from "./features/devoir_stats_slice.tsx";
 import periodeEnseignementReducer from "./features/periode_enseignement_slice.tsx";
 import progressionMatiereReducer from "./features/progession_matiere_slice.tsx";
 import progressionPeriodeEnseignementReducer from "./features/progession_periode_slice.tsx";
@@ -41,6 +42,7 @@ const store = configureStore({
     progressionPeriodeEnseignementSlice: progressionPeriodeEnseignementReducer,
     questionSlice: questionReducer,
     devoirSlice: devoirReducer,
+    devoirStatsSlice: devoirStatsReducer,
 
     // 
     admin: AdminReducer,

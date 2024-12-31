@@ -46,6 +46,7 @@
     "pedagogie":"Pedagogy"
   },
   "sub_menu": {
+    "statistiques":"Statistis",
     "test":"Test",
     "questions":"Questions",
     "cahier_exercice":"Exercise book",
@@ -106,7 +107,14 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
-    
+    "liste_etudiants":"Student List",
+    "note":"Note",
+    "tentatives_effectuees": "Attempts made",
+    "nombre_participant": "Number of participants",
+    "meilleur_note": "Best note",
+    "pire_note": "Worst note",
+    "note_moyenne": "Average note",
+    "stats_devoir":"Assignment statistics",
     "effacer_choix": "Clear selections",
     "points": "Points",
     "repondu": "Answered",

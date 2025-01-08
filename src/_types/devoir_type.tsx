@@ -87,6 +87,12 @@ interface DevoirReturnGetType {
     pageSize : number;
 }
 
+interface StudentStats{
+    etudiant:UserState
+    meilleureScore: number,
+    nombreTentatives: number,
+}
+
 interface DevoirStatsReturnGetType {
         devoir: {
             _id?:string, 
@@ -98,12 +104,7 @@ interface DevoirStatsReturnGetType {
         meilleureNote: number,
         pireNote: number,
         noteMoyenne: number,
-        etudiants : 
-        {
-            etudiant:UserState
-            meilleureScore: number,
-            nombreTentatives: number,
-        }[]
+        etudiants : StudentStats[]
     
         // currentPage: number;
         // totalPages: number;

@@ -193,3 +193,26 @@ export async function getDevoirStats({ devoirId}: {devoirId: string}): Promise<D
         throw error;
     }
 }
+
+export async function apiSearchStudentStatsByName({ searchString, devoirId }: { devoirId?:string, searchString: string }): Promise<StudentStats[]> {
+   
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/searchStudentStatsByName/${devoirId}/${searchString}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+               
+            },
+        );
+        
+        const stats: StudentStats[] = response.data;
+
+        return stats;
+    } catch (error) {
+        // console.error('Error getting all settings:', error);
+        throw error;
+    }
+}

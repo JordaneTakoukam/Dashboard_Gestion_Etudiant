@@ -12,7 +12,7 @@ import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import { setDevoirLoading } from "../../../_redux/features/devoir_slice";
 import { setDevoirStats } from "../../../_redux/features/devoir_stats_slice";
-import { getDevoirStats } from "../../../api/api_devoir";
+import { apiSearchStudentStatsByName, getDevoirStats } from "../../../api/api_devoir";
 
 interface TableDevoirStatsProps {
     data : 
@@ -45,7 +45,7 @@ const Table = ({ data, noteSur}: TableDevoirStatsProps) => {
     };
    
     const [searchText, setSearchText] = useState<string>('');
-
+    const [isSearch, setIsSearch] = useState(false);
    
     const [formatToDownload, setFormatToDownload] = useState("");
 
@@ -202,83 +202,62 @@ const Table = ({ data, noteSur}: TableDevoirStatsProps) => {
             }
         }
         fetchDevoirStats();
-    }, [dispatch, selectedDevoir, t]);
+    }, [dispatch, t]);
 
     // modifier les données de la page lors de la recherche ou de la sélection de la section
-    const [filteredData, setFilteredData] = useState<{
-        etudiant:UserState
-        meilleureScore: number,
-        nombreTentatives: number,
-    }[]>(data);
-
-   
+    const [filteredData, setFilteredData] = useState<StudentStats[]>(data);
     
     const latestQueryDevoir = useRef('');
-    // useEffect(() => {
-    //     dispatch(setDevoirLoading(true));
-    //     latestQueryDevoir.current = searchText;
-    //     try{
+    useEffect(() => {
+        dispatch(setDevoirLoading(true));
+        latestQueryDevoir.current = searchText;
+        try{
             
-    //         const filterDevoirByContent = async () => {
-    //             if (searchText === '') {
+            const filterStatsByContent = async () => {
+                if (searchText === '') {
                     
                     
-    //                 const result: DevoirType[] = data;
-    //                 setFilteredData(result); 
-    //             }else{
+                    const result: StudentStats[] = data;
+                    setFilteredData(result); 
+                }else{
                     
-    //                 let devoirsResult : DevoirType[] = [];
-    //                 if(hasManageHomeworkPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
+                    let devoirsResult : StudentStats[] = [];
+                    // if(hasManageHomeworkPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
                         
-    //                     await apiSearchDevoir({ searchString:searchText, limit:10, langue:lang }).then(result=>{
-    //                         if (latestQueryDevoir.current === searchText) {
-    //                             if(result){
-    //                                 devoirsResult = result.devoirs;
-    //                                 setFilteredData(devoirsResult);
-    //                             }else{
-    //                                 setFilteredData(devoirsResult)
-    //                             }
-    //                         }
+                        await apiSearchStudentStatsByName({devoirId:selectedDevoir?._id, searchString:searchText}).then(result=>{
+                            if (latestQueryDevoir.current === searchText) {
+                                if(result){
+                                    setFilteredData(result);
+                                }else{
+                                    setFilteredData(devoirsResult)
+                                }
+                            }
                             
-    //                     })
-    //                 }else{
-    //                     if(currentUser.role === roles.enseignant){
-    //                         if(selectedYear){
-    //                             await apiSearchDevoirByEnseignant({ searchString:searchText, limit:10, langue:lang, enseignantId:currentUser._id }).then(result=>{
-    //                                 if (latestQueryDevoir.current === searchText) {
-    //                                     if(result){
-    //                                         devoirsResult = result.devoirs;
-    //                                         setFilteredData(devoirsResult);
-    //                                     }else{
-    //                                         setFilteredData(devoirsResult)
-    //                                     }
-    //                                 }
-                                    
-    //                             })
-    //                         }
-    //                     }
-    //                 }
+                        })
+                    // }
                     
-    //             }                
-    //         };
-    //         filterDevoirByContent();
-    //     }catch(e){
-    //         dispatch(setErrorPageDevoir(t('message.erreur')));
-    //     }finally{
-    //         if (latestQueryDevoir.current === searchText) {
-    //             dispatch(setDevoirLoading(false)); // Définissez le loading à false après le chargement
-    //         }
-    //     }
-    // }, [searchText, data]);
+                }                
+            };
+            filterStatsByContent();
+        }catch(e){
+            createToast(t('message.erreur'), "", 2)
+        }finally{
+            if (latestQueryDevoir.current === searchText) {
+                dispatch(setDevoirLoading(false)); // Définissez le loading à false après le chargement
+            }
+        }
+    }, [searchText, data]);
 
 
 
     return (
         <div>
-           
+             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
+                <InputSearch hintText={t('recherche.rechercher')+t('recherche.etudiant')} value={searchText} onSubmit={(text) =>{setIsSearch(true); setSearchText(text)}} />
+            </div>
             {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                
+           
                 {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">

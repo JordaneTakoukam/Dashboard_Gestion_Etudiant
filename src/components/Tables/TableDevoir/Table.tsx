@@ -323,7 +323,7 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
                     totalPages: 0,
                     pageSize: 0
                 }
-                if(false || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
+                if(hasManageHomeworkPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
                     if (selectNiveauId) {
                         const fetchedDevoirs = await getDevoirsByNiveauPaginated({ niveauId: selectNiveauId, page: currentPage, annee: selectedYear });
                         
@@ -375,7 +375,6 @@ const Table = ({ data, onCreate, onEdit}: TableDevoirProps) => {
             }
         }
         fetchDevoirs();
-    // }, [section, selectNiveauId, currentPage, t]); // Déclencher l'effet lorsque currentPage change
     },[dispatch, currentPage, selectedYear, selectNiveauId, t]); // Déclencher l'effet lorsque currentPage change
     
 

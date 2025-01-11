@@ -33,7 +33,7 @@ const DevoirStatsPage = () => {
 
     const {t}=useTranslation();
     const dispatch = useDispatch();
-
+   
    useEffect(() => {
     
         const fetchDevoirStats = async () => {
@@ -44,7 +44,8 @@ const DevoirStatsPage = () => {
                         _id: "",
                         titreFr: "",
                         titreEn: "",
-                        noteSur: 0
+                        noteSur: 0,
+                        totalQuestionPoints:0,
                     },
                     nombreParticipants: 0,
                     meilleureNote: 0,
@@ -86,14 +87,14 @@ const DevoirStatsPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatCard label={t('label.nombre_participant')} value={nombreParticipants} />
-            <StatCard label={t('label.meilleur_note')} value={meilleureNote || 0} />
-            <StatCard label={t('label.pire_note')} value={pireNote || 0} />
-            <StatCard label={t('label.note_moyenne')} value={noteMoyenne ? parseInt(noteMoyenne.toFixed(2)) : 0} />
+            <StatCard label={t('label.meilleur_note')} value={devoir.totalQuestionPoints>0?parseFloat(((meilleureNote*devoir.noteSur)/devoir.totalQuestionPoints).toFixed(2)) : 0} />
+            <StatCard label={t('label.pire_note')} value={devoir.totalQuestionPoints>0?parseFloat(((pireNote*devoir.noteSur)/devoir.totalQuestionPoints).toFixed(2)) : 0} />
+            <StatCard label={t('label.note_moyenne')} value={noteMoyenne ?devoir.totalQuestionPoints>0? parseFloat(((noteMoyenne*devoir.noteSur)/devoir.totalQuestionPoints).toFixed(2)):0 : 0} />
         </div>
 
         <div>
             <h2 className="text-xl font-semibold mb-4">{t('label.liste_etudiants')}</h2>
-            <Table data={etudiants} noteSur={devoir.noteSur} />
+            <Table data={etudiants} noteSur={devoir.noteSur} totalQuestionPoints={devoir.totalQuestionPoints}/>
         </div>
         </div>
     </>

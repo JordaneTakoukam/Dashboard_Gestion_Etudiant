@@ -22,10 +22,11 @@ interface TableDevoirStatsProps {
         nombreTentatives: number,
     }[];
     noteSur:number;
+    totalQuestionPoints:number
    
 }
 
-const Table = ({ data, noteSur}: TableDevoirStatsProps) => {
+const Table = ({ data, noteSur, totalQuestionPoints}: TableDevoirStatsProps) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const selectedDevoir = useSelector((state: RootState) => state.devoirSlice.selectedDevoir);
@@ -174,7 +175,8 @@ const Table = ({ data, noteSur}: TableDevoirStatsProps) => {
                         _id: "",
                         titreFr: "",
                         titreEn: "",
-                        noteSur: 0
+                        noteSur: 0,
+                        totalQuestionPoints:0,
                     },
                     nombreParticipants: 0,
                     meilleureNote: 0,
@@ -273,7 +275,7 @@ const Table = ({ data, noteSur}: TableDevoirStatsProps) => {
                         {/* corp du tableau*/}
 
                         {
-                            !pageIsLoading && <BodyTable data={filteredData} noteSur={noteSur} />
+                            !pageIsLoading && <BodyTable data={filteredData} noteSur={noteSur} totalQuestionPoints={totalQuestionPoints} />
                         }
 
 

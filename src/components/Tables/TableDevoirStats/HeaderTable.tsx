@@ -24,7 +24,7 @@ const HeaderTable = () => {
                 </th>
                 
 
-                {/* Nombre de question */}
+                {/* moyenne obtenue */}
                 <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
                     {t('label.note')}
                 </th>
@@ -32,6 +32,11 @@ const HeaderTable = () => {
                 {/* Volume horaire  */}
                 <th className="min-w-[100px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black ">
                     {t('label.tentatives_effectuees')}
+                </th>
+
+                {/*Action */}
+                <th className="min-w-[120px] py-2 px-4 font-medium text-gray-2 dark:text-white xl:pl-4  border-r border-gray-3 dark:border-black">
+                    {t('label.actions')}
                 </th>
             </tr>
         </thead>

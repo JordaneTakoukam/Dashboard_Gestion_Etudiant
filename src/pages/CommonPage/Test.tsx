@@ -7,8 +7,11 @@ import { RootState } from "../../_redux/store";
 import { obtenirQuestionsDevoir } from "../../api/api_question";
 import Breadcrumb from "../../components/Breadcrumb";
 import createToast from "../../hooks/toastify";
-import { soumettreTentative } from "../../api/api_reponse";
+import { obtenirMeilleurTentativeEtudiant, obtenirNombreTentativesEffectuee, soumettreTentative } from "../../api/api_reponse";
 import { formatDatetime } from "../../fonctions/fonction";
+import { config } from "../../config";
+import { useNavigate } from "react-router-dom";
+import NoDataTable from "../../components/Tables/common/NoDataTable";
 
 // Définition du modèle QuestionType
 
@@ -19,8 +22,10 @@ const TestPage = () => {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [pageIsLoading, setPageIsLoading] = useState(true);
   const devoir = useSelector((state: RootState) => state.devoirSlice.selectedDevoir);
+  const student = useSelector((state: RootState) => state.devoirSlice.selectedStudent);
   const currentUser = useSelector((state: RootState) => state.user);
 
   // État pour stocker les réponses et tentatives
@@ -32,6 +37,7 @@ const TestPage = () => {
   const [finalScore, setFinalScore] = useState<number | null>(null);
   const { feedbackConfig, noteSur } = devoir || {};
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [existAttempts, setExistAttempts] = useState(false);
 
   // const calculateScore = () => {
   //   return questions.reduce((total, question) => {
@@ -220,8 +226,10 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
   // Effacer les réponses d'une question
 
   const clearAnswers = (questionId: string) => {
+    
     setReponses((prev) => prev.filter((r) => r.question !== questionId)); // Supprimer l'objet de la question concernée
-    setIsSubmitted(false);
+    // setIsSubmitted(false);
+    
   };
   
   
@@ -259,6 +267,7 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
   
 
   const resetTest = () => {
+    if(!verifyDeadline){
     if (attemptsLeft > 1) {
       setReponses([]);
       // setAttemptsLeft((prev) => prev - 1);
@@ -266,7 +275,7 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
       setIsSubmitted(false);
     } else {
       alert("Plus de tentatives disponibles.");
-    }
+    }}
   };
 
   const showScore = () => {
@@ -279,257 +288,331 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
 
   const isOptionCorrect = (option: { textFr?: string; textEn?: string; pourcentage: any; }) => option.pourcentage > 0;
 
-   useEffect(() => {
   
-          const fetchQuestions = async () => {
-              setPageIsLoading(true); // Définissez le loading à true avant le chargement
-              try {
-                  const emptyQuestions: QuestionReturnGetType = {
-                      questions: [],
-                      currentPage: 0,
-                      totalItems: 0,
-                      totalPages: 0,
-                      pageSize: 0
-                  }
-                  if(devoir && devoir._id){
-                      const fetchedQuestions = await obtenirQuestionsDevoir({ devoirId: devoir._id});
+  useEffect(() => {
+      if (devoir === undefined) {
+          navigate('/pedagogies/exercise-book')
+      }
+  }, [devoir])
+
+
+  /*Récupération du nombre de tentative*/
+  useEffect(() => {
+
+    const fetchNombreTentative = async () => {
+        setPageIsLoading(true); // Définissez le loading à true avant le chargement
+        try {
+          
+            if(devoir && devoir._id){
+                const fetchedNbTentative = await obtenirNombreTentativesEffectuee({ devoirId: devoir._id, etudiantId:currentUser._id});
+                if (fetchedNbTentative) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
+                  const reste = devoir.tentativesMax - fetchedNbTentative.nombreTentatives;
+                  setAttemptsLeft(reste);
+                } else {
+                  setAttemptsLeft(devoir.tentativesMax);
+                }
+            }else {
+              setAttemptsLeft(0);
+            }
+            
+            // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            setPageIsLoading(false); // Définissez le loading à false après le chargement
+        }
+    }
+    fetchNombreTentative();
+  }, [t]);
+
+  /*Initialisation du formulaire vide*/
+  useEffect(() => {
+
+        const fetchQuestions = async () => {
+            setPageIsLoading(true); // Définissez le loading à true avant le chargement
+            try {
+                const emptyQuestions: QuestionReturnGetType = {
+                    questions: [],
+                    currentPage: 0,
+                    totalItems: 0,
+                    totalPages: 0,
+                    pageSize: 0
+                }
+                if(devoir && devoir._id){
+                    const fetchedQuestions = await obtenirQuestionsDevoir({ devoirId: devoir._id});
+                        
+                    if (fetchedQuestions) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
+                        setQuestions(fetchedQuestions.questions);
+                    } else {
+                        setQuestions(emptyQuestions.questions);
+                    }
+                }else {
+                    setQuestions(emptyQuestions.questions);
+                }
+                
+                // Réinitialisez les erreurs s'il y en a
+            } catch (error) {
+                createToast(t('message.erreur'), "", 2)
+            } finally {
+                setPageIsLoading(false); // Définissez le loading à false après le chargement
+            }
+        }
+        fetchQuestions();
+  }, [devoir, t]); 
+  
+  /*Initialisation de l'interface si le devoir est terminé et que c'est un étudiant qui cherche à accéder à la page*/
+  useEffect(() => {
+
+      const fetchTentatives = async () => {
+          setPageIsLoading(true); // Définissez le loading à true avant le chargement
+          try {
+
+              if(verifyDeadline() && questions){
+                if(devoir && currentUser && devoir._id && (currentUser.role === config.roles.etudiant || currentUser.role === config.roles.delegue)){
+                    const fetchedTentatives = await obtenirMeilleurTentativeEtudiant({ devoirId: devoir._id, etudiantId:currentUser._id});
+                        
+                    if (fetchedTentatives) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
+                        // console.log(fetchedTentatives.tentative.score)
                           
-                      if (fetchedQuestions) { // Vérifiez si fetchedQuestions n'est pas faux, vide ou indéfini
-                          setQuestions(fetchedQuestions.questions);
-                      } else {
-                          setQuestions(emptyQuestions.questions);
-                      }
-                  }else {
-                      setQuestions(emptyQuestions.questions);
-                  }
-                  
-                  // Réinitialisez les erreurs s'il y en a
-              } catch (error) {
-                  createToast(t('message.erreur'), "", 2)
-              } finally {
-                  setPageIsLoading(false); // Définissez le loading à false après le chargement
+                          setReponses(fetchedTentatives.tentative.reponses);
+                          setIsSubmitted(true);
+                          const convertedScore = convertScore(fetchedTentatives.tentative.score); // Convertir en fonction de la note sur
+                          
+                          setFinalScore(convertedScore)
+                    } else{
+                      console.log("is empty")
+                    }
+                }
               }
+              // Réinitialisez les erreurs s'il y en a
+          } catch (error) {
+              createToast(t('message.erreur'), "", 2)
+          } finally {
+              setPageIsLoading(false); // Définissez le loading à false après le chargement
           }
-          fetchQuestions();
-      }, [devoir, t]); 
+      }
+      fetchTentatives();
+  }, [questions, t]); 
+  
+  /*Initialisation de l'interface si le devoir est terminé ou pas et que c'est un enseignant/admin qui cherche à accéder à la page*/
+  useEffect(() => {
 
-      return (
-        <>
-          <Breadcrumb pageName={t("sub_menu.test")} isQuestion={true} />
-          {devoir && (
-            <div className="mt-4 p-4 bg-white text-gray-700 ">
-              {/* Titre du devoir */}
-              <div className="text-center text-2xl font-bold text-blue-600">
-                {lang === "fr" ? devoir.titreFr : devoir.titreEn}
-              </div>
+    const fetchTentatives = async () => {
+        setPageIsLoading(true); // Définissez le loading à true avant le chargement
+        try {
+            if(questions){
+              if(devoir && student && devoir._id && student._id){
+                  const fetchedTentatives = await obtenirMeilleurTentativeEtudiant({ devoirId: devoir._id, etudiantId:student._id});
+                      
+                  if (fetchedTentatives) { // Vérifiez si fetchedTentatives n'est pas faux, vide ou indéfini
+                    setExistAttempts(true);
+                    setReponses(fetchedTentatives.tentative.reponses);
+                    setIsSubmitted(true);
+                    const convertedScore = convertScore(fetchedTentatives.tentative.score); // Convertir en fonction de la note sur
+                    
+                    setFinalScore(convertedScore)
+                  } else{
+                    setExistAttempts(false)
+                  }
+              }
+            }
+            // Réinitialisez les erreurs s'il y en a
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2)
+        } finally {
+            setPageIsLoading(false); // Définissez le loading à false après le chargement
+        }
+    }
+    fetchTentatives();
+  }, [questions, t]); 
 
-              {/* Détails du devoir */}
-              <div className="mt-4">
-                {/* Nombre total de points */}
-                <p className="text-lg">
-                  <span className="font-semibold">{t('label.note_sur')}:</span> {devoir.noteSur}
-                </p>
+  return (
+    <>
+      <Breadcrumb pageName={t("sub_menu.test")} isQuestion={true} />
+      {devoir && (
+        <div className="mt-4 p-4 bg-white text-gray-700 ">
+          {/* Titre du devoir */}
+          <div className="text-center text-2xl font-bold text-blue-600">
+            {lang === "fr" ? devoir.titreFr : devoir.titreEn}
+          </div>
+          
 
-                {/* Délai */}
-                <p className="text-lg mt-2">
-                  <span className="font-semibold">{t('label.deadline')}:</span>{" "}
-                  {formatDatetime(devoir.deadline, lang)}
-                </p>
+          {/* Détails du devoir */}
+          <div className="mt-4">
+            {/*Nom étudiant*/}
+            {student && (<p className="text-lg">
+              <span className="font-semibold">{t('label.etudiant')}:</span> {`${student.nom} ${student?.prenom || ""}`}
+            </p>)}
+            {/* Nombre total de points */}
+            <p className={`text-lg ${student ? "mt-2" : ""}`}>
+              <span className="font-semibold">{t('label.note_sur')}:</span> {devoir.noteSur}
+            </p>
 
-                {/* Type de feedback */}
-                <div className="mt-4">
-                  <span className="font-semibold text-lg">{lang === "fr" ? "Feedback" : "Feedback"}:</span>
-                  <ul className="list-disc list-inside mt-2">
-                    {feedbackConfig?.afficherNoteApresSoumission && (
-                      <li>
-                        {t('label.note_apres_soumission')}
-                      </li>
-                    )}
-                    {feedbackConfig?.afficherCorrectionApresSoumission && (
-                      <li>
-                        {t('label.correction_apres_soumission')}
-                      </li>
-                    )}
-                    {feedbackConfig?.afficherNoteApresDeadline && (
-                      <li>
-                        {t('label.note_apres_deadline')}
-                      </li>
-                    )}
-                    {feedbackConfig?.afficherCorrectionApresDeadline && (
-                      <li>
-                        {t('label.correction_apres_deadline')}
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
+            {/* Délai */}
+            <p className="text-lg mt-2">
+              <span className="font-semibold">{t('label.deadline')}:</span>{" "}
+              {formatDatetime(devoir.deadline, lang)}
+            </p>
+
+            {/*Devoir terminé*/}
+            {
+              <>
+                <span className="font-semibold">{t("label.etat")}:</span>{" "}
+                <span className={`text-lg mt-2 ${verifyDeadline() ? "text-red-500" : "text-[#38A169]"}`}>{ verifyDeadline()?t("label.termine"):t("label.en_cours")}</span></>
+            }
+
+            {/* Type de feedback */}
+            <div className="mt-4">
+              <span className="font-semibold text-lg">{lang === "fr" ? "Feedback" : "Feedback"}:</span>
+              <ul className="list-disc list-inside mt-2">
+                {feedbackConfig?.afficherNoteApresSoumission && (
+                  <li>
+                    {t('label.note_apres_soumission')}
+                  </li>
+                )}
+                {feedbackConfig?.afficherCorrectionApresSoumission && (
+                  <li>
+                    {t('label.correction_apres_soumission')}
+                  </li>
+                )}
+                {feedbackConfig?.afficherNoteApresDeadline && (
+                  <li>
+                    {t('label.note_apres_deadline')}
+                  </li>
+                )}
+                {feedbackConfig?.afficherCorrectionApresDeadline && (
+                  <li>
+                    {t('label.correction_apres_deadline')}
+                  </li>
+                )}
+              </ul>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
-          {pageIsLoading ? (
-            <Loading />
-          ) : (
-            <div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Section des questions */}
-              <div className="lg:col-span-8">
-                {questions.map((question, index) => (
-                  <div
-                    key={question._id}
-                    id={`question-${question._id}`}
-                    className="mb-6 bg-white p-4 rounded shadow flex flex-col lg:flex-row gap-4"
-                  >
-                    {/* Contenu de la question */}
-                    <div className="flex-1">
-                      <h2 className="text-lg font-semibold mb-2">
-                        {index + 1}. {lang === "fr" ? question.textFr : question.textEn}
-                      </h2>
-                      <div className="space-y-2">
-                      {question.options.map((option, idx) => {
-                          const isSelected = reponses.some(
-                            (r) =>
-                              r.question === question._id &&
-                              r.reponses.includes(lang === "fr" ? option.textFr : option.textEn)
-                          );
+      {pageIsLoading ? (
+        <Loading />
+      ) : (
+        existAttempts?(<div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Section des questions */}
+          <div className="lg:col-span-8">
+            {questions.map((question, index) => (
+              <div
+                key={question._id}
+                id={`question-${question._id}`}
+                className="mb-6 bg-white p-4 rounded shadow flex flex-col lg:flex-row gap-4"
+              >
+                {/* Contenu de la question */}
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold mb-2">
+                    {index + 1}. {lang === "fr" ? question.textFr : question.textEn}
+                  </h2>
+                  <div className="space-y-2">
+                  {question.options.map((option, idx) => {
+                      const isSelected = reponses.some(
+                        (r) =>
+                          r.question === question._id &&
+                          r.reponses.includes(lang === "fr" ? option.textFr : option.textEn)
+                      );
 
-                          const isCorrect = isOptionCorrect(option);
-                          const isWrongSelection = isSelected && !isCorrect;
+                      const isCorrect = isOptionCorrect(option);
+                      const isWrongSelection = isSelected && !isCorrect;
 
-                          return (
-                            <label
-                              key={idx}
-                              className={`block p-2 border rounded flex items-center gap-2 ${
-                                isCorrect && isSubmitted ? "border-green-500 bg-[#C6F6D5]" : ""
-                              } ${
-                                isWrongSelection && isSubmitted ? "border-red-500 bg-red-100" : ""
-                              }`}
-                            >
-                              <input
-                                type="checkbox"
-                                name={`question-${question._id}`}
-                                checked={isSelected || false}
-                                onChange={() =>
-                                  handleAnswerSelect(
-                                    question,
-                                    lang === "fr" ? option.textFr : option.textEn
-                                  )
-                                }
-                                disabled={isSubmitted}
-                              />
-                              {isSubmitted && getFeedback() && (
-                                <>
-                                  {isCorrect && <FaCheckCircle className="text-[#008000]" />}
-                                  {isWrongSelection && <FaTimesCircle className="text-red-500" />}
-                                </>
-                              )}
-                              {lang === "fr" ? option.textFr : option.textEn}
-                            </label>
-                          );
-                        })}
-
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => clearAnswers(question._id!)}
-                        className="mt-2 text-sm text-red-500 underline"
-                      >
-                        {t("label.effacer_choix")}
-                      </button>
-                    </div>
-      
-                    {/* Détails de la question */}
-                    <div className="w-full lg:w-64 bg-[#F7FAFC] p-4 rounded">
-                      <p className="text-sm">
-                        <strong>{t("label.question")} :</strong> {index + 1}
-                      </p>
-                      <p className="text-sm">
-                        <strong>{t("label.points")} :</strong> {question.nbPoint}
-                      </p>
-                      <p className="text-sm">
-                          <strong>{t("label.repondu")} :</strong>{" "}
-                          {reponses.some((r) => r.question === question._id)
-                              ? t("label.oui")
-                              : t("label.non")}
-                      </p>
-                      <p className="text-sm">
-                        <strong>{t("label.points_obtenus")} :</strong>{" "}
-                        {getFeedback() && calculateQuestionScore(question).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-      
-              {/* Section de navigation et actions */}
-              <div className="lg:col-span-4 bg-[#F7FAFC] p-4 rounded shadow">
-                <h3 className="text-lg font-semibold mb-4">{t("label.navigation")}</h3>
-                <div className="space-y-2">
-                  {questions.map((question, index) => {
-                    // const isAnswered = question._id && responses[question._id]?.length;
-                    const isAnswered = reponses.some(
-                      (r) => r.question === question._id && r.reponses.length > 0
-                    );
-                    
-
-                    
-                    return (
-                      <button
-                        key={question._id}
-                        className={`flex items-center justify-between w-full text-left py-2 px-4 rounded border transition-colors ${
-                          isAnswered ? "bg-[#C6F6D5] border-[#48BB78]" : "bg-white"
-                        } hover:bg-[#EDF2F7]`}
-                        onClick={() =>
-                          document
-                            .getElementById(`question-${question._id}`)
-                            ?.scrollIntoView({ behavior: "smooth", block: "start" })
-                        }
-                      >
-                        {t("label.question")} {index + 1}
-                        {isAnswered && (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-[#38A169]"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-10.707a1 1 0 00-1.414-1.414L9 9.586 7.707 8.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-6 space-y-4">
-                    {attemptsLeft > 0 ? (
-                      <button
-                        className="w-full py-3 px-5 bg-[#3182CE] text-white rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 active:scale-95 hover:bg-[#2B6CB0] shadow-md"
-                        onClick={resetTest}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
+                      return (
+                        <label
+                          key={idx}
+                          className={`block p-2 border rounded flex items-center gap-2 ${
+                            isCorrect && isSubmitted ? "border-green-500 bg-[#C6F6D5]" : ""
+                          } ${
+                            isWrongSelection && isSubmitted ? "border-red-500 bg-red-100" : ""
+                          }`}
                         >
-                          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3a1 1 0 001 1h3a1 1 0 100-2h-2V7z" />
-                        </svg>
-                        {t("label.nouvelle_tentative")} ({attemptsLeft}{" "}
-                        {t("label.tentatives_restantes")})
-                      </button>
-                    ) : (
-                      <p className="text-red-500 text-sm">{t("label.plus_tentatives")}</p>
-                    )}
-                    <button
-                      className="w-full py-3 px-5 bg-[#38A169] text-white rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 active:scale-95 hover:bg-[#2F855A] shadow-md"
-                      onClick={submitTest}
-                    >
+                          <input
+                            type="checkbox"
+                            name={`question-${question._id}`}
+                            checked={isSelected || false}
+                            onChange={() =>
+                              handleAnswerSelect(
+                                question,
+                                lang === "fr" ? option.textFr : option.textEn
+                              )
+                            }
+                            disabled={isSubmitted}
+                          />
+                          {isSubmitted && getFeedback() && (
+                            <>
+                              {isCorrect && <FaCheckCircle className="text-[#008000]" />}
+                              {isWrongSelection && <FaTimesCircle className="text-red-500" />}
+                            </>
+                          )}
+                          {lang === "fr" ? option.textFr : option.textEn}
+                        </label>
+                      );
+                    })}
+
+                  </div>
+                  {!verifyDeadline() && !isSubmitted && (<button
+                    type="button"
+                    onClick={() =>  clearAnswers(question._id!)}
+                    className="mt-2 text-sm text-red-500 underline"
+                  >
+                    {t("label.effacer_choix")}
+                  </button>)}
+                </div>
+  
+                {/* Détails de la question */}
+                <div className="w-full lg:w-64 bg-[#F7FAFC] p-4 rounded">
+                  <p className="text-sm">
+                    <strong>{t("label.question")} :</strong> {index + 1}
+                  </p>
+                  <p className="text-sm">
+                    <strong>{t("label.points")} :</strong> {question.nbPoint}
+                  </p>
+                  <p className="text-sm">
+                      <strong>{t("label.repondu")} :</strong>{" "}
+                      {reponses.some((r) => r.question === question._id)
+                          ? t("label.oui")
+                          : t("label.non")}
+                  </p>
+                  <p className="text-sm">
+                    <strong>{t("label.points_obtenus")} :</strong>{" "}
+                    {getFeedback() && calculateQuestionScore(question).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+  
+          {/* Section de navigation et actions */}
+          <div className="lg:col-span-4 bg-[#F7FAFC] p-4 rounded shadow">
+            <h3 className="text-lg font-semibold mb-4">{t("label.navigation")}</h3>
+            <div className="space-y-2">
+              {questions.map((question, index) => {
+                // const isAnswered = question._id && responses[question._id]?.length;
+                const isAnswered = reponses.some(
+                  (r) => r.question === question._id && r.reponses.length > 0
+                );
+                
+
+                
+                return (
+                  <button
+                    key={question._id}
+                    className={`flex items-center justify-between w-full text-left py-2 px-4 rounded border transition-colors ${
+                      isAnswered ? "bg-[#C6F6D5] border-[#48BB78]" : "bg-white"
+                    } hover:bg-[#EDF2F7]`}
+                    onClick={() =>
+                      document
+                        .getElementById(`question-${question._id}`)
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                    }
+                  >
+                    {t("label.question")} {index + 1}
+                    {isAnswered && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
+                        className="h-5 w-5 text-[#38A169]"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -539,20 +622,67 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      {t("label.soumettre_test")}
-                    </button>
-                    {showScore() && getFeedback() && (
-                      <p className="mt-4 text-lg font-semibold text-center">
-                        {t("label.note_finale")} : {finalScore && finalScore<0?0:finalScore?.toFixed(2)} / {noteSur}
-                      </p>
                     )}
-                </div>  
-
-              </div>
+                  </button>
+                );
+              })}
             </div>
-          )}
-        </>
-      );
+
+            <div className="mt-6 space-y-4">
+                {attemptsLeft > 0 ? (
+                  !verifyDeadline() && <button
+                    className="w-full py-3 px-5 bg-[#3182CE] text-white rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 active:scale-95 hover:bg-[#2B6CB0] shadow-md"
+                    onClick={resetTest}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3a1 1 0 001 1h3a1 1 0 100-2h-2V7z" />
+                    </svg>
+                    {t("label.nouvelle_tentative")} ({attemptsLeft}{" "}
+                    {t("label.tentatives_restantes")})
+                  </button>
+                ) : (
+                  !verifyDeadline() && <p className="text-red-500 text-sm">{t("label.plus_tentatives")}</p>
+                )}
+                {!verifyDeadline() && (<button
+                  className="w-full py-3 px-5 bg-[#38A169] text-white rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 active:scale-95 hover:bg-[#2F855A] shadow-md"
+                  onClick={submitTest}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-10.707a1 1 0 00-1.414-1.414L9 9.586 7.707 8.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {t("label.soumettre_test")}
+                </button>)}
+                {showScore() && getFeedback() && (
+                  <p className="mt-4 text-lg font-semibold text-center">
+                    {t("label.note_finale")} : {finalScore && finalScore<0?0:finalScore?.toFixed(2)} / {noteSur}
+                  </p>
+                )}
+            </div>  
+
+          </div>
+        </div>):
+        <thead className='mb-45 mt-35 flex justify-center items-center'>
+            <tr>
+                <th className="text-sm font-medium">{t('label.aucune_soumission')}</th>
+            </tr>
+        </thead>
+      )}
+    </>
+  );
       
 };
 

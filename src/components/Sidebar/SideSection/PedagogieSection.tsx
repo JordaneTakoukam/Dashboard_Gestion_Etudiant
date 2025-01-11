@@ -24,12 +24,12 @@ const PedagogieSidebarLink: React.FC<PedagogieSidebarLinkProps> = ({
     const hasSupportPermission = userPermissions.includes('gerer_supports_cours_formateurs') || userPermissions.includes('consulter_supports_cours_formateurs')
     || userPermissions.includes('gerer_supports_cours_etudiants') || userPermissions.includes('consulter_supports_cours_etudiants');
     const hasExerciseBookPermission = userPermissions.includes('gerer_cahiers_exercices') || userPermissions.includes('consulter_cahiers_exercices');
-    const hasPedagogicalGuidePermission = userPermissions.includes('gerer_guide_pedagogiqe') || userPermissions.includes('consulter_guide_pedagogiqe');
+    // const hasPedagogicalGuidePermission = userPermissions.includes('gerer_guide_pedagogiqe') || userPermissions.includes('consulter_guide_pedagogiqe');
 
     const menuItems = [
         { permission: hasSupportPermission, path: '/pedagogies/course-materials', label: t('sub_menu.supports_de_cours') },
         { permission: hasExerciseBookPermission, path: '/pedagogies/exercise-book', label: t('sub_menu.cahier_exercice') },
-        { permission: hasPedagogicalGuidePermission, path: '/pedagogies/guide-pedagogique', label: t('sub_menu.guide_pedagogique') }
+        // { permission: hasPedagogicalGuidePermission, path: '/pedagogies/guide-pedagogique', label: t('sub_menu.guide_pedagogique') }
     ];
 
     // Filtrer les éléments du menu en fonction des permissions

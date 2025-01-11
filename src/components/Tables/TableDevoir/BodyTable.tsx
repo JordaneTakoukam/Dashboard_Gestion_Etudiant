@@ -5,7 +5,7 @@ import { RootState } from "../../../_redux/store"
 import { useNavigate } from "react-router-dom"
 import { SelectButton } from "../common/composants/SelectButton"
 import { useTranslation } from "react-i18next"
-import { setDevoirSelected } from "../../../_redux/features/devoir_slice"
+import { setDevoirSelected, setStudentSelected } from "../../../_redux/features/devoir_slice"
 import { formatDatetime } from "../../../fonctions/fonction"
 
 interface BodyDevoirProps {

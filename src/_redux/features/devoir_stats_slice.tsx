@@ -8,7 +8,8 @@ const initialState: DevoirStatsInitialData = {
         devoir: {
             titreFr: "",
             titreEn: "",
-            noteSur: 0
+            noteSur: 0,
+            totalQuestionPoints:0
         },
         nombreParticipants: 0,
         meilleureNote: 0,

@@ -314,9 +314,6 @@ export function formatDatetime(datetime: string, lang: string): string {
   return `${formattedDate} à ${formattedTime}`;
 }
 
-
-
-
 export function nbTotalAbsences(listeAbsences: AbsenceType[]|undefined): string {
   // Vérifier si la liste d'absences est vide
 
@@ -637,6 +634,8 @@ export async function createFinalPermissionList(
 export function getNavLinkClass (isActive: boolean){ 
   return  `group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ${isActive ? 'text-secondary' : ''}`;
 }
+
+
 
 
 

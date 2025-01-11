@@ -24,3 +24,41 @@ export async function soumettreTentative ({devoirId, etudiantId, reponses}:{devo
     throw error;
   }
 };
+
+export async function obtenirMeilleurTentativeEtudiant({ devoirId, etudiantId}: {devoirId: string, etudiantId:string}){
+  try {
+      const response: AxiosResponse<any> = await axios.get(
+          `${api}/obtenirMeilleurTentativeEtudiant/${devoirId}/${etudiantId}`,
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'token': token,
+              },
+          },
+      );      
+      
+      return response.data;;
+  } catch (error) {
+      console.error('Error getting all settings:', error);
+      throw error;
+  }
+}
+
+export async function obtenirNombreTentativesEffectuee({ devoirId, etudiantId}: {devoirId: string, etudiantId:string}){
+  try {
+      const response: AxiosResponse<any> = await axios.get(
+          `${api}/obtenirNombreTentativesEffectuee/${devoirId}/${etudiantId}`,
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'token': token,
+              },
+          },
+      );      
+      
+      return response.data;;
+  } catch (error) {
+      console.error('Error getting all settings:', error);
+      throw error;
+  }
+}

@@ -361,7 +361,7 @@ const coreRoutes = [
     path: '/pedagogies/tests/manage',
     title: 'Tests',
     component: TestPage,
-    permissions:["effectuer_devoir"]
+    permissions:["effectuer_devoir", "consulter_devoir_etudiant"]
   },
 
   {

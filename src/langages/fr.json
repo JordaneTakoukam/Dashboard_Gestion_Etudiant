@@ -107,6 +107,9 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "aucune_soumission":"Aucune soumission pour l'instant.",
+    "termine":"Terminé",
+    "en_cours":"En cours",
     "liste_etudiants":"Liste des étudiants",
     "note":"Note",
     "tentatives_effectuees":"Tentatives effectuées",

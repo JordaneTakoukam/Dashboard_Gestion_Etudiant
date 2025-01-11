@@ -107,6 +107,9 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "aucune_soumission":"No submission yet.",
+    "termine":"Completed",
+    "en_cours":"Ongoing",
     "liste_etudiants":"Student List",
     "note":"Note",
     "tentatives_effectuees": "Attempts made",

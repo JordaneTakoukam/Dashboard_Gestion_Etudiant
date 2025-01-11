@@ -14,6 +14,7 @@ const initialState: DevoirInitialData = {
     pageIsLoading: false,
     pageError: null,
     selectedDevoir:undefined,
+    selectedStudent:undefined,
 };
 
 
@@ -24,6 +25,9 @@ const devoirSlice = createSlice({
     reducers: {
         setDevoirSelected(state, action: PayloadAction<DevoirType>) {
             state.selectedDevoir = action.payload;
+        },
+        setStudentSelected(state, action: PayloadAction<UserState>) {
+            state.selectedStudent = action.payload;
         },
         setPage(state){
             state.data.pageSize +=1;
@@ -87,6 +91,7 @@ const devoirSlice = createSlice({
 // Actions exportées
 export const {
     setDevoirSelected,
+    setStudentSelected,
     setPage,
     setDevoirLoading,
     setErrorPageDevoir,

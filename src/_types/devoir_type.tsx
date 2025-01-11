@@ -9,6 +9,7 @@ interface DevoirType {
     utilisateur: UserState
     niveau: string
     questions?: QuestionType[]; // Référence aux questions
+    totalQuestionPoints:number; //Nombre total de point pour les questions
     deadline: string;
     ordreAleatoire: boolean; // Si les questions doivent être affichées aléatoirement
     tentativesMax: number; // Nombre maximum de tentatives autorisées
@@ -34,6 +35,7 @@ interface DevoirInitialData {
     pageIsLoading: boolean;
     pageError: string | null;
     selectedDevoir:DevoirType|undefined;
+    selectedStudent:UserState|undefined;
 }
 
 interface DevoirStatsInitialData {
@@ -43,6 +45,7 @@ interface DevoirStatsInitialData {
             titreFr: string,
             titreEn: string,
             noteSur: number,
+            totalQuestionPoints:number,
         },
         nombreParticipants: number,
         meilleureNote: number,
@@ -99,6 +102,7 @@ interface DevoirStatsReturnGetType {
             titreFr: string,
             titreEn: string,
             noteSur: number,
+            totalQuestionPoints:number,
         },
         nombreParticipants: number,
         meilleureNote: number,

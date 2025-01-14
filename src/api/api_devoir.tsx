@@ -216,3 +216,34 @@ export async function apiSearchStudentStatsByName({ searchString, devoirId }: { 
         throw error;
     }
 }
+
+export async function generateDevoirStats({departement, section, cycle, niveau, langue, fileType, devoirId }: {departement?:CommonSettingProps, section?:SectionProps, cycle?:CycleProps, niveau?:NiveauProps, langue:string, fileType:string, devoirId:string}): Promise<Blob> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/generateDevoirStats/${devoirId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params:{
+                    departement:departement,
+                    section:section,
+                    cycle:cycle,
+                    niveau:niveau,
+                    langue:langue,
+                    fileType:fileType
+                },
+                responseType: 'blob',
+            },
+        );
+
+        // Extraction de tous les objets de paramètres de la réponse
+        const pdfBlob: Blob = response.data;
+
+        return pdfBlob;
+    } catch (error) {
+        console.error('Error getting all settings:', error);
+        throw error;
+    }
+}

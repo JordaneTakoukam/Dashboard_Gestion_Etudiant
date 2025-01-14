@@ -1,7 +1,7 @@
 
 interface StatCardProps {
     label: string;
-    value:number;
+    value:number | string;
 }
 
 const StatCard = ({ label, value }:StatCardProps) => {

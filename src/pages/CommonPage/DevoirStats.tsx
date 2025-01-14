@@ -21,8 +21,10 @@ const DevoirStatsPage = () => {
     const {data:{pireNote}} = useSelector((state: RootState) => state.devoirStatsSlice);
     const {data:{noteMoyenne}} = useSelector((state: RootState) => state.devoirStatsSlice);
     const {data:{nombreParticipants}} = useSelector((state: RootState) => state.devoirStatsSlice);
+    const {data:{nombreParticipantsSurEffectif}} = useSelector((state: RootState) => state.devoirStatsSlice);
     const { data: { etudiants } } = useSelector((state: RootState) => state.devoirStatsSlice);
     const { data: { devoir } } = useSelector((state: RootState) => state.devoirStatsSlice);
+    
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -48,6 +50,7 @@ const DevoirStatsPage = () => {
                         totalQuestionPoints:0,
                     },
                     nombreParticipants: 0,
+                    nombreParticipantsSurEffectif:"",
                     meilleureNote: 0,
                     pireNote: 0,
                     noteMoyenne: 0,
@@ -75,7 +78,7 @@ const DevoirStatsPage = () => {
         fetchDevoirStats();
     }, [dispatch, t]);
 
-  
+   
   return (
     <>
         <Breadcrumb pageName={t('sub_menu.statistiques')} isQuestion={true} />
@@ -86,7 +89,7 @@ const DevoirStatsPage = () => {
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <StatCard label={t('label.nombre_participant')} value={nombreParticipants} />
+            <StatCard label={t('label.nombre_participant')} value={nombreParticipantsSurEffectif} />
             <StatCard label={t('label.meilleur_note')} value={devoir.totalQuestionPoints>0?parseFloat(((meilleureNote*devoir.noteSur)/devoir.totalQuestionPoints).toFixed(2)) : 0} />
             <StatCard label={t('label.pire_note')} value={devoir.totalQuestionPoints>0?parseFloat(((pireNote*devoir.noteSur)/devoir.totalQuestionPoints).toFixed(2)) : 0} />
             <StatCard label={t('label.note_moyenne')} value={noteMoyenne ?devoir.totalQuestionPoints>0? parseFloat(((noteMoyenne*devoir.noteSur)/devoir.totalQuestionPoints).toFixed(2)):0 : 0} />

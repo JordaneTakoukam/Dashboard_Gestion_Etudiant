@@ -77,15 +77,15 @@ const BodyTable = ({ data, onEdit }: BodyDevoirProps) => {
                         // Construire dynamiquement la liste des pages en fonction des permissions
                         const listPage = [];
 
-                        if (hasManageHomeworkPermission || hasSeeHomeworkPermission || hasManageQuestionPermission || hasSeeStatPermission 
-                            || hasCompleteAssPermission) {
-                            listPage.push({
-                                name: t('label.details'),
-                                handleClick: () => {
-                                   alert("Fonctionnalitée pas encore disponible")
-                                },
-                            });
-                        }
+                        // if (hasManageHomeworkPermission || hasSeeHomeworkPermission || hasManageQuestionPermission || hasSeeStatPermission 
+                        //     || hasCompleteAssPermission) {
+                        //     listPage.push({
+                        //         name: t('label.details'),
+                        //         handleClick: () => {
+                        //            alert("Fonctionnalitée pas encore disponible")
+                        //         },
+                        //     });
+                        // }
 
                         if (hasManageQuestionPermission) {
                             listPage.push({

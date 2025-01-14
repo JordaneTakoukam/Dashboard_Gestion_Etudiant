@@ -12,7 +12,10 @@ import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import { setDevoirLoading } from "../../../_redux/features/devoir_slice";
 import { setDevoirStats } from "../../../_redux/features/devoir_stats_slice";
-import { apiSearchStudentStatsByName, getDevoirStats } from "../../../api/api_devoir";
+import { apiSearchStudentStatsByName, generateDevoirStats, getDevoirStats } from "../../../api/api_devoir";
+import Download from "../common/Download";
+import CustomButtonDownload from "../common/CustomButtomDownload";
+import { createPDF } from "../../../fonctions/fonction";
 
 interface TableDevoirStatsProps {
     data : 
@@ -33,6 +36,10 @@ const Table = ({ data, noteSur, totalQuestionPoints}: TableDevoirStatsProps) => 
 
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
+    const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
+    const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const departements:CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departementsAcademique) ?? [];
     
     const pageIsLoading = useSelector((state: RootState) => state.devoirStatsSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
@@ -51,95 +58,53 @@ const Table = ({ data, noteSur, totalQuestionPoints}: TableDevoirStatsProps) => 
     const [formatToDownload, setFormatToDownload] = useState("");
 
 
-    // const handleDownloadSelect = async (selected: string) => {
-    //     setFormatToDownload(selected);
-    //     try{
-    //         setIsDownload(true);
-    //         let title =`maquette_pédagogique_${formatYear(selectedYear)}_semestre_${selectedSemestre}`.replace("-","_")
-    //         if (lang !== 'fr') {
-    //             title = `pedagogical_framework_${formatYear(selectedYear)}_semester_${selectedSemestre}`.replace("-","_")
-    //         }
-    //         const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
-    //         if(selectNiveauId && section && cycle && niveau && departement){
-    //             if(selected === 'PDF'){
-                    
-    //                 if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
-    //                     if(selectedYear){
-    //                         await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf'}).then((blob)=>{
-    //                             // Créer un objet URL pour le blob PDF
-    //                             if(blob){
-    //                                 createPDF(blob, title);
-    //                             }
-    //                         })
-    //                     }else{
-    //                         alert(t("label.message_telecharger"));
-    //                     }
-    //                 }else{
-    //                     if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
-    //                         await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf' } ).then((blob)=>{
-    //                             // Créer un objet URL pour le blob PDF
-    //                             if(blob){
-    //                                 createPDF(blob, title);
-    //                             }
-    //                         })
-    //                     }
-    //                 }
-                    
-    //             }else{
-    //                 if(hasManageSubjectPermission || currentUser.role === roles.etudiant || currentUser.role === roles.delegue){
-    //                     if(selectedYear){
-    //                         await generateListMatByNiveau({annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx'}).then((blob)=>{
-    //                             // Créer un objet URL pour le blob PDF
-    //                             if(blob){
-    //                                 createPDF(blob, title, 'xlsx');
-    //                             }
-    //                         })
-    //                     }else{
-    //                         alert(t("label.message_telecharger"));
-    //                     }
-    //                 }else{
-    //                     if(currentUser && currentUser.role===roles.enseignant && selectedYear && selectedSemestre){
-    //                         await generateListMatByEnseignantNiveau({ niveauId: selectNiveauId, enseignantId: currentUser._id, annee:selectedYear, semestre:selectedSemestre, departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx' } ).then((blob)=>{
-    //                             // Créer un objet URL pour le blob PDF
-    //                             if(blob){
-    //                                 createPDF(blob, title, 'xlsx');
-    //                             }
-    //                         })
-    //                     }
-    //                 }
-                    
-    //             }
-    //         }else{
-    //             alert(t("label.message_telecharger"));
-    //         }
-    //     } catch (error) {
-    //         createToast(t('message.erreur'), "", 2);
-    //     }finally {
-    //         setIsDownload(false);
-    //     }
+    const handleDownloadSelect = async (selected: string) => {
+        setFormatToDownload(selected);
+        try{
+            setIsDownload(true);
+            let title =`statistiques_${selectedDevoir?.titreFr || ""}`.replace(" ","_")
+            if (lang !== 'fr') {
+                title = `statistics_${selectedDevoir?.titreEn || ""}`.replace(" ","_")
+            }
+            const niveau = selectedDevoir && niveaux.find(niv=>niv._id?.toString()===selectedDevoir.niveau.toString());
+            const cycle = niveau && cycles.find(cy=>cy._id?.toString()===niveau.cycle.toString());
+            const section = cycle && sections.find(sec=>sec._id?.toString() === cycle.section.toString());
+            const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
+            if(section && cycle && niveau && departement){
+                if(selected === 'PDF'){
+                    if(selectedDevoir && selectedDevoir._id){
+                        await generateDevoirStats({departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'pdf', devoirId:selectedDevoir._id}).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title);
+                            }
+                        })
+                    }  
+                }else{
+                    if(selectedDevoir && selectedDevoir._id){
+                        await generateDevoirStats({departement:departement, section:section, cycle:cycle, niveau:niveau, langue:lang, fileType:'xlsx', devoirId:selectedDevoir._id}).then((blob)=>{
+                            // Créer un objet URL pour le blob PDF
+                            if(blob){
+                                createPDF(blob, title, 'xlsx');
+                            }
+                        })
+                    }
+                }
+            }else{
+                alert(t("label.message_telecharger"));
+            }
+        } catch (error) {
+            createToast(t('message.erreur'), "", 2);
+        }finally {
+            setIsDownload(false);
+        }
 
-    // };
+    };
 
 
 
-    
-    // recuperer l'id de la section suite au click sur l'input select
    
-
-    // valeur de la l'id du cycle selectionner    
-    
-    
-
-    // valeur de la l'id du niveau selectionner    
-    
-
-    // Filtrer les matières en fonction de la langue
-
-
-
     // variable pour la pagination
-    
-    
     
     const itemsPerPage =  useSelector((state: RootState) => state.devoirSlice.data.pageSize); // nombre d'éléments maximum par page
     const count = useSelector((state: RootState) => state.devoirSlice.data.totalItems);
@@ -179,6 +144,7 @@ const Table = ({ data, noteSur, totalQuestionPoints}: TableDevoirStatsProps) => 
                         totalQuestionPoints:0,
                     },
                     nombreParticipants: 0,
+                    nombreParticipantsSurEffectif:"",
                     meilleureNote: 0,
                     pireNote: 0,
                     noteMoyenne: 0,
@@ -301,9 +267,9 @@ const Table = ({ data, noteSur, totalQuestionPoints}: TableDevoirStatsProps) => 
             </div>
 
             {/* bouton downlod Download */}
-            {/* <div className="mt-7 mb-10">
+            <div className="mt-7 mb-10">
                 {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
-            </div> */}
+            </div>
 
         </div>
     );

@@ -494,7 +494,7 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
       {pageIsLoading ? (
         <Loading />
       ) : (
-        existAttempts?(<div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Section des questions */}
           <div className="lg:col-span-8">
             {questions.map((question, index) => (
@@ -648,7 +648,7 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
                 ) : (
                   !verifyDeadline() && <p className="text-red-500 text-sm">{t("label.plus_tentatives")}</p>
                 )}
-                {!verifyDeadline() && (<button
+                {(!verifyDeadline()) && (<button
                   className="w-full py-3 px-5 bg-[#38A169] text-white rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 active:scale-95 hover:bg-[#2F855A] shadow-md"
                   onClick={submitTest}
                 >
@@ -674,12 +674,7 @@ const handleAnswerSelect = (question: QuestionType, optionValue: string) => {
             </div>  
 
           </div>
-        </div>):
-        <thead className='mb-45 mt-35 flex justify-center items-center'>
-            <tr>
-                <th className="text-sm font-medium">{t('label.aucune_soumission')}</th>
-            </tr>
-        </thead>
+        </div>
       )}
     </>
   );

@@ -12,6 +12,7 @@ const initialState: DevoirStatsInitialData = {
             totalQuestionPoints:0
         },
         nombreParticipants: 0,
+        nombreParticipantsSurEffectif:"",
         meilleureNote: 0,
         pireNote: 0,
         noteMoyenne: 0,

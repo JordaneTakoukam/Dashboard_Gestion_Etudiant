@@ -135,7 +135,7 @@ export async function apiGetTotalEtudiantByYear({ annee }: { annee: number }): P
 export async function apiGetTotalEtudiantByNiveaux({ niveaux, annee }: { niveaux: InscriptionType[], annee: number }): Promise<number> {
     try {
         const response: AxiosResponse<any> = await axios.get(
-            `${api}/getTotalEtudiantsByNiveau`,
+            `${api}/getTotalEtudiantsByNiveaux`,
             {
                 headers: {
                     'Content-Type': 'application/json',

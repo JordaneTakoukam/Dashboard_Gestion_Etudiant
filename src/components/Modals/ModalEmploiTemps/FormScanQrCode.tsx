@@ -251,7 +251,11 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                                     height={480}
                                                                     width={640}
                                                                     className="rounded-lg shadow-md"
-                                                                    
+                                                                    videoConstraints={{
+                                                                        width: 640,
+                                                                        height: 480,
+                                                                        facingMode: "user"
+                                                                    }}
                                                                 />
 
                                                                 {!faceCaptured ? (

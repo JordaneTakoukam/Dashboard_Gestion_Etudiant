@@ -21,6 +21,10 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const [faceCaptured, setFaceCaptured] = useState<Blob | null>(null); // Stocker la photo capturée
     const [showCamera, setShowCamera] = useState<boolean>(false);
     const webcamRef = useRef<Webcam>(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [hasFrontCamera, setHasFrontCamera] = useState(false);
+
+
 
     const closeModal = () => {
         dispatch(setShowModalOpenScan());
@@ -68,6 +72,29 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
             setShowCamera(false)
         }
     }, [isFirstRender, t]);
+
+    useEffect(() => {
+        // Détection des appareils mobiles
+        const checkMobile = () => {
+            setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+        };
+    
+        // Vérification des caméras disponibles
+        const checkCameras = async () => {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                // Plus d'une caméra suggère la présence d'une caméra frontale
+                setHasFrontCamera(videoDevices.length > 1);
+            } catch (error) {
+                console.error('Erreur lors de la détection des caméras:', error);
+            }
+        };
+    
+        checkMobile();
+        checkCameras();
+    }, []);
 
     // Vérification de la signature QR et envoi des données à l'API
     const handleSubmitQrData = async (scannedData: string, faceBlob: Blob | null) => {
@@ -213,6 +240,11 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                                     height={480}
                                                                     width={640}
                                                                     className="rounded-lg shadow-md"
+                                                                    videoConstraints={{
+                                                                        facingMode: isMobile 
+                                                                            ? (hasFrontCamera ? 'user' : 'environment') 
+                                                                            : 'user'
+                                                                    }}
                                                                 />
 
                                                                 {!faceCaptured ? (

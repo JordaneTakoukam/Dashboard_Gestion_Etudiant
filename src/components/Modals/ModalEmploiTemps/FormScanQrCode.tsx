@@ -10,6 +10,7 @@ import { apiPresence } from '../../../api/api_presence_paie';
 import createToast from '../../../hooks/toastify';
 import CryptoJS from 'crypto-js'; // Import crypto-js pour la vérification de la signature
 import Webcam from "react-webcam"; // Utilisé pour capturer une image avec la caméra
+import {Camera} from "react-camera-pro";
 
 function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const { t } = useTranslation();
@@ -21,6 +22,8 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const [faceCaptured, setFaceCaptured] = useState<Blob | null>(null); // Stocker la photo capturée
     const [showCamera, setShowCamera] = useState<boolean>(false);
     const webcamRef = useRef<Webcam>(null);
+    const camera = useRef(null);
+    const [image, setImage] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
     const [hasFrontCamera, setHasFrontCamera] = useState(false);
 
@@ -53,8 +56,8 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
         console.log(err);
     };
 
-    const captureFace = (webcamRef: any) => {
-        const imageSrc = webcamRef.current.getScreenshot();
+    const captureFace = (camera: any) => {
+        const imageSrc = camera.current.takePhoto();
         // console.log(imageSrc)
         if (imageSrc) {
             // Convertir l'image en Blob pour l'envoyer au serveur
@@ -244,23 +247,17 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                                 </button>
                                                             </div>
                                                             <div className="flex flex-col items-center space-y-4">
-                                                                <Webcam
-                                                                    audio={false}
-                                                                    ref={webcamRef}
-                                                                    screenshotFormat="image/jpeg"
-                                                                    height={480}
-                                                                    width={640}
-                                                                    className="rounded-lg shadow-md"
-                                                                    videoConstraints={{
-                                                                        width: 640,
-                                                                        height: 480,
-                                                                        facingMode: "user"
-                                                                    }}
-                                                                />
+                                                                <Camera ref={camera} errorMessages={{
+                                                                        noCameraAccessible: 'No camera device accessible. Please connect your camera or try a different browser.',
+                                                                        permissionDenied: 'Permission denied. Please refresh and give camera permission.',
+                                                                        switchCamera:
+                                                                        'It is not possible to switch camera to different one because there is only one video device accessible.',
+                                                                        canvas: 'Canvas is not supported.'
+                                                                    }} />
 
                                                                 {!faceCaptured ? (
                                                                     <button
-                                                                        onClick={() => captureFace(webcamRef)}
+                                                                        onClick={() => captureFace(camera)}
                                                                         className="bg-[#2196F3] hover:bg-[#2196F3] text-white font-bold py-2 px-4 rounded transition duration-300"
                                                                     >
                                                                         Capturer mon visage

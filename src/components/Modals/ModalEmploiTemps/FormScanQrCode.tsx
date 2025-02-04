@@ -21,7 +21,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const [faceCaptured, setFaceCaptured] = useState<Blob | null>(null); // Stocker la photo capturée
     const [showCamera, setShowCamera] = useState<boolean>(false);
     const webcamRef = useRef<Webcam>(null);
-    const [isMobile, setIsMobile] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
     const [hasFrontCamera, setHasFrontCamera] = useState(false);
 
 
@@ -93,6 +93,11 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                 
                 // Plus d'une caméra suggère la présence d'une caméra frontale
                 setHasFrontCamera(videoDevices.length > 1);
+                if(hasFrontCamera){
+                    createToast("Front", '', 2);
+                }else{
+                    createToast("Back", '', 2);
+                }
             } catch (error) {
                 console.error('Erreur lors de la détection des caméras:', error);
             }
@@ -246,11 +251,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                                     height={480}
                                                                     width={640}
                                                                     className="rounded-lg shadow-md"
-                                                                    videoConstraints={{
-                                                                        facingMode: isMobile 
-                                                                            ? (hasFrontCamera ? 'user' : 'environment') 
-                                                                            : 'user'
-                                                                    }}
+                                                                    
                                                                 />
 
                                                                 {!faceCaptured ? (

@@ -76,8 +76,14 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     useEffect(() => {
         // Détection des appareils mobiles
         const checkMobile = () => {
-            setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+            const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+            setIsMobile(mobileRegex.test(navigator.userAgent));
         };
+        if(isMobile){
+            createToast("Phone", '', 2);
+        }else{
+            createToast("PC", '', 2);
+        }
     
         // Vérification des caméras disponibles
         const checkCameras = async () => {

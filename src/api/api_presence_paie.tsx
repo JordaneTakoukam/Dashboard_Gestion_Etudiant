@@ -7,14 +7,37 @@ const token = localStorage.getItem(wstjqer);
 
 
 
-export async function apiPresence({ jour, semestre, annee, niveau, matiere, utilisateur, heureDebut, heureFin }: PresencePaieType): Promise<ReponseApiPros> {
+// export async function apiPresence({ jour, semestre, annee, niveau, matiere, utilisateur, heureDebut, heureFin }: PresencePaieType): Promise<ReponseApiPros> {
+//     try {
+//         const response: AxiosResponse<any> = await axios.post(
+//             `${api}/create`,
+//             { jour, semestre, annee, niveau, matiere, utilisateur, heureDebut, heureFin },
+//             {
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'token': token,
+//                 },
+//             },
+//         );
+
+//         return response.data;
+//     } catch (error) {
+//         console.error('Error creating section:', error);
+//         throw error;
+//     }
+// }
+
+export async function apiPresence({ formData}: { formData: FormData}): Promise<ReponseApiPros> {
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
-            { jour, semestre, annee, niveau, matiere, utilisateur, heureDebut, heureFin },
+            formData,
             {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     'token': token,
                 },
             },

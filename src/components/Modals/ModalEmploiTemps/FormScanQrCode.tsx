@@ -21,7 +21,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const [faceCaptured, setFaceCaptured] = useState<Blob | null>(null); // Stocker la photo capturée
     const [showCamera, setShowCamera] = useState<boolean>(false);
     const webcamRef = useRef<Webcam>(null);
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(true);
     const [hasFrontCamera, setHasFrontCamera] = useState(false);
 
 
@@ -97,10 +97,10 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                 console.error('Erreur lors de la détection des caméras:', error);
             }
         };
-    
+        
         checkMobile();
         checkCameras();
-    }, []);
+    }, [showCamera]);
 
     // Vérification de la signature QR et envoi des données à l'API
     const handleSubmitQrData = async (scannedData: string, faceBlob: Blob | null) => {

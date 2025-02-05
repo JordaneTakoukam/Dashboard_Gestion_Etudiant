@@ -119,6 +119,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
             formData.append('utilisateur', utilisateur?._id ||"");
             formData.append('heureDebut', heureDebut);
             formData.append('heureFin', heureFin);
+            formData.append('qrCode', "1");
             
 
            
@@ -193,7 +194,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                     
                                                     {!showCamera ? (
                                                         <>
-                                                            <h2 className="text-lg font-bold">Scanner le QR Code</h2>
+                                                            <h2 className="text-lg font-bold">{t('label.scan_qr')}</h2>
                                                             <div>
                                                                 <Scanner onScan={handleScan} onError={handleError} />
                                                                 {error && <p className="text-red-500">{error}</p>}
@@ -204,7 +205,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                         
                                                         <div>
                                                         <div className="flex justify-between mb-4">
-                                                            <h2 className="text-lg font-bold">Capture Faciale</h2>
+                                                            <h2 className="text-lg font-bold">{t('label.cap_faciale')}</h2>
                                                             <button onClick={() => setShowCamera(false)}>
                                                                 <IoMdClose />
                                                             </button>
@@ -226,7 +227,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                                     }}
                                                                     className="bg-[#2196F3] hover:bg-[#2196F3] text-white font-bold py-2 px-4 rounded transition duration-300"
                                                                 >
-                                                                    Capturer mon visage
+                                                                    {t('boutton.cap_visage')}
                                                                 </button>
                                                             ) : (
                                                                 <div className="flex flex-col space-y-4 w-full max-w-xs">
@@ -241,13 +242,13 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                                             }
                                                                         `}
                                                                     >
-                                                                        {loading ? "Validation en cours..." : "Valider la présence"}
+                                                                        {loading ? t('boutton.val_en_cours') : t('boutton.val_presence')}
                                                                     </button>
                                                                     <button
                                                                         onClick={() => setFaceCaptured(null)}
                                                                         className="w-full py-2 px-4 bg-[#F44336] hover:bg-[#E53935] text-white rounded transition duration-300"
                                                                     >
-                                                                        Réessayer la capture
+                                                                        {t('boutton.ree_capture')}
                                                                     </button>
                                                                 </div>
                                                             )}

@@ -107,6 +107,7 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    
     "aucune_soumission":"Aucune soumission pour l'instant.",
     "termine":"Terminé",
     "en_cours":"En cours",
@@ -178,6 +179,8 @@
     "noQrScanned":"Aucun QR Code scanné pour l'instant.",
     "qrContent":"Contenu du QR Code scanné ",
     "scan_qr_code":"Scannez le QR Code ci-dessous",
+    "scan_qr":"Scannez le QR Code",
+    "cap_faciale":"Capture Faciale",
     "signaler_absence":"Signaler mon absence (Je souhaite signaler que je serai absent pour cette séance.)",
     "signaler_presence_qr":"Enregistrer ma présence en scannant le QR code (Je vais scanner le QR code pour enregistrer ma présence automatiquement.)",
     "signaler_presence_manuelle":"Enregistrer ma présence manuellement (Je souhaite enregistrer ma présence manuellement. Une alerte sera envoyée à mon délégué, qui devra confirmer ma présence avant son enregistrement.)",
@@ -371,6 +374,10 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    "cap_visage":"Capturer mon visage",
+    "ree_capture":"Réessayer la capture",
+    "val_en_cours":"Validation en cours...",
+    "val_presence":"Valider la présence",
     "ajouter_option":"Ajouter une option",
     "appliquer":"Appliquer",
     "soumettre": "Soumettre",

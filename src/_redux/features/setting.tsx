@@ -85,6 +85,7 @@ export const settingSlice = createSlice({
         },
 
         setPeriodeIndex:(state, action: PayloadAction<number>)=>{
+            console.log(action.payload)
             state.periodeIndex = action.payload;
         },
 

@@ -75,7 +75,7 @@ const Table = ({ data, onCreate, onEdit }: TablePeriodeProps) => {
                 
             // }
 
-            if (periode && periode.enseignements) {
+            if (periode && periode.enseignements && periode.enseignements.length>0) {
                 // Parcours des matières de la période
                 const enseignements = periode.enseignements || [];
                 

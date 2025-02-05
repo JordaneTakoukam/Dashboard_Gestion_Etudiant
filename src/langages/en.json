@@ -177,6 +177,8 @@
     "noQrScanned":"No QR Code scanned yet.",
     "qrContent":"Scanned QR Code Content: ",
     "scan_qr_code":"Scan the QR Code below",
+    "scan_qr": "Scan the QR Code",
+    "cap_faciale": "Facial Capture",
     "signaler_absence":"Report my absence (I want to report that I will be absent for this session.)",
     "signaler_presence_qr":"Record my attendance by scanning the QR code (I will scan the QR code to automatically record my attendance.)",
     "signaler_presence_manuelle":"Record my attendance manually (I want to manually record my attendance. An alert will be sent to my class representative, who will need to confirm my attendance before it is recorded.)",
@@ -369,6 +371,10 @@
     "enseignement": "a teaching"
   },
   "boutton": {
+    "cap_visage": "Capture my face",
+    "ree_capture": "Retry capture", 
+    "val_en_cours": "Validation in progress...", 
+    "val_presence": "Validate presence",
     "appliquer":"Apply",
     "soumettre": "Submit",
     "ajouter_option":"Add an option",

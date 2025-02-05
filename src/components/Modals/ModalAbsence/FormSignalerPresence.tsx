@@ -47,8 +47,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
                 const libelle =  lang === 'fr'?matiere?.libelleFr || "":matiere?.libelleEn || ""
                 setMatiere(libelle)
             }
-        } else {
-        }
+        } 
 
 
 
@@ -56,7 +55,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
             setIsDeleting(false);
             setIsFirstRender(false);
         }
-    }, [periodeCours, isFirstRender, t]);
+    }, [periodeCours, index, isFirstRender, t]);
 
 
     const closeModal = () => {
@@ -70,11 +69,22 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
 
 
     const handleCreatePeriodeCours = async () => {
+       
         
         if (periodeCours) {
             const matiere = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].matiere:undefined
-            await apiPresence({jour:periodeCours.jour, semestre:periodeCours.semestre, annee:periodeCours.annee, niveau:periodeCours.niveau, 
-                matiere:matiere, utilisateur:currentUser, heureDebut:periodeCours.heureDebut, heureFin:periodeCours.heureFin}).then((e: ReponseApiPros) => {
+            const formData = new FormData();
+            formData.append('file', "");
+            formData.append('jour', periodeCours.jour.toString());
+            formData.append('annee',periodeCours.annee.toString());
+            formData.append('semestre', periodeCours.semestre.toString());
+            formData.append('niveau', periodeCours.niveau);
+            formData.append('matiere', matiere?._id || "");
+            formData.append('utilisateur', currentUser?._id ||"");
+            formData.append('heureDebut', periodeCours.heureDebut);
+            formData.append('heureFin', periodeCours.heureFin);
+            formData.append('qrCode', "0");
+            await apiPresence({formData}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
                     closeModal();

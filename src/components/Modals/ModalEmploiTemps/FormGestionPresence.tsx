@@ -93,7 +93,7 @@ function ModalGestionPresence({ periodeCours }: { periodeCours: PeriodeType | nu
                                                     <button
                                                         key={index}
                                                         className="text-blue-500 hover:underline text-left"
-                                                        onClick={() => {closeModal(); dispatch(setShowModalPresenceManuelle()); dispatch((setPeriodeIndex(index))) }}
+                                                        onClick={() => {closeModal(); dispatch((setPeriodeIndex(index))) ; dispatch(setShowModalPresenceManuelle())}}
                                                     >
                                                         {periodeCours && periodeCours.enseignements && periodeCours.enseignements.length>1? t('label.signaler_presence_manuelle') +" : "+ (lang === 'fr' ? matiere.matiere.libelleFr : matiere.matiere.libelleEn):t('label.signaler_presence_manuelle')}
                                                     </button>

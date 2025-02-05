@@ -24,10 +24,6 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const webcamRef = useRef<Webcam>(null);
     const camera = useRef(null);
     const [image, setImage] = useState(null);
-    const [isMobile, setIsMobile] = useState(false);
-    const [hasFrontCamera, setHasFrontCamera] = useState(false);
-
-
 
     const closeModal = () => {
         dispatch(setShowModalOpenScan());
@@ -57,7 +53,8 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     };
 
     const captureFace = (camera: any) => {
-        const imageSrc = camera.current.takePhoto();
+        const imageSrc =camera.current.takePhoto();
+        setImage(imageSrc)
         // console.log(imageSrc)
         if (imageSrc) {
             // Convertir l'image en Blob pour l'envoyer au serveur
@@ -76,43 +73,8 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
         }
     }, [isFirstRender, t]);
 
-    useEffect(() => {
-        // Détection des appareils mobiles
-        const checkMobile = () => {
-            const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-            setIsMobile(mobileRegex.test(navigator.userAgent));
-        };
-        if(isMobile){
-            createToast("Phone", '', 2);
-        }else{
-            createToast("PC", '', 2);
-        }
-    
-        // Vérification des caméras disponibles
-        const checkCameras = async () => {
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const videoDevices = devices.filter(device => device.kind === 'videoinput');
-                
-                // Plus d'une caméra suggère la présence d'une caméra frontale
-                setHasFrontCamera(videoDevices.length > 1);
-                if(hasFrontCamera){
-                    createToast("Front", '', 2);
-                }else{
-                    createToast("Back", '', 2);
-                }
-            } catch (error) {
-                console.error('Erreur lors de la détection des caméras:', error);
-            }
-        };
-        
-        checkMobile();
-        checkCameras();
-    }, [showCamera]);
-
     // Vérification de la signature QR et envoi des données à l'API
     const handleSubmitQrData = async (scannedData: string, faceBlob: Blob | null) => {
-        
         try {
             // Parsing des données JSON du QR code
             const qrInfo = JSON.parse(scannedData);
@@ -158,7 +120,8 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
             formData.append('heureDebut', heureDebut);
             formData.append('heureFin', heureFin);
             
-            
+
+           
             await apiPresence(
                { formData}
             ).then((e: ReponseApiPros) => {
@@ -208,7 +171,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                     leaveFrom="opacity-100 scale-100"
                                     leaveTo="opacity-0 scale-95"
                                 >
-                                    <Dialog.Panel className="my-20 w-full md:w-[500px] lg:w-[600px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                                    <Dialog.Panel className="my-20 w-full md:w-[400px] lg:w-[500px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
                                         <Dialog.Title as="h3" className="font-medium leading-6 text-gray-900">
                                             <div className="flex justify-between items-center text-black-2 dark:text-gray font-bold">
                                                 <div
@@ -240,55 +203,58 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                         // Dans la partie de capture faciale
                                                         
                                                         <div>
-                                                            <div className="flex justify-between mb-4">
-                                                                <h2 className="text-lg font-bold">Capture Faciale</h2>
-                                                                <button onClick={() => setShowCamera(false)}>
-                                                                    <IoMdClose />
-                                                                </button>
-                                                            </div>
-                                                            <div className="flex flex-col items-center space-y-4">
-                                                                <Camera ref={camera} errorMessages={{
-                                                                        noCameraAccessible: 'No camera device accessible. Please connect your camera or try a different browser.',
-                                                                        permissionDenied: 'Permission denied. Please refresh and give camera permission.',
-                                                                        switchCamera:
-                                                                        'It is not possible to switch camera to different one because there is only one video device accessible.',
-                                                                        canvas: 'Canvas is not supported.'
-                                                                    }} />
-
-                                                                {!faceCaptured ? (
-                                                                    <button
-                                                                        onClick={() => captureFace(camera)}
-                                                                        className="bg-[#2196F3] hover:bg-[#2196F3] text-white font-bold py-2 px-4 rounded transition duration-300"
-                                                                    >
-                                                                        Capturer mon visage
-                                                                    </button>
-                                                                ) : (
-                                                                    <div className="flex flex-col space-y-4 w-full max-w-xs">
-                                                                        <button
-                                                                            onClick={() => handleSubmitQrData(qrData!, faceCaptured)}
-                                                                            disabled={loading}
-                                                                            className={`
-                                                                                w-full py-2 px-4 rounded transition duration-300
-                                                                                ${loading 
-                                                                                    ? 'bg-[#9E9E9E] cursor-not-allowed' 
-                                                                                    : 'bg-[#4CAF50] hover:bg-[#388E3C] text-white'
-                                                                                }
-                                                                            `}
-                                                                        >
-                                                                            {loading ? "Validation en cours..." : "Valider la présence"}
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => setFaceCaptured(null)}
-                                                                            className="w-full py-2 px-4 bg-[#F44336] hover:bg-[#E53935] text-white rounded transition duration-300"
-                                                                        >
-                                                                            Réessayer la capture
-                                                                        </button>
-                                                                    </div>
-                                                                )}
-
-                                                                {error && <p className="text-[#F44336] mt-2">{error}</p>}
-                                                            </div>
+                                                        <div className="flex justify-between mb-4">
+                                                            <h2 className="text-lg font-bold">Capture Faciale</h2>
+                                                            <button onClick={() => setShowCamera(false)}>
+                                                                <IoMdClose />
+                                                            </button>
                                                         </div>
+                                                        <div className="flex flex-col items-center space-y-4">
+                                                            <div className="rounded-lg shadow-md h-[280px] w-[420px] overflow-hidden">
+                                                                <Camera
+                                                                    ref={camera}
+                                                                    aspectRatio={1 / 1}
+                                                                    
+                                                                />
+                                                            </div>
+                                                    
+                                                            {!faceCaptured ? (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        
+                                                                        captureFace(camera);
+                                                                    }}
+                                                                    className="bg-[#2196F3] hover:bg-[#2196F3] text-white font-bold py-2 px-4 rounded transition duration-300"
+                                                                >
+                                                                    Capturer mon visage
+                                                                </button>
+                                                            ) : (
+                                                                <div className="flex flex-col space-y-4 w-full max-w-xs">
+                                                                    <button
+                                                                        onClick={() => handleSubmitQrData(qrData!, faceCaptured)}
+                                                                        disabled={loading}
+                                                                        className={`
+                                                                            w-full py-2 px-4 rounded transition duration-300
+                                                                            ${loading 
+                                                                                ? 'bg-[#9E9E9E] cursor-not-allowed' 
+                                                                                : 'bg-[#4CAF50] hover:bg-[#388E3C] text-white'
+                                                                            }
+                                                                        `}
+                                                                    >
+                                                                        {loading ? "Validation en cours..." : "Valider la présence"}
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => setFaceCaptured(null)}
+                                                                        className="w-full py-2 px-4 bg-[#F44336] hover:bg-[#E53935] text-white rounded transition duration-300"
+                                                                    >
+                                                                        Réessayer la capture
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                    
+                                                            {error && <p className="text-[#F44336] mt-2">{error}</p>}
+                                                        </div>
+                                                    </div>
 
                                                     )}
                                                 </>

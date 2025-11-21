@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import LogoPng from "./../../images/logo/logo.png";
 import { config } from '../../config';
 import { RxDashboard } from "react-icons/rx";
 import { PiStudentFill } from "react-icons/pi";
-import { FaRegCalendarTimes } from "react-icons/fa";
-import { IoSettingsOutline } from "react-icons/io5";
+import { FaDownload, FaRegCalendarTimes } from "react-icons/fa";
+// import { IoSettingsOutline } from "react-icons/io5";
 import { RxPerson } from "react-icons/rx";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
 import { FaCalendarAlt } from "react-icons/fa";
-import { FaRegCopyright } from "react-icons/fa6";
+import { FaFile, FaRegCopyright } from "react-icons/fa6";
 import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
 import React from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
+import { useTranslation } from 'react-i18next';
+import LogoNavbar from './LogoNavbar';
 
 
 interface SidebarProps {
@@ -22,9 +23,9 @@ interface SidebarProps {
 }
 
 const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+    const { t } = useTranslation();
     const location = useLocation();
     const { pathname } = location;
-
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
 
@@ -59,19 +60,15 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     return (
         <nav
             ref={sidebar}
-            className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark   ${sidebarOpen ? 'translate-x-0 duration-300 lg:static lg:translate-x-0' : '-translate-x-full '
+            className={`
+            text-[14px]  lg:text-[15px] 
+
+            absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark   ${sidebarOpen ? 'translate-x-0 duration-300 lg:static lg:translate-x-0' : '-translate-x-full '
                 }`}
         >
             {/* <!-- SIDEBAR HEADER --> */}
             <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:pb-5  lg:pt-9 ">
-                <NavLink to="/" className={`flex`}>
-
-                    <div className="md:h-[60px] md:w-[60px] h-25 w-25 ml-2">
-                        <img src={LogoPng} alt="logo" />
-                    </div>
-                    <h1 className='font-extrabold pt-2 ml-4 text-white text-[15px] lg:text-[20px] mt-2'>{config.nameApp}</h1>
-
-                </NavLink>
+                <LogoNavbar />
 
                 {/* Bouton pour fermer la sidebar */}
                 <button
@@ -104,7 +101,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <nav className="mt-0 py-4 px-4 lg:mt- lg:px-6">
                     {/* <!-- Menu Group --> */}
                     <h3 className="mb-2 ml-3 text-sm font-semibold text-bodydark2">
-                        MENU
+                        {t('menu.menu')}
                     </h3>
                     <div>
                         <ul className="mb-6 flex flex-col gap-1.5">
@@ -122,7 +119,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <RxDashboard />
                                         </div>
                                     </div>
-                                    Tableau De Bord
+                                    {t('menu.tableau_de_bord')}
                                 </NavLink>
                             </li>
                             {/* TABLEAU DE BORD */}
@@ -130,9 +127,9 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             {/* Discipline etudiant */}
                             <li>
                                 <NavLink
-                                    to="/teacher/discipline-students"
-                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/teacher/discipline-students' ||
-                                        pathname.includes('/teacher/discipline-students')) &&
+                                    to="/students/disciplines"
+                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/students/disciplines' ||
+                                        pathname.includes('/students/disciplines')) &&
                                         'bg-graydark dark:bg-meta-4 text-secondary'
                                         }`}
                                 >
@@ -141,7 +138,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <PiStudentFill />
                                         </div>
                                     </div>
-                                    Discipline étudiants
+                                    {t('menu.discipline_etudiant')}
                                 </NavLink>
                             </li>
                             {/* Discipline etudiant */}
@@ -150,9 +147,9 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             {/* Abscences */}
                             <li>
                                 <NavLink
-                                    to="/teacher/abscences"
+                                    to="/teacher/absences"
                                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/teacher/abscence' ||
-                                        pathname.includes('/teacher/abscence')) &&
+                                        pathname.includes('/teacher/absence')) &&
                                         'bg-graydark dark:bg-meta-4 text-secondary'
                                         }`}
                                 >
@@ -161,7 +158,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <FaRegCalendarTimes />
                                         </div>
                                     </div>
-                                    Abscences
+                                    {t('menu.absences')}
                                 </NavLink>
                             </li>
                             {/* Abscences */}
@@ -211,7 +208,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <LuBookMarked />
                                                     </div>
                                                 </div>
-                                                Matières
+                                                {t('menu.matieres')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -232,7 +229,18 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Liste des matières
+                                                            {t('sub_menu.liste_matiere')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-chapitre"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression_chap')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -243,7 +251,18 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Progréssion
+                                                            {t('sub_menu.progression')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-par-periode"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.progression_periode')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -271,7 +290,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <AiOutlineSchedule />
                                         </div>
                                     </div>
-                                    Emploi de temps
+                                    {t('menu.emploi')}
                                 </NavLink>
                             </li>
                             {/* EMPLOI DE TEMPS */}
@@ -292,11 +311,28 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <FaCalendarAlt />
                                         </div>
                                     </div>
-                                    Calendrier académique
+                                    {t('menu.calendrier')}
                                 </NavLink>
                             </li>
                             {/*  calendrier academique*/}
-
+                            {/* document */}
+                            <li>
+                                <NavLink
+                                    to="/documents"
+                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/documents' ||
+                                        pathname.includes('documents')) &&
+                                        'bg-graydark dark:bg-meta-4 text-secondary'
+                                        }`}
+                                >
+                                    <div className='-ml-.75 w-6'>
+                                        <div className='text-[18px]'>
+                                            <FaFile />
+                                        </div>
+                                    </div>
+                                    {t('menu.document')}
+                                </NavLink>
+                            </li>
+                            {/*Documents*/}
 
 
                         </ul>
@@ -305,14 +341,14 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     {/* <!-- Autres --> */}
                     <div>
                         <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
-                            AUTRES
+                            {t('menu.autres')}
                         </h3>
 
                         <ul className="mb-2 flex flex-col gap-1.5">
                             {/* Profil */}
                             <li>
                                 <NavLink
-                                    to="/profile"
+                                    to="/parametres/profile"
                                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/profile' ||
                                         pathname.includes('profile')) &&
                                         'bg-graydark dark:bg-meta-4 text-secondary'
@@ -323,13 +359,13 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <RxPerson />
                                         </div>
                                     </div>
-                                    Mon Profil
+                                    {t('menu.profil')}
                                 </NavLink>
                             </li>
                             {/* Profil */}
 
                             {/* Parametre */}
-                            <li>
+                            {/* <li>
                                 <NavLink
                                     to="/settings"
                                     className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/settings' ||
@@ -344,7 +380,7 @@ const SidebarTeacher = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                     </div>
                                     Paramètres
                                 </NavLink>
-                            </li>
+                            </li> */}
                             {/* Parametre */}
 
 

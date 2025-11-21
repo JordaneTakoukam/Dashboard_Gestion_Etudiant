@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import LogoPng from "./../../images/logo/logo.png";
 import { config } from '../../config';
 import SidebarLinkGroup from './SideGroup/SidebarLinkGroup';
 import React from 'react';
@@ -11,11 +10,14 @@ import { GiTeacher } from "react-icons/gi";
 import { GiLevelEndFlag } from "react-icons/gi";
 import { TbSchool } from "react-icons/tb";
 import { IoSettingsOutline } from "react-icons/io5";
-import { RxPerson } from "react-icons/rx";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { LuBookMarked } from "react-icons/lu";
-import { FaCalendarAlt } from "react-icons/fa";
-import { FaRegCopyright } from "react-icons/fa6";
+import { FaCalendarAlt, FaDownload } from "react-icons/fa";
+import { FaFile, FaRegCopyright } from "react-icons/fa6";
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import LogoNavbar from './LogoNavbar';
+
 
 
 interface SidebarProps {
@@ -26,9 +28,10 @@ interface SidebarProps {
 const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const location = useLocation();
     const { pathname } = location;
-
     const trigger = useRef<any>(null);
     const sidebar = useRef<any>(null);
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
     const [sidebarExpanded, setSidebarExpanded] = useState(
@@ -58,21 +61,18 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     return (
         <nav
             ref={sidebar}
-            className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark   ${sidebarOpen ? 'translate-x-0 duration-300 lg:static lg:translate-x-0' : '-translate-x-full '
+            className={`
+            text-[14px]  lg:text-[15px] 
+
+            absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark   ${sidebarOpen ? 'translate-x-0 duration-300 lg:static lg:translate-x-0' : '-translate-x-full '
                 }`}
         >
             {/* <!-- SIDEBAR HEADER --> */}
             <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:pb-5  lg:pt-9 ">
-                <NavLink to="/" className={`flex`}>
-
-                    <div className="md:h-[60px] md:w-[60px] h-25 w-25 ml-2">
-                        <img src={LogoPng} alt="logo" />
-                    </div>
-                    <h1 className='font-extrabold pt-2 ml-4 text-white text-[15px] lg:text-[20px] mt-2'>{config.nameApp}</h1>
-
-                </NavLink>
-
+                <LogoNavbar />
                 {/* Bouton pour fermer la sidebar */}
+
+
                 <button
                     ref={trigger}
                     onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -103,7 +103,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <nav className="mt-0 py-4 px-4 lg:mt- lg:px-6">
                     {/* <!-- Menu Group --> */}
                     <h3 className="mb-2 ml-3 text-sm font-semibold text-bodydark2">
-                        MENU
+                        {t('menu.menu')}
                     </h3>
                     <div>
                         <ul className="mb-6 flex flex-col gap-1.5">
@@ -121,7 +121,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <RxDashboard />
                                         </div>
                                     </div>
-                                    Tableau De Bord
+                                    {t('menu.tableau_de_bord')}
                                 </NavLink>
                             </li>
                             {/* TABLEAU DE BORD */}
@@ -154,7 +154,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                     </div>
                                                 </div>
 
-                                                Étudiants
+                                                {t('menu.etudiants')}
                                                 <div className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'}`}>
                                                     <IoIosArrowDown />
                                                 </div>
@@ -173,7 +173,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Listes des étudiants
+                                                            {t('sub_menu.liste_etudiant')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -184,10 +184,24 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Disciplines
+                                                            {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
+
+                                                    {/* <li>
+                                                        <NavLink
+                                                            to="/students/absence_reporting"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.absence_reporting')}
+                                                        </NavLink>
+                                                    </li> */}
                                                 </ul>
+
+
                                             </div>
                                             {/* <!-- Dropdown Menu End --> */}
                                         </React.Fragment>
@@ -225,7 +239,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <GiTeacher />
                                                     </div>
                                                 </div>
-                                                Enseignants
+                                                {t('menu.enseignants')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -246,7 +260,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Listes des étudiants
+                                                            {t('sub_menu.liste_enseignant')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -257,9 +271,31 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Disciplines
+                                                            {t('sub_menu.discipline')}
                                                         </NavLink>
                                                     </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/teachers/presence-paie"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.presence_paie')}
+                                                        </NavLink>
+                                                    </li>
+                                                    {/* <li>
+                                                        <NavLink
+                                                            to="/teachers/absence_reporting"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.absence_reporting')}
+                                                        </NavLink>
+                                                    </li> */}
                                                 </ul>
                                             </div>
                                             {/* <!-- Dropdown Menu End --> */}
@@ -297,7 +333,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <LuBookMarked />
                                                     </div>
                                                 </div>
-                                                Matières
+                                                {t('menu.matieres')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -317,19 +353,57 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 'group relative flex items-center  pb-2 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && ' text-secondary')
                                                             }
+
                                                         >
-                                                            Liste des matières
+                                                            {t('sub_menu.liste_matiere')}
+
                                                         </NavLink>
                                                     </li>
                                                     <li>
                                                         <NavLink
-                                                            to="/subjects/progressions"
+                                                            to="/subjects/progression-par-chapitre"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+
+                                                        >
+                                                            {t('sub_menu.progression_chap')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-par-matiere"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+
+                                                        >
+                                                            {t('sub_menu.progression')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/periodes_enseignement"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+
+                                                        >
+                                                            {t('sub_menu.periodes_enseignement')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/subjects/progressions-par-periode"
                                                             className={({ isActive }) =>
                                                                 'group relative flex items-center pb-1.5  rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Progréssion
+                                                            {t('sub_menu.progression_periode')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -356,11 +430,11 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <TbSchool />
                                         </div>
                                     </div>
-                                    Salles de cours
+                                    {t('menu.salles')}
                                 </NavLink>
                             </li>
                             {/* SALLES DE COURS */}
-
+                            
 
                             {/* Niveaux  academique : list group */}
                             <SidebarLinkGroup
@@ -389,7 +463,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                         <GiLevelEndFlag />
                                                     </div>
                                                 </div>
-                                                Niveaux Académiques
+                                                {t('menu.niveaux')}
                                                 <div
                                                     className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
                                                         }`}>
@@ -404,13 +478,24 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                 <ul className="mt-4 mb-3 flex flex-col gap-2.5 pl-6">
                                                     <li>
                                                         <NavLink
+                                                            to="/academic-levels/departements"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.departementsAcademique')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
                                                             to="/academic-levels/sections"
                                                             className={({ isActive }) =>
                                                                 'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
                                                                 (isActive && ' text-secondary')
                                                             }
                                                         >
-                                                            Sections
+                                                            {t('sub_menu.sections')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -421,7 +506,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Cycles
+                                                            {t('sub_menu.cycles')}
                                                         </NavLink>
                                                     </li>
                                                     <li>
@@ -432,7 +517,18 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                                                 (isActive && 'text-secondary')
                                                             }
                                                         >
-                                                            Niveaux
+                                                            {t('sub_menu.niveaux')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/academic-levels/promotions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.promotions')}
                                                         </NavLink>
                                                     </li>
                                                 </ul>
@@ -460,7 +556,7 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <AiOutlineSchedule />
                                         </div>
                                     </div>
-                                    Emploi de temps
+                                    {t('menu.emploi')}
                                 </NavLink>
                             </li>
                             {/* EMPLOI DE TEMPS */}
@@ -481,77 +577,241 @@ const SidebarAdmin = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                             <FaCalendarAlt />
                                         </div>
                                     </div>
-                                    Calendrier académique
+                                    {t('menu.calendrier')}
                                 </NavLink>
                             </li>
                             {/* calen */}
 
+                            {/* document */}
+                            <li>
+                                <NavLink
+                                    to="/documents"
+                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/documents' ||
+                                        pathname.includes('documents')) &&
+                                        'bg-graydark dark:bg-meta-4 text-secondary'
+                                        }`}
+                                >
+                                    <div className='-ml-.75 w-6'>
+                                        <div className='text-[18px]'>
+                                            <FaFile />
+                                        </div>
+                                    </div>
+                                    {t('menu.document')}
+                                </NavLink>
+                            </li>
+                            {/*Documents*/}            
 
 
+                            {/* <!-- Autres --> */}
+
+                            <h3 className="mt-8 mb-2 ml-4 text-sm font-semibold text-bodydark2">
+                                {t('menu.autres')}
+                            </h3>
+
+
+                            {/* Parametre */}
+                            <SidebarLinkGroup
+                                activeCondition={
+                                    pathname === '/parametres' || pathname.includes('parametres')
+                                }
+                            >
+                                {(handleClick, open) => {
+                                    return (
+                                        <React.Fragment>
+                                            <NavLink
+                                                to="#"
+                                                className={`group relative flex items-center gap-2.5 rounded-sm  py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/academic-levels' ||
+                                                    pathname.includes('parametres')) &&
+                                                    'bg-graydark dark:bg-meta-4 text-secondary'
+                                                    }`}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    sidebarExpanded
+                                                        ? handleClick()
+                                                        : setSidebarExpanded(true);
+                                                }}
+                                            >
+                                                <div className='-ml-.75 w-6'>
+                                                    <div className='text-[22px]'>
+                                                        <IoSettingsOutline />
+                                                    </div>
+                                                </div>
+                                                {t('menu.parametres')}
+                                                <div
+                                                    className={`absolute right-2 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
+                                                        }`}>
+                                                    <IoIosArrowDown />
+                                                </div>
+
+                                            </NavLink>
+                                            <div
+                                                className={`translate transform overflow-hidden ${!open && 'hidden'
+                                                    }`}
+                                            >
+                                                <ul className="mt-4 mb-3 flex flex-col gap-2.5 pl-6">
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/profile"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.profil')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/admins"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.administrateurs')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/qr-code"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && ' text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.qr_code')}
+                                                        </NavLink>
+                                                    </li>
+                                                    {/* <li>
+                                                        <NavLink
+                                                            to="/parametres/current-year-semester"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            Année et semestre courant
+                                                        </NavLink>
+                                                    </li> */}
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/services"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.services')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/fonctions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.fonctions')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/grades"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.grades')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/categories"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.categories')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/regions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.regions')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/departements"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.departements')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/communes"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.communes')}
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/parametres/permissions"
+                                                            className={({ isActive }) =>
+                                                                'group relative flex items-center pb-1.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-secondary ' +
+                                                                (isActive && 'text-secondary')
+                                                            }
+                                                        >
+                                                            {t('sub_menu.permission')}
+                                                        </NavLink>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {/* <!-- Dropdown Menu End --> */}
+                                        </React.Fragment>
+                                    );
+                                }}
+                            </SidebarLinkGroup>
                         </ul>
                     </div>
 
-                    {/* <!-- Autres --> */}
-                    <div>
-                        <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
-                            AUTRES
-                        </h3>
 
-                        <ul className="mb-2 flex flex-col gap-1.5">
-                            {/* Profil */}
-                            <li>
-                                <NavLink
-                                    to="/profile"
-                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/profile' ||
-                                        pathname.includes('profile')) &&
-                                        'bg-graydark dark:bg-meta-4 text-secondary'
-                                        }`}
-                                >
-                                    <div className='-ml-.75 w-6'>
-                                        <div className='text-[22px]'>
-                                            <RxPerson />
-                                        </div>
-                                    </div>
-                                    Mon Profil
-                                </NavLink>
-                            </li>
-                            {/* Profil */}
 
-                            {/* Parametre */}
-                            <li>
-                                <NavLink
-                                    to="/settings"
-                                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 pl-3 pr-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/settings' ||
-                                        pathname.includes('settings')) &&
-                                        'bg-graydark dark:bg-meta-4 text-secondary'
-                                        }`}
-                                >
-                                    <div className='-ml-.75 w-6'>
-                                        <div className='text-[22px]'>
-                                            <IoSettingsOutline />
-                                        </div>
-                                    </div>
-                                    Paramètres
-                                </NavLink>
-                            </li>
-                            {/* Parametre */}
 
-                            <div className='w-full flex flex-col justify-center items-center -ml-4 mt-10 mb-5 text-body'>
-                                <div className='flex items-center'>
-                                    <div className='text-[10px]  pr-1 '>
-                                        <FaRegCopyright />
-                                    </div>
-                                    <p className='text-[10px]'>{config.copyRight}</p>
 
-                                </div>
+                    {/* Parametre */}
 
-                                <p className='text-[13px] ml-2'>Version <span className='font-semibold'>{config.version}</span></p>
-
+                    <div className='w-full flex flex-col justify-center items-center -ml-4 mt-10 mb-5 text-body'>
+                        <div className='flex items-center'>
+                            <div className='text-[10px]  pr-1 '>
+                                <FaRegCopyright />
                             </div>
+                            <p className='text-[10px]'>{config.copyRight}</p>
 
+                        </div>
 
-                        </ul>
+                        <p className='text-[13px] ml-2'>Version <span className='font-semibold'>{config.version}</span></p>
+
                     </div>
+
+
+
                 </nav>
                 {/* <!-- Sidebar Menu --> */}
             </div>

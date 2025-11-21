@@ -16,6 +16,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const currentYear: number = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const { t } = useTranslation();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const currentUser = useSelector((state: RootState) => state.user); // fr ou en
@@ -284,6 +285,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
         console.log(tentativesMax);
         console.log(noteSur);
         if (!devoir) {
+            setIsLoading(true);
             if (niveau && niveau._id) {
                 await apiCreateDevoir(
                     {
@@ -339,10 +341,13 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }else{
             if (niveau && niveau._id) {
+                setIsLoading(true)
                 await apiUpdateDevoir(
                     {
                         titreFr:titreFr,
@@ -395,6 +400,8 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -409,6 +416,7 @@ function ModalCreateUpdate({ devoir }: { devoir: DevoirType | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 
                 <label>{t('label.annee')}</label>{/* <label className="text-red-500"> *</label> */}

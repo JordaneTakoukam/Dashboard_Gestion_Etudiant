@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { apiDeleteChapitre } from '../../../api/api_chapitre';
 import createToast from '../../../hooks/toastify';
 import { deleteChapitre } from '../../../_redux/features/chapitre_slice';
-import { retirerChapitre, updateChapitres } from '../../../_redux/features/matiere_slice';
+import { useState } from 'react';
 
 
 
@@ -16,9 +16,10 @@ function ModalDelete({ chapitre, matiere }: { chapitre : ChapitreType|null, mati
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const handleDelete = async () => {
         if(chapitre && chapitre._id){
+            setIsLoading(true)
             await apiDeleteChapitre(chapitre._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     if(chapitre._id){
@@ -32,7 +33,8 @@ function ModalDelete({ chapitre, matiere }: { chapitre : ChapitreType|null, mati
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-    
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
         
@@ -46,6 +48,7 @@ function ModalDelete({ chapitre, matiere }: { chapitre : ChapitreType|null, mati
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.chapitre')} : {chapitre? lang === 'fr' ? chapitre.libelleFr: chapitre.libelleEn:""}</h1>
             </CustomDialogModal>

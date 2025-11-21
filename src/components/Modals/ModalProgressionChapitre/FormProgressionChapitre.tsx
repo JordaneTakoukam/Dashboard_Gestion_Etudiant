@@ -20,7 +20,7 @@ function ModalProgressionChapitre({ chapitre }: ModalProgressionChapitreProps) {
     const closeModal = () => { dispatch(setShowModal()); setIsFirstRender(true);};
     const { t } = useTranslation();
     const userRole = useSelector((state: RootState) => state.user.role);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedObjectifs, setSelectedObjectifs] = useState<{ [key: string]: boolean }>({});
     const [showNoObjectifsMessage, setShowNoObjectifsMessage] = useState(false);
     const [isFirstRender, setIsFirstRender] = useState(true);
@@ -79,6 +79,7 @@ function ModalProgressionChapitre({ chapitre }: ModalProgressionChapitreProps) {
                 const newChapitreState = chapitre.objectifs?.length ? undefined : (Object.values(selectedObjectifs).every(val => val) ? chapitre.etat===1?0 : 1:0);
         
                 try {
+                    setIsLoading(true);
                     const response = await apiUpdateEtatChapitre({ chapitreId: chapitre._id, objectifs: updatedObjectifs, etat: newChapitreState });
                     if (response.success) {
                         dispatch(updateChapitre({
@@ -105,6 +106,8 @@ function ModalProgressionChapitre({ chapitre }: ModalProgressionChapitreProps) {
                 } catch (error) {
                     createToast(t('label.error_update'), '', 2);
                     closeModal();
+                }finally {
+                   setIsLoading(false);
                 }
             }
         }else{
@@ -121,6 +124,7 @@ function ModalProgressionChapitre({ chapitre }: ModalProgressionChapitreProps) {
                 isDelete={(userRole!==config.roles.etudiant && userRole!==config.roles.etudiant)}
                 closeModal={closeModal}
                 handleConfirm={handleUpdate}
+                isLoading={isLoading}
             >
                 {showNoObjectifsMessage ? (
                     <p>{t('label.info_objectifs')}</p>

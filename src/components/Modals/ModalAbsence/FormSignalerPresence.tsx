@@ -24,7 +24,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
     const [semestre, setSemestre] = useState(currentSemester);
     const [matiere, setMatiere] = useState("");
     const [annee, setAnnee] = useState(currentYear);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isFirstRender, setIsFirstRender] = useState(true);
 
 
@@ -72,6 +72,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
        
         
         if (periodeCours) {
+            setIsLoading(true);
             const matiere = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].matiere:undefined
             const formData = new FormData();
             formData.append('file', "");
@@ -95,6 +96,8 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
 
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
             
@@ -111,6 +114,7 @@ function ModalSignalerPresence({ periodeCours }: { periodeCours: PeriodeType | n
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

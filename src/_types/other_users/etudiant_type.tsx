@@ -29,10 +29,10 @@ interface EtudiantCreateType {
     fonction: string | null;
     service: string | null;
 
-    commune: string | null;
-    nationalite: string | null;
-    diplomeEntre: string | null;
-    specialite: string | null;
+    commune?: string ;
+    nationalite?: string;
+    diplomeEntre?: string ;
+    specialite?: string;
     niveaux: InscriptionType[];
 }
 

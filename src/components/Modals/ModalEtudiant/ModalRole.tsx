@@ -12,7 +12,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 function ModalRole({ etudiant }: { etudiant: EtudiantType | null }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.addRole);
     const closeModal = () => { dispatch(setShowRoleModal()); setRolesData(etudiant?.roles)};
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -20,6 +20,7 @@ function ModalRole({ etudiant }: { etudiant: EtudiantType | null }) {
     const [rolesData, setRolesData] = useState<string[]|undefined>(); // État de la matière
 
     const handleUpdateRole = async () => {
+        setIsLoading(true);
         if(etudiant){await apiUpdateEtudiant(
                     {
                         _id:etudiant._id,
@@ -34,7 +35,7 @@ function ModalRole({ etudiant }: { etudiant: EtudiantType | null }) {
                         lieu_naiss:etudiant.lieu_naiss,
                         date_entree:etudiant.date_entree,
                         niveaux:etudiant.niveaux,
-                        grade:etudiant.grade,
+                        // grade:etudiant.grade,
                         categorie:etudiant.categorie,
                         fonction:etudiant.fonction,
                         service:etudiant.service,
@@ -60,7 +61,11 @@ function ModalRole({ etudiant }: { etudiant: EtudiantType | null }) {
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })}
+                }).finally(() => {
+                    setIsLoading(false);
+                })
+            }
+
     }
     useEffect(()=>{
         setRolesData(etudiant?.roles);
@@ -106,8 +111,9 @@ function ModalRole({ etudiant }: { etudiant: EtudiantType | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleUpdateRole}
+                isLoading={isLoading}
             >
-                <h1>{t('label.nom_chose')+ " : "+etudiant?.nom+" "+etudiant?.prenom??""}</h1>
+                <h1>{t('label.nom_chose')+ " : "+etudiant?.nom+" "+etudiant?.prenom||""}</h1>
                 {Object.entries(roles).map(([roleKey, roleName]) => (
                     (roleName !== roles.superAdmin && roleName !== roles.admin && roleName !== roles.enseignant) && (
                         <div key={roleKey}>

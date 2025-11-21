@@ -38,7 +38,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
     const [salleCours, setSalleCours] = useState<SalleDeCoursProps>();
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
     const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorJour, setErrorJour] = useState("");
     const [errorHeureDebut, setErrorHeureDebut] = useState("");
     const [errorHeureFin, setErrorHeureFin] = useState("");
@@ -591,6 +591,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
     
         // Si aucune période de cours existante, création d'une nouvelle période
         if (!periodeCours || (periodeCours && !periodeCours._id) || index == -1) {
+            setIsLoading(true)
             if (selectedMatiere && typeEnseignement && typeEnseignement._id && selectedEnsPrincipal && niveau._id && salleCours._id && jour.ordre) {
                 const enseignements = [...(periodeCours?.enseignements || [])];
                
@@ -615,8 +616,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                     heureDebut,
                     heureFin,
                     pause: false
-                })
-                    .then((e: ReponseApiPros) => {
+                }).then((e: ReponseApiPros) => {
                         if (e.success) {
                             createToast(e.message[lang as keyof typeof e.message], '', 0);
                             dispatch(createPeriode({
@@ -637,11 +637,13 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                         } else {
                             createToast(e.message[lang as keyof typeof e.message], '', 2);
                         }
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                        createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                    });
+                })
+                .catch((e) => {
+                    console.log(e);
+                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
+                })
             }
         } else {
             // Mise à jour d'une période existante
@@ -654,6 +656,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                                         typeEnseignement:typeEnseignement._id
                                     }
                 enseignements[index] = newEnseignement;
+                setIsLoading(true);
                 // API pour mettre à jour la période
                 await apiUpdatePeriode({
                     jour: jour.ordre,
@@ -691,7 +694,9 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                     })
                     .catch((e) => {
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                    });
+                    }).finally(() => {
+                        setIsLoading(false)
+                    })
             }
         }
     };
@@ -706,6 +711,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null}
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

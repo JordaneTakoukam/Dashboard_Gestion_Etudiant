@@ -29,7 +29,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [niveau, setNiveau] = useState<NiveauProps>();
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorJour, setErrorJour] = useState("");
     const [errorHeureDebut, setErrorHeureDebut] = useState("");
     const [errorHeureFin, setErrorHeureFin] = useState("");
@@ -238,7 +238,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
 
     const handleDelete = async () => {
         if (periodeCours?._id != undefined) {
-            await apiDeletePeriode(periodeCours._id).then((e: ReponseApiPros) => {
+            setIsLoading(true);
+            await apiDeletePeriode({periodeId:periodeCours._id, matiereIndex:}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 
@@ -254,6 +255,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
 
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
 
@@ -296,6 +299,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         }
         
         if (!periodeCours || (periodeCours && !periodeCours._id)) {
+            setIsLoading(true);
             if (niveau._id && jour.ordre) {
                 await apiCreatePeriode(
                     {
@@ -318,14 +322,14 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                                 annee: e.data.annee,
                                 semestre: e.data.semestre,
                                 niveau: e.data.niveau,
-                                matiere: e.data.matiere,
-                                salleCours: e.data.salleCours,
+                                // matiere: e.data.matiere,
+                                // salleCours: e.data.salleCours,
                                 heureDebut: e.data.heureDebut,
                                 heureFin: e.data.heureFin,
                                 pause:e.data.pause,
-                                typeEnseignement: e.data.typeEnseignement,
-                                enseignantPrincipal:e.data.enseignantPrincipal,
-                                enseignantSuppleant:e.data.enseignantSuppleant,
+                                // typeEnseignement: e.data.typeEnseignement,
+                                // enseignantPrincipal:e.data.enseignantPrincipal,
+                                // enseignantSuppleant:e.data.enseignantSuppleant,
                                 
                             }
                             
@@ -340,10 +344,13 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }else{
             if (niveau._id && jour.ordre) {
+                setIsLoading(true)
                 await apiUpdatePeriode(
                     {
                         jour : jour.ordre,
@@ -367,13 +374,13 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                                     annee: e.data.annee,
                                     semestre: e.data.semestre,
                                     niveau: e.data.niveau,
-                                    matiere: e.data.matiere,
-                                    salleCours: e.data.salleCours,
+                                    // matiere: e.data.matiere,
+                                    // salleCours: e.data.salleCours,
                                     heureDebut: e.data.heureDebut,
                                     heureFin: e.data.heureFin,
-                                    typeEnseignement: e.data.typeEnseignement,
-                                    enseignantPrincipal:e.data.enseignantPrincipal,
-                                    enseignantSuppleant:e.data.enseignantSuppleant,
+                                    // typeEnseignement: e.data.typeEnseignement,
+                                    // enseignantPrincipal:e.data.enseignantPrincipal,
+                                    // enseignantSuppleant:e.data.enseignantSuppleant,
                                     pause:e.data.pause,
                                 }
                             }));
@@ -383,6 +390,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -398,6 +407,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

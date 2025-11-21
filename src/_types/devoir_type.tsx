@@ -9,7 +9,7 @@ interface DevoirType {
     utilisateur: UserState
     niveau: string
     questions?: QuestionType[]; // Référence aux questions
-    totalQuestionPoints:number; //Nombre total de point pour les questions
+    totalQuestionPoints?:number; //Nombre total de point pour les questions
     deadline: string;
     ordreAleatoire: boolean; // Si les questions doivent être affichées aléatoirement
     tentativesMax: number; // Nombre maximum de tentatives autorisées

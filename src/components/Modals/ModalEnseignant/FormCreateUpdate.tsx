@@ -22,7 +22,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
     const categories: CategorieProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const { t } = useTranslation();
 
@@ -423,6 +423,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
         }
 
         if (!enseignant) {
+            setIsLoading(true);
             await apiCreateEnseignant(
                 {
                     nom,
@@ -483,9 +484,11 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
             }).catch((e) => {
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false)
             })
-
         } else {
+            setIsLoading(true);
             await apiUpdateEnseignant(
                 {
                     _id: enseignant._id,
@@ -545,6 +548,8 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
         }
     }
@@ -557,6 +562,7 @@ function ModalCreateEnseignant({ enseignant }: { enseignant: EnseignantType | nu
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateEnseignant}
+                isLoading={isLoading}
             >
                 <label>{t('label.matricule')}</label>
                 <input

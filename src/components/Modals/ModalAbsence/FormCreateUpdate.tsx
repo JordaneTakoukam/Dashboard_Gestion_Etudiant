@@ -15,7 +15,7 @@ import { ajouterAbsenceEtudiant, ajouterAbsenceEtudiantDisciplineUI, modifierAbs
 function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, isJustify }: { isStudent: boolean, user: CustomEnseignantSelect | CustomEtudiantSelect | CustomUserSelect | null, isSignaled?: boolean, isHourRemove: boolean, isJustify: boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -127,6 +127,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
     const handleCreateUpdate = async () => {
         if (isHourRemove) {
             // supprimer
+            setIsLoading(true);
             if (user?.user && user.absence) {
 
                 await apiDeleteAbsence(
@@ -154,9 +155,12 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         } else if (isJustify) {
+            setIsLoading(true);
             if (user?.user && user.absence?._id) {
 
                 await apiJustifierAbsence(
@@ -186,6 +190,8 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         } else {
@@ -212,6 +218,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
             }
 
             if (user?.user) {
+                setIsLoading(true);
                 await apiCreateAbsence(
                     {
                         userId: user?.user?._id,
@@ -240,6 +247,8 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -254,6 +263,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove, i
                 isDelete={isHourRemove || (isJustify ? true : false)}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {

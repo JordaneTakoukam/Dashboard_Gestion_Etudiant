@@ -13,7 +13,7 @@ import { updateUserAbsences } from '../../../_redux/features/user_slice';
 function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }: { isStudent?:boolean,user:UserState| null, isSignaled?: boolean, isHourRemove: boolean }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -59,7 +59,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
     useEffect(() => {
         
         if (user) {
-            setModalTitle(t('form_update.absence') + user.nom + " " + user?.prenom??"");
+            setModalTitle(t('form_update.absence') + user.nom + " " + user?.prenom||"");
         } else {
             setModalTitle(t('form_update.absence'));
         }
@@ -103,6 +103,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
             
         }
         else {
+            setIsLoading(true)
             if (!date || !debutPeriode || !finPeriode || !semestre) {
                 if (!semestre) {
                     setErrorSemestre(t('error.semestre'));
@@ -166,6 +167,8 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                 }).catch((e) => {
                     console.log(e);
                     // createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -180,6 +183,7 @@ function ModalCreateUpdateAbsence({ isStudent, user, isSignaled, isHourRemove }:
                 isDelete={isHourRemove ? true : false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {

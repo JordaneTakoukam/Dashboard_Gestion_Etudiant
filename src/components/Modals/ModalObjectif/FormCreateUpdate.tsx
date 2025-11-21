@@ -21,7 +21,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
     const {t}=useTranslation();
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
@@ -172,6 +172,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                 setStatut(1);
             }
             if(matiere?._id){ 
+                setIsLoading(true)
                 await apiCreateObjectif(
                     {
                         annee:annee,
@@ -215,11 +216,13 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
             
         }else{
-            
+            setIsLoading(true)
             await apiUpdateObjectif(
                 {
                     _id:objectif._id, 
@@ -261,6 +264,8 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                 }
             }).catch((e) => {
                 createToast(e.responsmatiere.message[lang as keyof typeof e.responsmatiere.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
             
         }
@@ -274,6 +279,7 @@ function ModalCreateUpdate({ objectif, matiere  }: { objectif: ObjectifType | nu
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

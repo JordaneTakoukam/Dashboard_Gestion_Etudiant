@@ -29,7 +29,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
     const [semestre, setSemestre] = useState(currentSemester);
     const [annee, setAnnee] = useState(currentYear);
     const [statut, setStatut]=useState(0);
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
@@ -185,6 +185,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
         }
         
         if (!chapitre) {
+            setIsLoading(true);
             if(currentUser.role == config.roles.admin || currentUser.role == config.roles.superAdmin){
                 setStatut(1);
             }
@@ -231,10 +232,13 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                   setIsLoading(false)
                 })
             }
         }else{
             if (matiere && matiere._id) {
+                setIsLoading(true)
                 await apiUpdateChapitre(
                     {
                         annee:annee,
@@ -275,6 +279,8 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                   setIsLoading(false)
                 })
             }
         }
@@ -288,6 +294,7 @@ function ModalCreateUpdate({ chapitre, matiere  }: { chapitre: ChapitreType | nu
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

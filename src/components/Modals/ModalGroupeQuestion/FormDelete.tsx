@@ -3,6 +3,7 @@ import { setShowModalDelete } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
 import CustomDialogModal from '../CustomDialogModal';
 import { GroupeQuestion } from '../../../pages/Admin/GroupeQuestions';
+import { useState } from 'react';
 
 
 
@@ -11,7 +12,7 @@ function ModalDelete({ groupeQuestion }: { groupeQuestion : GroupeQuestion|null}
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
-
+     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleDelete = () => {
         console.log("delete ok");

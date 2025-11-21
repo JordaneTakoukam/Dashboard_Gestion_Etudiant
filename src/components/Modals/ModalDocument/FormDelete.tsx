@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { apiDeleteDocumentUpload } from '../../../api/api_document_upload';
 import { deleteDocumentUpload } from '../../../_redux/features/document_upload_slice';
+import { useState } from 'react';
 
 
 function ModalDelete({ documentUpload }: {documentUpload:DocumentUploadType | null}) {
@@ -14,9 +15,10 @@ function ModalDelete({ documentUpload }: {documentUpload:DocumentUploadType | nu
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const handleDelete = async () => {
         if(documentUpload && documentUpload._id){
+            setIsLoading(true)
             await apiDeleteDocumentUpload(documentUpload._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     if(documentUpload._id){
@@ -32,6 +34,8 @@ function ModalDelete({ documentUpload }: {documentUpload:DocumentUploadType | nu
             }).catch((e) => {
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false)
             })
             
         }
@@ -46,6 +50,7 @@ function ModalDelete({ documentUpload }: {documentUpload:DocumentUploadType | nu
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.document')} : {documentUpload? lang === 'fr' ? documentUpload.nomFr: documentUpload.nomEn:""}</h1>
             </CustomDialogModal>

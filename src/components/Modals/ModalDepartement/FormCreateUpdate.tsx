@@ -13,7 +13,7 @@ import createToast from '../../../hooks/toastify';
 
 function ModalCreateUpdate({ departement }: { departement: DepartementProps | null }) {
     const regions = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -116,7 +116,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
 
             } else {
                 // creation
-
+                setIsLoading(true);
                 if (region._id) {
                     await apiCreateDepartement(
                         {
@@ -147,6 +147,8 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                         }
                     }).catch((e) => {
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false)
                     })
                 }
 
@@ -171,7 +173,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                 }
             } else {
 
-
+                setIsLoading(true)
                 //
                 //  mise a jour
                 if (region._id) {
@@ -207,6 +209,8 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                         }
                     }).catch((e) => {
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false)
                     })
                 }
             }
@@ -224,6 +228,7 @@ function ModalCreateUpdate({ departement }: { departement: DepartementProps | nu
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

@@ -14,7 +14,7 @@ function ModalCreateUpdate({file, handleSetFile }: {file:File|null, handleSetFil
     const dispatch = useDispatch();
     const [nomFr, setNomFr] = useState("");
     const [nomEn, setNomEn] = useState("");
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     
 
     const [errorNomFr, setErrorNomFr] = useState("");
@@ -73,6 +73,7 @@ function ModalCreateUpdate({file, handleSetFile }: {file:File|null, handleSetFil
         formData.append('nomEn', nomEn);
 
         try {
+            setIsLoading(true)
             await apiSaveDocumentUpload({ formData}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -94,7 +95,9 @@ function ModalCreateUpdate({file, handleSetFile }: {file:File|null, handleSetFil
             });
 
         } catch (error) {
-        console.error('Error uploading documentupload:', error);
+            console.error('Error uploading documentupload:', error);
+        }finally  {
+            setIsLoading(false)
         }
 
     }    
@@ -107,6 +110,7 @@ function ModalCreateUpdate({file, handleSetFile }: {file:File|null, handleSetFil
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.nom_chose_fr')}</label><label className="text-red-500"> *</label>
                 <input

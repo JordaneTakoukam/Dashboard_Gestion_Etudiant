@@ -6,13 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import createToast from '../../../hooks/toastify';
 import { apiDeleteSalleDeCours } from '../../../api/settings/api_salle_de_cours';
+import { useState } from 'react';
 
 
 
 function ModalDelete({ salleDeCours }: { salleDeCours : SalleDeCoursProps|null}) {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
 
@@ -23,6 +24,7 @@ function ModalDelete({ salleDeCours }: { salleDeCours : SalleDeCoursProps|null})
     const handleDelete = async () => {
 
         if (salleDeCours?._id != undefined) {
+            setIsLoading(true)
             await apiDeleteSalleDeCours(salleDeCours._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -37,7 +39,8 @@ function ModalDelete({ salleDeCours }: { salleDeCours : SalleDeCoursProps|null})
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
 
@@ -51,6 +54,7 @@ function ModalDelete({ salleDeCours }: { salleDeCours : SalleDeCoursProps|null})
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.salle')} : {salleDeCours ? (lang == "fr" ? salleDeCours.libelleFr : salleDeCours.libelleEn) : ""}</h1>
             </CustomDialogModal>

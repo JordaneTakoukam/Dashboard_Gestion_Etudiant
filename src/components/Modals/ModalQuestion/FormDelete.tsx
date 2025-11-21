@@ -7,6 +7,7 @@ import { apiDeleteQuestion } from '../../../api/api_question';
 import createToast from '../../../hooks/toastify';
 import { deleteQuestion } from '../../../_redux/features/question_slice';
 import { retirerQuestion } from '../../../_redux/features/devoir_slice';
+import { useState } from 'react';
 
 
 
@@ -16,9 +17,10 @@ function ModalDelete({ question, devoir }: { question : QuestionType|null, devoi
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const handleDelete = async () => {
         if(question && question._id){
+            setIsLoading(true)
             await apiDeleteQuestion(question._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     if(question._id){
@@ -32,7 +34,8 @@ function ModalDelete({ question, devoir }: { question : QuestionType|null, devoi
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-    
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
         
@@ -46,6 +49,7 @@ function ModalDelete({ question, devoir }: { question : QuestionType|null, devoi
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.question')} : {question? lang === 'fr' ? question.textFr: question.textEn:""}</h1>
             </CustomDialogModal>

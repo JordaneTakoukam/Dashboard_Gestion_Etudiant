@@ -16,7 +16,7 @@ function ModalCreateUpdate({ section }: { section: SectionProps | null }) {
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
@@ -115,7 +115,7 @@ function ModalCreateUpdate({ section }: { section: SectionProps | null }) {
 
             } else {
                 // creation
-
+                setIsLoading(true)
                 if (departement._id) {
                     await apiCreateSection(
                         {
@@ -147,6 +147,8 @@ function ModalCreateUpdate({ section }: { section: SectionProps | null }) {
                     }).catch((e) => {
                         console.log(e);
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false);
                     })
                 }
 
@@ -174,6 +176,7 @@ function ModalCreateUpdate({ section }: { section: SectionProps | null }) {
 
                 //
                 //  mise a jour
+                setIsLoading(true);
                 if (departement._id) {
                     await apiUpdateSection(
                         {
@@ -207,6 +210,8 @@ function ModalCreateUpdate({ section }: { section: SectionProps | null }) {
                         }
                     }).catch((e) => {
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false);
                     })
                 }
             }
@@ -224,6 +229,7 @@ function ModalCreateUpdate({ section }: { section: SectionProps | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

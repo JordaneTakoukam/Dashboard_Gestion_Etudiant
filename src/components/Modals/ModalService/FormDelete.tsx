@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeleteService } from '../../../api/settings/api_service';
 import createToast from '../../../hooks/toastify';
+import { useState } from 'react';
 
 
 function ModalDelete({ service }: { service: CommonSettingProps | null }) {
@@ -15,13 +16,14 @@ function ModalDelete({ service }: { service: CommonSettingProps | null }) {
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const lang = useSelector((state: RootState) => state.setting.language);
 
 
     const handleDelete = async () => {
 
         if (service?._id != undefined) {
+            setIsLoading(true)
             await apiDeleteService(service._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -36,7 +38,8 @@ function ModalDelete({ service }: { service: CommonSettingProps | null }) {
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
 
@@ -50,6 +53,7 @@ function ModalDelete({ service }: { service: CommonSettingProps | null }) {
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression') + t('form_delete.service')} : {service ? (lang == "fr" ? service.libelleFr : service.libelleEn) : ""}</h1>
             </CustomDialogModal>

@@ -18,7 +18,7 @@ function ModalDelete({ enseignement, matiere }: { enseignement : string|null, ma
     const {t}=useTranslation();
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const handleDelete = async () => {
         
         if(matiere && matiere._id && enseignement){
@@ -31,7 +31,7 @@ function ModalDelete({ enseignement, matiere }: { enseignement : string|null, ma
                 }
                 
             }
-
+            setIsLoading(true);
             await apiUpdateMatiere(
                 {
                     code:matiere.code,
@@ -60,6 +60,8 @@ function ModalDelete({ enseignement, matiere }: { enseignement : string|null, ma
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
         
@@ -78,6 +80,7 @@ function ModalDelete({ enseignement, matiere }: { enseignement : string|null, ma
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.type_ens')} : {typeEnseignement?.code}</h1>
             </CustomDialogModal>

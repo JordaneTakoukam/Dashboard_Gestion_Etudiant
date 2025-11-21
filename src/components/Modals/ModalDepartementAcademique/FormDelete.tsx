@@ -6,12 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import createToast from '../../../hooks/toastify';
 import { apiDeleteDepartementAcademique } from '../../../api/settings/api_departement_academique';
+import { useState } from 'react';
 
 
 function ModalDelete({ departementAcademique }: { departementAcademique: CommonSettingProps | null }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
@@ -22,6 +23,7 @@ function ModalDelete({ departementAcademique }: { departementAcademique: CommonS
     const handleDelete = async () => {
 
         if (departementAcademique?._id != undefined) {
+            setIsLoading(true);
             await apiDeleteDepartementAcademique(departementAcademique._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -37,6 +39,8 @@ function ModalDelete({ departementAcademique }: { departementAcademique: CommonS
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
 
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
 
@@ -50,6 +54,7 @@ function ModalDelete({ departementAcademique }: { departementAcademique: CommonS
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression') + t('form_delete.departementAcademique')} : {departementAcademique ? (lang == "fr" ? departementAcademique.libelleFr : departementAcademique.libelleEn) : ""}</h1>
             </CustomDialogModal>

@@ -6,19 +6,21 @@ import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { deleteSupportDeCours } from '../../../_redux/features/support_cours_slice';
 import { apiDeleteSupportDeCours } from '../../../api/api_support_cours';
+import { useState } from 'react';
 
 
 
 function ModalDeleteSupportDeCours({ supportDeCours }: { supportDeCours : SupportDeCoursType|null}) {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const lang = useSelector((state: RootState) => state.setting.language);
 
     const handleDelete = async () => {
         if (supportDeCours?._id != undefined) {
+            setIsLoading(true)
             await apiDeleteSupportDeCours(supportDeCours._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -33,7 +35,8 @@ function ModalDeleteSupportDeCours({ supportDeCours }: { supportDeCours : Suppor
                 }
             }).catch((e: { response: { data: { message: { [x: string]: string; }; }; }; }) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
     }
@@ -46,6 +49,7 @@ function ModalDeleteSupportDeCours({ supportDeCours }: { supportDeCours : Suppor
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.support_de_cours')} : {supportDeCours?lang==='fr'?supportDeCours.titre_fr:supportDeCours.titre_en:""}</h1>
             </CustomDialogModal>

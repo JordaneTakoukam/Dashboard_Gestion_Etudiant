@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { retirerEnseignement } from '../../../_redux/features/periode_enseignement_slice';
 import { apiUpdatePeriodeEnseignement } from '../../../api/api_periode_enseignement';
 import createToast from '../../../hooks/toastify';
+import { useState } from 'react';
 
 
 
@@ -15,10 +16,12 @@ function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : Mat
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const handleDelete = async () => {
+        
         if (periodeEnseignement) {
-            
+            setIsLoading(true)
             var newEnseignements: MatiereEnseignement[] = [];
             for (let i = 0;periodeEnseignement.enseignements &&  i < ( periodeEnseignement.enseignements ? periodeEnseignement.enseignements.length : 0); i++) {
                 const ens = periodeEnseignement.enseignements[i];
@@ -67,6 +70,8 @@ function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : Mat
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
     }
@@ -79,6 +84,7 @@ function ModalDelete({ enseignement, periodeEnseignement }: { enseignement : Mat
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <div></div>
                 {/* <h1>{t('form_delete.suppression')+t('form_delete.enseignement')} : {enseignement?(typesEnseignement.find(type=>type._id===enseignement)?.code)+" "+enseignement.matiere.code:""}</h1> */}

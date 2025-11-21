@@ -13,7 +13,7 @@ import { createPermission, updatePermission } from '../../../_redux/features/per
 function ModalCreateUpdate({ permission  }: { permission: PermissionType | null }) {
     const lang:string = useSelector((state: RootState) => state.setting.language); // fr ou en
     const {t}=useTranslation();
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const dispatch = useDispatch();
     const [nom, setNom] = useState("");
@@ -94,7 +94,7 @@ function ModalCreateUpdate({ permission  }: { permission: PermissionType | null 
        
         if (!permission) {
            
-            
+            setIsLoading(true)
             await apiCreatePermission(
                 {
                     nom:nom, 
@@ -128,11 +128,13 @@ function ModalCreateUpdate({ permission  }: { permission: PermissionType | null 
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+               setIsLoading(false)
             })
         
             
         }else{
-            
+            setIsLoading(true)
             await apiUpdatePermission(
                 {
                     _id:permission._id, 
@@ -166,6 +168,8 @@ function ModalCreateUpdate({ permission  }: { permission: PermissionType | null 
                 }
             }).catch((e) => {
                 createToast(e.responsmatiere.message[lang as keyof typeof e.responsmatiere.message], '', 2);
+            }).finally(() => {
+               setIsLoading(false)
             })
             
         }
@@ -179,6 +183,7 @@ function ModalCreateUpdate({ permission  }: { permission: PermissionType | null 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >                
                 <label>{t('label.code')}</label><label className="text-red-500"> *</label>
                 <input

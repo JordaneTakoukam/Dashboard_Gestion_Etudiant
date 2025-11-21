@@ -19,7 +19,7 @@ function ModalCreateUpdate({ groupeQuestion }: { groupeQuestion : GroupeQuestion
     const [displayType, setDisplayType] = useState("");
     const [rubrique, setRubrique] = useState<Rubrique>();
     const [reponses, setReponses] = useState<Reponse[]>([]); // État local pour les compétences
-    
+     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorOrdre, setErrorOrdre] = useState("");
     const [errorDisplayName, setErrorDisplayName] = useState("");
     const [errorDisplayType, setErrorDisplayType] = useState("");

@@ -6,12 +6,13 @@ import { deleteSettingItem } from '../../../_redux/features/data_setting_slice';
 import { apiDeletePromotion } from '../../../api/settings/api_promotion';
 import createToast from '../../../hooks/toastify';
 import { setShowModalDelete } from '../../../_redux/features/setting';
+import { useState } from 'react';
 
 
 function ModalDelete({ promotion }: { promotion: PromotionProps | null }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
@@ -22,6 +23,7 @@ function ModalDelete({ promotion }: { promotion: PromotionProps | null }) {
     const handleDelete = async () => {
 
         if (promotion?._id != undefined) {
+            setIsLoading(true)
             await apiDeletePromotion(promotion._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -36,7 +38,8 @@ function ModalDelete({ promotion }: { promotion: PromotionProps | null }) {
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
 
@@ -50,6 +53,7 @@ function ModalDelete({ promotion }: { promotion: PromotionProps | null }) {
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression') + t('form_delete.promotion')} : {promotion ? (lang == "fr" ? promotion.libelleFr : promotion.libelleEn) : ""}</h1>
             </CustomDialogModal>

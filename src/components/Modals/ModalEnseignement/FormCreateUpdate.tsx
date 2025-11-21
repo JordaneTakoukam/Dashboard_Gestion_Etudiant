@@ -19,7 +19,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     // const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [matiere, setMatiere] = useState<MatiereType>();
     // const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
     // const [typesEnseignementMat, setTypesEnseignementMat] = useState<CommonSettingProps[]>([]);
@@ -180,7 +180,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
 
         
         if (periodeEnseignement) {
-            
+            setIsLoading(true)
             const updatedEnseignement: MatiereEnseignement = {
                 _id: enseignement?._id,
                 // typeEnseignement: typeEnseignement?._id || '',
@@ -225,6 +225,8 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
     };
@@ -237,6 +239,7 @@ function ModalCreateUpdate({ enseignement, periodeEnseignement }: { enseignement
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.matiere')}</label><label className="text-red-500"> *</label>
                 {!enseignement && <select

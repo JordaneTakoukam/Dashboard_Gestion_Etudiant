@@ -4,8 +4,6 @@ import CustomDialogModal from '../CustomDialogModal';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setShowModal } from '../../../_redux/features/setting';
-import Input from '../../ui/input';
-import { ErrorMessage, Label } from '../../ui/Label';
 import { apiCreatePromotion, apiUpdatePromotion } from '../../../api/settings/api_promotion';
 import createToast from '../../../hooks/toastify';
 import { createSettingItem, updateSettingItem } from '../../../_redux/features/data_setting_slice';
@@ -20,7 +18,7 @@ function ModalCreateUpdate({ promotion }: { promotion: PromotionProps | null }) 
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
     const [annee, setAnnee] = useState(currentYear);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
@@ -81,6 +79,7 @@ function ModalCreateUpdate({ promotion }: { promotion: PromotionProps | null }) 
 
             } else {
                 // creation
+                setIsLoading(true)
                 await apiCreatePromotion(
                     { code, libelleFr, libelleEn, annee }
                 ).then((e: ReponseApiPros) => {
@@ -105,6 +104,8 @@ function ModalCreateUpdate({ promotion }: { promotion: PromotionProps | null }) 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -127,6 +128,7 @@ function ModalCreateUpdate({ promotion }: { promotion: PromotionProps | null }) 
                 //
                 //
                 // mise a jour
+                setIsLoading(true);
                 await apiUpdatePromotion(
                     { _id: promotion._id, code, libelleFr, libelleEn, annee }
                 ).then((e: ReponseApiPros) => {
@@ -151,6 +153,8 @@ function ModalCreateUpdate({ promotion }: { promotion: PromotionProps | null }) 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -166,6 +170,7 @@ function ModalCreateUpdate({ promotion }: { promotion: PromotionProps | null }) 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>

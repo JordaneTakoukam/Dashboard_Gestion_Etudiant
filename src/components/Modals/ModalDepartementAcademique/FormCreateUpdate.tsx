@@ -18,7 +18,7 @@ function ModalCreateUpdate({ departementAcademique }: { departementAcademique: C
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
@@ -76,6 +76,7 @@ function ModalCreateUpdate({ departementAcademique }: { departementAcademique: C
                 }
 
             } else {
+                setIsLoading(true);
                 // creation
                 await apiCreateDepartementAcademique(
                     { code, libelleFr, libelleEn }
@@ -101,6 +102,8 @@ function ModalCreateUpdate({ departementAcademique }: { departementAcademique: C
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -120,6 +123,7 @@ function ModalCreateUpdate({ departementAcademique }: { departementAcademique: C
                 }
 
             } else {
+                setIsLoading(true)
                 //
                 //
                 // mise a jour
@@ -147,6 +151,8 @@ function ModalCreateUpdate({ departementAcademique }: { departementAcademique: C
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -162,6 +168,7 @@ function ModalCreateUpdate({ departementAcademique }: { departementAcademique: C
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

@@ -13,7 +13,7 @@ import { createSettingItem, updateSettingItem } from '../../../_redux/features/d
 
 function ModalCreateUpdate({ grade }: { grade: CommonSettingProps | null }) {
     const { t } = useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
@@ -77,6 +77,7 @@ function ModalCreateUpdate({ grade }: { grade: CommonSettingProps | null }) {
 
             } else {
                 // creation
+                setIsLoading(true)
                 await apiCreateGrade(
                     { code, libelleFr, libelleEn }
                 ).then((e: ReponseApiPros) => {
@@ -101,13 +102,15 @@ function ModalCreateUpdate({ grade }: { grade: CommonSettingProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
 
         //update
         else {
-
+            setIsLoading(true)
             if ( !libelleFr || !libelleEn) {
                 // if (!code) {
                 //     setErrorCode(t('error.code'));
@@ -147,6 +150,8 @@ function ModalCreateUpdate({ grade }: { grade: CommonSettingProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -162,6 +167,7 @@ function ModalCreateUpdate({ grade }: { grade: CommonSettingProps | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

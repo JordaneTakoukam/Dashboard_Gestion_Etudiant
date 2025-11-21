@@ -13,7 +13,7 @@ import { createQuestion, updateQuestion } from '../../../_redux/features/questio
 
 function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | null, devoir : DevoirType |undefined|null }) {
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
-   
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const {t}=useTranslation();
     const dispatch = useDispatch();
     const [type, setType] = useState("");
@@ -185,6 +185,7 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
         
         if (!question) {
             if (devoir && devoir._id) {
+                setIsLoading(true)
                 await apiCreateQuestion(
                     {
                         type, 
@@ -218,12 +219,14 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
 
                     }
                 }).catch((e) => {
-                    
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }else{
             if (devoir && devoir._id) {
+                setIsLoading(true)
                 await apiUpdateQuestion(
                     {
                         type, 
@@ -257,6 +260,8 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -270,6 +275,7 @@ function ModalCreateUpdate({ question, devoir  }: { question: QuestionType | nul
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
             
                 

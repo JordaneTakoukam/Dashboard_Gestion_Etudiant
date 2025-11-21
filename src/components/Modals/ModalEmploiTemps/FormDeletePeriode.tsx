@@ -14,7 +14,7 @@ import { apiDeletePeriode } from '../../../api/api_periode';
 function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -50,6 +50,7 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
 
     const handleDelete = async () => {
         if (periodeCours?._id != undefined) {
+            setIsLoading(true);
             await apiDeletePeriode({periodeId:periodeCours._id, matiereIndex:index}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -85,6 +86,8 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
 
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
 
@@ -98,6 +101,7 @@ function ModalCreateUpdateAbsence({ periodeCours }: { periodeCours: PeriodeType 
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
 
                 <div>

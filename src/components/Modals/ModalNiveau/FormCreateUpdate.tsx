@@ -12,7 +12,7 @@ import createToast from '../../../hooks/toastify';
 function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections:SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
@@ -152,7 +152,9 @@ function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
             return;
         }
         if (!niveau){
+            
             if (cycle._id) {
+                setIsLoading(true)
                 await apiCreateNiveau(
                     {
                         code,
@@ -182,10 +184,13 @@ function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }else{
             if (cycle._id) {
+                setIsLoading(true)
                 await apiUpdateNiveau(
                     {
                         code,
@@ -218,6 +223,8 @@ function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -233,6 +240,7 @@ function ModalCreateUpdate({ niveau }: { niveau: NiveauProps | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 <label>{t('label.code')}</label>

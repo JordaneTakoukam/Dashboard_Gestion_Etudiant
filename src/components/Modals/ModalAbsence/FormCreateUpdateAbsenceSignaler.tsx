@@ -26,7 +26,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [annee, setAnnee] = useState(currentYear);
     const [motif, setMotif] = useState("");
     const [files, setFiles] = useState<File[]>([]);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isFirstRender, setIsFirstRender] = useState(true);
 
 
@@ -76,6 +76,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const handleCreatePeriodeCours = async () => {
         
         if (periodeCours) {
+            setIsLoading(true)
             let enseignant: UserState | EnseignantType | undefined;
             if(currentUser.role!==config.roles.enseignant){
                 const enseignantPrincipal = index!=-1 && periodeCours.enseignements ?periodeCours.enseignements[index].enseignantPrincipal:undefined
@@ -110,6 +111,8 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
             
@@ -126,6 +129,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreatePeriodeCours}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

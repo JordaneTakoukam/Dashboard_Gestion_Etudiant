@@ -31,7 +31,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
     const [personnelEn, setPersonnelEn] = useState("");
     const [descriptionObservationFr, setDescriptionObservationFr] = useState("");
     const [descriptionObservationEn, setDescriptionObservationEn] = useState("");
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
@@ -205,6 +205,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
             return;
         }
         if(!evenement){
+            setIsLoading(true);
             if (etat._id && promotion._id) {
                 await apiCreateEvenement(
                     {
@@ -257,10 +258,13 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                 }).catch((e) => {
                     
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }else{
             if (etat._id && promotion._id) {
+                setIsLoading(true);
                 await apiUpdateEvenement(
                     {
                         code, 
@@ -309,6 +313,8 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -323,6 +329,7 @@ function ModalCreateUpdate({ evenement }: { evenement : EvenementType | null }) 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

@@ -15,6 +15,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const { t } = useTranslation();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
     const lang = useSelector((state: RootState) => state.setting.language); // fr ou en
     const [code, setCode] = useState("");
@@ -292,29 +293,89 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
             return;
         }
         if (!matiere) {
+            setIsLoading(true)
             // if (niveau && niveau._id) {
-                await apiCreateMatiere(
-                    {
-                        code,
-                        libelleFr,
-                        libelleEn,
-                        // niveau:niveau._id, 
-                        prerequisFr, 
-                        prerequisEn, 
-                        approchePedFr, 
-                        approchePedEn, 
-                        evaluationAcquisFr, 
-                        evaluationAcquisEn,
-                        typesEnseignement:enseignements,
-                        chapitres,
-                        objectifs
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(createMatiere({
+            await apiCreateMatiere(
+                {
+                    code,
+                    libelleFr,
+                    libelleEn,
+                    // niveau:niveau._id, 
+                    prerequisFr, 
+                    prerequisEn, 
+                    approchePedFr, 
+                    approchePedEn, 
+                    evaluationAcquisFr, 
+                    evaluationAcquisEn,
+                    typesEnseignement:enseignements,
+                    chapitres,
+                    objectifs
+                }
+            ).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(createMatiere({
+                        
+                        matiere: {
+                            _id: e.data._id,
+                            code:e.data.code,
+                            libelleFr:e.data.libelleFr,
+                            libelleEn:e.data.libelleEn,
+                            // niveau:e.data.niveau, 
+                            prerequisFr:e.data.prerequisFr, 
+                            prerequisEn:e.data.prerequisEn, 
+                            approchePedFr:e.data.approchePedFr, 
+                            approchePedEn:e.data.approchePedEn, 
+                            evaluationAcquisFr:e.data.evaluationAcquisFr, 
+                            evaluationAcquisEn:e.data.evaluationAcquisEn,
+                            typesEnseignement:e.data.typesEnseignement,
+                            chapitres:e.data.chapitres,
+                            objectifs:e.data.objectifs
                             
-                            matiere: {
+                        }
+                        
+                    }));
+                    // dispatch(setPage());
+                    closeModal();
+
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+
+                }
+            }).catch((e) => {
+                console.log(e);
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
+            })
+            // }
+        }else{
+            // if (niveau && niveau._id) {
+            setIsLoading(true)
+            await apiUpdateMatiere(
+                {
+                    code,
+                    libelleFr,
+                    libelleEn,
+                    // niveau:niveau._id, 
+                    prerequisFr, 
+                    prerequisEn, 
+                    approchePedFr, 
+                    approchePedEn, 
+                    evaluationAcquisFr, 
+                    evaluationAcquisEn,
+                    typesEnseignement:matiere.typesEnseignement,
+                    chapitres:matiere.chapitres,
+                    objectifs:matiere.objectifs,
+                    _id:matiere._id,
+                }
+            ).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+                    dispatch(
+                        updateMatiere({
+                            id: e.data._id,
+                            matiereData: {
                                 _id: e.data._id,
                                 code:e.data.code,
                                 libelleFr:e.data.libelleFr,
@@ -326,75 +387,21 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                                 approchePedEn:e.data.approchePedEn, 
                                 evaluationAcquisFr:e.data.evaluationAcquisFr, 
                                 evaluationAcquisEn:e.data.evaluationAcquisEn,
-                                typesEnseignement:e.data.typesEnseignement,
-                                chapitres:e.data.chapitres,
-                                objectifs:e.data.objectifs
-                                
+                                typesEnseignement:matiere.typesEnseignement,
+                                chapitres:matiere.chapitres,
+                                objectifs:matiere.objectifs,
+
                             }
-                            
                         }));
-                        // dispatch(setPage());
-                        closeModal();
-
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-
-                    }
-                }).catch((e) => {
-                    console.log(e);
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
-            // }
-        }else{
-            // if (niveau && niveau._id) {
-                await apiUpdateMatiere(
-                    {
-                        code,
-                        libelleFr,
-                        libelleEn,
-                        // niveau:niveau._id, 
-                        prerequisFr, 
-                        prerequisEn, 
-                        approchePedFr, 
-                        approchePedEn, 
-                        evaluationAcquisFr, 
-                        evaluationAcquisEn,
-                        typesEnseignement:matiere.typesEnseignement,
-                        chapitres:matiere.chapitres,
-                        objectifs:matiere.objectifs,
-                        _id:matiere._id,
-                    }
-                ).then((e: ReponseApiPros) => {
-                    if (e.success) {
-                        createToast(e.message[lang as keyof typeof e.message], '', 0);
-                        dispatch(
-                            updateMatiere({
-                                id: e.data._id,
-                                matiereData: {
-                                    _id: e.data._id,
-                                    code:e.data.code,
-                                    libelleFr:e.data.libelleFr,
-                                    libelleEn:e.data.libelleEn,
-                                    // niveau:e.data.niveau, 
-                                    prerequisFr:e.data.prerequisFr, 
-                                    prerequisEn:e.data.prerequisEn, 
-                                    approchePedFr:e.data.approchePedFr, 
-                                    approchePedEn:e.data.approchePedEn, 
-                                    evaluationAcquisFr:e.data.evaluationAcquisFr, 
-                                    evaluationAcquisEn:e.data.evaluationAcquisEn,
-                                    typesEnseignement:matiere.typesEnseignement,
-                                    chapitres:matiere.chapitres,
-                                    objectifs:matiere.objectifs,
-
-                                }
-                            }));
-                        closeModal();
-                    } else {
-                        createToast(e.message[lang as keyof typeof e.message], '', 2);
-                    }
-                }).catch((e) => {
-                    createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-                })
+                    closeModal();
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
+            })
             // }
         }
 
@@ -408,6 +415,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 
                 <label>{t('label.code')}</label>{/* <label className="text-red-500"> *</label> */}

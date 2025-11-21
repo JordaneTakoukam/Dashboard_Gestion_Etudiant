@@ -18,7 +18,7 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
@@ -77,6 +77,7 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
 
             } else {
                 // creation
+                setIsLoading(true)
                 await apiCreateService(
                     { code, libelleFr, libelleEn }
                 ).then((e: ReponseApiPros) => {
@@ -101,6 +102,8 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -121,6 +124,7 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
                 //
                 //
                 // mise a jour
+                setIsLoading(true)
                 await apiUpdateService(
                     { _id: service._id, code, libelleFr, libelleEn }
                 ).then((e: ReponseApiPros) => {
@@ -145,6 +149,8 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -160,6 +166,7 @@ function ModalCreateUpdate({ service }: { service: CommonSettingProps | null }) 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

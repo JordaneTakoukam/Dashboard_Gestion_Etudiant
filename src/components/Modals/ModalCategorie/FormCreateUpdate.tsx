@@ -13,7 +13,7 @@ import createToast from '../../../hooks/toastify';
 
 function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) {
     const grades = useSelector((state: RootState) => state.dataSetting.dataSetting.grades) ?? [];
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -99,6 +99,7 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
     const handleCreateUpdate = async () => {
         // create
         if (!categorie) {
+           
             if (!libelleFr || !libelleEn || !grade) {
                 // if (!code) {
                 //     setErrorCode(t('error.code'));
@@ -115,7 +116,7 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
 
             } else {
                 // creation
-
+                 setIsLoading(true)
                 if (grade._id) {
                     await apiCreateCategorie(
                         {
@@ -147,6 +148,8 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
                     }).catch((e) => {
                         console.log(e);
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false);
                     })
                 }
 
@@ -175,6 +178,7 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
                 //
                 //  mise a jour
                 if (grade._id) {
+                    setIsLoading(true);
                     await apiUpdateCategorie(
                         {
                             code,
@@ -207,6 +211,8 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
                         }
                     }).catch((e) => {
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false);
                     })
                 }
             }
@@ -224,6 +230,7 @@ function ModalCreateUpdate({ categorie }: { categorie: CategorieProps | null }) 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

@@ -18,7 +18,7 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
     const dispatch = useDispatch();
     const typesEnseignement: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.typesEnseignement) ?? [];
     const [typeEnseignement, setTypeEnseignement] = useState<CommonSettingProps>();
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     
     const [errorTypeEnseignement, setErrorTypeEnseignement] = useState("");
     const [errorEnseignantPrincipal, setErrorEnseignantPrincipal] = useState("");
@@ -106,7 +106,7 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
             // if(enseignement){
             //     saveEnseignement=enseignement;
             // }
-
+        
             var newEnseignements:string[] = [];
             for (let i = 0; matiere.typesEnseignement && i < matiere.typesEnseignement.length; i++) {
                 const enseignement = matiere.typesEnseignement[i];
@@ -118,7 +118,7 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
             }else{
                 newEnseignements.push(saveEnseignement);
             }
-            
+            setIsLoading(true);
             await apiUpdateMatiere(
                 {
                     code:matiere.code,
@@ -151,6 +151,8 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
     };
@@ -191,6 +193,7 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
                 {!enseignement && <select

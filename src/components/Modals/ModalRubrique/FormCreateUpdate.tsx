@@ -12,7 +12,7 @@ function ModalCreateUpdate({ rubrique }: { rubrique : Rubrique | null }) {
     const [code, setCode] = useState("");
     const [ordre, setOrdre] = useState(0);
     const [libelle, setLibelle] = useState("");
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [errorOrdre, setErrorOrdre] = useState("");
     const [errorLibelle, setErrorLibelle] = useState("");

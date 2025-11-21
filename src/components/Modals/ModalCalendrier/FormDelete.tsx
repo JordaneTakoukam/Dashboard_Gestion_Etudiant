@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { deleteEvenement } from '../../../_redux/features/evenement_slice';
 import { apiDeleteEvenement } from '../../../api/api_evenement';
 import createToast from '../../../hooks/toastify';
+import { useState } from 'react';
 
 
 
@@ -15,10 +16,11 @@ function ModalDelete({ evenement }: { evenement : EvenementType|null}) {
     const lang = useSelector((state: RootState) => state.setting.language);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleDelete = async () => {
         if (evenement?._id != undefined) {
+            setIsLoading(true)
             await apiDeleteEvenement(evenement._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -33,7 +35,8 @@ function ModalDelete({ evenement }: { evenement : EvenementType|null}) {
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
     }
@@ -46,6 +49,7 @@ function ModalDelete({ evenement }: { evenement : EvenementType|null}) {
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.evenement')} : {evenement ? (lang === 'fr' ? evenement.libelleFr : evenement.libelleEn) : ""}</h1>
             </CustomDialogModal>

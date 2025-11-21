@@ -16,7 +16,7 @@ function ModalCreateUpdate() {
 
     const dispatch = useDispatch();
     
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const currentYear=useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023; 
     const firstYear=useSelector((state: RootState) => state.dataSetting.dataSetting.premiereAnnee) ?? 2023; 
     const currentSemester=useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
@@ -52,7 +52,7 @@ function ModalCreateUpdate() {
         
         // creation
         if(annee!=currentYear){
-            
+            setIsLoading(true)
             await apiUpdateAnneeCourante(
                 {annee}
             ).then((e: ReponseApiPros) => {
@@ -68,10 +68,13 @@ function ModalCreateUpdate() {
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
         // console.log(semestre+" != "+currentSemester)
         if(semestre!=currentSemester){
+            setIsLoading(true)
             await apiUpdateSemestreCourant(
                 {semestre}
             ).then((e: ReponseApiPros) => {
@@ -86,6 +89,8 @@ function ModalCreateUpdate() {
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
         
@@ -114,6 +119,7 @@ function ModalCreateUpdate() {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <select

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { setPeriodeIndex, setShowModal, setShowModalDelete, setShowModalElement, setShowModalPause } from '../../../_redux/features/setting';
 import { RootState } from '../../../_redux/store';
-import { Fragment} from 'react';
+import { Fragment, useState} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Transition, Dialog } from '@headlessui/react';
 import { IoMdClose } from 'react-icons/io';
@@ -10,7 +10,7 @@ import { IoMdClose } from 'react-icons/io';
 function ModalGestionElement({ periodeCours }: { periodeCours: PeriodeType | null }) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
     const lang = useSelector((state: RootState) => state.setting.language);

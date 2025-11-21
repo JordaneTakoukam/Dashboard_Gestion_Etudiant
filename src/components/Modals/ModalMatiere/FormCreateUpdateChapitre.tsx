@@ -21,7 +21,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelle, setLibelle] = useState("");
-
+     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelle, setErrorLibelle] = useState("");
 
@@ -126,6 +126,7 @@ function ModalCreateUpdate({ matiere }: { matiere: MatiereType | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">

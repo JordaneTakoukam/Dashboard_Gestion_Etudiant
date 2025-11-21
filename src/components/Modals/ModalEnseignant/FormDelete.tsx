@@ -6,19 +6,21 @@ import { useTranslation } from 'react-i18next';
 import { apiDeleteEnseignant } from '../../../api/other_users/api_enseignant';
 import createToast from '../../../hooks/toastify';
 import { deleteEnseignant } from '../../../_redux/features/enseignant_slice';
+import { useState } from 'react';
 
 
 
 function ModalDeleteEnseignant({ enseignant }: { enseignant : EnseignantType|null}) {
     const {t}=useTranslation();
     const dispatch = useDispatch();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const lang = useSelector((state: RootState) => state.setting.language);
 
     const handleDelete = async () => {
         if (enseignant?._id != undefined) {
+            setIsLoading(true)
             await apiDeleteEnseignant(enseignant._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -34,6 +36,8 @@ function ModalDeleteEnseignant({ enseignant }: { enseignant : EnseignantType|nul
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
 
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
     }
@@ -46,6 +50,7 @@ function ModalDeleteEnseignant({ enseignant }: { enseignant : EnseignantType|nul
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.enseignant')} : {enseignant?enseignant.nom:""} {enseignant?enseignant.prenom:""}</h1>
             </CustomDialogModal>

@@ -23,7 +23,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
     const categories: CategorieProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
     const specialites: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.specialites) ?? [];
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const { t } = useTranslation();
 
@@ -459,6 +459,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
         }
 
         if (!etudiant) {
+            setIsLoading(true)
             if (niveau._id) {
                 await apiCreateEtudiant(
                     {
@@ -478,10 +479,10 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         categorie:categorie?._id||null,
                         fonction:fonction?._id||null,
                         service:service?._id||null,
-                        commune:commune?._id||null,
+                        commune:commune?._id,
                         nationalite, 
                         diplomeEntre, 
-                        specialite:specialite?._id||null
+                        specialite:specialite?._id
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -523,9 +524,12 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(()=>{
+                    setIsLoading(false)
                 })
             }
         } else {
+            setIsLoading(true);
             if (niveau._id) {
                 await apiUpdateEtudiant(
                     {
@@ -545,11 +549,11 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         categorie:categorie?._id||null,
                         fonction:fonction?._id||null,
                         service:service?._id||null,
-                        commune:commune?._id||null,
+                        commune:commune?._id,
                         roles:etudiant.roles,
                         nationalite, 
                         diplomeEntre, 
-                        specialite:specialite?._id||null,
+                        specialite:specialite?._id,
                     }
                 ).then((e: ReponseApiPros) => {
                     if (e.success) {
@@ -591,6 +595,8 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(()=>{
+                    setIsLoading(false)
                 })
             }
         }
@@ -604,6 +610,7 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateEtudiant}
+                isLoading={isLoading}
             >
                 <label>{t('label.matricule')}</label>
                 <input

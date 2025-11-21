@@ -18,7 +18,7 @@ function ModalCreateUpdate({ fonction }: { fonction: CommonSettingProps | null }
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
     const [errorLibelleEn, setErrorLibelleEn] = useState("");
@@ -77,6 +77,7 @@ function ModalCreateUpdate({ fonction }: { fonction: CommonSettingProps | null }
 
             } else {
                 // creation
+                setIsLoading(true);
                 await apiCreateFonction(
                     { code, libelleFr, libelleEn }
                 ).then((e: ReponseApiPros) => {
@@ -101,13 +102,15 @@ function ModalCreateUpdate({ fonction }: { fonction: CommonSettingProps | null }
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
 
         //update
         else {
-
+            setIsLoading(true);
             if (!libelleFr || !libelleEn) {
                 // if (!code) {
                 //     setErrorCode(t('error.code'));
@@ -147,6 +150,8 @@ function ModalCreateUpdate({ fonction }: { fonction: CommonSettingProps | null }
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -162,6 +167,7 @@ function ModalCreateUpdate({ fonction }: { fonction: CommonSettingProps | null }
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

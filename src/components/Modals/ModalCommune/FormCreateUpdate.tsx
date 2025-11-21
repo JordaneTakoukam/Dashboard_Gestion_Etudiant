@@ -12,7 +12,7 @@ import createToast from '../../../hooks/toastify';
 function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
     const departements: DepartementProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.departements) ?? [];
     const regions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.regions) ?? [];
-
+     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
@@ -152,6 +152,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
             return;
         }
         if (!commune){
+            setIsLoading(true)
             if (departement._id) {
                 await apiCreateCommune(
                     {
@@ -182,9 +183,12 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }else{
+            setIsLoading(true)
             if (departement._id) {
                 await apiUpdateCommune(
                     {
@@ -218,6 +222,8 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
             }
         }
@@ -233,6 +239,7 @@ function ModalCreateUpdate({ commune }: { commune: CommuneProps | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 <label>{t('label.code')}</label>

@@ -16,7 +16,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
     const [nbPlace, setNbPlace] = useState(0);
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [errorCode, setErrorCode] = useState("");
     const [errorLibelleFr, setErrorLibelleFr] = useState("");
@@ -81,6 +81,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
 
             } else {
                 // creation
+                setIsLoading(true);
                 await apiCreateSalleDeCours(
                     { code, libelleFr, libelleEn, nbPlace }
                 ).then((e: ReponseApiPros) => {
@@ -106,6 +107,8 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -128,6 +131,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                 //
                 //
                 // mise a jour
+                setIsLoading(true)
                 await apiUpdateSalleDeCours(
                     { _id: salleDeCours._id, code, libelleFr, libelleEn, nbPlace}
                 ).then((e: ReponseApiPros) => {
@@ -154,6 +158,8 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -169,6 +175,7 @@ function ModalCreateUpdate({ salleDeCours }: { salleDeCours : SalleDeCoursProps 
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 
                 <label>{t('label.code')}</label>

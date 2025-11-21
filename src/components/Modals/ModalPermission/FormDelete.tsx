@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { apiDeletePermission } from '../../../api/api_permission';
 import { deletePermission } from '../../../_redux/features/permission_slice';
+import { useState } from 'react';
 
 
 function ModalDelete({ permission }: {permission:PermissionType | null}) {
@@ -14,9 +15,10 @@ function ModalDelete({ permission }: {permission:PermissionType | null}) {
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const handleDelete = async () => {
         if(permission && permission._id){
+            setIsLoading(true)
             await apiDeletePermission(permission._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     if(permission._id){
@@ -32,6 +34,8 @@ function ModalDelete({ permission }: {permission:PermissionType | null}) {
             }).catch((e) => {
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+               setIsLoading(false)
             })
             
         }
@@ -46,6 +50,7 @@ function ModalDelete({ permission }: {permission:PermissionType | null}) {
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.permission')} : {permission? lang === 'fr' ? permission.libelleFr: permission.libelleEn:""}</h1>
             </CustomDialogModal>

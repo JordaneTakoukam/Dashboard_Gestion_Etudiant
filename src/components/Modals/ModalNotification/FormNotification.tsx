@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
@@ -23,13 +23,13 @@ function ModalNotificationDetails({ notification }: ModalNotificationDetailsProp
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.notificationDetails);
     const closeModal = () => { dispatch(setShowModalNotificationDetails()); };
     const { t } = useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     
     
     async function handleAcknowledge(): Promise<void> {
         
         if(notification && notification.type === config.typeNotifications.approbation_chap && notification.chapitre?._id){
-            console.log("if");
+            setIsLoading(true);
             await apiUpdateStatutChap({chapitre:notification.chapitre?._id}
             ).then((e: ReponseApiPros) => {
                 if (e.success) {
@@ -56,9 +56,11 @@ function ModalNotificationDetails({ notification }: ModalNotificationDetailsProp
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }else if(notification && notification.type === config.typeNotifications.approbation_obj && notification.objectif?._id){
-            console.log("else if");
+            setIsLoading(true);
             await apiUpdateStatutObj({objectif : notification.objectif?._id}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     
@@ -84,6 +86,8 @@ function ModalNotificationDetails({ notification }: ModalNotificationDetailsProp
                 }
             }).catch((e) => {
                 createToast(e.responsmatiere.message[lang as keyof typeof e.responsmatiere.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
         }else{
             
@@ -101,6 +105,7 @@ function ModalNotificationDetails({ notification }: ModalNotificationDetailsProp
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleAcknowledge}
+                isLoading={isLoading}
             >
                 {notification && (
                     <>

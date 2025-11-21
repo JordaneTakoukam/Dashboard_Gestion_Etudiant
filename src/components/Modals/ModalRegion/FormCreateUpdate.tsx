@@ -13,7 +13,7 @@ import { createSettingItem, updateSettingItem } from '../../../_redux/features/d
 
 function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
     const { t } = useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
     const [code, setCode] = useState("");
     const [libelleFr, setLibelleFr] = useState("");
@@ -76,7 +76,8 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
                 }
 
             } else {
-                // creation
+                // creations
+                setIsLoading(true)
                 await apiCreateRegion(
                     { code, libelleFr, libelleEn }
                 ).then((e: ReponseApiPros) => {
@@ -101,13 +102,15 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
 
         //update
         else {
-
+            
             if (!code || !libelleFr || !libelleEn) {
                 if (!code) {
                     setErrorCode(t('error.code'));
@@ -123,6 +126,7 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
                 //
                 //
                 // mise a jour
+                setIsLoading(true)
                 await apiUpdateRegion(
                     { _id: region._id, code, libelleFr, libelleEn }
                 ).then((e: ReponseApiPros) => {
@@ -147,6 +151,8 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -162,6 +168,7 @@ function ModalCreateUpdate({ region }: { region: CommonSettingProps | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

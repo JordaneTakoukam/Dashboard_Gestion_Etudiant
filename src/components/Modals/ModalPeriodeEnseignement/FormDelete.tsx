@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { deletePeriodeEnseignement } from '../../../_redux/features/periode_enseignement_slice';
 import { apiDeletePeriodeEnseignement } from '../../../api/api_periode_enseignement';
+import { useState } from 'react';
 
 
 
@@ -15,10 +16,11 @@ function ModalDelete({ periodeEnseignement }: { periodeEnseignement : PeriodeEns
     const lang = useSelector((state: RootState) => state.setting.language);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleDelete = async () => {
         if (periodeEnseignement?._id != undefined) {
+            setIsLoading(true)
             await apiDeletePeriodeEnseignement(periodeEnseignement._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -33,7 +35,8 @@ function ModalDelete({ periodeEnseignement }: { periodeEnseignement : PeriodeEns
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
     }
@@ -46,6 +49,7 @@ function ModalDelete({ periodeEnseignement }: { periodeEnseignement : PeriodeEns
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.periode_enseignement')} : {periodeEnseignement ? (lang === 'fr' ? periodeEnseignement.periodeFr : periodeEnseignement.periodeEn) : ""}</h1>
             </CustomDialogModal>

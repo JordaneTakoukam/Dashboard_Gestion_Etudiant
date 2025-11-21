@@ -13,7 +13,7 @@ import createToast from '../../../hooks/toastify';
 
 function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -113,7 +113,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
 
             } else {
                 // creation
-
+                setIsLoading(true)
                 if (section._id) {
                     await apiCreateCycle(
                         {
@@ -145,6 +145,8 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
                     }).catch((e) => {
                         console.log(e);
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false);
                     })
                 }
 
@@ -167,7 +169,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
                 }
             } else {
 
-
+                setIsLoading(true);
                 //
                 //  mise a jour
                 if (section._id) {
@@ -203,6 +205,8 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
                         }
                     }).catch((e) => {
                         createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                    }).finally(() => {
+                        setIsLoading(false);
                     })
                 }
             }
@@ -220,6 +224,7 @@ function ModalCreateUpdate({ cycle }: { cycle: CycleProps | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
 
                 {/* input 1 */}

@@ -31,7 +31,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [enseignements, setEnseignements] = useState<EnseignementType[]>([{ typeEnseignement: '', enseignantPrincipal: undefined, enseignantSuppleant: undefined }]);
 
     const [errorCode, setErrorCode] = useState("");
@@ -202,7 +202,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
     
 
     const handleCreateUpdate = async () => {
-        console.log(enseignements);
+       
         if (!periodeFr || !periodeEn || !dateDebut || !dateFin || !section || !cycle || !niveau || !semestre) {
             if (!semestre) {
                 setErrorSemestre(t('error.semestre'));
@@ -236,6 +236,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
 
         if (!periodeEnseignement) {
             if (niveau._id) {
+                setIsLoading(true);
                 await apiCreatePeriodeEnseignement(
                     {
                         semestre,
@@ -276,10 +277,13 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }else{
             if (niveau._id) {
+                setIsLoading(true)
                 await apiUpdatePeriodeEnseignement(
                     {
                         semestre,
@@ -316,6 +320,8 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                     }
                 }).catch((e) => {
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false)
                 })
             }
         }
@@ -330,6 +336,7 @@ function ModalCreateUpdate({ periodeEnseignement }: { periodeEnseignement: Perio
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateUpdate}
+                isLoading={isLoading}
             >
                 <label>{t('label.annee')}</label><label className="text-red-500"> *</label>
                 <input

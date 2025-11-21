@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { deleteMatiere } from '../../../_redux/features/matiere_slice';
 import { apiDeleteMatiere } from '../../../api/api_matiere';
 import createToast from '../../../hooks/toastify';
+import { useState } from 'react';
 
 
 
@@ -15,10 +16,11 @@ function ModalDelete({ matiere }: { matiere : MatiereType|null}) {
     const lang = useSelector((state: RootState) => state.setting.language);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleDelete = async () => {
         if (matiere?._id != undefined) {
+            setIsLoading(true);
             await apiDeleteMatiere(matiere._id).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
@@ -33,7 +35,8 @@ function ModalDelete({ matiere }: { matiere : MatiereType|null}) {
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
-
+            }).finally(() => {
+                setIsLoading(false);
             })
         }
     }
@@ -46,6 +49,7 @@ function ModalDelete({ matiere }: { matiere : MatiereType|null}) {
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.matiere')} : {matiere ? (lang === 'fr' ? matiere.libelleFr : matiere.libelleEn) : ""}</h1>
             </CustomDialogModal>

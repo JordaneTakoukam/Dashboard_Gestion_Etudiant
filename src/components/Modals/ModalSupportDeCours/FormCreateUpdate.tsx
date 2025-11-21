@@ -18,7 +18,7 @@ function ModalCreateSupportDeCours({ supportDeCours }: { supportDeCours: Support
     const sections: SectionProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
-    
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     
     
 
@@ -267,7 +267,8 @@ function ModalCreateSupportDeCours({ supportDeCours }: { supportDeCours: Support
         
         
 
-        if (!supportDeCours) {                
+        if (!supportDeCours) { 
+            setIsLoading(true)               
             await apiCreateSupportDeCours(
                 {
                     formData
@@ -303,9 +304,11 @@ function ModalCreateSupportDeCours({ supportDeCours }: { supportDeCours: Support
                 }
             }).catch((e) => {
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false)
             })
         } else {
-            
+            setIsLoading(true)
             supportDeCours._id && await apiUpdateSupportDeCours(
                 {
                    supportId:supportDeCours._id,
@@ -343,6 +346,8 @@ function ModalCreateSupportDeCours({ supportDeCours }: { supportDeCours: Support
             }).catch((e) => {
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false)
             })
         }
     }
@@ -355,6 +360,7 @@ function ModalCreateSupportDeCours({ supportDeCours }: { supportDeCours: Support
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateSupportDeCours}
+                isLoading={isLoading}
             >
                 
                 <label>{t('label.titre_fr')}</label><label className="text-red-500"> *</label>

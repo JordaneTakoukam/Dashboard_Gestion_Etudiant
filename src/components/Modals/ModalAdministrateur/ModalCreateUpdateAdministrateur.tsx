@@ -22,7 +22,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
     const fonctions: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.fonctions) ?? [];
     const categories: CategorieProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.categories) ?? [];
     const services: CommonSettingProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.services) ?? [];
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const { t } = useTranslation();
 
@@ -423,6 +423,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
         }
 
         if (!admin) {
+            setIsLoading(true);
             await apiCreateAdministrateur(
                 {
                     nom,
@@ -480,9 +481,12 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
             }).catch((e) => {
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
 
         } else {
+            setIsLoading(true)
             await apiUpdateAdministrateur(
                 {
                     _id: admin._id,
@@ -537,6 +541,8 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                 }).catch((e) => {
                     console.log(e);
                     createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+                }).finally(() => {
+                    setIsLoading(false);
                 })
         }
     }
@@ -549,6 +555,7 @@ function ModalCreateUpdateAdmin({ admin }: { admin: AdminType | null }) {
                 isDelete={false}
                 closeModal={closeModal}
                 handleConfirm={handleCreateAdmin}
+                isLoading={isLoading}
             >
                 <label>{t('label.matricule')}</label>
                 <input

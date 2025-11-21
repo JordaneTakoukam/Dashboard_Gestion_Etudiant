@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import createToast from '../../../hooks/toastify';
 import { apiDeleteObjectif } from '../../../api/api_objectif';
 import { deleteObjectif } from '../../../_redux/features/objectif_slice';
+import { useState } from 'react';
 
 
 function ModalDelete({ objectif, matiere }: {objectif:ObjectifType | null,  matiere:MatiereType | undefined}) {
@@ -14,10 +15,11 @@ function ModalDelete({ objectif, matiere }: {objectif:ObjectifType | null,  mati
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.delete);
     const closeModal = () => { dispatch(setShowModalDelete()); };
     const {t}=useTranslation();
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const handleDelete = async () => {
         if(objectif && objectif._id){
             await apiDeleteObjectif(objectif._id).then((e: ReponseApiPros) => {
+                setIsLoading(true)
                 if (e.success) {
                     if(objectif._id){
                         dispatch(deleteObjectif({ id: objectif._id }));
@@ -32,6 +34,8 @@ function ModalDelete({ objectif, matiere }: {objectif:ObjectifType | null,  mati
             }).catch((e) => {
                 console.log(e);
                 createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+            }).finally(() => {
+                setIsLoading(false);
             })
             
         }
@@ -46,6 +50,7 @@ function ModalDelete({ objectif, matiere }: {objectif:ObjectifType | null,  mati
                 isDelete={true}
                 closeModal={closeModal}
                 handleConfirm={handleDelete}
+                isLoading={isLoading}
             >
                 <h1>{t('form_delete.suppression')+t('form_delete.objectif')} : {objectif? lang === 'fr' ? objectif.libelleFr: objectif.libelleEn:""}</h1>
             </CustomDialogModal>

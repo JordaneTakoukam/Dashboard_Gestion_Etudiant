@@ -24,7 +24,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
     const webcamRef = useRef<Webcam>(null);
     const camera = useRef(null);
     const [image, setImage] = useState(null);
-
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const closeModal = () => {
         dispatch(setShowModalOpenScan());
         dispatch(setPeriodeIndex(-1));
@@ -122,7 +122,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
             formData.append('qrCode', "1");
             
 
-           
+           setIsLoading(true);
             await apiPresence(
                { formData}
             ).then((e: ReponseApiPros) => {
@@ -141,6 +141,7 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
             createToast(t('message.erreur'), '', 2);
         } finally {
             setLoading(false);
+            setIsLoading(false)
         }
     };
 
@@ -213,9 +214,13 @@ function ModalScanQrCode({ periodeCours }: { periodeCours: PeriodeType | null })
                                                         <div className="flex flex-col items-center space-y-4">
                                                             <div className="rounded-lg shadow-md h-[280px] w-[420px] overflow-hidden">
                                                                 <Camera
-                                                                    ref={camera}
-                                                                    aspectRatio={1 / 1}
-                                                                    
+                                                                            ref={camera}
+                                                                            aspectRatio={1 / 1} errorMessages={{
+                                                                                noCameraAccessible: undefined,
+                                                                                permissionDenied: undefined,
+                                                                                switchCamera: undefined,
+                                                                                canvas: undefined
+                                                                            }}                                                                    
                                                                 />
                                                             </div>
                                                     

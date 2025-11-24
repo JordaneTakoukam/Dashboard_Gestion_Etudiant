@@ -25,7 +25,7 @@ const DashBoardStudent = () => {
     const [periodes, setPeriodes] = useState<PeriodeType[]>([]);
     const [progression, setProgression] = useState<number>(0);
     const currentUser:UserState = useSelector((state: RootState) => state.user);
-    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
+    const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2023;
     const currentSemester = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
     const niveaux:NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const cycles: CycleProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
@@ -60,6 +60,7 @@ const DashBoardStudent = () => {
                 // }
                 if(currentNiveauId){
                     const progressionGlobal = await getProgressionGlobalEnseignantsNiveau({niveauId:currentNiveauId, annee:currentYear, semestre:currentSemester});
+                    console.log(progressionGlobal)
                     if (progressionGlobal !== null) {
                         setProgression(progressionGlobal);
                     }

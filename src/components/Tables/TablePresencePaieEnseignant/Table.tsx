@@ -46,15 +46,17 @@ const Table = ({ data}: TableProps) => {
     const pageIsLoading = useSelector((state: RootState) => state.presencePaieSlice.pageIsLoading);
     const [isDownload, setIsDownload]=useState(false);
     
-    const [section, setSection] = sections.length>0?useState<SectionProps | undefined>(sections[0]):useState<SectionProps | undefined>();;
+    // CORRECTION : Initialisation correcte du state section
+    const [section, setSection] = useState<SectionProps | undefined>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
-    const [selectedYear, setSelectedYear] = useState<number>(currentYear); // contient la valeur qui a ete selectionner sur le bouton filtre annee
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
     const [semestre, setSemestre] = useState<number | undefined>(currentSemestre);
-    // Fonction pour basculer la visibilité des CustomDropDown
+    
     const toggleDropdownVisibility = () => {
         setIsDropdownVisible(!isDropdownVisible);
     };
+    
     const [selectSectionId, setSelectIdSection] = useState<string | undefined>('');
     const [selectCycleId, setSelectIdCycle] = useState<string | undefined>('');
     const [selectNiveauId, setSelectIdNiveau] = useState<string | undefined>('');
@@ -84,47 +86,50 @@ const Table = ({ data}: TableProps) => {
 
     }
 
-    // filtrer les donnee a partir de l'id de la section selectionner
+    // CORRECTION : Amélioration de la fonction filterCycleBySection
     const filterCycleBySection = (sectionId: string | undefined) => {
         if (sectionId && sectionId !== '') {
-            // Filtrer les départements en fonction de l'ID de la région
             const result: CycleProps[] = cycles.filter(cycle => cycle.section === sectionId);
+            setFilteredCycle(result);
+            
             if (result.length > 0) {
-                setSelectIdCycle(result[0]._id);
-                setCycle(cycles.find(cycle=>cycle._id ===result[0]._id))
-                // filterNiveauxByCycle(cycle?._id)
-            }else{
+                const firstCycle = result[0];
+                setSelectIdCycle(firstCycle._id);
+                setCycle(firstCycle);
+                filterNiveauxByCycle(firstCycle._id);
+            } else {
                 setSelectIdCycle(undefined);
                 setCycle(undefined);
-                // filterNiveauxByCycle(undefined);
-                // setFilteredNiveaux([]);
+                setFilteredNiveaux([]);
+                setSelectIdNiveau(undefined);
+                setNiveau(undefined);
             }
-            setFilteredCycle(result);
-        }else{
-            setFilteredCycle([])
+        } else {
+            setFilteredCycle([]);
             setSelectIdCycle(undefined);
             setCycle(undefined);
+            setFilteredNiveaux([]);
+            setSelectIdNiveau(undefined);
+            setNiveau(undefined);
         }
     };
 
-    // filtrer les donnee a partir de l'id du cycle selectionner
+    // CORRECTION : Amélioration de la fonction filterNiveauxByCycle
     const filterNiveauxByCycle = (cycleId: string | undefined) => {
-        
         if (cycleId && cycleId !== '') {
-            // Filtrer les départements en fonction de l'ID de la région
             const result: NiveauProps[] = niveaux.filter(niveau => niveau.cycle === cycleId);
+            setFilteredNiveaux(result);
+            
             if (result.length > 0) {
-                setSelectIdNiveau(result[0]._id);
-                setNiveau(niveaux.find(niveau=>niveau._id===result[0]._id))
-                setFilteredNiveaux(result)
-            }else{
+                const firstNiveau = result[0];
+                setSelectIdNiveau(firstNiveau._id);
+                setNiveau(firstNiveau);
+            } else {
                 setSelectIdNiveau(undefined);
                 setNiveau(undefined);
-                setFilteredNiveaux([])
             }
-            
-        }else{
-            setFilteredNiveaux([])
+        } else {
+            setFilteredNiveaux([]);
             setSelectIdNiveau(undefined);
             setNiveau(undefined);
         }
@@ -141,91 +146,78 @@ const Table = ({ data}: TableProps) => {
             }
             const departement=section && departements.find(dep=>dep._id && dep._id.toString()===section.departement.toString());
             if(selected === 'PDF'){
-                
-
                 if(section && cycle && niveau && departement && niveau._id){
                     await generateListPresenceByNiveau({ niveauId:niveau._id, annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'pdf' }).then((blob) => {
-                        // Créer un objet URL pour le blob PDF
                         if (blob) {
                             createPDF(blob, title);
                         }
                     })
                 }
-                
-                
             }else{
                 if(section && cycle && niveau && departement && niveau._id){
                     await generateListPresenceByNiveau({ niveauId:niveau._id, annee: selectedYear, semestre: selectSemestre, departement: departement, section: section, cycle: cycle, niveau: niveau, langue: lang, fileType:'xlsx' }).then((blob) => {
-                        // Créer un objet URL pour le blob PDF
                         if (blob) {
                             createPDF(blob, title, 'xlsx');
                         }
                     })
-                   
                 }
             }
         } catch (error) {
-            
             createToast(t('message.erreur'), "", 2);
         }finally {
             setIsDownload(false);
         }
-        
     };
-
-    
-
 
     const handleAnneeSelect = (selected: String | undefined) => {
         if(selected){
             setSelectedYear(extractYear(selected.toString()));
+            setCurrentPage(1); // Réinitialiser à la première page
         }
     };
     
-     // recuperer l'id de la section suite au click sur l'input select
     const handleSectionSelect = (selected: SectionProps | undefined) => {
         if (selected?._id) {
             setSelectIdSection(selected._id);
-            filterCycleBySection(selected._id);
             setSection(selected);
+            filterCycleBySection(selected._id);
             setSearchText('');
             setIsSearch(false);
+            setCurrentPage(1);
         }
     };
 
-    // valeur de la l'id du cycle selectionner    
     const handleCycleSelect = (selected: CycleProps | undefined) => {
         if (selected?._id) {
             setSelectIdCycle(selected._id);
-            filterNiveauxByCycle(selected._id);
             setCycle(selected);
+            filterNiveauxByCycle(selected._id);
             setSearchText('');
             setIsSearch(false);
+            setCurrentPage(1);
         }
     };
 
-    // valeur de la l'id du niveau selectionner    
     const handleNiveauSelect = (selected: NiveauProps | undefined) => {
         if (selected && selected?._id) {
             setSelectIdNiveau(selected._id);
             setNiveau(selected);
             setSearchText('');
             setIsSearch(false);
+            setCurrentPage(1);
         }
     };
 
     const handleSemestreSelect = (selected: number | undefined) => {
         if (selected) {
-            setSelectSemestre(selected)
+            setSelectSemestre(selected);
             setSemestre(selected);
+            setCurrentPage(1);
         }
-
     };
 
-    
-
-     // variable pour la pagination
-    const itemsPerPage =  useSelector((state: RootState) => state.presencePaieSlice.data.pageSize); // nombre d'éléments maximum par page
+    // variable pour la pagination
+    const itemsPerPage = useSelector((state: RootState) => state.presencePaieSlice.data.pageSize);
     const count = useSelector((state: RootState) => state.presencePaieSlice.data.totalItems);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -235,7 +227,6 @@ const Table = ({ data}: TableProps) => {
         setCurrentPage(pageNumber);
     };
 
-    // Render page numbers
     const pageNumbers :number[]= [];
     for (let i = 1; i <= Math.ceil(count / itemsPerPage); i++) {
         pageNumbers.push(i);
@@ -247,34 +238,39 @@ const Table = ({ data}: TableProps) => {
     const startItem = indexOfFirstItem + 1;
     const endItem = Math.min(count, indexOfLastItem);
     
-    //fournir initialement les données à la page
-    // Effet pour filtrer les options des CustomDropDown
+    // CORRECTION : Initialisation des filtres au chargement
     useEffect(() => {
-        if(!selectSectionId){
-            if (sections && sections.length > 0) {
-                filterCycleBySection(sections[0]._id);
-            }
-        }else{
-            setFilteredCycle([]);
+        if (sections && sections.length > 0 && !section) {
+            const firstSection = sections[0];
+            setSection(firstSection);
+            setSelectIdSection(firstSection._id);
+            filterCycleBySection(firstSection._id);
+        }
+    }, [sections]);
+
+    // CORRECTION : Gestion du filtrage des cycles
+    useEffect(() => {
+        if (selectSectionId) {
             filterCycleBySection(selectSectionId);
         }
-        
-        
-    }, [sections, selectSectionId]);
+    }, [cycles, selectSectionId]);
 
+    // CORRECTION : Gestion du filtrage des niveaux
     useEffect(() => {
-        if (filteredCycle && filteredCycle.length > 0) {
-            if(!selectCycleId){
-                filterNiveauxByCycle(filteredCycle[0]?._id);
-            }else{
-                filterNiveauxByCycle(selectCycleId);
-            }
-                
-        }        
-    }, [filteredCycle]);
+        if (selectCycleId) {
+            filterNiveauxByCycle(selectCycleId);
+        }
+    }, [niveaux, selectCycleId]);
+
+    // CORRECTION : Un seul useEffect pour récupérer les présences (suppression du doublon)
     useEffect(() => {
         const fetchPresencePaie = async () => {
-            dispatch(setPresencePaiesLoading(true)); // Définissez le loading à true avant le chargement
+            // Ne pas faire d'appel API si on est en mode recherche
+            if (isSearch && searchText) {
+                return;
+            }
+
+            dispatch(setPresencePaiesLoading(true));
             try {
                 const emptyPresencePaie: PresencePaieListGetType = {
                     presencePaies: [],
@@ -284,7 +280,6 @@ const Table = ({ data}: TableProps) => {
                     pageSize: 0
                 };
     
-                // Assurez-vous que les dépendances sont bien définies avant l'appel de l'API
                 if (selectNiveauId && selectSemestre && selectedYear) {
                     const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({
                         page: currentPage,
@@ -293,52 +288,6 @@ const Table = ({ data}: TableProps) => {
                         niveauId: selectNiveauId
                     });
     
-                    // Vérifiez si fetchedPresencePaies n'est pas vide ou indéfini
-                    if (fetchedPresencePaies) {
-                        dispatch(setPresencePaie(fetchedPresencePaies));
-                    } else {
-                        dispatch(setPresencePaie(emptyPresencePaie));
-                    }
-                } else {
-                    // Si les critères ne sont pas remplis, renvoyez une liste vide
-                    dispatch(setPresencePaie(emptyPresencePaie));
-                }
-            } catch (error) {
-                // Gérer les erreurs
-                dispatch(setErrorPagePresencePaie(t('message.erreur')));
-                createToast(t('message.erreur'), "", 2);
-            } finally {
-                // Terminer le chargement
-                dispatch(setPresencePaiesLoading(false));
-            }
-        };
-    
-        // Appeler la fonction dès que les dépendances changent
-        fetchPresencePaie();
-    }, [dispatch, selectedYear, selectSemestre, currentPage, selectNiveauId, t]); // Supprimer la virgule en trop dans les dépendances
-    
-    useEffect(() => {
-        const fetchPresencePaie = async () => {
-            dispatch(setPresencePaiesLoading(true)); // Définissez le loading à true avant le chargement
-            try {
-                const emptyPresencePaie: PresencePaieListGetType = {
-                    presencePaies: [],
-                    currentPage: 0,
-                    totalItems: 0,
-                    totalPages: 0,
-                    pageSize: 0
-                };
-    
-                // Assurez-vous que les dépendances sont bien définies avant l'appel de l'API
-                if (selectNiveauId) {
-                    const fetchedPresencePaies = await apiGetPresencesWithTotalHoraire({
-                        page: currentPage,
-                        annee: selectedYear,
-                        semestre: selectSemestre,
-                        niveauId: selectNiveauId
-                    });
-    
-                    // Vérifiez si fetchedPresencePaies n'est pas vide ou indéfini
                     if (fetchedPresencePaies && fetchedPresencePaies.presencePaies.length > 0) {
                         dispatch(setPresencePaie(fetchedPresencePaies));
                     } else {
@@ -352,98 +301,101 @@ const Table = ({ data}: TableProps) => {
                 dispatch(setErrorPagePresencePaie(t('message.erreur')));
                 createToast(t('message.erreur'), "", 2);
             } finally {
-                // Terminer le chargement
                 dispatch(setPresencePaiesLoading(false));
             }
         };
     
-        // Appeler la fonction dès que les dépendances changent
         fetchPresencePaie();
-    }, [dispatch, selectNiveauId, selectedYear, selectSemestre, currentPage, t]);
+    }, [dispatch, selectNiveauId, selectedYear, selectSemestre, currentPage, isSearch, searchText, t]);
     
-    // modifier les données de la page lors de la recherche ou de la sélection de la section
+    // CORRECTION : Gestion de la recherche
     const [filteredData, setFilteredData] = useState<PresencePaieType[]>(data);
-    
-
     const latestQueryPresence = useRef('');
+    
     useEffect(() => {
-        dispatch(setPresencePaiesLoading(true));
-        latestQueryPresence.current = searchText;
-        try{
-            
-            const filterPresenceByContent = async () => {
-                if (searchText === '') {
-                    // if(isSearch){
-                        // sections.length>0?setSection(sections[0]):setSection(undefined);
-                        // filterCycleBySection(section?._id);
-                        // filterNiveauxByCycle(cycle?._id);
-                        const result: PresencePaieType[] = data;
-                        setFilteredData(result); 
-                    // }
-                }else{
-                    // setSection(undefined);
-                    // setCycle(undefined);
-                    // setNiveau(undefined);
-                    // setSemestre(undefined);
-                    // setFilteredCycle([]);
-                    // setFilteredNiveaux([]);
-                    let presencesResult : PresencePaieType[] = [];
-                    await apiSearchPresenceEnseignant({ searchString:searchText, limit:10 }).then(result=>{
-                        
-                        if (latestQueryPresence.current === searchText) {
-                            if(result){
-                                
-                                presencesResult = result.presencePaies;
-                                setFilteredData(presencesResult);
-                            }
-                          }
-                        
-                    })
-                }
-        
-                
-            };
-            filterPresenceByContent();
-        }catch(e){
-            dispatch(setErrorPagePresencePaie(t('message.erreur')));
-        }finally{
-            if (latestQueryPresence.current === searchText) {
-                dispatch(setPresencePaiesLoading(false)); // Définissez le loading à false après le chargement
+        const filterPresenceByContent = async () => {
+            if (searchText === '') {
+                setIsSearch(false);
+                setFilteredData(data);
+                return;
             }
+
+            dispatch(setPresencePaiesLoading(true));
+            latestQueryPresence.current = searchText;
+            
+            try {
+                const result = await apiSearchPresenceEnseignant({ 
+                    searchString: searchText, 
+                    limit: 10 
+                });
+                
+                if (latestQueryPresence.current === searchText && result) {
+                    setFilteredData(result.presencePaies);
+                    setIsSearch(true);
+                }
+            } catch (e) {
+                console.error("Error during search:", e);
+                dispatch(setErrorPagePresencePaie(t('message.erreur')));
+            } finally {
+                if (latestQueryPresence.current === searchText) {
+                    dispatch(setPresencePaiesLoading(false));
+                }
+            }
+        };
+
+        const timeoutId = setTimeout(() => {
+            filterPresenceByContent();
+        }, 300); // Debounce de 300ms
+
+        return () => clearTimeout(timeoutId);
+    }, [searchText, dispatch, t]);
+
+    // CORRECTION : Mise à jour de filteredData quand data change (et pas en mode recherche)
+    useEffect(() => {
+        if (!isSearch) {
+            setFilteredData(data);
         }
-    }, [searchText, isSearch, data]);
+    }, [data, isSearch]);
    
    
     return (
         <div>
             {/* bouton creer ajouter un nouvel ... et search bar */}
             <div className="flex justify-between items-center gap-x-1 lg:gap-x-2 mb-1 -mt-3 md:mt-0">
-                <InputSearch hintText={t('recherche.rechercher')+t('recherche.enseignant')} value={searchText} onSubmit={(text) =>{setIsSearch(true); setSearchText(text)}} />
+                <InputSearch 
+                    hintText={t('recherche.rechercher')+t('recherche.enseignant')} 
+                    value={searchText} 
+                    onSubmit={(text) => setSearchText(text)} 
+                />
             </div>
-            {/*! bouton creer ajouter un nouvel ... et search bar */}
 
-
-            {/*  */}
             <div className="rounded-sm border border-stroke bg-white px-3 lg:px-5 pt-0 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2"><div className="hidden lg:block"><FaFilter /></div>{t('filtre.enseignant')} </h1>
+                <h1 className="text-[12px] lg:text-[15px] mt-3 lg:mt-5 font-medium flex justify-start items-center gap-x-2">
+                    <div className="hidden lg:block"><FaFilter /></div>
+                    {t('filtre.enseignant')}
+                </h1>
+                
                 {/* version mobile */}
                 <div className="block lg:hidden">
-                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> <FaFilter /><p className="text-[12px]"> {t('filtre.filtrer')}</p><FaSort /> </button>
+                    <button className="px-2.5  py-1 border border-gray text-[12px] mb-2 flex  justify-center items-center gap-x-2" onClick={toggleDropdownVisibility}> 
+                        <FaFilter />
+                        <p className="text-[12px]"> {t('filtre.filtrer')}</p>
+                        <FaSort /> 
+                    </button>
                     {isDropdownVisible && (
                         <div className="flex flex-col justify-start items-start overflow-y-scroll pb-2 h-[200px] gap-x-2 ">
                             <CustomDropDown2<String>
                                 title={t('label.annee')}
                                 selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
-                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
-
+                                defaultValue={formatYear(currentYear)}
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
-                                defaultValue={section} // ou spécifie une valeur par défaut
+                                defaultValue={section}
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -451,7 +403,7 @@ const Table = ({ data}: TableProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={cycle} // ou spécifie une valeur par défaut
+                                defaultValue={cycle}
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -459,7 +411,7 @@ const Table = ({ data}: TableProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={niveau} // ou spécifie une valeur par défaut
+                                defaultValue={niveau}
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -482,15 +434,14 @@ const Table = ({ data}: TableProps) => {
                                 title={t('label.annee')}
                                 selectedItem={formatYear(selectedYear)}
                                 items={generateYearRange(currentYear,firstYear)}
-                                defaultValue={formatYear(currentYear)} // ou spécifie une valeur par défaut
-
+                                defaultValue={formatYear(currentYear)}
                                 onSelect={handleAnneeSelect}
                             />
                             <CustomDropDown2<SectionProps>
                                 title={t('label.section')}
                                 selectedItem={section}
                                 items={sections}
-                                defaultValue={section} // ou spécifie une valeur par défaut
+                                defaultValue={section}
                                 displayProperty={(section: SectionProps) => `${lang === 'fr' ? section.libelleFr : section.libelleEn}`}
                                 onSelect={handleSectionSelect}
                             />
@@ -498,7 +449,7 @@ const Table = ({ data}: TableProps) => {
                                 title={t('label.cycle')}
                                 selectedItem={cycle}
                                 items={filteredCycle}
-                                defaultValue={cycle} // ou spécifie une valeur par défaut
+                                defaultValue={cycle}
                                 displayProperty={(cycle: CycleProps) => `${lang === 'fr' ? cycle.libelleFr : cycle.libelleEn}`}
                                 onSelect={handleCycleSelect}
                             />
@@ -506,7 +457,7 @@ const Table = ({ data}: TableProps) => {
                                 title={t('label.niveau')}
                                 selectedItem={niveau}
                                 items={filteredNiveaux}
-                                defaultValue={niveau} // ou spécifie une valeur par défaut
+                                defaultValue={niveau}
                                 displayProperty={(niveau: NiveauProps) => `${lang === 'fr' ? niveau.libelleFr : niveau.libelleEn}`}
                                 onSelect={handleNiveauSelect}
                             />
@@ -520,41 +471,34 @@ const Table = ({ data}: TableProps) => {
                         </div>
                     </div>
                 </div>
+                
                 <div className="mt-5">
-    <label className="text-sm lg:text-base font-medium">{t('label.taux_horaire')}</label>   
-</div>
+                    <label className="text-sm lg:text-base font-medium">{t('label.taux_horaire')}</label>   
+                </div>
 
-{/* Bouton et champ permettant de modifier le taux horaire */}    
-<div className="flex flex-col md:flex-row justify-start items-center gap-y-4 md:gap-x-4 mt-2">
-    {/* Champ pour visualiser et modifier le taux horaire */}
-    <div className="flex flex-col gap-y-1 w-full md:w-auto">
-        <input
-            type="number"
-            value={taux} // valeur du taux horaire actuel
-            onChange={(e) => setTaux(parseInt(e.target.value))} // met à jour la valeur du taux horaire
-            className="w-full px-3 py-2 text-sm lg:text-base border border-stroke rounded-md focus:ring focus:ring-blue-500 dark:bg-boxdark dark:text-white"
-            placeholder={t('label.modifierTauxHoraire')}
-        />
-    </div>
+                <div className="flex flex-col md:flex-row justify-start items-center gap-y-4 md:gap-x-4 mt-2">
+                    <div className="flex flex-col gap-y-1 w-full md:w-auto">
+                        <input
+                            type="number"
+                            value={taux}
+                            onChange={(e) => setTaux(parseInt(e.target.value))}
+                            className="w-full px-3 py-2 text-sm lg:text-base border border-stroke rounded-md focus:ring focus:ring-blue-500 dark:bg-boxdark dark:text-white"
+                            placeholder={t('label.modifierTauxHoraire')}
+                        />
+                    </div>
 
-    {/* Bouton de modification */}
-    <div className="flex flex-col gap-y-1 w-full md:w-auto">
-        <button
-            onClick={handleUpdateTauxHoraire} // Fonction pour mettre à jour le taux horaire
-            className="w-full md:w-auto px-4 py-2 bg-primary text-white text-sm lg:text-base rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-            {t('boutton.appliquer')}
-        </button>
-    </div>
-</div>
+                    <div className="flex flex-col gap-y-1 w-full md:w-auto">
+                        <button
+                            onClick={handleUpdateTauxHoraire}
+                            className="w-full md:w-auto px-4 py-2 bg-primary text-white text-sm lg:text-base rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        >
+                            {t('boutton.appliquer')}
+                        </button>
+                    </div>
+                </div>
 
-
-
-
-                {/* DEBUT DU TABLE */}
                 <div className="max-w-full overflow-x-auto mt-2 lg:mt-8">
                     <table className="w-full table-auto">
-                        {/* en tete du tableau */}
                         {
                             pageIsLoading ?
                                 <LoadingTable />
@@ -563,21 +507,13 @@ const Table = ({ data}: TableProps) => {
                                     <HeaderTable />
                         }
 
-                        {/* corp du tableau*/}
-
                         {
                             !pageIsLoading && <BodyTable data={filteredData} />
                         }
-
-
-
-
                     </table>
                 </div>
 
-                {/* Pagination */}
-
-                {filteredData && filteredData.length>0 && <Pagination
+                {filteredData && filteredData.length>0 && !isSearch && <Pagination
                     count={count}
                     itemsPerPage={itemsPerPage}
                     startItem={startItem}
@@ -587,15 +523,12 @@ const Table = ({ data}: TableProps) => {
                     currentPage={currentPage}
                     pageNumbers={pageNumbers}
                     handlePageClick={handlePageClick}
-
                 />}
 
             </div>
 
-            {/* bouton downlod Download */}
             <div className="mt-7 mb-10">
-                {isDownload?<Download/>:<CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
-
+                {isDownload ? <Download /> : <CustomButtonDownload items={['PDF', 'XLSX']} defaultValue="" onClick={handleDownloadSelect} />}
             </div>
 
         </div>

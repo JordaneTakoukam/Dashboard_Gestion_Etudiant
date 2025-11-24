@@ -161,7 +161,7 @@ export function PickPhoto() {
                   !updatePhoto && user.photo !== '' ?
                     <div className='w-full flex justify-center items-center'>
                       <div className="h-30 lg:h-40 w-30 lg:w-40 rounded-full overflow-hidden">
-                        <img className="w-full h-full object-cover" src={serveurUrl + userState.photo_profil?.replace("private", "public")} alt={userState.nom} />
+                        <img className="w-full h-full object-cover" src={serveurUrl + userState.photo_profil} alt={userState.nom} />
                       </div>
                     </div>
                     :

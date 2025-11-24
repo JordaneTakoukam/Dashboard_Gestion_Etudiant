@@ -38,6 +38,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [errorNiveau, setErrorNiveau] = useState("");
     const [errorSemestre, setErrorSemestre] = useState("");
     const [isFirstRender, setIsFirstRender] = useState(true);
+    const index = useSelector((state: RootState) => state.setting.periodeIndex);
 
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openPause);
@@ -239,7 +240,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const handleDelete = async () => {
         if (periodeCours?._id != undefined) {
             setIsLoading(true);
-            await apiDeletePeriode({periodeId:periodeCours._id, matiereIndex:}).then((e: ReponseApiPros) => {
+            await apiDeletePeriode({periodeId:periodeCours._id, matiereIndex:index}).then((e: ReponseApiPros) => {
                 if (e.success) {
                     createToast(e.message[lang as keyof typeof e.message], '', 0);
 

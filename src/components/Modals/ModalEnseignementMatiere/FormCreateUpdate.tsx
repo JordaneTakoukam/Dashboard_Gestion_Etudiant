@@ -4,10 +4,8 @@ import { RootState } from '../../../_redux/store';
 import { useEffect, useState } from 'react';
 import CustomDialogModal from '../CustomDialogModal';
 import { useTranslation } from 'react-i18next';
-import { setEnseignantsLoading, setEnseignant, setErrorPageEnseignant } from '../../../_redux/features/enseignant_slice';
-import { apiGetEnseignantsByNomPrenom } from '../../../api/other_users/api_enseignant';
 import createToast from '../../../hooks/toastify';
-import { ajouterEnseignement, modifierEnseignement } from '../../../_redux/features/matiere_slice';
+import {  modifierEnseignement } from '../../../_redux/features/matiere_slice';
 import { apiUpdateMatiere } from '../../../api/api_matiere';
 
 
@@ -21,50 +19,17 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
     const [isLoading, setIsLoading] = useState<boolean>(false);
     
     const [errorTypeEnseignement, setErrorTypeEnseignement] = useState("");
-    const [errorEnseignantPrincipal, setErrorEnseignantPrincipal] = useState("");
     
     const [isFirstRender, setIsFirstRender] = useState(true);
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.open);
     const [modalTitle, setModalTitle] = useState("");
-    // const { data: { enseignants } } = useSelector((state: RootState) => state.enseignantSlice);
-    // useEffect(() => {
-    //     const fetchEnseignants = async () => {
-    //         dispatch(setEnseignantsLoading(true)); // Définissez le loading à true avant le chargement
-    //         try {
-    //             // Initialisation de currentCycleId et currentNiveauId
-               
-    //             const emptyEnseignants : EnseignantListGetType={
-    //                 enseignants: [],
-    //                 currentPage: 0,
-    //                 totalItems: 0,
-    //                 totalPages: 0,
-    //                 pageSize: 0
-    //             }
-    //             const fetchedEnseignants = await apiGetEnseignantsByNomPrenom();
-    //             if (fetchedEnseignants) { // Vérifiez si fetchedEnseignants n'est pas faux, vide ou indéfini
-    //                 dispatch(setEnseignant(fetchedEnseignants));
-    //                 console.log(enseignants);
-    //             } else {
-    //                 dispatch(setEnseignant(emptyEnseignants));
-    //             }
-    //         } catch (error) {
-    //             dispatch(setErrorPageEnseignant(t('message.erreur')));
-    //             createToast(t('message.erreur'), "", 2)
-    //         } finally {
-    //             dispatch(setEnseignantsLoading(false)); // Définissez le loading à false après le chargement
-    //         }
-    //     };
-
-    //     fetchEnseignants();
-    // }, [dispatch, t]);
+   
     
     useEffect(() => {
         if (enseignement) {
             setModalTitle(t('form_update.enregistrer')+t('form_update.type_ens'));
             const typeEns = typesEnseignement.find(typeEns => typeEns._id === enseignement);
             setTypeEnseignement(typeEns);
-            
-            
         
         }else{
             setModalTitle(t('form_save.enregistrer')+t('form_save.type_ens'));
@@ -72,7 +37,6 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
         }
         if (isFirstRender) {
             setErrorTypeEnseignement("");
-            // setErrorEnseignantPrincipal("");
             setIsFirstRender(false);
             
         }
@@ -80,7 +44,6 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
 
     const closeModal = () => {
         setErrorTypeEnseignement("");
-        setErrorEnseignantPrincipal("");
         setIsFirstRender(true);
         dispatch(setShowModal());
     };
@@ -94,18 +57,14 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
             if (!typeEnseignement) {
                 setErrorTypeEnseignement(t('error.type_ens'));
             }
-            // if (!enseignantPrincipal) {
-            //     setErrorEnseignantPrincipal(t('error.enseignant'));
-            // }
+            
 
             return;
         }
         if (matiere) {
             var saveEnseignement:string= typeEnseignement._id || "";
             
-            // if(enseignement){
-            //     saveEnseignement=enseignement;
-            // }
+           
         
             var newEnseignements:string[] = [];
             for (let i = 0; matiere.typesEnseignement && i < matiere.typesEnseignement.length; i++) {
@@ -166,23 +125,6 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
         }
     };
 
-    // const handleEnseignantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     const selectedId = e.target.value;
-    //     const selectedEnseignant = enseignants.find(enseignant => enseignant._id === selectedId);
-    //     if (selectedEnseignant) {
-    //         // setEnseignantPrincipal(selectedEnseignant);
-    //         setErrorEnseignantPrincipal("");
-    //     }
-    // };
-
-    // const handleEnseignantSupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     const selectedId = e.target.value;
-    //     const selectedEnseignant = enseignants.find(enseignant => enseignant._id === selectedId);
-    //     if (selectedEnseignant) {
-    //         // setEnseignantSuppleant(selectedEnseignant);
-    //     }
-    // };
-
 
 
     return (
@@ -196,42 +138,38 @@ function ModalCreateUpdate({ enseignement, matiere }: { enseignement: string | n
                 isLoading={isLoading}
             >
                 <label>{t('label.type_ens')}</label><label className="text-red-500"> *</label>
-                {!enseignement && <select
-                    value={typeEnseignement ? lang==='fr'?typeEnseignement?.libelleFr??"":typeEnseignement?.libelleEn??"" : t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}
+               <select
+                    value={typeEnseignement ? (lang === 'fr' ? typeEnseignement?.libelleFr ?? "" : typeEnseignement?.libelleEn ?? "") : ""}
                     onChange={handleTypeEnseignementChange}
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                 >
                     <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.type_ens')}</option>
-                    {typesEnseignement.filter(type => matiere && matiere.typesEnseignement && !matiere.typesEnseignement.some(enseignement => enseignement === type._id))
-                                    .map(typeEnseignement => (
-                                        <option key={typeEnseignement._id} value={lang==='fr'?typeEnseignement?.libelleFr??"":typeEnseignement?.libelleEn??""}>{lang==='fr'?typeEnseignement.libelleFr:typeEnseignement.libelleEn}</option>
-                    ))}
-                </select>}
+                    
+                    {/* Afficher l'option sélectionnée si elle existe */}
+                    {typeEnseignement && enseignement && (
+                        <option key={typeEnseignement._id} value={lang === 'fr' ? typeEnseignement?.libelleFr ?? "" : typeEnseignement?.libelleEn ?? ""}>
+                            {lang === 'fr' ? typeEnseignement.libelleFr : typeEnseignement.libelleEn}
+                        </option>
+                    )}
+                    
+                    {/* Afficher les autres options non sélectionnées */}
+                    {typesEnseignement
+                        .filter(type => 
+                            matiere && 
+                            matiere.typesEnseignement && 
+                            !matiere.typesEnseignement.some(ens => ens === type._id) &&
+                            type._id !== enseignement // Exclure l'option déjà sélectionnée pour éviter les doublons
+                        )
+                        .map(typeEns => (
+                            <option key={typeEns._id} value={lang === 'fr' ? typeEns?.libelleFr ?? "" : typeEns?.libelleEn ?? ""}>
+                                {lang === 'fr' ? typeEns.libelleFr : typeEns.libelleEn}
+                            </option>
+                        ))
+                    }
+                </select>
                 
                 {errorTypeEnseignement && <p className="text-red-500">{errorTypeEnseignement}</p>}
-                {/* <label>{t('label.enseignant')}</label><label className="text-red-500"> *</label>
-                <select
-                    value={enseignantPrincipal ? enseignantPrincipal._id : t('select_par_defaut.selectionnez') + t('select_par_defaut.enseignant')}
-                    onChange={handleEnseignantChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.enseignant')}</option>
-                    {enseignants.map(enseignant => (
-                        <option key={enseignant._id} value={enseignant._id}>{enseignant.nom+" "+enseignant.prenom}</option>
-                    ))}
-                </select>
-                {errorEnseignantPrincipal && <p className="text-red-500">{errorEnseignantPrincipal}</p>}
-                <label>{t('label.enseignant_sup')}</label>
-                <select
-                    value={enseignantSuppleant ? enseignantSuppleant._id : t('select_par_defaut.selectionnez') + t('select_par_defaut.enseignant')}
-                    onChange={handleEnseignantSupChange}
-                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                >
-                    <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.enseignant')}</option>
-                    {enseignants.map(enseignant => (
-                        <option key={enseignant._id} value={enseignant._id}>{enseignant.nom+" "+enseignant.prenom}</option>
-                    ))}
-                </select> */}
+                
             </CustomDialogModal>
         </>
     );

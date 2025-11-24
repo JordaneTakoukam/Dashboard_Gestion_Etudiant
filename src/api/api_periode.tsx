@@ -47,7 +47,6 @@ export async function apiUpdatePeriode({ _id, jour, semestre, annee, niveau, ens
 }
 
 export async function apiDeletePeriode({periodeId, matiereIndex}:{periodeId:string, matiereIndex:number}): Promise<ReponseApiPros> {
-    console.log(matiereIndex)
     try {
         const response: AxiosResponse<any> = await axios.delete(
             `${api}/delete/${periodeId}`,

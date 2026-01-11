@@ -32,6 +32,7 @@ interface EvaluationType {
     creePar: string;
     noteMax: number;
     noteMin: number;
+    
 }
 
 // Type pour un anonymat

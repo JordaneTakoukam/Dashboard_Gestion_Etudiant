@@ -18,6 +18,7 @@ import {
     updateEvaluation
 } from '../../../_redux/features/evaluation_slice';
 import { FaPlus, FaTrash } from 'react-icons/fa';
+import { getMatieresByNiveau, getMatieresByNiveauWithPagination } from '../../../api/api_matiere';
 
 function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null }) {
     const { t } = useTranslation();
@@ -29,7 +30,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
     const niveaux: NiveauProps[] = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux) ?? [];
     const currentYear = useSelector((state: RootState) => state.dataSetting.dataSetting.anneeCourante) ?? 2024;
     const currentSemestre = useSelector((state: RootState) => state.dataSetting.dataSetting.semestreCourant) ?? 1;
-
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
     const [libelleFr, setLibelleFr] = useState("");
     const [libelleEn, setLibelleEn] = useState("");
     const [descriptionFr, setDescriptionFr] = useState("");
@@ -83,6 +84,19 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
                     setMatieresDisponibles([]);
                 })
                 .catch(console.error);
+        }
+    }, [niveau, annee, semestre]);
+
+    useEffect(() => {
+        if (niveau?._id) {
+            getMatieresByNiveau({ niveauId: niveau._id, annee: currentYear, semestre: currentSemestre, langue:lang }).then(result => {
+                if(result){
+                    setMatieresDisponibles(result.matieres)
+                }else{
+                    setMatieres([])
+                }
+            })
+            
         }
     }, [niveau, annee, semestre]);
 
@@ -270,7 +284,8 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             dateEpreuve: dateEpreuve ? new Date(dateEpreuve) : undefined,
             dateLimiteSaisie: dateLimiteSaisie ? new Date(dateLimiteSaisie) : undefined,
             noteMax,
-            noteMin
+            noteMin,
+            creePar:currentUser._id
         };
 
         try {
@@ -420,6 +435,9 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
                             className="flex-1 rounded border border-stroke bg-gray py-2 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         >
                             <option value="">{t('select_par_defaut.selectionnez') + ' matière'}</option>
+                            {matieresDisponibles.map(matD => (
+                                <option key={matD._id} value={matD._id}>{lang==='fr'?matD.libelleFr:matD.libelleEn}</option>
+                            ))}
                             {/* À compléter avec les matières disponibles */}
                         </select>
                         <input

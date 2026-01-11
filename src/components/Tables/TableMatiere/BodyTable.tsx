@@ -1,3 +1,5 @@
+//src/components/Tables/TableMatiere/BodyTable.tsx
+
 import { useDispatch, useSelector } from "react-redux"
 import ButtonCrudTable from "../common/ButtonActionTable"
 import { setShowModal, setShowModalDelete } from "../../../_redux/features/setting"

@@ -1,3 +1,5 @@
+//src/_redux/features/matiere_slice.tsx
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { updateEnseignant } from "./enseignant_slice";
 

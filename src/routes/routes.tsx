@@ -43,6 +43,8 @@ import Devoirs from '../pages/CommonPage/Devoirs';
 import Questions from '../pages/CommonPage/Questions';
 import TestPage from '../pages/CommonPage/Test';
 import DevoirStatsPage from '../pages/CommonPage/DevoirStats';
+import ListeEvaluations from '../pages/Admin/ListeEvaluations';
+import GestionNotes from '../pages/Admin/GestionNotes';
 
 
 
@@ -356,6 +358,32 @@ const coreRoutes = [
     component: Questions,
     permissions:["gerer_questions","consulter_liste_questions"]
   },
+
+  {
+    path: '/evaluations/liste',
+    title: 'Liste des évaluations',
+    component: ListeEvaluations,
+  },
+  // {
+  //   path: '/evaluations/details',
+  //   title: 'Détails évaluation',
+  //   component: DetailsEvaluation,
+  // },
+  // {
+  //   path: '/evaluations/coefficients',
+  //   title: 'Gestion des coefficients',
+  //   component: GestionCoefficients,
+  // },
+  {
+    path: '/evaluations/saisie-notes',
+    title: 'Saisie des notes',
+    component: GestionNotes,
+  },
+  // {
+  //   path: '/evaluations/resultats',
+  //   title: 'Mes résultats',
+  //   component: ResultatsEtudiants,
+  // },
 
   {
     path: '/pedagogies/tests/manage',

@@ -1,3 +1,5 @@
+//src/_redux/store.tsx
+
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./features/user_slice.tsx";
 import settingReducer from "./features/setting.tsx";
@@ -24,6 +26,9 @@ import EtudiantReducer from "./features/etudiant_slice.tsx";
 import SignalementAbsence from "./features/absence/signalement_absence.tsx";
 import notificationReducer from './features/notification_slice.tsx';
 import SupportDeCoursReducer from "./features/support_cours_slice.tsx";
+import EvaluationReducer from "./features/evaluation_slice.tsx";
+import NoteReducer from "./features/note_slice.tsx";
+import CoefficientReducer from "./features/coefficient_slice.tsx";
 
 const store = configureStore({
   reducer: {
@@ -52,7 +57,9 @@ const store = configureStore({
     etudiantDisciplineSlice: EtudiantDisciplineReducer,
     etudiantSlice: EtudiantReducer,
     supportDeCoursSlice:SupportDeCoursReducer,
-
+    evaluationSlice:EvaluationReducer,
+    noteSlice:NoteReducer,
+    coefficientSlice:CoefficientReducer,
 
     signalementAbsence: SignalementAbsence,
     notifications: notificationReducer,

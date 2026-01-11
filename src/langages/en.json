@@ -26,6 +26,7 @@
   },
   "menu": {
     "menu": "MENU",
+    "evaluations": "Evaluations",
     "heure_d_absence": "Absence Hour",
     "heures_d_absences": "Absence Hours",
     "tableau_de_bord": "Dashboard",
@@ -46,6 +47,10 @@
     "pedagogie":"Pedagogy"
   },
   "sub_menu": {
+    "liste_evaluation": "Evaluation Management",
+    "gestion_note": "Grade Management",
+    "coefficients": "Coefficient Management",
+    "resultats_evaluations": "Results",
     "statistiques":"Statistis",
     "test":"Test",
     "questions":"Questions",

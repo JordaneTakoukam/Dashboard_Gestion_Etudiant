@@ -825,13 +825,13 @@ function ModalCreateEtudiant({ etudiant }: { etudiant: EtudiantType | null }) {
                         <option key={commune._id} value={(lang==='fr'?commune.libelleFr:commune.libelleEn)}>{(lang==='fr'?commune.libelleFr:commune.libelleEn)}</option>
                     ))}
                 </select>
-                <label>{t('label.date_entree_admin')}</label>
+                {/* <label>{t('label.date_entree_admin')}</label>
                 <input
                     className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     type="date"
                     value={dateEntreeAdmin}
                     onChange={(e) => { setDateEntreeAdmin(e.target.value) }}
-                />
+                /> */}
             </CustomDialogModal>
 
         </>

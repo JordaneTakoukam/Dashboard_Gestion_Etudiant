@@ -38,6 +38,7 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
     const [errorNiveau, setErrorNiveau] = useState("");
     const [errorSemestre, setErrorSemestre] = useState("");
     const [isFirstRender, setIsFirstRender] = useState(true);
+    const index = useSelector((state: RootState) => state.setting.periodeIndex);
 
 
     const isModalOpen = useSelector((state: RootState) => state.setting.showModal.openPause);
@@ -236,7 +237,31 @@ function ModalCreateUpdate({ periodeCours }: { periodeCours: PeriodeType | null 
         setIsDeleting(!isDeleting);
     };
 
- 
+    const handleDelete = async () => {
+        if (periodeCours?._id != undefined) {
+            setIsLoading(true);
+            await apiDeletePeriode({periodeId:periodeCours._id, matiereIndex:index}).then((e: ReponseApiPros) => {
+                if (e.success) {
+                    createToast(e.message[lang as keyof typeof e.message], '', 0);
+
+                    if (periodeCours._id) {
+                        dispatch(deletePeriode({ id: periodeCours._id }));
+                    }
+
+                    closeModal();
+                    setIsDeleting(false); // Réinitialiser le toggle à false après la suppression
+                } else {
+                    createToast(e.message[lang as keyof typeof e.message], '', 2);
+                }
+            }).catch((e) => {
+                createToast(e.response.data.message[lang as keyof typeof e.response.data.message], '', 2);
+
+            }).finally(() => {
+                setIsLoading(false)
+            })
+        }
+
+    };
 
     const handleCreatePeriodeCours = async () => {
         if (!jour || !heureDebut || !heureFin || !section || !cycle || !niveau  || !semestre) {

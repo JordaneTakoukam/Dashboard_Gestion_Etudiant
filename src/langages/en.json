@@ -26,6 +26,7 @@
   },
   "menu": {
     "menu": "MENU",
+    "evaluations": "Evaluations",
     "heure_d_absence": "Absence Hour",
     "heures_d_absences": "Absence Hours",
     "tableau_de_bord": "Dashboard",
@@ -46,6 +47,10 @@
     "pedagogie":"Pedagogy"
   },
   "sub_menu": {
+    "liste_evaluation": "Evaluation Management",
+    "gestion_notes": "Grade Management",
+    "coefficients": "Coefficient Management",
+    "resultats_evaluations": "Results",
     "statistiques":"Statistis",
     "test":"Test",
     "questions":"Questions",
@@ -107,6 +112,15 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "type_evaluation": "Evaluation Type",
+    "date_epreuve": "Exam Date",
+    "controle_continu": "Continuous Assessment",
+    "examen_partiel": "Midterm Exam",
+    "examen_final": "Final Exam",
+    "session_rattrapae": "Resit Session",
+    "autre": "Other",
+    "date_limite_saisie": "Grade Submission Deadline",
+
     "aucune_soumission":"No submission yet.",
     "termine":"Completed",
     "en_cours":"Ongoing",
@@ -343,6 +357,7 @@
   },
   "recherche": {
     "rechercher": "Search ",
+    "evaluation":"an evaluation",
     "devoir": "an assignment",
     "question":"a question",
     "support_de_cours":"a course material",
@@ -371,6 +386,7 @@
     "enseignement": "a teaching"
   },
   "boutton": {
+    "ajouter_matiere":"Add a subject",
     "cap_visage": "Capture my face",
     "ree_capture": "Retry capture", 
     "val_en_cours": "Validation in progress...", 
@@ -378,7 +394,7 @@
     "appliquer":"Apply",
     "soumettre": "Submit",
     "ajouter_option":"Add an option",
-    "daccord": "OK",
+    "d_accord": "OK",
     "actualiser": "Refresh",
     "rafraichir_la_page": "Refresh the page",
     "recevoir_un_nouveau_mdp": "Receive a new password",
@@ -425,6 +441,7 @@
   },
   "select_par_defaut": {
   "selectionnez": "Select ",
+  "evaluation":"an evaluation",
   "type":"a type",
   "statut":"a status",
   "section": "a section",
@@ -452,6 +469,7 @@
 
   "filtre": {
     "filtrer": "Filter",
+    "evaluation":"Filter the list of the following evaluation:",
     "devoir":"Filter the list of the following assignment:",
     "objectif": "Filter the list of the following subject objectives:",
     "chapitre": "Filter the list of the following subject chapters:",
@@ -474,6 +492,7 @@
   "form_save": {
     "ajouter":"Add ",
     "enregistrer": "Save ",
+    "evaluation":"a new evaluation",
     "devoir":"a new assignment",
     "question":"a new question",
     "support_de_cours":"a new course material",
@@ -506,6 +525,7 @@
     "periode_enseignement": "a teaching period"
   },
   "form_update": {
+    "evaluation":"of the evaluation",
     "devoir":"of the assignment",
     "question":"of the question",
     "progression_chap":"Update progression",
@@ -548,8 +568,10 @@
     "emploi_temps_fin":" in this period."
   },
   "form_delete": {
+
     "supprimer": "Delete",
     "suppression": "Deletion",
+    "evaluation":"of the evaluation",
     "devoir":"of the assignment",
     "question":"of the question",
     "permission":"of the permission",

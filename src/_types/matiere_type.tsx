@@ -1,4 +1,5 @@
 
+//src/_types/matiere_type.tsx
 // Définir le type de données pour un événement
 interface MatiereType {
     _id?: string;

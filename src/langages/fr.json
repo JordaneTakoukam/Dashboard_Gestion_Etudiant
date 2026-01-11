@@ -26,6 +26,7 @@
   },
   "menu": {
     "menu": "MENU",
+    "evaluations":"Evaluations",
     "heure_d_absence": "Heure d'absence",
     "heures_d_absences": "Heures d'absences",
     "tableau_de_bord": "Tableau de bord",
@@ -46,6 +47,11 @@
     "pedagogie":"Pédagogie"
   },
   "sub_menu": {
+    
+    "liste_evaluation":"Gestion des évaluations",
+    "gestion_notes":"Gestion des notes",
+    "coefficients":"Gestion des coefficients",
+    "resultats_evaluations":"Résultats",
     "statistiques":"Statistiques",
     "test":"Test",
     "questions":"Questions",
@@ -107,7 +113,14 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
-    
+    "type_evaluation":"Type d'évaluation",
+    "date_epreuve":"Date des épreuves",
+    "controle_continu":"Controle continu",
+    "examen_partiel":"Examen partiel",
+    "examen_final":"Examen final",
+    "session_rattrapae":"Session de rattrapage",
+    "autre":"Autre",
+    "date_limite_saisie":"Date limite de saisie",
     "aucune_soumission":"Aucune soumission pour l'instant.",
     "termine":"Terminé",
     "en_cours":"En cours",
@@ -346,6 +359,7 @@
   },
   "recherche": {
     "rechercher": "Rechercher ",
+    "evaluation":"une evaluation",
     "devoir": "un devoir",
     "question":"une question",
     "support_de_cours":"un support de cours",
@@ -374,6 +388,7 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    "ajouter_matiere":"Ajouter une matière",
     "cap_visage":"Capturer mon visage",
     "ree_capture":"Réessayer la capture",
     "val_en_cours":"Validation en cours...",
@@ -381,7 +396,7 @@
     "ajouter_option":"Ajouter une option",
     "appliquer":"Appliquer",
     "soumettre": "Soumettre",
-    "daccord": "D'accord",
+    "d_accord": "D'accord",
     "actualiser": "Actualiser",
     "rafraichir_la_page": "Rafraichir la page",
     "recevoir_un_nouveau_mdp": "Recevoir un nouveau mot de passe",
@@ -428,6 +443,7 @@
   },
   "select_par_defaut": {
     "selectionnez": "Sélectionnez ",
+    "evaluation":"une évaluation",
     "type":"un type",
     "statut":"un statut",
     "section": "une section",
@@ -454,6 +470,7 @@
   },
   "filtre": {
     "filtrer": "Filtrer",
+    "evaluation": "Filtrer la liste des evaluations suivant :",
     "devoir": "Filtrer la liste des devoirs suivant :",
     "objectif": "Filtrer la liste des objectifs de la matière suivant :",
     "chapitre": "Filtrer la liste des chapitres de la matière suivant :",
@@ -476,6 +493,7 @@
   "form_save": {
     "ajouter":"Ajouter ",
     "enregistrer": "Enregistrer ",
+    "evaluation":"une evaluation",
     "devoir":"un devoir",
     "question":"une question",
     "support_de_cours":"un support de cours",
@@ -509,6 +527,7 @@
   },
   "form_update": {
     "devoir":"du devoir",
+    "evaluation":"de l'évaluation",
     "question":"de la question",
     "progression_chap":"Mettre à jours la progression",
     "annee_semestre": "Modifier l'année ou le semestre courant",
@@ -552,6 +571,7 @@
   "form_delete": {
     "supprimer": "Supprimer",
     "suppression": "Suppression ",
+    "evaluation":"de l'évaluation",
     "devoir":"du devoir",
     "question":"de la question",
     "permission":"de la permission",

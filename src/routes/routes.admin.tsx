@@ -1,3 +1,5 @@
+//src/routes/routes.admin.tsx
+
 import Cycles from '../pages/Admin/Cycles';
 import DisciplineDesEnseignants from '../pages/Admin/Disciplines/Enseignant/DisciplineEnseignant';
 import DisciplineEtudiants from '../pages/Admin/Disciplines/Etudiant/DisciplineEtudiant';

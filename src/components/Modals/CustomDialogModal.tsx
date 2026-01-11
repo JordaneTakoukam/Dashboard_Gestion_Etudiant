@@ -53,8 +53,9 @@ function CustomModal({ isUnique, isLoading, title, handleConfirm, isModalOpen, i
                                         <div className='flex justify-between items-center  text-black-2 dark:text-gray font-bold '>
                                             {title}
                                             <div
-                                                onClick={closeModal}
-                                                className='h-6 w-6 cursor-pointer flex items-center justify-center hover:bg-body rounded-full hover:text-white'>
+                                                onClick={isLoading ? undefined : closeModal}
+                                                className={`h-6 w-6 flex items-center justify-center hover:bg-body rounded-full hover:text-white ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                                            >
                                                 <IoMdClose />
                                             </div>
                                         </div>
@@ -69,24 +70,27 @@ function CustomModal({ isUnique, isLoading, title, handleConfirm, isModalOpen, i
                                             <div className='flex items-end justify-end w-full mt-10'>
 
                                                 <button
-
+                                                    disabled={isLoading}
                                                     className={
                                                         `
-                                            flex justify-center rounded bg-primary py-2 px-6 lg:px-12 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm`}
+                                            flex justify-center rounded bg-primary py-2 px-6 lg:px-12 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm
+                                            ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     onClick={handleConfirm}
                                                 >
                                                     {isLoading && <div className={`flex items-center justify-center bg-transparent pr-2`}>
                                                         <div className="h-5 w-5  animate-spin rounded-full border-2 border-solid border-white border-t-transparent"></div>
                                                     </div>}
-                                                    {isLoading ?"" :t('boutton.d_accord')}
+                                                    {isLoading ? "" : t('boutton.d_accord')}
                                                 </button>
                                             </div>
 
                                             : <div className="flex justify-end gap-4.5 mt-8">
                                                 <button
+                                                    disabled={isLoading}
                                                     className={`
                                         ${isDelete ? '  px-6 lg:px-16' : " px-6 lg:px-10 "}
-                                        flex justify-center rounded border border-stroke py-1 lg:py-2  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm`}
+                                        flex justify-center rounded border border-stroke py-1 lg:py-2  font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white text-[12px] lg:text-sm
+                                        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     type="submit"
                                                     onClick={closeModal}
                                                 >
@@ -94,16 +98,17 @@ function CustomModal({ isUnique, isLoading, title, handleConfirm, isModalOpen, i
                                                 </button>
                                                 
                                                 <button
+                                                    disabled={isLoading}
                                                     className={
                                                         `
-                                            ${isLoading && 'opacity-50'}
+                                            ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
                                             flex justify-center rounded ${isDelete ? ' bg-meta-1' : "bg-primary "} py-2 px-6 lg:px-10 font-medium text-gray hover:bg-opacity-70 text-[12px] lg:text-sm`}
                                                     onClick={handleConfirm}
                                                 >
                                                     {isLoading && <div className={`flex items-center justify-center bg-transparent pr-2`}>
                                                         <div className="h-5 w-5  animate-spin rounded-full border-2 border-solid border-white border-t-transparent"></div>
                                                     </div>}
-                                                    {isLoading ?"" : !isDelete ? t('boutton.enregistrer') : t('boutton.oui')}
+                                                    {isLoading ? "" : !isDelete ? t('boutton.enregistrer') : t('boutton.oui')}
                                                 </button>
                                             </div>
                                     }

@@ -79,33 +79,80 @@ export async function apiGetEtudiants({ annee, niveauId }: { annee: number, nive
     }
 }
 
-export async function generateListEtudiant({ annee, departement, section, cycle, niveau, langue, fileType }: { annee: number, departement: CommonSettingProps, section: SectionProps, cycle: CycleProps, niveau: NiveauProps, langue: string, fileType:string }): Promise<Blob> {
+export async function generateListEtudiant({ 
+    annee, 
+    departement, 
+    section, 
+    cycle, 
+    niveau, 
+    langue, 
+    fileType 
+}: { 
+    annee: number, 
+    departement: CommonSettingProps, 
+    section: SectionProps, 
+    cycle: CycleProps, 
+    niveau: NiveauProps, 
+    langue: string, 
+    fileType: string 
+}): Promise<Blob> {
     try {
-        const response: AxiosResponse<any> = await axios.get(
+        console.log('=== Début requête PDF ===');
+        
+        const response: AxiosResponse = await axios.post(
             `${api}/generateListEtudiant/${annee}`,
+            {
+                departement,
+                section,
+                cycle,
+                niveau,
+                langue,
+                fileType
+            },
             {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': token,
                 },
-                params: {
-                    departement: departement,
-                    section: section,
-                    cycle: cycle,
-                    niveau: niveau,
-                    langue: langue,
-                    fileType: fileType
-                },
                 responseType: 'blob',
+                timeout: 60000 // 60 secondes
             },
         );
 
-        // Extraction de tous les objets de paramètres de la réponse
-        const pdfBlob: Blob = response.data;
+        console.log('Response reçue:', {
+            status: response.status,
+            contentType: response.headers['content-type'],
+            size: response.data.size
+        });
 
+        // Vérifier que c'est bien un PDF
+        if (response.data.type !== 'application/pdf') {
+            // Tenter de lire le contenu pour voir si c'est une erreur JSON
+            const text = await response.data.text();
+            console.error('Réponse non-PDF reçue:', text);
+            throw new Error('La réponse n\'est pas un PDF');
+        }
+
+        const pdfBlob: Blob = response.data;
+        
+        console.log('=== PDF reçu avec succès ===');
+        
         return pdfBlob;
     } catch (error) {
-        console.error('Error getting all settings:', error);
+        console.error('=== Erreur génération PDF ===');
+        console.error('Error:', error);
+        
+        if (axios.isAxiosError(error) && error.response) {
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+            
+            // Si c'est un blob d'erreur, le lire
+            if (error.response.data instanceof Blob) {
+                const text = await error.response.data.text();
+                console.error('Error body:', text);
+            }
+        }
+        
         throw error;
     }
 }

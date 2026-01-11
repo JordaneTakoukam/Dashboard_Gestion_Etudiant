@@ -12,6 +12,7 @@ import ParametreSidebarLink from './SideSection/ParametreSection';
 import { AbsencesLink, CalendrierAcaLink, DashboardLink, DocumentLink, EmploiTempsLink, SalleCourLink } from './SideSection/SidebarLink';
 import AcademicLevelSidebarLink from './SideSection/AcademiqueSection';
 import PedagogieSidebarLink from './SideSection/PedagogieSection';
+import EvaluationSidebarLink from './SideSection/EvalutaionSection';
 
 
 
@@ -156,6 +157,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, userPermissions }: SidebarProps)
                                 t={t}
                             />}
                             {/* ! Pedagogie */}
+
+                            {/* Evaluation*/}
+                            {userPermissions && <EvaluationSidebarLink
+                                userPermissions={userPermissions}
+                                sidebarExpanded={sidebarExpanded}
+                                setSidebarExpanded={setSidebarExpanded}
+                                t={t}
+                            />}
+                            {/* ! Evaluation */}
 
 
                             {/* SALLES DE COURS */}

@@ -2,7 +2,7 @@
 
 // Type pour les matières incluses dans une évaluation
 interface EvaluationMatiereType {
-    matiere: string; // ID de la matière
+    matiere: MatiereType|undefined; // ID de la matière
     coefficient: number;
 }
 
@@ -39,7 +39,7 @@ interface EvaluationType {
 interface AnonymatType {
     _id?: string;
     evaluation: string; // ID de l'évaluation
-    etudiant: string; // ID de l'étudiant (confidentiel)
+    etudiant: EtudiantType; // ID de l'étudiant (confidentiel)
     numeroAnonymat: string;
     niveau: string;
     dateGeneration?: Date;
@@ -81,7 +81,7 @@ interface NoteType {
 // Type pour un coefficient
 interface CoefficientMatiereType {
     _id?: string;
-    matiere: string;
+    matiere: MatiereType;
     niveau: string;
     annee: number;
     semestre: number;

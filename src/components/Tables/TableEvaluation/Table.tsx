@@ -24,7 +24,7 @@ import createToast from "../../../hooks/toastify";
 import Pagination from "../../Pagination/Pagination";
 import { formatYear, generateYearRange } from "../../../fonctions/fonction";
 import Bouton from "../../ui/Bouton";
-import { getSemestresByNiveau } from "../../../api/api_evaluation";
+import { getSemestresByNiveau } from "../../../api/api_semestre_evaluation";
 
 interface TableEvaluationProps {
     data: EvaluationType[];

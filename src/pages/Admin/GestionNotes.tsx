@@ -7,10 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import {
     apiSaisirNote,
-    apiVerifierAnonymat,
     getNotesByEvaluationMatiere,
+} from "../../api/api_note";
+import {
+    apiVerifierAnonymat,
     getNumerosAnonymatsByEvaluation
-} from "../../api/api_evaluation";
+} from "../../api/api_anonymat";
 import createToast from "../../hooks/toastify";
 import { setNoteLoading, setNotes } from "../../_redux/features/note_slice";
 import Loading from "../../components/ui/loading";
@@ -34,6 +36,7 @@ const GestionNotes = () => {
     const [copieBlanche, setCopieBlanche] = useState<boolean>(false);
     const [anonymatValide, setAnonymatValide] = useState<boolean | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
 
     // Charger les notes quand une matière est sélectionnée
     useEffect(() => {
@@ -71,7 +74,7 @@ const GestionNotes = () => {
             }
         } catch (error) {
             setAnonymatValide(false);
-            createToast(t('evaluation.anonymat_invalide'), "", 2);
+            createToast(t('label.anonymat_invalide'), "", 2);
         }
     };
 
@@ -87,7 +90,7 @@ const GestionNotes = () => {
         }
 
         if (!anonymatValide) {
-            createToast(t('evaluation.verifier_anonymat_dabord'), "", 2);
+            createToast(t('label.verifier_anonymat_dabord'), "", 2);
             return;
         }
 
@@ -102,7 +105,9 @@ const GestionNotes = () => {
                 appreciationEn,
                 absent,
                 fraude,
-                copieBlanche
+                copieBlanche,
+                saisiePar:currentUser._id,
+                modifiePar:currentUser._id
             });
 
             if (response.success) {
@@ -145,7 +150,7 @@ const GestionNotes = () => {
 
     return (
         <>
-            <Breadcrumb pageName={t('menu.gestion_notes')} />
+            <Breadcrumb pageName={t('sub_menu.gestion_notes')} />
 
             <div className="rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark mb-5">
                 <h3 className="font-medium text-lg mb-4">
@@ -162,11 +167,11 @@ const GestionNotes = () => {
                         onChange={(e) => setSelectedMatiere(e.target.value)}
                         className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                     >
-                        <option value="">{t('select_par_defaut.selectionnez') + ' matière'}</option>
+                        <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}</option>
                         {selectedEvaluation.matieres.map(m => (
-                            <option key={m.matiere} value={m.matiere}>
+                            <option key={m.matiere!._id} value={m.matiere!._id}>
                                 {/* Afficher le nom de la matière - à adapter */}
-                                Matière (Coef: {m.coefficient})
+                                {lang==="fr"?m.matiere!.libelleFr:m.matiere!.libelleEn} (Coef: {m.coefficient})
                             </option>
                         ))}
                     </select>
@@ -176,7 +181,7 @@ const GestionNotes = () => {
                     <>
                         {/* Formulaire de saisie */}
                         <div className="border-t pt-5">
-                            <h4 className="font-medium mb-4">{t('evaluation.saisie_note')}</h4>
+                            <h4 className="font-medium mb-4">{t('label.saisie_note')}</h4>
 
                             {/* Numéro d'anonymat */}
                             <div className="mb-4">
@@ -198,7 +203,7 @@ const GestionNotes = () => {
                                         onClick={handleVerifierAnonymat}
                                         className="px-6 py-3 bg-primary text-white rounded hover:bg-opacity-90"
                                     >
-                                        {t('button.verifier')}
+                                        {t('boutton.verifier')}
                                     </button>
                                 </div>
                                 {anonymatValide !== null && (
@@ -206,12 +211,12 @@ const GestionNotes = () => {
                                         {anonymatValide ? (
                                             <>
                                                 <FaCheckCircle className="text-green-500" />
-                                                <span className="text-green-500">{t('evaluation.anonymat_valide')}</span>
+                                                <span className="text-green-500">{t('label.anonymat_valide')}</span>
                                             </>
                                         ) : (
                                             <>
                                                 <FaTimesCircle className="text-red-500" />
-                                                <span className="text-red-500">{t('evaluation.anonymat_invalide')}</span>
+                                                <span className="text-red-500">{t('label.anonymat_invalide')}</span>
                                             </>
                                         )}
                                     </div>
@@ -311,11 +316,11 @@ const GestionNotes = () => {
 
                         {/* Liste des notes saisies */}
                         <div className="border-t mt-5 pt-5">
-                            <h4 className="font-medium mb-4">{t('evaluation.notes_saisies')}</h4>
+                            <h4 className="font-medium mb-4">{t('label.notes_saisies')}</h4>
                             {pageIsLoading ? (
                                 <Loading />
                             ) : notes.length === 0 ? (
-                                <p className="text-gray-500">{t('evaluation.aucune_note_saisie')}</p>
+                                <p className="text-gray-500">{t('label.aucune_note_saisie')}</p>
                             ) : (
                                 <div className="overflow-x-auto">
                                     <table className="w-full table-auto">

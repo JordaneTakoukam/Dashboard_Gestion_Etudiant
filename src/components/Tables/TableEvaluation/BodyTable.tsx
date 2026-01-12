@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { setEvaluationSelected } from "../../../_redux/features/evaluation_slice";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { SelectButton } from "../common/composants/SelectButton";
 
 interface BodyEvaluationProps {
     data: EvaluationType[];
@@ -37,11 +38,11 @@ const BodyTable = ({ data, onEdit }: BodyEvaluationProps) => {
 
     const getTypeLabel = (type: string) => {
         const types: Record<string, string> = {
-            'CONTROLE_CONTINU': t('evaluation.type.controle_continu'),
-            'EXAMEN_PARTIEL': t('evaluation.type.examen_partiel'),
-            'EXAMEN_FINAL': t('evaluation.type.examen_final'),
-            'SESSION_RATTRAPAGE': t('evaluation.type.session_rattrapage'),
-            'AUTRE': t('evaluation.type.autre')
+            'CONTROLE_CONTINU': t('label.controle_continu'),
+            'EXAMEN_PARTIEL': t('label.examen_partiel'),
+            'EXAMEN_FINAL': t('label.examen_final'),
+            'SESSION_RATTRAPAGE': t('label.session_rattrapage'),
+            'AUTRE': t('label.autre')
         };
         return types[type] || type;
     };
@@ -111,10 +112,27 @@ const BodyTable = ({ data, onEdit }: BodyEvaluationProps) => {
                                     }
                                     : undefined
                             }
-                            // onClickView={() => {
-                            //     dispatch(setEvaluationSelected(item));
-                            //     navigate('/evaluations/details');
-                            // }}
+                        />
+                         <SelectButton
+                            listPage={[
+                                {
+                                    "name": t('sub_menu.coefficients'),
+                                    "handleClick": () => {dispatch(setEvaluationSelected(item)); navigate('/evaluations/coefficients')}
+                                },
+                                {
+                                    "name": t('sub_menu.gestion_anonymats'),
+                                    "handleClick": () => {dispatch(setEvaluationSelected(item)); navigate('/evaluations/anonymats')}
+                                },
+                                {
+                                    "name": t('sub_menu.gestion_notes'),
+                                    "handleClick": () => {dispatch(setEvaluationSelected(item)); navigate('/evaluations/saisie-notes')}
+                                },
+                                {
+                                    "name": t('sub_menu.resultats_evaluations'),
+                                    "handleClick": () => {dispatch(setEvaluationSelected(item)); navigate('/evaluations/resultats')}
+                                },
+                                
+                            ]}
                         />
                     </td>
                 </tr>

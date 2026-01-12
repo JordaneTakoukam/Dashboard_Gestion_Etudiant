@@ -8,17 +8,21 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     apiCreateEvaluation,
-    apiUpdateEvaluation,
-    getSemestresByNiveau,
-    getCoefficientsByNiveau
+    apiUpdateEvaluation
 } from '../../../api/api_evaluation';
+import {
+    getCoefficientsByNiveau
+} from '../../../api/api_coefficient';
+import {
+    getSemestresByNiveau,
+} from '../../../api/api_semestre_evaluation';
 import createToast from '../../../hooks/toastify';
 import {
     createEvaluation,
     updateEvaluation
 } from '../../../_redux/features/evaluation_slice';
 import { FaPlus, FaTrash } from 'react-icons/fa';
-import { getMatieresByNiveau, getMatieresByNiveauWithPagination } from '../../../api/api_matiere';
+import { getMatieresByNiveau } from '../../../api/api_matiere';
 
 function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null }) {
     const { t } = useTranslation();
@@ -102,7 +106,8 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
 
     useEffect(() => {
         if (evaluation) {
-             const currentNiveau = niveaux.find(n => n._id === evaluation.niveau);
+             console.log(evaluation)
+            const currentNiveau = niveaux.find(n => n._id === evaluation.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
             currentSection && filterCycleBySection(currentSection._id);
@@ -113,6 +118,8 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             setDescriptionFr(evaluation.descriptionFr || "");
             setDescriptionEn(evaluation.descriptionEn || "");
             setType(evaluation.type);
+            setSection(currentSection)
+            setCycle(currentCycle);
             setNiveau(currentNiveau);
             setAnnee(evaluation.annee);
             setSemestre(evaluation.semestre);
@@ -235,7 +242,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
     };
 
     const handleAddMatiere = () => {
-        setMatieres([...matieres, { matiere: "", coefficient: 1 }]);
+        setMatieres([...matieres, { matiere: undefined, coefficient: 1 }]);
     };
 
     const handleRemoveMatiere = (index: number) => {
@@ -430,15 +437,14 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
                 {matieres.map((mat, index) => (
                     <div key={index} className="flex gap-2 mb-2 items-center">
                         <select
-                            value={mat.matiere}
+                            value={ mat.matiere!._id}
                             onChange={(e) => handleMatiereChange(index, 'matiere', e.target.value)}
                             className="flex-1 rounded border border-stroke bg-gray py-2 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         >
-                            <option value="">{t('select_par_defaut.selectionnez') + ' matière'}</option>
+                            <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}</option>
                             {matieresDisponibles.map(matD => (
-                                <option key={matD._id} value={matD._id}>{lang==='fr'?matD.libelleFr:matD.libelleEn}</option>
+                                <option key={matD._id} value={lang==='fr'?matD.libelleFr:matD.libelleEn}>{lang==='fr'?matD.libelleFr:matD.libelleEn}</option>
                             ))}
-                            {/* À compléter avec les matières disponibles */}
                         </select>
                         <input
                             type="number"

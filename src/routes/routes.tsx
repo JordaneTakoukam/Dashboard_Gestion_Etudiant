@@ -45,6 +45,9 @@ import TestPage from '../pages/CommonPage/Test';
 import DevoirStatsPage from '../pages/CommonPage/DevoirStats';
 import ListeEvaluations from '../pages/Admin/ListeEvaluations';
 import GestionNotes from '../pages/Admin/GestionNotes';
+import GestionCoefficients from '../pages/Admin/GestionCoefficients';
+import GestionAnonymats from '../pages/Admin/GestionAnonymats';
+import ResultatsEtudiants from '../pages/Admin/ResultatsEtudiants';
 
 
 
@@ -370,22 +373,30 @@ const coreRoutes = [
   //   title: 'Détails évaluation',
   //   component: DetailsEvaluation,
   // },
-  // {
-  //   path: '/evaluations/coefficients',
-  //   title: 'Gestion des coefficients',
-  //   component: GestionCoefficients,
-  // },
+  {
+    path: '/evaluations/coefficients',
+    title: 'Gestion des coefficients',
+    component: GestionCoefficients,
+    permissions:["gerer_matieres", "consulter_liste_matieres"]
+  },
+  {
+    path: '/evaluations/anonymats',
+    title: 'Crée les anonymats',
+    component: GestionAnonymats,
+    permissions:["gerer_matieres", "consulter_liste_matieres"]
+  },
   {
     path: '/evaluations/saisie-notes',
     title: 'Saisie des notes',
     component: GestionNotes,
     permissions:["gerer_matieres", "consulter_liste_matieres"]
   },
-  // {
-  //   path: '/evaluations/resultats',
-  //   title: 'Mes résultats',
-  //   component: ResultatsEtudiants,
-  // },
+  {
+    path: '/evaluations/resultats',
+    title: 'Mes résultats',
+    component: ResultatsEtudiants,
+    permissions:["gerer_matieres", "consulter_liste_matieres"]
+  },
 
   {
     path: '/pedagogies/tests/manage',

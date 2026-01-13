@@ -48,6 +48,7 @@ import GestionNotes from '../pages/Admin/GestionNotes';
 import GestionCoefficients from '../pages/Admin/GestionCoefficients';
 import GestionAnonymats from '../pages/Admin/GestionAnonymats';
 import ResultatsEtudiants from '../pages/Admin/ResultatsEtudiants';
+import AffichageResultats from '../pages/Admin/AffichageResultats';
 
 
 
@@ -394,7 +395,7 @@ const coreRoutes = [
   {
     path: '/evaluations/resultats',
     title: 'Mes résultats',
-    component: ResultatsEtudiants,
+    component: AffichageResultats,
     permissions:["gerer_matieres", "consulter_liste_matieres"]
   },
 

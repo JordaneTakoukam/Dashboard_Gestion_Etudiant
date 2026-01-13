@@ -35,6 +35,23 @@ const GestionAnonymats = () => {
 
     const isEtudiant = currentUser.role === roles.etudiant;
     const isAdmin = currentUser.role === roles.admin || currentUser.role === roles.superAdmin;
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const [currentClasse, setCurrentClasse] = useState<string>("")
+
+    useEffect(() => {
+        if(selectedEvaluation){
+            const currentNiveau = niveaux.find(niveau => niveau._id === selectedEvaluation?.niveau)
+            const currentCycle = cycles.find(cycle=>cycle._id===currentNiveau?.cycle)
+            const currentSection = sections.find(sec=>sec._id===currentCycle?.section)
+            const sectionLib = lang === "fr"?currentSection?.libelleFr:currentSection?.libelleEn;
+            const cycleLib = lang === "fr"?currentCycle?.libelleFr:currentCycle?.libelleEn;
+            const niveauLib = lang === "fr"?currentNiveau?.libelleFr:currentNiveau?.libelleEn;
+            setCurrentClasse(sectionLib!+cycleLib!+niveauLib)
+        }
+        
+    }, [selectedEvaluation]);
 
     // Charger les anonymats
     useEffect(() => {
@@ -191,8 +208,8 @@ const GestionAnonymats = () => {
                 <Breadcrumb pageName={t('sub_menu.mon_anonymat')} />
 
                 <div className="rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-                    <h3 className="font-medium text-lg mb-4">
-                        {lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}
+                    <h3 className="font-medium text-lg mb-2">
+                        {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
                     </h3>
 
                     {isLoading ? (
@@ -255,7 +272,7 @@ const GestionAnonymats = () => {
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h3 className="font-medium text-lg mb-2">
-                            {lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}
+                            {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                             {t('label.date_epreuve')}: {selectedEvaluation.dateEpreuve ? new Date(selectedEvaluation.dateEpreuve).toLocaleDateString() : '-'}

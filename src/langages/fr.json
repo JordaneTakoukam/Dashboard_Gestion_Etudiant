@@ -114,6 +114,13 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "total_note_coef":"Total note",
+    "total_coef":"Total coef",
+    "rang":"Rang",
+    "moyenne":"Moyenne",
+    "maximum":"Maximum",
+    "minimum":"Minimum",
+    "taux_reussite":"Taux de réussite",
     "appreciation":"Appreciation",
     "anonymat":"Anonymat",
     "brouillon":"Brouillon", 
@@ -122,6 +129,9 @@
     "publiee":"Publiée",
     "verrouillee":"Vérouillée",
     "verrouille":"Vérrouillé",
+    "programmee":"Programée",
+    "correction":"Correction", 
+    "deliberation":"Délibération",
     "resultats_non_disponibles":"Résultats non disponibles",
     "resultats_pas_encore_publies":"Résultats pas encore publies",
     "moyenne_generale":"Moyenne générale",
@@ -425,6 +435,13 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    "exporter":"Exporter",
+    "exporter_excel":"Exporter(Excel)",
+    "deliberer":"Délibérer",
+    "publier_resultats":"Publier les résultats",
+    "verrouiller_notes":"Verrouiller les notes",
+    "masquer_stats":"Masquer les statistiques",
+    "afficher_stats":"Afficher les statistiques",
     "enregistrement":"Enregistrement",
     "reinitialiser":"Réinitialiser",
     "verifier":"Vérifier",

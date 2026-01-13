@@ -29,6 +29,74 @@ absent:boolean, fraude : boolean, copieBlanche : boolean, saisiePar:string, modi
     }
 }
 
+/**
+ * Obtenir les résultats détaillés d'une évaluation (ADMIN)
+ * Retourne notes par matière, moyennes et rangs pour tous les étudiants
+ */
+export async function getResultatsDetailles(evaluationId: string): Promise<ResultatsDetaillesType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/resultats/${evaluationId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error('Error getting detailed results:', error);
+        throw error;
+    }
+}
+
+/**
+ * Obtenir mes résultats détaillés pour une évaluation (ÉTUDIANT)
+ */
+export async function getMesResultatsDetailles(evaluationId: string): Promise<MesResultatsDetaillesType> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/mes-resultats/${evaluationId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error('Error getting my detailed results:', error);
+        throw error;
+    }
+}
+
+/**
+ * Exporter les résultats en CSV (ADMIN)
+ */
+export async function exporterResultatsExcel(evaluationId: string, currentClasse:string): Promise<Blob> {
+    try {
+        const response: AxiosResponse<Blob> = await axios.get(
+            `${api}/export-excel/${evaluationId}`,
+            {
+                headers: {
+                    'token': token,
+                },
+                params:{
+                    section:currentClasse
+                },
+                responseType: 'blob',
+            },
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error exporting Excel:', error);
+        throw error;
+    }
+}
+
+
 export async function getNotesByEvaluationMatiere(
     evaluationId: string,
     matiereId: string,
@@ -71,7 +139,7 @@ export async function getMesNotes(evaluationId: string): Promise<any> {
     }
 }
 
-export async function apiDelibererEvaluation(evaluationId: string): Promise<ReponseApiPros> {
+export async function apiDelibererEvaluation(evaluationId: string, valideePar:string): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/deliberer/${evaluationId}`,
@@ -81,6 +149,9 @@ export async function apiDelibererEvaluation(evaluationId: string): Promise<Repo
                     'Content-Type': 'application/json',
                     'token': token,
                 },
+                params:{
+                    valideePar
+                }
             },
         );
         return response.data;

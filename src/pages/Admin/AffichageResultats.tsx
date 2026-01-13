@@ -1,4 +1,4 @@
-//src/pages/Admin/Evaluations/ResultatsEtudiants.tsx
+//src/pages/Admin/Evaluations/AffichageResultats.tsx
 
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
@@ -6,19 +6,26 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
 import {
-    calculerMoyennes,
-    getMesNotes,
+    getResultatsDetailles,
+    getMesResultatsDetailles,
     apiDelibererEvaluation,
     apiPublierResultats,
-    apiVerrouillerNotes
+    apiVerrouillerNotes,
+    exporterResultatsExcel
 } from "../../api/api_note";
 import createToast from "../../hooks/toastify";
+import {
+    setResultatLoading,
+    setResultatsDetailles,
+    setMesResultatsDetailles,
+    clearResultats
+} from "../../_redux/features/resultat_slice";
 import Loading from "../../components/ui/loading";
-import { FaCheckCircle, FaTimesCircle, FaLock, FaUnlock, FaEye } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaLock, FaEye, FaDownload, FaChartBar } from "react-icons/fa";
 import { config } from "../../config";
 import { updateEvaluationStatut } from "../../_redux/features/evaluation_slice";
 
-const ResultatsEtudiants = () => {
+const AffichageResultats = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const lang = useSelector((state: RootState) => state.setting.language);
@@ -26,35 +33,52 @@ const ResultatsEtudiants = () => {
     const currentUser: UserState = useSelector((state: RootState) => state.user);
     const roles = config.roles;
     
-    const [moyennes, setMoyennes] = useState<MoyenneEtudiantType[]>([]);
-    const [mesNotes, setMesNotes] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { data: { resultatsDetailles, mesResultatsDetailles } } = useSelector((state: RootState) => state.resultatSlice);
+    const pageIsLoading = useSelector((state: RootState) => state.resultatSlice.pageIsLoading);
+    
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [showStats, setShowStats] = useState<boolean>(true);
 
     const isEtudiant = currentUser.role === roles.etudiant;
     const isAdmin = currentUser.role === roles.admin || currentUser.role === roles.superAdmin;
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
+    const [currentClasse, setCurrentClasse] = useState<string>("")
 
     // Charger les résultats
     useEffect(() => {
+        if(selectedEvaluation){
+            const currentNiveau = niveaux.find(niveau => niveau._id === selectedEvaluation?.niveau)
+            const currentCycle = cycles.find(cycle=>cycle._id===currentNiveau?.cycle)
+            const currentSection = sections.find(sec=>sec._id===currentCycle?.section)
+            const sectionLib = lang === "fr"?currentSection?.libelleFr:currentSection?.libelleEn;
+            const cycleLib = lang === "fr"?currentCycle?.libelleFr:currentCycle?.libelleEn;
+            const niveauLib = lang === "fr"?currentNiveau?.libelleFr:currentNiveau?.libelleEn;
+            setCurrentClasse(sectionLib!+cycleLib!+niveauLib)
+        }
         if (selectedEvaluation?._id) {
             if (isEtudiant) {
-                fetchMesNotes();
+                fetchMesResultatsDetailles();
             } else {
-                fetchMoyennes();
+                fetchResultatsDetailles();
             }
         }
+
+        // Cleanup on unmount
+        return () => {
+            dispatch(clearResultats());
+        };
     }, [selectedEvaluation]);
 
-    const fetchMoyennes = async () => {
+    const fetchResultatsDetailles = async () => {
         if (!selectedEvaluation?._id) return;
 
-        setIsLoading(true);
+        dispatch(setResultatLoading(true));
         try {
-            const result = await calculerMoyennes(selectedEvaluation._id);
-            
-            setMoyennes(result);
+            const result = await getResultatsDetailles(selectedEvaluation._id);
+            dispatch(setResultatsDetailles({ resultats: result }));
         } catch (error: any) {
             if (error.response?.status === 403) {
                 createToast(t('error.evaluation_non_publiee'), "", 1);
@@ -62,17 +86,17 @@ const ResultatsEtudiants = () => {
                 createToast(t('message.erreur'), "", 2);
             }
         } finally {
-            setIsLoading(false);
+            dispatch(setResultatLoading(false));
         }
     };
 
-    const fetchMesNotes = async () => {
+    const fetchMesResultatsDetailles = async () => {
         if (!selectedEvaluation?._id) return;
 
-        setIsLoading(true);
+        dispatch(setResultatLoading(true));
         try {
-            const result = await getMesNotes(selectedEvaluation._id);
-            setMesNotes(result);
+            const result = await getMesResultatsDetailles(selectedEvaluation._id);
+            dispatch(setMesResultatsDetailles({ resultats: result }));
         } catch (error: any) {
             if (error.response?.status === 403) {
                 createToast(t('error.resultats_non_publies'), "", 1);
@@ -80,7 +104,7 @@ const ResultatsEtudiants = () => {
                 createToast(t('message.erreur'), "", 2);
             }
         } finally {
-            setIsLoading(false);
+            dispatch(setResultatLoading(false));
         }
     };
 
@@ -100,7 +124,7 @@ const ResultatsEtudiants = () => {
                     id: selectedEvaluation._id,
                     statut: 'DELIBERATION'
                 }));
-                fetchMoyennes();
+                fetchResultatsDetailles();
             } else {
                 createToast(response.message[lang as keyof typeof response.message], '', 2);
             }
@@ -163,32 +187,35 @@ const ResultatsEtudiants = () => {
         }
     };
 
-    // Statistiques
-    const calculerStatistiques = () => {
-        const notesValides = moyennes.filter(m => m.moyenne !== null).map(m => m.moyenne!);
-        if (notesValides.length === 0) return null;
+    const handleExportExcel = async () => {
+        if (!selectedEvaluation?._id) return;
 
-        const moyenne = notesValides.reduce((a, b) => a + b, 0) / notesValides.length;
-        const max = Math.max(...notesValides);
-        const min = Math.min(...notesValides);
-        const admis = notesValides.filter(n => n >= 10).length;
-        const tauxReussite = (admis / notesValides.length) * 100;
-
-        return { moyenne, max, min, admis, total: notesValides.length, tauxReussite };
+        try {
+            const blob = await exporterResultatsExcel(selectedEvaluation._id, currentClasse);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Resultats_${lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}_${new Date().getTime()}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            createToast(t('message.export_reussi'), '', 0);
+        } catch (error) {
+            createToast(t('message.erreur_export'), '', 2);
+        }
     };
 
-    const stats = calculerStatistiques();
-
-    const filteredMoyennes = moyennes.filter(m =>
-        m.etudiant.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.etudiant.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.etudiant.matricule.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredResultats = resultatsDetailles?.resultats.filter(r =>
+        r.etudiant.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.etudiant.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.etudiant.matricule.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
     if (!selectedEvaluation) {
         return (
             <>
-                <Breadcrumb pageName={t('sub_menu.resultats_evaluations')} />
+                <Breadcrumb pageName={t('sub_menu.resultats')} />
                 <div className="rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
                     <p>{t('select_par_defaut.selectionnez') + t('select_par_defaut.evaluation')}</p>
                 </div>
@@ -207,23 +234,30 @@ const ResultatsEtudiants = () => {
                         {lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}
                     </h3>
 
-                    {isLoading ? (
+                    {pageIsLoading ? (
                         <Loading />
-                    ) : mesNotes ? (
+                    ) : mesResultatsDetailles ? (
                         <div className="max-w-4xl mx-auto">
                             {/* Moyenne générale */}
                             <div className="bg-primary bg-opacity-10 rounded-lg p-6 mb-6 text-center">
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                     {t('label.moyenne_generale')}
                                 </p>
-                                <p className={`text-5xl font-bold ${mesNotes.moyenne >= 10 ? 'text-success' : 'text-danger'}`}>
-                                    {mesNotes.moyenne !== null ? mesNotes.moyenne.toFixed(2) : '-'}
-                                    <span className="text-2xl">/{selectedEvaluation.noteMax}</span>
+                                <p className={`text-5xl font-bold ${mesResultatsDetailles.moyenne && mesResultatsDetailles.moyenne >= 10 ? 'text-success' : 'text-danger'}`}>
+                                    {mesResultatsDetailles.moyenne !== null ? mesResultatsDetailles.moyenne.toFixed(2) : '-'}
+                                    <span className="text-2xl">/{mesResultatsDetailles.evaluation.noteMax}</span>
                                 </p>
-                                {mesNotes.moyenne !== null && (
-                                    <p className={`mt-2 font-medium ${mesNotes.moyenne >= 10 ? 'text-success' : 'text-danger'}`}>
-                                        {mesNotes.moyenne >= 10 ? t('label.admis') : t('label.non_admis')}
-                                    </p>
+                                {mesResultatsDetailles.moyenne !== null && (
+                                    <>
+                                        <p className={`mt-2 font-medium ${mesResultatsDetailles.admis ? 'text-success' : 'text-danger'}`}>
+                                            {mesResultatsDetailles.admis ? t('label.admis') : t('label.non_admis')}
+                                        </p>
+                                        {mesResultatsDetailles.rang && (
+                                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                                {t('label.rang')}: {mesResultatsDetailles.rang} / {mesResultatsDetailles.totalEtudiants}
+                                            </p>
+                                        )}
+                                    </>
                                 )}
                             </div>
 
@@ -247,12 +281,13 @@ const ResultatsEtudiants = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {mesNotes.notes.map((note: any, index: number) => (
+                                        {mesResultatsDetailles.notes.map((note, index) => (
                                             <tr key={index} className="border-b dark:border-strokedark">
                                                 <td className="py-4 px-4">
                                                     <p className="font-medium">
                                                         {lang === 'fr' ? note.matiere.libelleFr : note.matiere.libelleEn}
                                                     </p>
+                                                    <p className="text-sm text-gray-500">{note.matiere.code}</p>
                                                 </td>
                                                 <td className="py-4 px-4 text-center">
                                                     {note.coefficient}
@@ -268,9 +303,9 @@ const ResultatsEtudiants = () => {
                                                         </span>
                                                     ) : (
                                                         <span className={`font-bold text-lg ${
-                                                            note.note >= note.noteMax / 2 ? 'text-success' : 'text-danger'
+                                                            note.noteRamenee20 >= 10 ? 'text-success' : 'text-danger'
                                                         }`}>
-                                                            {note.note.toFixed(2)}/{note.noteMax}
+                                                            {note.noteRamenee20.toFixed(2)}/20
                                                         </span>
                                                     )}
                                                 </td>
@@ -301,6 +336,8 @@ const ResultatsEtudiants = () => {
     }
 
     // Vue admin
+    const stats = resultatsDetailles?.statistiques;
+
     return (
         <>
             <Breadcrumb pageName={t('sub_menu.resultats_evaluations')} />
@@ -310,7 +347,7 @@ const ResultatsEtudiants = () => {
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h3 className="font-medium text-lg mb-2">
-                            {lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}
+                            {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
                         </h3>
                         <div className="flex items-center gap-4 text-sm">
                             <span className={`flex items-center gap-2 ${
@@ -361,10 +398,20 @@ const ResultatsEtudiants = () => {
                                 {t('boutton.verrouiller_notes')}
                             </button>
                         )}
+                        {resultatsDetailles && (
+                            <button
+                                onClick={handleExportExcel}
+                                className="px-6 py-3 bg-warning text-white rounded hover:bg-opacity-90 flex items-center gap-2"
+                            >
+                                <FaDownload />
+                                {t('boutton.exporter_excel')}
+                            </button>
+                        )}
                         <button
                             onClick={() => setShowStats(!showStats)}
-                            className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-opacity-90"
+                            className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-opacity-90 flex items-center gap-2"
                         >
+                            <FaChartBar />
                             {showStats ? t('boutton.masquer_stats') : t('boutton.afficher_stats')}
                         </button>
                     </div>
@@ -375,44 +422,44 @@ const ResultatsEtudiants = () => {
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                         <div className="bg-blue-50 dark:bg-meta-4 rounded p-4 text-center">
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('label.moyenne')}</p>
-                            <p className="text-2xl font-bold text-primary">{stats.moyenne.toFixed(2)}</p>
+                            <p className="text-2xl font-bold text-primary">{stats.moyenneClasse?.toFixed(2) || '-'}</p>
                         </div>
                         <div className="bg-green-50 dark:bg-meta-4 rounded p-4 text-center">
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('label.maximum')}</p>
-                            <p className="text-2xl font-bold text-success">{stats.max.toFixed(2)}</p>
+                            <p className="text-2xl font-bold text-success">{stats.moyenneMax?.toFixed(2) || '-'}</p>
                         </div>
                         <div className="bg-red-50 dark:bg-meta-4 rounded p-4 text-center">
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('label.minimum')}</p>
-                            <p className="text-2xl font-bold text-danger">{stats.min.toFixed(2)}</p>
+                            <p className="text-2xl font-bold text-danger">{stats.moyenneMin?.toFixed(2) || '-'}</p>
                         </div>
                         <div className="bg-purple-50 dark:bg-meta-4 rounded p-4 text-center">
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('label.admis')}</p>
-                            <p className="text-2xl font-bold text-purple-600">{stats.admis}/{stats.total}</p>
+                            <p className="text-2xl font-bold text-purple-600">{stats.nombreAdmis}/{stats.nombreMoyennesCalculees}</p>
                         </div>
                         <div className="bg-yellow-50 dark:bg-meta-4 rounded p-4 text-center">
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('label.taux_reussite')}</p>
-                            <p className="text-2xl font-bold text-yellow-600">{stats.tauxReussite.toFixed(1)}%</p>
+                            <p className="text-2xl font-bold text-yellow-600">{stats.tauxReussite?.toFixed(1) || '-'}%</p>
                         </div>
                     </div>
                 )}
 
                 {/* Recherche */}
-                {moyennes.length > 0 && (
+                {resultatsDetailles && resultatsDetailles.resultats.length > 0 && (
                     <div className="mb-4">
-                        <input
+                        {/* <input
                             type="text"
                             placeholder={t('recherche.rechercher_etudiant')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full md:w-96 rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
-                        />
+                        /> */}
                     </div>
                 )}
 
                 {/* Liste des résultats */}
-                {isLoading ? (
+                {pageIsLoading ? (
                     <Loading />
-                ) : moyennes.length === 0 ? (
+                ) : !resultatsDetailles || resultatsDetailles.resultats.length === 0 ? (
                     <div className="text-center py-12">
                         <p className="text-gray-600 dark:text-gray-400">
                             {t('label.aucun_resultat')}
@@ -423,43 +470,95 @@ const ResultatsEtudiants = () => {
                         <table className="w-full table-auto">
                             <thead>
                                 <tr className="bg-gray-2 dark:bg-meta-4">
-                                    <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
-                                        #
-                                    </th>
+                                   
                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
                                         {t('label.matricule')}
                                     </th>
                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
-                                        {t('label.nom_prenom')}
+                                        {t('label.nom')}
+                                    </th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
+                                        {t('label.prenom')}
+                                    </th>
+                                    {resultatsDetailles.evaluation.matieres.map((matiere) => (
+                                        <th key={matiere._id} className="py-4 px-2 font-medium text-black dark:text-white text-center">
+                                            <div className="flex flex-col">
+                                                <span>{lang==="fr"?matiere.libelleFr:matiere.libelleEn}</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                    (Coef {matiere.coefficient})
+                                                </span>
+                                            </div>
+                                        </th>
+                                    ))}
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white text-center bg-gray-100 dark:bg-gray-800">
+                                        {t('label.total_note_coef')}
+                                    </th>
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white text-center bg-gray-100 dark:bg-gray-800">
+                                        {t('label.total_coef')}
                                     </th>
                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-center">
                                         {t('label.moyenne')}
                                     </th>
-                                    <th className="py-4 px-4 font-medium text-black dark:text-white text-center">
-                                        {t('label.resultat')}
+                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
+                                        {t('label.rang')}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredMoyennes.map((item, index) => (
-                                    <tr key={item.etudiant._id} className="border-b dark:border-strokedark">
+                                {filteredResultats.map((item) => (
+                                    <tr key={item.etudiant._id} className="border-b dark:border-strokedark hover:bg-gray-50 dark:hover:bg-gray-900">
+                                        
                                         <td className="py-4 px-4">
-                                            {index + 1}
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <span className="font-mono">
+                                            <span className="font-mono text-sm">
                                                 {item.etudiant.matricule}
                                             </span>
                                         </td>
                                         <td className="py-4 px-4">
-                                            <p className="font-medium">
-                                                {item.etudiant.nom} {item.etudiant.prenom}
-                                            </p>
+                                            <span className="font-medium">
+                                                {item.etudiant.nom}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <span className="font-medium">
+                                                {item.etudiant.prenom}
+                                            </span>
+                                        </td>
+                                        {resultatsDetailles.evaluation.matieres.map((matiere) => {
+                                            const note = item.notes.find(n => n.matiere._id === matiere._id);
+                                            return (
+                                                <td key={matiere._id} className="py-4 px-2 text-center">
+                                                    {note ? (
+                                                        note.absent ? (
+                                                            <span className="text-danger font-medium">ABS</span>
+                                                        ) : (
+                                                            <span className={`font-semibold ${
+                                                                note.noteRamenee20 >= 10 ? 'text-success' : 'text-danger'
+                                                            }`}>
+                                                                {note.noteRamenee20.toFixed(2)}
+                                                            </span>
+                                                        )
+                                                    ) : (
+                                                        <span className="text-gray-400">-</span>
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                        <td className="py-4 px-4 text-center bg-gray-50 dark:bg-gray-800">
+                                            <span className="font-bold">
+                                                {item.totalPoints > 0 ? item.totalPoints.toFixed(2) : '-'}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-4 text-center bg-gray-50 dark:bg-gray-800">
+                                            <span className="font-bold">
+                                                {item.totalCoefficients > 0 ? item.totalCoefficients : '-'}
+                                            </span>
                                         </td>
                                         <td className="py-4 px-4 text-center">
                                             {item.moyenne !== null ? (
-                                                <span className={`text-xl font-bold ${
-                                                    item.moyenne >= 10 ? 'text-success' : 'text-danger'
+                                                <span className={`text-xl font-bold px-3 py-1 rounded ${
+                                                    item.moyenne >= 10 
+                                                        ? 'bg-success text-white' 
+                                                        : 'bg-danger text-white'
                                                 }`}>
                                                     {item.moyenne.toFixed(2)}
                                                 </span>
@@ -467,14 +566,15 @@ const ResultatsEtudiants = () => {
                                                 <span className="text-gray-400">-</span>
                                             )}
                                         </td>
-                                        <td className="py-4 px-4 text-center">
-                                            {item.moyenne !== null && (
-                                                <span className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${
-                                                    item.moyenne >= 10 ? 'bg-success text-white' : 'bg-danger text-white'
-                                                }`}>
-                                                    {item.moyenne >= 10 ? t('label.admis') : t('label.non_admis')}
-                                                </span>
-                                            )}
+                                        <td className="py-4 px-4">
+                                            <span className={`font-bold text-lg ${
+                                                item.rang === 1 ? 'text-yellow-500' :
+                                                item.rang === 2 ? 'text-gray-400' :
+                                                item.rang === 3 ? 'text-orange-600' :
+                                                'text-primary'
+                                            }`}>
+                                                {item.rang || '-'}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}
@@ -487,4 +587,4 @@ const ResultatsEtudiants = () => {
     );
 };
 
-export default ResultatsEtudiants;
+export default AffichageResultats;

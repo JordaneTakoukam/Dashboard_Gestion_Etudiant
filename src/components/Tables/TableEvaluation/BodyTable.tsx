@@ -79,8 +79,8 @@ const BodyTable = ({ data, onEdit }: BodyEvaluationProps) => {
 
                     {/* Statut */}
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark">
-                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium text-white ${getStatutBadge(item.statut)}`}>
-                            {t(`evaluation.statut.${item.statut.toLowerCase()}`)}
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium  ${getStatutBadge(item.statut)}`}>
+                            {t(`label.${item.statut.toLowerCase()}`)}
                         </span>
                     </td>
 
@@ -97,7 +97,7 @@ const BodyTable = ({ data, onEdit }: BodyEvaluationProps) => {
                     <td className="border-b border-[#eee] py-3 px-4 dark:border-strokedark flex justify-center items-center">
                         <ButtonCrudTable
                             onClickEdit={
-                                hasManageEvaluationPermission && item.statut === 'BROUILLON'
+                                hasManageEvaluationPermission 
                                     ? () => {
                                         onEdit(item);
                                         dispatch(setShowModal());

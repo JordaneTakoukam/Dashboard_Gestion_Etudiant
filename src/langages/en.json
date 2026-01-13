@@ -114,6 +114,13 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "total_note_coef": "Total score",
+    "total_coef": "Total coefficient",
+    "rang": "Rank",
+    "moyenne": "Average",
+    "maximum": "Maximum",
+    "minimum": "Minimum",
+    "taux_reussite": "Pass Rate",
     "appreciation":"Appreciation",
     "anonymat":"Anonymity numbers",
     "brouillon": "Draft",
@@ -122,6 +129,9 @@
     "publiee": "Published",
     "verrouillee": "Locked",
     "verrouille": "Locked",
+    "programmee": "Scheduled",
+    "correction": "Grading",
+    "deliberation": "Deliberation",
 
     "resultats_non_disponibles": "Results not available",
     "resultats_pas_encore_publies": "Results not yet published",
@@ -427,6 +437,14 @@
     "enseignement": "a teaching"
   },
   "boutton": {
+    "exporter":"Export",
+    "exporter_excel":"Export(Excel)",
+    "deliberer": "Deliberate",
+    "publier_resultats": "Publish Results",
+    "verrouiller_notes": "Lock Grades",
+    "masquer_stats": "Hide Statistics",
+    "afficher_stats": "Show Statistics",
+
     "enregistrement": "Save...",
     "reinitialiser": "Reset",
     "verifier":"Verify",

@@ -38,7 +38,23 @@ const GestionCoefficients = () => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [selectedAnnee, setSelectedAnnee] = useState<number>(currentYear);
     const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemestre);
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const [currentClasse, setCurrentClasse] = useState<string>("")
 
+    useEffect(() => {
+        if(selectedEvaluation){
+            const currentNiveau = niveaux.find(niveau => niveau._id === selectedEvaluation?.niveau)
+            const currentCycle = cycles.find(cycle=>cycle._id===currentNiveau?.cycle)
+            const currentSection = sections.find(sec=>sec._id===currentCycle?.section)
+            const sectionLib = lang === "fr"?currentSection?.libelleFr:currentSection?.libelleEn;
+            const cycleLib = lang === "fr"?currentCycle?.libelleFr:currentCycle?.libelleEn;
+            const niveauLib = lang === "fr"?currentNiveau?.libelleFr:currentNiveau?.libelleEn;
+            setCurrentClasse(sectionLib!+cycleLib!+niveauLib)
+        }
+        
+    }, [selectedEvaluation]);
+    
     // Charger les matières et coefficients du niveau
     useEffect(() => {
         if (selectedEvaluation?.niveau) {
@@ -189,9 +205,9 @@ const GestionCoefficients = () => {
                     {/* <h3 className="font-medium text-lg mb-2">
                         {t('label.gestion_coefficients')}
                     </h3> */}
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {t('label.niveau')}: {niveau ? (lang === 'fr' ? niveau.libelleFr : niveau.libelleEn) : '-'}
-                    </p>
+                    <h3 className="font-medium text-lg mb-2">
+                        {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
+                    </h3>
                 </div>
 
                 {/* Filtres Année/Semestre */}

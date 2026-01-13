@@ -40,6 +40,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
     const [descriptionFr, setDescriptionFr] = useState("");
     const [descriptionEn, setDescriptionEn] = useState("");
     const [type, setType] = useState<string>("CONTROLE_CONTINU");
+    const [statut, setStatut] = useState<string>("BROUILLON");
     const [section, setSection] = useState<SectionProps>();
     const [cycle, setCycle] = useState<CycleProps>();
     const [niveau, setNiveau] = useState<NiveauProps>();
@@ -118,6 +119,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             setDescriptionFr(evaluation.descriptionFr || "");
             setDescriptionEn(evaluation.descriptionEn || "");
             setType(evaluation.type);
+            setStatut(evaluation.statut);
             setSection(currentSection)
             setCycle(currentCycle);
             setNiveau(currentNiveau);
@@ -140,6 +142,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
         setDescriptionFr("");
         setDescriptionEn("");
         setType("CONTROLE_CONTINU");
+        setStatut("BROUILLON");
         setNiveau(undefined);
         setAnnee(currentYear);
         setSemestre(currentSemestre);
@@ -284,6 +287,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             descriptionFr,
             descriptionEn,
             type: type as any,
+            statut:statut as any,
             niveau: niveau._id!,
             annee,
             semestre,
@@ -330,6 +334,17 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
         { value: 'AUTRE', label: t('label.autre') }
     ];
 
+    const statutsEvaluation = [
+        { value: 'BROUILLON', label: t('label.brouillon') },
+        { value: 'PROGRAMMEE', label: t('label.programmee') },
+        { value: 'EN_COURS', label: t('label.en_cours') },
+        { value: 'CORRECTION', label: t('label.correction') },
+        { value: 'DELIBERATION', label: t('label.deliberation') },
+        { value: 'PUBLIEE', label: t('label.publiee') },
+        { value: 'VERROUILEE', label: t('label.verrouillee') }
+    ];
+
+
     return (
         <CustomDialogModal
             title={modalTitle}
@@ -368,6 +383,17 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
                 >
                     {typesEvaluation.map(t => (
                         <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                </select>
+
+                <label>{t('label.statut')}</label>
+                <select
+                    value={statut}
+                    onChange={(e) => setStatut(e.target.value)}
+                    className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary mb-3"
+                >
+                    {statutsEvaluation.map(s => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
                     ))}
                 </select>
 

@@ -38,6 +38,24 @@ const GestionNotes = () => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const currentUser: UserState = useSelector((state: RootState) => state.user);
 
+    const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
+    const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
+    const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
+    const [currentClasse, setCurrentClasse] = useState<string>("")
+
+    useEffect(() => {
+        if(selectedEvaluation){
+            const currentNiveau = niveaux.find(niveau => niveau._id === selectedEvaluation?.niveau)
+            const currentCycle = cycles.find(cycle=>cycle._id===currentNiveau?.cycle)
+            const currentSection = sections.find(sec=>sec._id===currentCycle?.section)
+            const sectionLib = lang === "fr"?currentSection?.libelleFr:currentSection?.libelleEn;
+            const cycleLib = lang === "fr"?currentCycle?.libelleFr:currentCycle?.libelleEn;
+            const niveauLib = lang === "fr"?currentNiveau?.libelleFr:currentNiveau?.libelleEn;
+            setCurrentClasse(sectionLib!+cycleLib!+niveauLib)
+        }
+        
+    }, [selectedEvaluation]);
+
     // Charger les notes quand une matière est sélectionnée
     useEffect(() => {
         if (selectedEvaluation && selectedMatiere) {
@@ -153,9 +171,9 @@ const GestionNotes = () => {
             <Breadcrumb pageName={t('sub_menu.gestion_notes')} />
 
             <div className="rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark mb-5">
-                <h3 className="font-medium text-lg mb-4">
-                    {lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}
-                </h3>
+                <h3 className="font-medium text-lg mb-2">
+                        {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
+                    </h3>
 
                 {/* Sélection matière */}
                 <div className="mb-5">

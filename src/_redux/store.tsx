@@ -29,6 +29,7 @@ import SupportDeCoursReducer from "./features/support_cours_slice.tsx";
 import EvaluationReducer from "./features/evaluation_slice.tsx";
 import NoteReducer from "./features/note_slice.tsx";
 import CoefficientReducer from "./features/coefficient_slice.tsx";
+import ResultatReducer from "./features/resultat_slice.tsx";
 
 const store = configureStore({
   reducer: {
@@ -60,6 +61,7 @@ const store = configureStore({
     evaluationSlice:EvaluationReducer,
     noteSlice:NoteReducer,
     coefficientSlice:CoefficientReducer,
+    resultatSlice:ResultatReducer,
 
     signalementAbsence: SignalementAbsence,
     notifications: notificationReducer,

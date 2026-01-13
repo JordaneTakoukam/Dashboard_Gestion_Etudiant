@@ -16,7 +16,7 @@ import {
 import createToast from "../../hooks/toastify";
 import { setNoteLoading, setNotes } from "../../_redux/features/note_slice";
 import Loading from "../../components/ui/loading";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
 
 const GestionNotes = () => {
     const { t } = useTranslation();
@@ -36,6 +36,7 @@ const GestionNotes = () => {
     const [copieBlanche, setCopieBlanche] = useState<boolean>(false);
     const [anonymatValide, setAnonymatValide] = useState<boolean | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isVerifying, setIsVerifying] = useState<boolean>(false);
     const currentUser: UserState = useSelector((state: RootState) => state.user);
 
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
@@ -84,15 +85,20 @@ const GestionNotes = () => {
     const handleVerifierAnonymat = async () => {
         if (!numeroAnonymat || !selectedEvaluation?._id) return;
 
+        setIsVerifying(true);
         try {
             const result = await apiVerifierAnonymat(numeroAnonymat, selectedEvaluation._id);
             setAnonymatValide(result.valide);
             if (!result.valide) {
                 createToast(result.message, "", 2);
+            } else {
+                createToast(t('label.anonymat_valide'), "", 0);
             }
         } catch (error) {
             setAnonymatValide(false);
             createToast(t('label.anonymat_invalide'), "", 2);
+        } finally {
+            setIsVerifying(false);
         }
     };
 
@@ -188,7 +194,6 @@ const GestionNotes = () => {
                         <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}</option>
                         {selectedEvaluation.matieres.map(m => (
                             <option key={m.matiere!._id} value={m.matiere!._id}>
-                                {/* Afficher le nom de la matière - à adapter */}
                                 {lang==="fr"?m.matiere!.libelleFr:m.matiere!.libelleEn}
                             </option>
                         ))}
@@ -215,13 +220,16 @@ const GestionNotes = () => {
                                             setAnonymatValide(null);
                                         }}
                                         placeholder="AN2024-123456"
-                                        className="flex-1 rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
+                                        disabled={isVerifying}
+                                        className="flex-1 rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                                     />
                                     <button
                                         onClick={handleVerifierAnonymat}
-                                        className="px-6 py-3 bg-primary text-white rounded hover:bg-opacity-90"
+                                        disabled={isVerifying || !numeroAnonymat}
+                                        className="px-6 py-3 bg-primary text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                                     >
-                                        {t('boutton.verifier')}
+                                        {isVerifying && <FaSpinner className="animate-spin" />}
+                                        {isVerifying ? "" : t('boutton.verifier')}
                                     </button>
                                 </div>
                                 {anonymatValide !== null && (
@@ -252,6 +260,7 @@ const GestionNotes = () => {
                                             type="checkbox"
                                             checked={absent}
                                             onChange={(e) => setAbsent(e.target.checked)}
+                                            disabled={isSubmitting}
                                         />
                                         <span className="text-sm">{t('label.absent')}</span>
                                     </label>
@@ -263,8 +272,8 @@ const GestionNotes = () => {
                                     step="0.25"
                                     value={note}
                                     onChange={(e) => setNote(e.target.value)}
-                                    disabled={absent}
-                                    className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200"
+                                    disabled={absent || isSubmitting}
+                                    className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                                 />
                             </div>
 
@@ -278,7 +287,8 @@ const GestionNotes = () => {
                                         value={appreciationFr}
                                         onChange={(e) => setAppreciationFr(e.target.value)}
                                         rows={3}
-                                        className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
+                                        disabled={isSubmitting}
+                                        className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                                     />
                                 </div>
                                 <div>
@@ -289,7 +299,8 @@ const GestionNotes = () => {
                                         value={appreciationEn}
                                         onChange={(e) => setAppreciationEn(e.target.value)}
                                         rows={3}
-                                        className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
+                                        disabled={isSubmitting}
+                                        className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                                     />
                                 </div>
                             </div>
@@ -301,6 +312,7 @@ const GestionNotes = () => {
                                         type="checkbox"
                                         checked={fraude}
                                         onChange={(e) => setFraude(e.target.checked)}
+                                        disabled={isSubmitting}
                                     />
                                     <span className="text-sm">{t('label.fraude')}</span>
                                 </label>
@@ -309,6 +321,7 @@ const GestionNotes = () => {
                                         type="checkbox"
                                         checked={copieBlanche}
                                         onChange={(e) => setCopieBlanche(e.target.checked)}
+                                        disabled={isSubmitting}
                                     />
                                     <span className="text-sm">{t('label.copie_blanche')}</span>
                                 </label>
@@ -319,13 +332,15 @@ const GestionNotes = () => {
                                 <button
                                     onClick={handleSaisirNote}
                                     disabled={isSubmitting || !anonymatValide}
-                                    className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400"
+                                    className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
-                                    {isSubmitting ? t('boutton.enregistrement') : t('boutton.enregistrer')}
+                                    {isSubmitting && <FaSpinner className="animate-spin" />}
+                                    {isSubmitting ? "" : t('boutton.enregistrer')}
                                 </button>
                                 <button
                                     onClick={resetForm}
-                                    className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-opacity-90"
+                                    disabled={isSubmitting}
+                                    className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 >
                                     {t('boutton.reinitialiser')}
                                 </button>
@@ -353,9 +368,6 @@ const GestionNotes = () => {
                                                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                                                     {t('label.appreciation')}
                                                 </th>
-                                                {/* <th className="py-4 px-4 font-medium text-black dark:text-white">
-                                                    {t('label.statut')}
-                                                </th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -370,15 +382,6 @@ const GestionNotes = () => {
                                                     <td className="py-3 px-4">
                                                         {lang === 'fr' ? n.appreciationFr : n.appreciationEn}
                                                     </td>
-                                                    {/* <td className="py-3 px-4">
-                                                        <span className={`px-3 py-1 rounded-full text-xs ${
-                                                            n.statut === 'SAISIE' ? 'bg-blue-500 text-white' :
-                                                            n.statut === 'VALIDEE' ? 'bg-green-500 text-white' :
-                                                            'bg-gray-500 text-white'
-                                                        }`}>
-                                                            {t(`label.${n.statut.toLowerCase()}`)}
-                                                        </span>
-                                                    </td> */}
                                                 </tr>
                                             ))}
                                         </tbody>

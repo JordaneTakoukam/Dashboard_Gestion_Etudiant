@@ -21,7 +21,7 @@ import {
     clearResultats
 } from "../../_redux/features/resultat_slice";
 import Loading from "../../components/ui/loading";
-import { FaCheckCircle, FaTimesCircle, FaLock, FaEye, FaDownload, FaChartBar } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaLock, FaEye, FaDownload, FaChartBar, FaSpinner } from "react-icons/fa";
 import { config } from "../../config";
 import { updateEvaluationStatut } from "../../_redux/features/evaluation_slice";
 
@@ -37,6 +37,10 @@ const AffichageResultats = () => {
     const pageIsLoading = useSelector((state: RootState) => state.resultatSlice.pageIsLoading);
     
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const [isDeliberating, setIsDeliberating] = useState<boolean>(false);
+    const [isPublishing, setIsPublishing] = useState<boolean>(false);
+    const [isLocking, setIsLocking] = useState<boolean>(false);
+    const [isExporting, setIsExporting] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [showStats, setShowStats] = useState<boolean>(true);
 
@@ -95,7 +99,7 @@ const AffichageResultats = () => {
 
         dispatch(setResultatLoading(true));
         try {
-            const result = await getMesResultatsDetailles(selectedEvaluation._id);
+            const result = await getMesResultatsDetailles(selectedEvaluation._id, currentUser._id);
             dispatch(setMesResultatsDetailles({ resultats: result }));
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -116,6 +120,7 @@ const AffichageResultats = () => {
         }
 
         setIsProcessing(true);
+        setIsDeliberating(true);
         try {
             const response = await apiDelibererEvaluation(selectedEvaluation._id, currentUser._id);
             if (response.success) {
@@ -132,6 +137,7 @@ const AffichageResultats = () => {
             createToast(error.response?.data?.message?.[lang] || t('message.erreur'), '', 2);
         } finally {
             setIsProcessing(false);
+            setIsDeliberating(false);
         }
     };
 
@@ -143,6 +149,7 @@ const AffichageResultats = () => {
         }
 
         setIsProcessing(true);
+        setIsPublishing(true);
         try {
             const response = await apiPublierResultats(selectedEvaluation._id);
             if (response.success) {
@@ -158,6 +165,7 @@ const AffichageResultats = () => {
             createToast(error.response?.data?.message?.[lang] || t('message.erreur'), '', 2);
         } finally {
             setIsProcessing(false);
+            setIsPublishing(false);
         }
     };
 
@@ -169,6 +177,7 @@ const AffichageResultats = () => {
         }
 
         setIsProcessing(true);
+        setIsLocking(true);
         try {
             const response = await apiVerrouillerNotes(selectedEvaluation._id);
             if (response.success) {
@@ -184,12 +193,14 @@ const AffichageResultats = () => {
             createToast(error.response?.data?.message?.[lang] || t('message.erreur'), '', 2);
         } finally {
             setIsProcessing(false);
+            setIsLocking(false);
         }
     };
 
     const handleExportExcel = async () => {
         if (!selectedEvaluation?._id) return;
 
+        setIsExporting(true);
         try {
             const blob = await exporterResultatsExcel(selectedEvaluation._id, currentClasse);
             const url = window.URL.createObjectURL(blob);
@@ -203,6 +214,8 @@ const AffichageResultats = () => {
             createToast(t('message.export_reussi'), '', 0);
         } catch (error) {
             createToast(t('message.erreur_export'), '', 2);
+        } finally {
+            setIsExporting(false);
         }
     };
 
@@ -373,38 +386,40 @@ const AffichageResultats = () => {
                             <button
                                 onClick={handleDeliberer}
                                 disabled={isProcessing}
-                                className="px-6 py-3 bg-primary text-white rounded hover:bg-opacity-90 disabled:bg-gray-400"
+                                className="px-6 py-3 bg-primary text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                {t('boutton.deliberer')}
+                                {isDeliberating && <FaSpinner className="animate-spin" />}
+                                {isDeliberating ? "" : t('boutton.deliberer')}
                             </button>
                         )}
                         {selectedEvaluation.statut === 'DELIBERATION' && (
                             <button
                                 onClick={handlePublier}
                                 disabled={isProcessing}
-                                className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 flex items-center gap-2"
+                                className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                <FaEye />
-                                {t('boutton.publier_resultats')}
+                                {isPublishing ? <FaSpinner className="animate-spin" /> : <FaEye />}
+                                {isPublishing ? "" : t('boutton.publier_resultats')}
                             </button>
                         )}
                         {selectedEvaluation.statut === 'PUBLIEE' && !selectedEvaluation.notesVerrouillees && (
                             <button
                                 onClick={handleVerrouiller}
                                 disabled={isProcessing}
-                                className="px-6 py-3 bg-danger text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 flex items-center gap-2"
+                                className="px-6 py-3 bg-danger text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                <FaLock />
-                                {t('boutton.verrouiller_notes')}
+                                {isLocking ? <FaSpinner className="animate-spin" /> : <FaLock />}
+                                {isLocking ? "" : t('boutton.verrouiller_notes')}
                             </button>
                         )}
                         {resultatsDetailles && (
                             <button
                                 onClick={handleExportExcel}
-                                className="px-6 py-3 bg-warning text-white rounded hover:bg-opacity-90 flex items-center gap-2"
+                                disabled={isExporting}
+                                className="px-6 py-3 bg-warning text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                                <FaDownload />
-                                {t('boutton.exporter_excel')}
+                                {isExporting ? <FaSpinner className="animate-spin" /> : <FaDownload />}
+                                {isExporting ? "": t('boutton.exporter_excel')}
                             </button>
                         )}
                         <button

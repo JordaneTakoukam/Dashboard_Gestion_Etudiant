@@ -17,7 +17,7 @@ import {
     updateCoefficient
 } from "../../_redux/features/coefficient_slice";
 import Loading from "../../components/ui/loading";
-import { FaSave, FaEdit, FaCheckCircle } from "react-icons/fa";
+import { FaSave, FaEdit, FaCheckCircle, FaSpinner } from "react-icons/fa";
 import { getMatieresByNiveau } from "../../api/api_matiere";
 
 const GestionCoefficients = () => {
@@ -36,6 +36,7 @@ const GestionCoefficients = () => {
     const [coefficientsEdited, setCoefficientsEdited] = useState<{ [key: string]: number }>({});
     const [editingMatiere, setEditingMatiere] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [submittingMatiere, setSubmittingMatiere] = useState<string | null>(null);
     const [selectedAnnee, setSelectedAnnee] = useState<number>(currentYear);
     const [selectedSemestre, setSelectedSemestre] = useState<number>(currentSemestre);
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
@@ -121,6 +122,7 @@ const GestionCoefficients = () => {
         }
 
         setIsSubmitting(true);
+        setSubmittingMatiere(matiereId);
         try {
             const response = await apiSetCoefficient({
                 matiere: matiereId,
@@ -159,6 +161,7 @@ const GestionCoefficients = () => {
             createToast(error.response?.data?.message?.[lang] || t('message.erreur'), '', 2);
         } finally {
             setIsSubmitting(false);
+            setSubmittingMatiere(null);
         }
     };
 
@@ -202,9 +205,6 @@ const GestionCoefficients = () => {
             <div className="rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
                 {/* En-tête */}
                 <div className="mb-6">
-                    {/* <h3 className="font-medium text-lg mb-2">
-                        {t('label.gestion_coefficients')}
-                    </h3> */}
                     <h3 className="font-medium text-lg mb-2">
                         {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
                     </h3>
@@ -235,16 +235,6 @@ const GestionCoefficients = () => {
                             <option value={1}>{t('label.semestre')} 1</option>
                             <option value={2}>{t('label.semestre')} 2</option>
                         </select>
-                    </div>
-                    <div className="flex items-end">
-                        <button
-                            onClick={handleSaveAllCoefficients}
-                            disabled={isSubmitting || Object.keys(coefficientsEdited).length === 0}
-                            className="w-full px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 flex items-center justify-center gap-2"
-                        >
-                            <FaSave />
-                            {t('boutton.tout_enregistrer')}
-                        </button>
                     </div>
                 </div>
 
@@ -279,6 +269,7 @@ const GestionCoefficients = () => {
                                     const isEditing = editingMatiere === matiere._id;
                                     const hasChanges = coefficientsEdited[matiere._id!] !== undefined;
                                     const currentCoef = getCoefficientValue(matiere._id!);
+                                    const isCurrentlySubmitting = submittingMatiere === matiere._id;
 
                                     return (
                                         <tr key={matiere._id} className="border-b dark:border-strokedark">
@@ -301,6 +292,7 @@ const GestionCoefficients = () => {
                                                         onChange={(e) => handleCoefficientChange(matiere._id!, parseFloat(e.target.value))}
                                                         className="w-24 rounded border border-stroke bg-gray py-2 px-3 text-center text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
                                                         autoFocus
+                                                        disabled={isCurrentlySubmitting}
                                                     />
                                                 ) : (
                                                     <span className={`font-medium ${hasChanges ? 'text-primary' : ''}`}>
@@ -322,10 +314,15 @@ const GestionCoefficients = () => {
                                                     <div className="flex gap-2 justify-center">
                                                         <button
                                                             onClick={() => handleSaveCoefficient(matiere._id!)}
-                                                            disabled={isSubmitting}
-                                                            className="px-4 py-2 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400"
+                                                            disabled={isCurrentlySubmitting}
+                                                            className="px-4 py-2 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                                                         >
-                                                            <FaSave />
+                                                            {isCurrentlySubmitting ? (
+                                                                <FaSpinner className="animate-spin" />
+                                                            ) : (
+                                                                <FaSave />
+                                                            )}
+                                                            {/* {isCurrentlySubmitting ? () : ''} */}
                                                         </button>
                                                         <button
                                                             onClick={() => {
@@ -334,7 +331,8 @@ const GestionCoefficients = () => {
                                                                 delete newEdited[matiere._id!];
                                                                 setCoefficientsEdited(newEdited);
                                                             }}
-                                                            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-opacity-90"
+                                                            disabled={isCurrentlySubmitting}
+                                                            className="px-4 py-2 bg-gray-500 rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                                         >
                                                             {t('boutton.annuler')}
                                                         </button>
@@ -342,7 +340,8 @@ const GestionCoefficients = () => {
                                                 ) : (
                                                     <button
                                                         onClick={() => setEditingMatiere(matiere._id!)}
-                                                        className="px-4 py-2 bg-primary text-white rounded hover:bg-opacity-90 flex items-center gap-2 mx-auto"
+                                                        disabled={isSubmitting}
+                                                        className="px-4 py-2 bg-primary text-white rounded hover:bg-opacity-90 flex items-center gap-2 mx-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
                                                     >
                                                         <FaEdit />
                                                         {t('boutton.modifier')}
@@ -356,13 +355,6 @@ const GestionCoefficients = () => {
                         </table>
                     </div>
                 )}
-
-                {/* Aide */}
-                {/* <div className="mt-6 p-4 bg-blue-50 dark:bg-meta-4 rounded">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <strong>{t('label.note')}:</strong> {t('help.coefficients_info')}
-                    </p>
-                </div> */}
             </div>
         </>
     );

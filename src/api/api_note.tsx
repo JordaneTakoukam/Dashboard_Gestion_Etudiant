@@ -54,7 +54,7 @@ export async function getResultatsDetailles(evaluationId: string): Promise<Resul
 /**
  * Obtenir mes résultats détaillés pour une évaluation (ÉTUDIANT)
  */
-export async function getMesResultatsDetailles(evaluationId: string): Promise<MesResultatsDetaillesType> {
+export async function getMesResultatsDetailles(evaluationId: string, etudiantId:string): Promise<MesResultatsDetaillesType> {
     try {
         const response: AxiosResponse<any> = await axios.get(
             `${api}/mes-resultats/${evaluationId}`,
@@ -63,6 +63,9 @@ export async function getMesResultatsDetailles(evaluationId: string): Promise<Me
                     'Content-Type': 'application/json',
                     'token': token,
                 },
+                params:{
+                    etudiantId
+                }
             },
         );
         return response.data.data;

@@ -53,6 +53,7 @@ const ResultatsEtudiants = () => {
         setIsLoading(true);
         try {
             const result = await calculerMoyennes(selectedEvaluation._id);
+            
             setMoyennes(result);
         } catch (error: any) {
             if (error.response?.status === 403) {

@@ -8,7 +8,9 @@ const token = localStorage.getItem(wstjqer);
 
 
 
-export async function apiSaisirNote(noteData: Partial<NoteType>): Promise<ReponseApiPros> {
+
+export async function apiSaisirNote(noteData: {evaluation: string, matiere: string, anonymat:string, note: number, appreciationFr: string, appreciationEn : string, 
+absent:boolean, fraude : boolean, copieBlanche : boolean, saisiePar:string, modifiePar:string}): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/saisir`,

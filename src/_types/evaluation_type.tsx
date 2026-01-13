@@ -49,12 +49,13 @@ interface AnonymatType {
     raisonInvalidation?: string;
 }
 
+
 // Type pour une note
 interface NoteType {
     _id?: string;
     evaluation: string; // ID de l'évaluation
     matiere: string; // ID de la matière
-    anonymat: string; // ID de l'anonymat
+    anonymat: AnonymatType; // ID de l'anonymat
     etudiant?: string; // ID de l'étudiant (rempli après délibération)
     note: number;
     noteMax: number;

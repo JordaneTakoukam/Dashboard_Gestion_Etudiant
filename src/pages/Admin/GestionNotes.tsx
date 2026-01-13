@@ -171,7 +171,7 @@ const GestionNotes = () => {
                         {selectedEvaluation.matieres.map(m => (
                             <option key={m.matiere!._id} value={m.matiere!._id}>
                                 {/* Afficher le nom de la matière - à adapter */}
-                                {lang==="fr"?m.matiere!.libelleFr:m.matiere!.libelleEn} (Coef: {m.coefficient})
+                                {lang==="fr"?m.matiere!.libelleFr:m.matiere!.libelleEn}
                             </option>
                         ))}
                     </select>
@@ -303,13 +303,13 @@ const GestionNotes = () => {
                                     disabled={isSubmitting || !anonymatValide}
                                     className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400"
                                 >
-                                    {isSubmitting ? t('button.enregistrement') : t('button.enregistrer')}
+                                    {isSubmitting ? t('boutton.enregistrement') : t('boutton.enregistrer')}
                                 </button>
                                 <button
                                     onClick={resetForm}
                                     className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-opacity-90"
                                 >
-                                    {t('button.reinitialiser')}
+                                    {t('boutton.reinitialiser')}
                                 </button>
                             </div>
                         </div>
@@ -335,16 +335,16 @@ const GestionNotes = () => {
                                                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                                                     {t('label.appreciation')}
                                                 </th>
-                                                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                                                {/* <th className="py-4 px-4 font-medium text-black dark:text-white">
                                                     {t('label.statut')}
-                                                </th>
+                                                </th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {notes.map((n, index) => (
                                                 <tr key={index} className="border-b">
                                                     <td className="py-3 px-4">
-                                                        {/* Afficher le numéro d'anonymat */}
+                                                        {n.anonymat.numeroAnonymat}
                                                     </td>
                                                     <td className="py-3 px-4">
                                                         {n.absent ? t('label.absent') : `${n.note}/${n.noteMax}`}
@@ -352,15 +352,15 @@ const GestionNotes = () => {
                                                     <td className="py-3 px-4">
                                                         {lang === 'fr' ? n.appreciationFr : n.appreciationEn}
                                                     </td>
-                                                    <td className="py-3 px-4">
+                                                    {/* <td className="py-3 px-4">
                                                         <span className={`px-3 py-1 rounded-full text-xs ${
                                                             n.statut === 'SAISIE' ? 'bg-blue-500 text-white' :
                                                             n.statut === 'VALIDEE' ? 'bg-green-500 text-white' :
                                                             'bg-gray-500 text-white'
                                                         }`}>
-                                                            {t(`evaluation.statut.${n.statut.toLowerCase()}`)}
+                                                            {t(`label.${n.statut.toLowerCase()}`)}
                                                         </span>
-                                                    </td>
+                                                    </td> */}
                                                 </tr>
                                             ))}
                                         </tbody>

@@ -9,7 +9,7 @@ import StudentSidebarLink from './SideSection/EtudiantSection';
 import TeacherSidebarLink from './SideSection/EnseignantSection';
 import MatiereSidebarLink from './SideSection/MatiereSection';
 import ParametreSidebarLink from './SideSection/ParametreSection';
-import { AbsencesLink, CalendrierAcaLink, DashboardLink, DocumentLink, EmploiTempsLink, SalleCourLink } from './SideSection/SidebarLink';
+import { AbsencesLink, CalendrierAcaLink, DashboardLink, DocumentLink, EmploiTempsLink, EvaluationLink, SalleCourLink } from './SideSection/SidebarLink';
 import AcademicLevelSidebarLink from './SideSection/AcademiqueSection';
 import PedagogieSidebarLink from './SideSection/PedagogieSection';
 import EvaluationSidebarLink from './SideSection/EvalutaionSection';
@@ -159,10 +159,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, userPermissions }: SidebarProps)
                             {/* ! Pedagogie */}
 
                             {/* Evaluation*/}
-                            {userPermissions && <EvaluationSidebarLink
+                            {userPermissions && <EvaluationLink
                                 userPermissions={userPermissions}
-                                sidebarExpanded={sidebarExpanded}
-                                setSidebarExpanded={setSidebarExpanded}
                                 t={t}
                             />}
                             {/* ! Evaluation */}

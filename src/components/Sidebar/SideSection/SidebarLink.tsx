@@ -5,6 +5,7 @@ import { AiOutlineSchedule } from 'react-icons/ai';
 import { TbSchool } from 'react-icons/tb';
 import { FaCalendarAlt, FaCalendarTimes, FaFile } from 'react-icons/fa';
 import { FaDoorOpen } from 'react-icons/fa6';
+import { BsClipboardCheck } from 'react-icons/bs';
 
 interface SidebarLinkProps {
     to: string;
@@ -117,6 +118,17 @@ export const AbsencesLink = ({ userPermissions, t }: { userPermissions: string[]
         icon={<FaCalendarTimes />}
         label="menu.absences"
         permissionsRequired={["consulter_liste_absence"]}
+        userPermissions={userPermissions}
+        t={t}
+    />
+);
+
+// Composant pour les évaluations
+export const EvaluationLink = ({ userPermissions, t }: { userPermissions: string[], t: (key: string) => string }) => (
+    <SidebarLink
+        to="/evaluations/liste"
+        icon={<BsClipboardCheck />}
+        label="menu.evaluations"
         userPermissions={userPermissions}
         t={t}
     />

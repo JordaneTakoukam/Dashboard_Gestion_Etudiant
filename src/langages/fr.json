@@ -114,6 +114,8 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "appreciation":"Appreciation",
+    "anonymat":"Anonymat",
     "brouillon":"Brouillon", 
     "saisie":"Saisie",
     "validee":"Validée",
@@ -423,6 +425,9 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    "enregistrement":"Enregistrement",
+    "reinitialiser":"Réinitialiser",
+    "verifier":"Vérifier",
     "regenerer_anonymats":"Regénérer les anonymats",
     "generation":"Generation...",
     "tout_enregistrer":"Tout enregistrer",

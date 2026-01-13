@@ -43,17 +43,16 @@ function FormDelete({ evaluation }: { evaluation: EvaluationType | null }) {
 
     return (
         <CustomDialogModal
-            title={t('form_delete.supprimer') + ' ' + t('form_delete.evaluation')}
+            title={t('form_delete.supprimer')}
             isModalOpen={isModalOpen}
             isDelete={true}
             closeModal={closeModal}
             handleConfirm={handleDelete}
             isLoading={isLoading}
         >
-            <p>{t('form_delete.confirmation_message')}</p>
             {evaluation && (
-                <p className="font-bold mt-2">
-                    {lang === 'fr' ? evaluation.libelleFr : evaluation.libelleEn}
+                <p>
+                    {t('form_delete.suppression') + t('form_delete.evaluation')} : {lang === 'fr' ? evaluation.libelleFr : evaluation.libelleEn}
                 </p>
             )}
         </CustomDialogModal>

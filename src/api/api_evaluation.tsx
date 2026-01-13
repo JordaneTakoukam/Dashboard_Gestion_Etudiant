@@ -10,7 +10,23 @@ const token = localStorage.getItem(wstjqer);
 // ÉVALUATIONS
 // ========================================
 
-export async function apiCreateEvaluation(evaluationData: Partial<EvaluationType>): Promise<ReponseApiPros> {
+export async function apiCreateEvaluation(evaluationData: { 
+    libelleFr: string,
+    libelleEn: string,
+    descriptionFr: string,
+    descriptionEn: string,
+    type: string,
+    statut: string,
+    niveau: string,
+    annee: number,
+    semestre: number,
+    matieres: {matiere?: string, coefficient: number}[], // Array au lieu d'un seul objet
+    dateEpreuve?: Date, // Optional car peut être undefined
+    dateLimiteSaisie?: Date, // Optional car peut être undefined
+    noteMax: number,
+    noteMin: number,
+    creePar: string
+}): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.post(
             `${api}/create`,
@@ -29,7 +45,23 @@ export async function apiCreateEvaluation(evaluationData: Partial<EvaluationType
     }
 }
 
-export async function apiUpdateEvaluation(evaluationData: Partial<EvaluationType> & { _id: string }): Promise<ReponseApiPros> {
+export async function apiUpdateEvaluation(evaluationData: { 
+    libelleFr: string,
+    libelleEn: string,
+    descriptionFr: string,
+    descriptionEn: string,
+    type: string,
+    statut: string,
+    niveau: string,
+    annee: number,
+    semestre: number,
+    matieres: {matiere?: string, coefficient: number}[], // Array au lieu d'un seul objet
+    dateEpreuve?: Date, // Optional car peut être undefined
+    dateLimiteSaisie?: Date, // Optional car peut être undefined
+    noteMax: number,
+    noteMin: number,
+    creePar: string
+} & { _id: string }): Promise<ReponseApiPros> {
     try {
         const response: AxiosResponse<any> = await axios.put(
             `${api}/update/${evaluationData._id}`,

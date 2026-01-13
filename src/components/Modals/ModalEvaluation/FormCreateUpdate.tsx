@@ -11,7 +11,8 @@ import {
     apiUpdateEvaluation
 } from '../../../api/api_evaluation';
 import {
-    getCoefficientsByNiveau
+    getCoefficientsByNiveau,
+    getLatestCoefficientByMatiere
 } from '../../../api/api_coefficient';
 import {
     getSemestresByNiveau,
@@ -107,7 +108,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
 
     useEffect(() => {
         if (evaluation) {
-             console.log(evaluation)
+            console.log(evaluation)
             const currentNiveau = niveaux.find(n => n._id === evaluation.niveau);
             const currentCycle = currentNiveau && cycles.find(cycle => cycle._id === "" + currentNiveau.cycle);
             const currentSection = currentCycle && sections.find(section => section._id === "" + currentCycle.section);
@@ -129,12 +130,38 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             setDateLimiteSaisie(evaluation.dateLimiteSaisie ? new Date(evaluation.dateLimiteSaisie).toISOString().split('T')[0] : "");
             setNoteMax(evaluation.noteMax);
             setNoteMin(evaluation.noteMin);
-            setMatieres(evaluation.matieres);
+            
+            // Ne pas définir les matières ici directement
+            // On va les "hydrater" dans un autre useEffect quand matieresDisponibles sera chargé
         } else {
             setModalTitle(t('form_save.enregistrer') + ' ' + t('form_save.evaluation'));
             resetForm();
         }
     }, [evaluation, t, niveaux]);
+
+    // Nouveau useEffect pour hydrater les matières lors de l'édition
+    useEffect(() => {
+        if (evaluation && matieresDisponibles.length > 0) {
+            // Hydrater les matières avec les objets complets
+            const matieresHydratees = evaluation.matieres.map(evalMat => {
+                // Si evalMat.matiere est déjà un objet complet avec _id
+                const matiereId = typeof evalMat.matiere === 'string' 
+                    ? evalMat.matiere 
+                    : evalMat.matiere?._id;
+                
+                // Trouver la matière complète dans matieresDisponibles
+                const matiereComplete = matieresDisponibles.find(m => m._id === matiereId);
+                
+                return {
+                    matiere: matiereComplete,
+                    coefficient: evalMat.coefficient
+                };
+            });
+            
+            setMatieres(matieresHydratees);
+            console.log('Matières hydratées:', matieresHydratees);
+        }
+    }, [evaluation, matieresDisponibles]);
 
     const resetForm = () => {
         setLibelleFr("");
@@ -144,6 +171,8 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
         setType("CONTROLE_CONTINU");
         setStatut("BROUILLON");
         setNiveau(undefined);
+        setCycle(undefined);
+        setSection(undefined);
         setAnnee(currentYear);
         setSemestre(currentSemestre);
         setDateEpreuve("");
@@ -253,9 +282,37 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
         setMatieres(newMatieres);
     };
 
-    const handleMatiereChange = (index: number, field: 'matiere' | 'coefficient', value: any) => {
+   const handleMatiereChange = async (index: number, field: 'matiere' | 'coefficient', value: any) => {
         const newMatieres = [...matieres];
-        newMatieres[index] = { ...newMatieres[index], [field]: value };
+        
+        if (field === 'matiere') {
+            // Trouver la matière complète à partir de l'ID
+            const matiereSelectionnee = matieresDisponibles.find(m => m._id === value);
+            newMatieres[index] = { ...newMatieres[index], matiere: matiereSelectionnee };
+            
+            // Récupérer automatiquement le dernier coefficient enregistré
+            if (matiereSelectionnee && niveau?._id) {
+                try {
+                    const result = await getLatestCoefficientByMatiere(matiereSelectionnee._id!, niveau._id);
+                    if (result.success && result.data) {
+                        // Mettre à jour le coefficient avec la valeur récupérée
+                        newMatieres[index].coefficient = result.data.coefficient;
+                        console.log(`Coefficient récupéré pour ${matiereSelectionnee.libelleFr}: ${result.data.coefficient}`);
+                    } else {
+                        // Si aucun coefficient n'est trouvé, utiliser 1 par défaut
+                        newMatieres[index].coefficient = 1;
+                        console.log(`Aucun coefficient trouvé pour ${matiereSelectionnee.libelleFr}, utilisation du coefficient par défaut: 1`);
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la récupération du coefficient:', error);
+                    // En cas d'erreur, garder le coefficient par défaut
+                    newMatieres[index].coefficient = 1;
+                }
+            }
+        } else {
+            newMatieres[index] = { ...newMatieres[index], [field]: value };
+        }
+        
         setMatieres(newMatieres);
         setErrorMatieres("");
     };
@@ -279,7 +336,12 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             return;
         }
 
+        const matieresData = matieres.map(m => ({
+            matiere: m.matiere!._id,
+            coefficient: m.coefficient
+        }));
         setIsLoading(true);
+
 
         const evaluationData = {
             libelleFr,
@@ -291,7 +353,7 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
             niveau: niveau._id!,
             annee,
             semestre,
-            matieres,
+            matieres:matieresData,
             dateEpreuve: dateEpreuve ? new Date(dateEpreuve) : undefined,
             dateLimiteSaisie: dateLimiteSaisie ? new Date(dateLimiteSaisie) : undefined,
             noteMax,
@@ -463,13 +525,15 @@ function FormCreateUpdate({ evaluation }: { evaluation: EvaluationType | null })
                 {matieres.map((mat, index) => (
                     <div key={index} className="flex gap-2 mb-2 items-center">
                         <select
-                            value={ mat.matiere!._id}
+                            value={mat.matiere?._id || ""}
                             onChange={(e) => handleMatiereChange(index, 'matiere', e.target.value)}
                             className="flex-1 rounded border border-stroke bg-gray py-2 pl-4 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         >
                             <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.matiere')}</option>
                             {matieresDisponibles.map(matD => (
-                                <option key={matD._id} value={lang==='fr'?matD.libelleFr:matD.libelleEn}>{lang==='fr'?matD.libelleFr:matD.libelleEn}</option>
+                                <option key={matD._id} value={matD._id}>
+                                    {lang === 'fr' ? matD.libelleFr : matD.libelleEn}
+                                </option>
                             ))}
                         </select>
                         <input

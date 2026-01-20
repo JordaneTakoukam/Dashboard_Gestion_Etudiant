@@ -49,6 +49,8 @@ import GestionCoefficients from '../pages/Admin/GestionCoefficients';
 import GestionAnonymats from '../pages/Admin/GestionAnonymats';
 import ResultatsEtudiants from '../pages/Admin/ResultatsEtudiants';
 import AffichageResultats from '../pages/Admin/AffichageResultats';
+import GestionNotesDiscipline from '../pages/Admin/GestionNotesDiscipline';
+import GestionCoefficientsDiscipline from '../pages/Admin/GestionCoefficientsDiscipline';
 
 
 
@@ -396,6 +398,18 @@ const coreRoutes = [
     path: '/evaluations/resultats',
     title: 'Mes résultats',
     component: AffichageResultats,
+    permissions:["gerer_matieres", "consulter_liste_matieres"]
+  },
+  {
+    path: '/evaluations/discipline',
+    title: 'Saisie discipline',
+    component: GestionNotesDiscipline,
+    permissions:["gerer_matieres", "consulter_liste_matieres"]
+  },
+  {
+    path: '/evaluations/coefficient-discipline',
+    title: 'Saisie coefficient discipline',
+    component: GestionCoefficientsDiscipline,
     permissions:["gerer_matieres", "consulter_liste_matieres"]
   },
 

@@ -1,22 +1,20 @@
-//src/pages/Admin/Evaluations/GestionNotes.tsx
+// src/pages/Admin/Evaluations/GestionNotes.tsx - Version améliorée
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
+import { getNotesByEvaluationMatiere } from "../../api/api_note";
 import {
-    apiSaisirNote,
-    getNotesByEvaluationMatiere,
-} from "../../api/api_note";
-import {
-    apiVerifierAnonymat,
-    getNumerosAnonymatsByEvaluation
+    getAnonymatsDisponibles,
+    rechercherAnonymats,
 } from "../../api/api_anonymat";
 import createToast from "../../hooks/toastify";
 import { setNoteLoading, setNotes } from "../../_redux/features/note_slice";
 import Loading from "../../components/ui/loading";
 import { FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
+import { saisieRapideNote } from "../../api/api_note";
 
 const GestionNotes = () => {
     const { t } = useTranslation();
@@ -26,6 +24,7 @@ const GestionNotes = () => {
     const { data: { notes } } = useSelector((state: RootState) => state.noteSlice);
     const pageIsLoading = useSelector((state: RootState) => state.noteSlice.pageIsLoading);
 
+    // États principaux
     const [selectedMatiere, setSelectedMatiere] = useState<string>("");
     const [numeroAnonymat, setNumeroAnonymat] = useState<string>("");
     const [note, setNote] = useState<string>("");
@@ -37,30 +36,46 @@ const GestionNotes = () => {
     const [anonymatValide, setAnonymatValide] = useState<boolean | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isVerifying, setIsVerifying] = useState<boolean>(false);
-    const currentUser: UserState = useSelector((state: RootState) => state.user);
 
+    // NOUVEAUX ÉTATS pour les améliorations
+    const [anonymatsDisponibles, setAnonymatsDisponibles] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+    const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<number>(-1);
+    const [loadingAnonymats, setLoadingAnonymats] = useState<boolean>(false);
+
+    const currentUser: UserState = useSelector((state: RootState) => state.user);
     const niveaux = useSelector((state: RootState) => state.dataSetting.dataSetting.niveaux);
     const cycles = useSelector((state: RootState) => state.dataSetting.dataSetting.cycles) ?? [];
     const sections = useSelector((state: RootState) => state.dataSetting.dataSetting.sections) ?? [];
-    const [currentClasse, setCurrentClasse] = useState<string>("")
+    const [currentClasse, setCurrentClasse] = useState<string>("");
+
+    // Refs pour la navigation au clavier
+    const anonymatInputRef = useRef<HTMLInputElement>(null);
+    const noteInputRef = useRef<HTMLInputElement>(null);
+    const appreciationFrRef = useRef<HTMLTextAreaElement>(null);
+    const suggestionsRef = useRef<HTMLDivElement>(null);
+
+    // Timer pour le debounce de la vérification automatique
+    const verificationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if(selectedEvaluation){
-            const currentNiveau = niveaux.find(niveau => niveau._id === selectedEvaluation?.niveau)
-            const currentCycle = cycles.find(cycle=>cycle._id===currentNiveau?.cycle)
-            const currentSection = sections.find(sec=>sec._id===currentCycle?.section)
+            const currentNiveau = niveaux.find(niveau => niveau._id === selectedEvaluation?.niveau);
+            const currentCycle = cycles.find(cycle=>cycle._id===currentNiveau?.cycle);
+            const currentSection = sections.find(sec=>sec._id===currentCycle?.section);
             const sectionLib = lang === "fr"?currentSection?.libelleFr:currentSection?.libelleEn;
             const cycleLib = lang === "fr"?currentCycle?.libelleFr:currentCycle?.libelleEn;
             const niveauLib = lang === "fr"?currentNiveau?.libelleFr:currentNiveau?.libelleEn;
-            setCurrentClasse(sectionLib!+cycleLib!+niveauLib)
+            setCurrentClasse(sectionLib!+cycleLib!+niveauLib);
         }
-        
     }, [selectedEvaluation]);
 
     // Charger les notes quand une matière est sélectionnée
     useEffect(() => {
         if (selectedEvaluation && selectedMatiere) {
             fetchNotes();
+            fetchAnonymatsDisponibles();
         }
     }, [selectedEvaluation, selectedMatiere]);
 
@@ -81,27 +96,158 @@ const GestionNotes = () => {
         }
     };
 
-    // Vérifier l'anonymat lors de la saisie
-    const handleVerifierAnonymat = async () => {
-        if (!numeroAnonymat || !selectedEvaluation?._id) return;
+    // NOUVEAU - Charger la liste des anonymats disponibles
+    const fetchAnonymatsDisponibles = async () => {
+        if (!selectedEvaluation?._id || !selectedMatiere) return;
+
+        setLoadingAnonymats(true);
+        try {
+            const result = await getAnonymatsDisponibles(
+                selectedEvaluation._id,
+                selectedMatiere
+            );
+            setAnonymatsDisponibles(result.anonymats || []);
+        } catch (error) {
+            console.error("Erreur lors du chargement des anonymats:", error);
+        } finally {
+            setLoadingAnonymats(false);
+        }
+    };
+
+    // NOUVEAU - Vérification automatique avec debounce
+    const handleAnonymatChange = useCallback((value: string) => {
+        setNumeroAnonymat(value);
+        setAnonymatValide(null);
+        
+        // Nettoyer le timer précédent
+        if (verificationTimerRef.current) {
+            clearTimeout(verificationTimerRef.current);
+        }
+
+        // Si le champ est vide, masquer les suggestions
+        if (!value.trim()) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        // Rechercher dans les suggestions (autocomplétion locale d'abord)
+        const matches = anonymatsDisponibles.filter(a => 
+            a.numeroAnonymat.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(matches);
+        setShowSuggestions(matches.length > 0);
+        setSelectedSuggestionIndex(-1);
+
+        // Si on a une correspondance exacte, vérifier automatiquement
+        const exactMatch = matches.find(a => 
+            a.numeroAnonymat.toLowerCase() === value.toLowerCase()
+        );
+
+        if (exactMatch) {
+            setAnonymatValide(true);
+            setShowSuggestions(false);
+        } else if (value.length >= 5) {
+            // Vérification automatique après 500ms de pause
+            verificationTimerRef.current = setTimeout(() => {
+                verifierAnonymatAuto(value);
+            }, 500);
+        }
+    }, [anonymatsDisponibles]);
+
+    // NOUVEAU - Vérification automatique
+    const verifierAnonymatAuto = async (numAnonymat: string) => {
+        if (!numAnonymat || !selectedEvaluation?._id) return;
 
         setIsVerifying(true);
         try {
-            const result = await apiVerifierAnonymat(numeroAnonymat, selectedEvaluation._id);
-            setAnonymatValide(result.valide);
-            if (!result.valide) {
-                createToast(result.message, "", 2);
+            const result = await rechercherAnonymats(
+                selectedEvaluation._id,
+                numAnonymat,
+                selectedMatiere
+            );
+            
+            if (result.anonymats && result.anonymats.length > 0) {
+                const match = result.anonymats.find(
+                    (a: any) => a.numeroAnonymat.toLowerCase() === numAnonymat.toLowerCase()
+                );
+                
+                if (match) {
+                    setAnonymatValide(true);
+                    createToast(t('label.anonymat_valide'), "", 0);
+                } else {
+                    setAnonymatValide(false);
+                    setSuggestions(result.anonymats);
+                    setShowSuggestions(true);
+                }
             } else {
-                createToast(t('label.anonymat_valide'), "", 0);
+                setAnonymatValide(false);
+                createToast(t('label.anonymat_invalide'), "", 2);
             }
         } catch (error) {
             setAnonymatValide(false);
-            createToast(t('label.anonymat_invalide'), "", 2);
         } finally {
             setIsVerifying(false);
         }
     };
 
+    // NOUVEAU - Gestion de la navigation au clavier
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!showSuggestions) {
+            // Navigation entre les champs
+            if (e.key === 'Enter' && anonymatValide) {
+                e.preventDefault();
+                if (absent) {
+                    handleSaisirNote();
+                } else {
+                    noteInputRef.current?.focus();
+                }
+            }
+            return;
+        }
+
+        // Navigation dans les suggestions
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                setSelectedSuggestionIndex(prev => 
+                    prev < suggestions.length - 1 ? prev + 1 : prev
+                );
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                setSelectedSuggestionIndex(prev => prev > 0 ? prev - 1 : 0);
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
+                    selectSuggestion(suggestions[selectedSuggestionIndex]);
+                }
+                break;
+            case 'Escape':
+                setShowSuggestions(false);
+                setSelectedSuggestionIndex(-1);
+                break;
+        }
+    };
+
+    // NOUVEAU - Sélectionner une suggestion
+    const selectSuggestion = (anonymat: any) => {
+        setNumeroAnonymat(anonymat.numeroAnonymat);
+        setAnonymatValide(true);
+        setShowSuggestions(false);
+        setSuggestions([]);
+        setSelectedSuggestionIndex(-1);
+        
+        // Focus sur le champ de note si pas absent
+        setTimeout(() => {
+            if (!absent) {
+                noteInputRef.current?.focus();
+            }
+        }, 100);
+    };
+
+    // AMÉLIORÉ - Saisie rapide avec validation intégrée
     const handleSaisirNote = async () => {
         if (!selectedEvaluation?._id || !selectedMatiere || !numeroAnonymat) {
             createToast(t('error.champs_requis'), "", 2);
@@ -113,40 +259,52 @@ const GestionNotes = () => {
             return;
         }
 
-        if (!anonymatValide) {
-            createToast(t('label.verifier_anonymat_dabord'), "", 2);
-            return;
-        }
-
         setIsSubmitting(true);
         try {
-            const response = await apiSaisirNote({
+            const response = await saisieRapideNote({
                 evaluation: selectedEvaluation._id,
                 matiere: selectedMatiere,
-                anonymat:numeroAnonymat,
+                anonymat: numeroAnonymat,
                 note: absent ? 0 : parseFloat(note),
                 appreciationFr,
                 appreciationEn,
                 absent,
                 fraude,
                 copieBlanche,
-                saisiePar:currentUser._id,
-                modifiePar:currentUser._id
+                saisiePar: currentUser._id,
+                modifiePar: currentUser._id
             });
 
             if (response.success) {
                 createToast(response.message[lang as keyof typeof response.message], '', 0);
-                // Réinitialiser le formulaire
                 resetForm();
-                // Recharger les notes
                 fetchNotes();
+                fetchAnonymatsDisponibles();
+                
+                // Focus automatique sur le champ anonymat pour saisie continue
+                setTimeout(() => {
+                    anonymatInputRef.current?.focus();
+                }, 100);
             } else {
                 createToast(response.message[lang as keyof typeof response.message], '', 2);
             }
         } catch (error: any) {
-            createToast(error.response?.data?.message?.[lang] || t('message.erreur'), '', 2);
+            const errorMsg = error.response?.data?.message?.[lang] || t('message.erreur');
+            createToast(errorMsg, '', 2);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    // AMÉLIORÉ - Navigation au clavier pour le champ note
+    const handleNoteKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (appreciationFr || appreciationEn) {
+                appreciationFrRef.current?.focus();
+            } else {
+                handleSaisirNote();
+            }
         }
     };
 
@@ -159,7 +317,19 @@ const GestionNotes = () => {
         setFraude(false);
         setCopieBlanche(false);
         setAnonymatValide(null);
+        setSuggestions([]);
+        setShowSuggestions(false);
+        setSelectedSuggestionIndex(-1);
     };
+
+    // Nettoyage du timer au démontage
+    useEffect(() => {
+        return () => {
+            if (verificationTimerRef.current) {
+                clearTimeout(verificationTimerRef.current);
+            }
+        };
+    }, []);
 
     if (!selectedEvaluation) {
         return (
@@ -178,8 +348,8 @@ const GestionNotes = () => {
 
             <div className="rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark mb-5">
                 <h3 className="font-medium text-lg mb-2">
-                        {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
-                    </h3>
+                    {lang === 'fr' ? `${selectedEvaluation.libelleFr} (${currentClasse})` : `${selectedEvaluation.libelleEn} (${currentClasse})`}
+                </h3>
 
                 {/* Sélection matière */}
                 <div className="mb-5">
@@ -202,47 +372,95 @@ const GestionNotes = () => {
 
                 {selectedMatiere && (
                     <>
-                        {/* Formulaire de saisie */}
-                        <div className="border-t pt-5">
-                            <h4 className="font-medium mb-4">{t('label.saisie_note')}</h4>
+                        {/* Statistiques rapides */}
+                        <div className="mb-5 flex gap-4 text-sm">
+                            <div className="bg-blue-50 dark:bg-blue-900 px-4 py-2 rounded">
+                                <span className="font-medium">{t('label.total_anonymats')}: </span>
+                                <span className="font-bold">{anonymatsDisponibles.length + notes.length}</span>
+                            </div>
+                            <div className="bg-green-50 dark:bg-green-900 px-4 py-2 rounded">
+                                <span className="font-medium">{t('label.notes_saisies')}: </span>
+                                <span className="font-bold">{notes.length}</span>
+                            </div>
+                            <div className="bg-orange-50 dark:bg-orange-900 px-4 py-2 rounded">
+                                <span className="font-medium">{t('label.restants')}: </span>
+                                <span className="font-bold">{anonymatsDisponibles.length}</span>
+                            </div>
+                        </div>
 
-                            {/* Numéro d'anonymat */}
-                            <div className="mb-4">
+                        {/* Formulaire de saisie rapide */}
+                        <div className="border-t pt-5">
+                            <h4 className="font-medium mb-4 flex items-center gap-2">
+                                {t('label.saisie_note')}
+                                <span className="text-xs text-gray-500">
+                                    ({t('label.navigation_clavier')}: Enter ↵ {t('label.pour_continuer')})
+                                </span>
+                            </h4>
+
+                            {/* Numéro d'anonymat avec autocomplétion */}
+                            <div className="mb-4 relative">
                                 <label className="mb-2 block text-sm font-medium">
                                     {t('label.numero_anonymat')} <span className="text-red-500">*</span>
                                 </label>
-                                <div className="flex gap-2">
+                                <div className="relative">
                                     <input
+                                        ref={anonymatInputRef}
                                         type="text"
                                         value={numeroAnonymat}
-                                        onChange={(e) => {
-                                            setNumeroAnonymat(e.target.value);
-                                            setAnonymatValide(null);
-                                        }}
+                                        onChange={(e) => handleAnonymatChange(e.target.value)}
+                                        onKeyDown={handleKeyDown}
                                         placeholder="AN2024-123456"
-                                        disabled={isVerifying}
-                                        className="flex-1 rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
+                                        disabled={isSubmitting}
+                                        autoFocus
+                                        className="w-full rounded border border-stroke bg-gray py-3 px-4 pr-10 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                                     />
-                                    <button
-                                        onClick={handleVerifierAnonymat}
-                                        disabled={isVerifying || !numeroAnonymat}
-                                        className="px-6 py-3 bg-primary text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-                                    >
-                                        {isVerifying && <FaSpinner className="animate-spin" />}
-                                        {isVerifying ? "" : t('boutton.verifier')}
-                                    </button>
+                                    {/* Indicateur de vérification */}
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                        {isVerifying && <FaSpinner className="animate-spin text-blue-500" />}
+                                        {!isVerifying && anonymatValide === true && (
+                                            <FaCheckCircle className="text-green-500" />
+                                        )}
+                                        {!isVerifying && anonymatValide === false && (
+                                            <FaTimesCircle className="text-red-500" />
+                                        )}
+                                    </div>
                                 </div>
-                                {anonymatValide !== null && (
+
+                                {/* Suggestions d'autocomplétion */}
+                                {showSuggestions && suggestions.length > 0 && (
+                                    <div
+                                        ref={suggestionsRef}
+                                        className="absolute z-10 w-full mt-1 bg-white dark:bg-boxdark border border-stroke dark:border-strokedark rounded shadow-lg max-h-60 overflow-y-auto"
+                                    >
+                                        {suggestions.map((suggestion, index) => (
+                                            <div
+                                                key={suggestion._id}
+                                                onClick={() => selectSuggestion(suggestion)}
+                                                className={`px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-meta-4 ${
+                                                    index === selectedSuggestionIndex ? 'bg-blue-50 dark:bg-blue-900' : ''
+                                                }`}
+                                            >
+                                                <span className="font-medium">{suggestion.numeroAnonymat}</span>
+                                                <span className="text-xs text-gray-500 ml-2">
+                                                    ({suggestion.statut})
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Message de validation */}
+                                {anonymatValide !== null && !showSuggestions && (
                                     <div className="mt-2 flex items-center gap-2">
                                         {anonymatValide ? (
                                             <>
                                                 <FaCheckCircle className="text-green-500" />
-                                                <span className="text-green-500">{t('label.anonymat_valide')}</span>
+                                                <span className="text-green-500 text-sm">{t('label.anonymat_valide')}</span>
                                             </>
                                         ) : (
                                             <>
                                                 <FaTimesCircle className="text-red-500" />
-                                                <span className="text-red-500">{t('label.anonymat_invalide')}</span>
+                                                <span className="text-red-500 text-sm">{t('label.anonymat_invalide')}</span>
                                             </>
                                         )}
                                     </div>
@@ -266,12 +484,14 @@ const GestionNotes = () => {
                                     </label>
                                 </div>
                                 <input
+                                    ref={noteInputRef}
                                     type="number"
                                     min="0"
                                     max={selectedEvaluation.noteMax}
                                     step="0.25"
                                     value={note}
                                     onChange={(e) => setNote(e.target.value)}
+                                    onKeyDown={handleNoteKeyDown}
                                     disabled={absent || isSubmitting}
                                     className="w-full rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white disabled:bg-gray-200 disabled:cursor-not-allowed"
                                 />
@@ -284,6 +504,7 @@ const GestionNotes = () => {
                                         {t('label.appreciation_fr')}
                                     </label>
                                     <textarea
+                                        ref={appreciationFrRef}
                                         value={appreciationFr}
                                         onChange={(e) => setAppreciationFr(e.target.value)}
                                         rows={3}
@@ -335,7 +556,7 @@ const GestionNotes = () => {
                                     className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     {isSubmitting && <FaSpinner className="animate-spin" />}
-                                    {isSubmitting ? "" : t('boutton.enregistrer')}
+                                    {isSubmitting ? "" : t('boutton.enregistrer')} (Enter ↵)
                                 </button>
                                 <button
                                     onClick={resetForm}

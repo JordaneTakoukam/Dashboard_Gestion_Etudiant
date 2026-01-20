@@ -92,6 +92,27 @@ const BodyTable = ({ data, onEdit }: BodyEvaluationProps) => {
             });
         }
 
+
+        if (isAdmin) {
+            pages.push({
+                name: t('sub_menu.coefficient_discipline'),
+                handleClick: () => {
+                    dispatch(setEvaluationSelected(item));
+                    navigate('/evaluations/coefficient-discipline');
+                }
+            });
+        }
+
+        if (isAdmin) {
+            pages.push({
+                name: t('sub_menu.gestion_discipline'),
+                handleClick: () => {
+                    dispatch(setEvaluationSelected(item));
+                    navigate('/evaluations/discipline');
+                }
+            });
+        }
+
         // Tout le monde (Admin, Enseignant, Étudiant)
         pages.push({
             name: t('sub_menu.resultats_evaluations'),

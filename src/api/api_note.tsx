@@ -219,3 +219,39 @@ export async function calculerMoyennes(evaluationId: string): Promise<MoyenneEtu
         throw error;
     }
 }
+
+
+
+/**
+ * NOUVEAU - Saisie rapide (validation + enregistrement en une seule requête)
+ */
+export async function saisieRapideNote(noteData: {
+    evaluation: string,
+    matiere: string,
+    anonymat: string,
+    note: number,
+    appreciationFr?: string,
+    appreciationEn?: string,
+    absent?: boolean,
+    fraude?: boolean,
+    copieBlanche?: boolean,
+    saisiePar: string,
+    modifiePar: string
+}): Promise<ReponseApiPros> {
+    try {
+        const response: AxiosResponse<any> = await axios.post(
+            `${api}/saisie-rapide`,
+            noteData,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error quick saving note:', error);
+        throw error;
+    }
+}

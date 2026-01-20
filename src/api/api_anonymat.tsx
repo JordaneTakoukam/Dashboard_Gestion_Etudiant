@@ -109,3 +109,79 @@ export async function getMonAnonymat(evaluationId: string): Promise<AnonymatType
         throw error;
     }
 }
+
+/**
+ * NOUVEAU - Obtenir les anonymats disponibles (non utilisés ou non notés)
+ */
+export async function getAnonymatsDisponibles(
+    evaluationId: string,
+    matiereId:string
+): Promise<any> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/disponibles/${evaluationId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: { matiereId },
+            },
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error('Error getting available anonymats:', error);
+        throw error;
+    }
+}
+
+/**
+ * NOUVEAU - Rechercher des anonymats (autocomplétion)
+ */
+export async function rechercherAnonymats(
+    evaluationId: string,
+    searchTerm: string,
+    matiereId:string
+): Promise<any> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/rechercher/${evaluationId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: { q: searchTerm, matiereId },
+            },
+        );
+        return response.data.data;
+    } catch (error) {
+        console.error('Error searching anonymats:', error);
+        throw error;
+    }
+}
+
+/**
+ * NOUVEAU - Vérification automatique d'anonymat
+ */
+export async function verifierAnonymatAuto(
+    numeroAnonymat: string,
+    evaluationId: string
+): Promise<any> {
+    try {
+        const response: AxiosResponse<any> = await axios.get(
+            `${api}/verifier/${numeroAnonymat}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token,
+                },
+                params: { evaluationId },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error verifying anonymat:', error);
+        throw error;
+    }
+}

@@ -116,6 +116,9 @@
     "liste_alerte": "Liste des alertes recentes"
   },
   "label": {
+    "total_anonymats":"Total des anonymats",
+    "informations":"Informations",
+    "restants":"Restants",
     "saisie_note_discipline": "Saisie Note de Discipline",
     "notes_discipline_saisies": "Notes de Discipline Saisies",
     "total_etudiants": "Total Étudiants",
@@ -470,10 +473,12 @@
     "enseignement": "un enseignement"
   },
   "boutton": {
+    
     "ajouter_manquement": "Ajouter Manquement",
     "ajouter_bonus": "Ajouter Bonus",
     "exporter":"Exporter",
     "exporter_excel":"Exporter(Excel)",
+    "exporter_pdf":"Exporter(PDF)",
     "deliberer":"Délibérer",
     "publier_resultats":"Publier les résultats",
     "verrouiller_notes":"Verrouiller les notes",
@@ -564,7 +569,8 @@
     "enseignant": "un enseignant",
     "enseignant_sup": "un enseignant suppléant",
     "salle": "une salle de cours",
-    "type_ens": "une activité pédagogique"
+    "type_ens": "une activité pédagogique",
+    "etudiant": "un étudiant"
   },
   "filtre": {
     "filtrer": "Filtrer",
@@ -774,6 +780,8 @@
     "confirm_pass": "La confirmation du mot de passe est incorrecte."
   },
   "message": {
+    "export_reussi":"Exportation réussi",
+    "erreur_export":"Erreur lors de l'exportation",
     "verifier": "Vérifier",
     "non_autoriser": "Non autorisé",
     "vous_etes_pas_autoriser_a_mener_cette_action": "Vous n'êtes pas autorisé à mener cette action",

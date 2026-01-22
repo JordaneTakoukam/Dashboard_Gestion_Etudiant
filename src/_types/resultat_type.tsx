@@ -19,6 +19,18 @@ interface NoteDetailleeMatiereType {
     copieBlanche: boolean;
 }
 
+// Type pour la note de discipline
+interface NoteDisciplineType {
+    note: number;
+    noteMax: number;
+    noteRamenee20: number;
+    coefficient: number;
+    appreciationFr?: string;
+    appreciationEn?: string;
+    manquements: any[];
+    bonus: any[];
+}
+
 // Type pour un résultat d'étudiant
 interface ResultatEtudiantType {
     etudiant: {
@@ -28,7 +40,8 @@ interface ResultatEtudiantType {
         matricule: string;
         email?: string;
     };
-    notes: NoteDetailleeMatiereType[];
+    notesMatieres: NoteDetailleeMatiereType[];
+    noteDiscipline: NoteDisciplineType;
     totalPoints: number;
     totalCoefficients: number;
     moyenne: number | null;
@@ -61,6 +74,8 @@ interface EvaluationInfoResultatType {
     datePublication?: Date;
     statut: string;
     noteMax: number;
+    noteVerrouillees?: boolean;
+    coefficientDiscipline?: number;
     matieres: {
         _id: string;
         libelleFr: string;
@@ -91,6 +106,7 @@ interface MesResultatsDetaillesType {
         noteMax: number;
     };
     notes: NoteDetailleeMatiereType[];
+    noteDiscipline?: NoteDisciplineType;
     moyenne: number | null;
     rang: number | null;
     totalEtudiants: number;

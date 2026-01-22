@@ -116,6 +116,9 @@
     "liste_alerte": "List of Recent Alerts"
   },
   "label": {
+    "total_anonymats": "Total anonymats",
+    "informations":"Informations",
+    "restants":"Remaining",
     "saisie_note_discipline": "Discipline Grade Entry",
     "notes_discipline_saisies": "Discipline Grades Entered",
     "total_etudiants": "Total Students",
@@ -476,6 +479,7 @@
     "ajouter_bonus": "Add Bonus",
     "exporter":"Export",
     "exporter_excel":"Export(Excel)",
+    "exporter_pdf":"Export(PDF)",
     "deliberer": "Deliberate",
     "publier_resultats": "Publish Results",
     "verrouiller_notes": "Lock Grades",
@@ -567,7 +571,8 @@
   "enseignant": "a teacher",
   "enseignant_sup": "a substitute teacher",
   "salle": "a classroom",
-  "type_ens": "an educational activity"
+  "type_ens": "an educational activity",
+  "etudiant": "a student"
 },
 
   "filtre": {
@@ -778,6 +783,8 @@
     "confirm_pass": "The password confirmation is incorrect."
   },
   "message": {
+    "export_reussi": "Export successful",
+    "erreur_export": "Error during export",
     "verifier": "Verify",
     "non_autoriser": "Not allowed",
     "vous_etes_pas_autoriser_a_mener_cette_action": "You are not authorized to perform this action",

@@ -11,7 +11,8 @@ import {
     apiDelibererEvaluation,
     apiPublierResultats,
     apiVerrouillerNotes,
-    exporterResultatsExcel
+    exporterResultatsExcel,
+    exporterResultatsPDF
 } from "../../api/api_note";
 import createToast from "../../hooks/toastify";
 import {
@@ -21,7 +22,7 @@ import {
     clearResultats
 } from "../../_redux/features/resultat_slice";
 import Loading from "../../components/ui/loading";
-import { FaCheckCircle, FaTimesCircle, FaLock, FaEye, FaDownload, FaChartBar, FaSpinner } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaLock, FaEye, FaDownload, FaChartBar, FaSpinner, FaFilePdf } from "react-icons/fa";
 import { config } from "../../config";
 import { updateEvaluationStatut } from "../../_redux/features/evaluation_slice";
 
@@ -41,6 +42,7 @@ const AffichageResultats = () => {
     const [isPublishing, setIsPublishing] = useState<boolean>(false);
     const [isLocking, setIsLocking] = useState<boolean>(false);
     const [isExporting, setIsExporting] = useState<boolean>(false);
+    const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [showStats, setShowStats] = useState<boolean>(true);
 
@@ -219,10 +221,33 @@ const AffichageResultats = () => {
         }
     };
 
+    const handleExportPDF = async () => {
+        if (!selectedEvaluation?._id) return;
+
+        setIsExportingPDF(true);
+        try {
+            const blob = await exporterResultatsPDF(selectedEvaluation._id, currentClasse);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Resultats_${lang === 'fr' ? selectedEvaluation.libelleFr : selectedEvaluation.libelleEn}_${new Date().getTime()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            createToast(t('message.export_reussi'), '', 0);
+        } catch (error) {
+            console.error('Erreur export PDF:', error);
+            createToast(t('message.erreur_export'), '', 2);
+        } finally {
+            setIsExportingPDF(false);
+        }
+    };
+
     const filteredResultats = resultatsDetailles?.resultats.filter(r =>
         r.etudiant.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
         r.etudiant.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.etudiant.matricule.toLowerCase().includes(searchTerm.toLowerCase())
+        r.etudiant.matricule?.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
     if (!selectedEvaluation) {
@@ -329,6 +354,31 @@ const AffichageResultats = () => {
                                                 </td>
                                             </tr>
                                         ))}
+                                        {/* Affichage de la note de discipline pour l'étudiant */}
+                                        {mesResultatsDetailles.noteDiscipline && (
+                                            <tr className="border-b dark:border-strokedark bg-blue-50 dark:bg-meta-4">
+                                                <td className="py-4 px-4">
+                                                    <p className="font-medium">
+                                                        {t('label.discipline')}
+                                                    </p>
+                                                </td>
+                                                <td className="py-4 px-4 text-center">
+                                                    {mesResultatsDetailles.noteDiscipline.coefficient}
+                                                </td>
+                                                <td className="py-4 px-4 text-center">
+                                                    <span className={`font-bold text-lg ${
+                                                        mesResultatsDetailles.noteDiscipline.noteRamenee20 >= 10 ? 'text-success' : 'text-danger'
+                                                    }`}>
+                                                        {mesResultatsDetailles.noteDiscipline.noteRamenee20.toFixed(2)}/20
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                        {lang === 'fr' ? mesResultatsDetailles.noteDiscipline.appreciationFr : mesResultatsDetailles.noteDiscipline.appreciationEn}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -413,14 +463,25 @@ const AffichageResultats = () => {
                             </button>
                         )}
                         {resultatsDetailles && (
-                            <button
-                                onClick={handleExportExcel}
-                                disabled={isExporting}
-                                className="px-6 py-3 bg-warning text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                                {isExporting ? <FaSpinner className="animate-spin" /> : <FaDownload />}
-                                {isExporting ? "": t('boutton.exporter_excel')}
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleExportExcel}
+                                    disabled={isExporting}
+                                    className="px-6 py-3 bg-warning text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {isExporting ? <FaSpinner className="animate-spin" /> : <FaDownload />}
+                                    {isExporting ? "" : t('boutton.exporter_excel')}
+                                </button>
+                                
+                                <button
+                                    onClick={handleExportPDF}
+                                    disabled={isExportingPDF}
+                                    className="px-6 py-3 bg-[#DC2626] text-[#FFFFFF] rounded hover:bg-opacity-90 disabled:bg-[#9CA3AF] disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {isExportingPDF ? <FaSpinner className="animate-spin" /> : <FaFilePdf />}
+                                    {isExportingPDF ? "" : t('boutton.exporter_pdf')}
+                                </button>
+                            </>
                         )}
                         <button
                             onClick={() => setShowStats(!showStats)}
@@ -458,19 +519,6 @@ const AffichageResultats = () => {
                     </div>
                 )}
 
-                {/* Recherche */}
-                {resultatsDetailles && resultatsDetailles.resultats.length > 0 && (
-                    <div className="mb-4">
-                        {/* <input
-                            type="text"
-                            placeholder={t('recherche.rechercher_etudiant')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full md:w-96 rounded border border-stroke bg-gray py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
-                        /> */}
-                    </div>
-                )}
-
                 {/* Liste des résultats */}
                 {pageIsLoading ? (
                     <Loading />
@@ -485,7 +533,6 @@ const AffichageResultats = () => {
                         <table className="w-full table-auto">
                             <thead>
                                 <tr className="bg-gray-2 dark:bg-meta-4">
-                                   
                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
                                         {t('label.matricule')}
                                     </th>
@@ -498,13 +545,24 @@ const AffichageResultats = () => {
                                     {resultatsDetailles.evaluation.matieres.map((matiere) => (
                                         <th key={matiere._id} className="py-4 px-2 font-medium text-black dark:text-white text-center">
                                             <div className="flex flex-col">
-                                                <span>{lang==="fr"?matiere.libelleFr:matiere.libelleEn}</span>
+                                                <span className="text-xs">{lang==="fr"?matiere.libelleFr:matiere.libelleEn}</span>
                                                 <span className="text-xs text-gray-500 dark:text-gray-400">
                                                     (Coef {matiere.coefficient})
                                                 </span>
                                             </div>
                                         </th>
                                     ))}
+                                    {/* Colonne discipline */}
+                                    {resultatsDetailles.evaluation.coefficientDiscipline && resultatsDetailles.evaluation.coefficientDiscipline > 0 && (
+                                        <th className="py-4 px-2 font-medium text-black dark:text-white text-center bg-blue-50 dark:bg-blue-900">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs">{t('label.discipline')}</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                    (Coef {resultatsDetailles.evaluation.coefficientDiscipline})
+                                                </span>
+                                            </div>
+                                        </th>
+                                    )}
                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-center bg-gray-100 dark:bg-gray-800">
                                         {t('label.total_note_coef')}
                                     </th>
@@ -514,7 +572,7 @@ const AffichageResultats = () => {
                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-center">
                                         {t('label.moyenne')}
                                     </th>
-                                     <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
+                                    <th className="py-4 px-4 font-medium text-black dark:text-white text-left">
                                         {t('label.rang')}
                                     </th>
                                 </tr>
@@ -522,10 +580,9 @@ const AffichageResultats = () => {
                             <tbody>
                                 {filteredResultats.map((item) => (
                                     <tr key={item.etudiant._id} className="border-b dark:border-strokedark hover:bg-gray-50 dark:hover:bg-gray-900">
-                                        
                                         <td className="py-4 px-4">
                                             <span className="font-mono text-sm">
-                                                {item.etudiant.matricule}
+                                                {item.etudiant.matricule || '-'}
                                             </span>
                                         </td>
                                         <td className="py-4 px-4">
@@ -538,13 +595,16 @@ const AffichageResultats = () => {
                                                 {item.etudiant.prenom}
                                             </span>
                                         </td>
+                                        {/* Notes des matières */}
                                         {resultatsDetailles.evaluation.matieres.map((matiere) => {
-                                            const note = item.notes.find(n => n.matiere._id === matiere._id);
+                                            const note = item.notesMatieres?.find(n => n.matiere._id === matiere._id);
                                             return (
                                                 <td key={matiere._id} className="py-4 px-2 text-center">
                                                     {note ? (
                                                         note.absent ? (
                                                             <span className="text-danger font-medium">ABS</span>
+                                                        ) : note.fraude ? (
+                                                            <span className="text-danger font-medium">FRD</span>
                                                         ) : (
                                                             <span className={`font-semibold ${
                                                                 note.noteRamenee20 >= 10 ? 'text-success' : 'text-danger'
@@ -558,6 +618,20 @@ const AffichageResultats = () => {
                                                 </td>
                                             );
                                         })}
+                                        {/* Note de discipline */}
+                                        {resultatsDetailles.evaluation.coefficientDiscipline && resultatsDetailles.evaluation.coefficientDiscipline > 0 && (
+                                            <td className="py-4 px-2 text-center bg-blue-50 dark:bg-blue-900">
+                                                {item.noteDiscipline ? (
+                                                    <span className={`font-semibold ${
+                                                        item.noteDiscipline.noteRamenee20 >= 10 ? 'text-success' : 'text-danger'
+                                                    }`}>
+                                                        {item.noteDiscipline.noteRamenee20.toFixed(2)}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-gray-400">-</span>
+                                                )}
+                                            </td>
+                                        )}
                                         <td className="py-4 px-4 text-center bg-gray-50 dark:bg-gray-800">
                                             <span className="font-bold">
                                                 {item.totalPoints > 0 ? item.totalPoints.toFixed(2) : '-'}

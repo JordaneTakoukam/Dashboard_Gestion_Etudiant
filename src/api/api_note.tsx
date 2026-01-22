@@ -99,6 +99,30 @@ export async function exporterResultatsExcel(evaluationId: string, currentClasse
     }
 }
 
+/**
+ * Exporter les résultats en PDF (ADMIN)
+ */
+export async function exporterResultatsPDF(evaluationId: string, currentClasse: string): Promise<Blob> {
+    try {
+        const response: AxiosResponse<Blob> = await axios.get(
+            `${api}/export-pdf/${evaluationId}`,
+            {
+                headers: {
+                    'token': token,
+                },
+                params: {
+                    section: currentClasse
+                },
+                responseType: 'blob',
+            },
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error exporting PDF:', error);
+        throw error;
+    }
+}
+
 
 export async function getNotesByEvaluationMatiere(
     evaluationId: string,

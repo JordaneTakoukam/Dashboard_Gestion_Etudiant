@@ -392,9 +392,9 @@ const GestionNotes = () => {
                         <div className="border-t pt-5">
                             <h4 className="font-medium mb-4 flex items-center gap-2">
                                 {t('label.saisie_note')}
-                                <span className="text-xs text-gray-500">
+                                {/* <span className="text-xs text-gray-500">
                                     ({t('label.navigation_clavier')}: Enter ↵ {t('label.pour_continuer')})
-                                </span>
+                                </span> */}
                             </h4>
 
                             {/* Numéro d'anonymat avec autocomplétion */}
@@ -556,7 +556,7 @@ const GestionNotes = () => {
                                     className="px-6 py-3 bg-success text-white rounded hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                                 >
                                     {isSubmitting && <FaSpinner className="animate-spin" />}
-                                    {isSubmitting ? "" : t('boutton.enregistrer')} (Enter ↵)
+                                    {isSubmitting ? "" : t('boutton.enregistrer')} 
                                 </button>
                                 <button
                                     onClick={resetForm}

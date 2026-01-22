@@ -237,7 +237,7 @@ const GestionNotesDiscipline = () => {
 
                     {/* Recherche et sélection étudiant */}
                     <div className="mb-4">
-                        <label className="mb-2 block text-sm font-medium">
+                        {/* <label className="mb-2 block text-sm font-medium">
                             {t('label.etudiant')} <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -246,7 +246,7 @@ const GestionNotesDiscipline = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full rounded border border-stroke bg-gray py-3 px-4 mb-2 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
-                        />
+                        /> */}
                         <select
                             value={selectedEtudiant}
                             onChange={(e) => setSelectedEtudiant(e.target.value)}
@@ -256,7 +256,7 @@ const GestionNotesDiscipline = () => {
                             <option value="">{t('select_par_defaut.selectionnez') + t('select_par_defaut.etudiant')}</option>
                             {filteredEtudiants.map(e => (
                                 <option key={e._id} value={e._id}>
-                                    {e.matricule} - {e.nom} {e.prenom} {e.aNoteDisc ? '✓' : ''}
+                                    {e.nom} {e.prenom} {e.aNoteDisc ? '✓' : ''}
                                 </option>
                             ))}
                         </select>
@@ -314,7 +314,7 @@ const GestionNotesDiscipline = () => {
                     </div>
 
                     {/* Manquements */}
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
                             <label className="text-sm font-medium">{t('label.manquements')}</label>
                             <button
@@ -367,10 +367,10 @@ const GestionNotesDiscipline = () => {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
 
                     {/* Bonus */}
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
                             <label className="text-sm font-medium">{t('label.bonus')}</label>
                             <button
@@ -416,7 +416,7 @@ const GestionNotesDiscipline = () => {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
 
                     {/* Boutons */}
                     <div className="flex gap-3">
@@ -454,7 +454,7 @@ const GestionNotesDiscipline = () => {
                                             {t('label.matricule')}
                                         </th>
                                         <th className="py-4 px-4 font-medium text-black dark:text-white">
-                                            {t('label.nom_prenom')}
+                                            {t('label.nom_chose')}
                                         </th>
                                         <th className="py-4 px-4 font-medium text-black dark:text-white">
                                             {t('label.note')}

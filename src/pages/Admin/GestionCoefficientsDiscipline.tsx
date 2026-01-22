@@ -278,7 +278,7 @@ const GestionCoefficientsDiscipline = () => {
                                         <button
                                             onClick={handleCancelEdit}
                                             disabled={isSubmitting}
-                                            className="px-6 py-3 bg-gray-500 text-white rounded hover:bg-opacity-90 disabled:bg-gray-400"
+                                            className="px-6 py-3 bg-[#6B7280] text-white rounded hover:bg-opacity-90 disabled:bg-[#9CA3AF]"
                                         >
                                             {t('boutton.annuler')}
                                         </button>

@@ -319,7 +319,8 @@ const AffichageResultats = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {mesResultatsDetailles.notes.map((note, index) => (
+                                        {/* CORRECTION ICI: notesMatieres au lieu de notes */}
+                                        {mesResultatsDetailles.notesMatieres?.map((note, index) => (
                                             <tr key={index} className="border-b dark:border-strokedark">
                                                 <td className="py-4 px-4">
                                                     <p className="font-medium">

@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-import ImageAdmin from './../../images/user/admin.png';
-import ImageTeacher from './../../images/user/teacher.png';
-import ImageDelegate from './../../images/user/delegate.png';
-import ImageStudent from './../../images/user/student.png';
+
+import ImageUser from './../../images/user/user.png';
 import { logoutFunction } from '../../api/auth/logout';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from "./../../_redux/store";
@@ -88,13 +86,7 @@ const DropdownUser = () => {
             userState.photo_profil !== null && userState.photo_profil !== '' ?
               <img className="w-full h-full object-cover" src={serveurUrl + userState.photo_profil} alt={userState.nom} />
               :
-              <img src={
-                user.role === roles.superAdmin ? ImageAdmin :
-                  user.role === roles.admin ? ImageAdmin :
-                    user.role === roles.enseignant ? ImageTeacher :
-                      user.role === roles.delegue ? ImageDelegate :
-                        ImageStudent
-              } alt="User" />
+              <img src={ImageUser} alt="User" />
           }
         </div>
 

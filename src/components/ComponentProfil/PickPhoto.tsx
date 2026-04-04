@@ -1,7 +1,6 @@
-import ImageAdmin from './../../images/user/admin.png';
-import ImageTeacher from './../../images/user/teacher.png';
-import ImageDelegate from './../../images/user/delegate.png';
-import ImageStudent from './../../images/user/student.png';
+
+import ImageUser from './../../images/user/user.png';
+
 import { config, serveurUrl } from "../../config";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../_redux/store";
@@ -113,13 +112,7 @@ export function PickPhoto() {
                   <div className="h-14 w-14 rounded-full overflow-hidden">
                     {
 
-                      <img src={
-                        user.role === roles.superAdmin ? ImageAdmin :
-                          user.role === roles.admin ? ImageAdmin :
-                            user.role === roles.enseignant ? ImageTeacher :
-                              user.role === roles.delegue ? ImageDelegate :
-                                ImageStudent
-                      } alt="User" />
+                     <img src={ImageUser} alt="User" />
                     }
                   </div>
 

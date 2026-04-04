@@ -31,7 +31,7 @@ interface NoteDisciplineType {
     bonus: any[];
 }
 
-// Type pour un résultat d'étudiant
+// Type pour un résultat d'étudiant (ADMIN)
 interface ResultatEtudiantType {
     etudiant: {
         _id: string;
@@ -41,7 +41,7 @@ interface ResultatEtudiantType {
         email?: string;
     };
     notesMatieres: NoteDetailleeMatiereType[];
-    noteDiscipline: NoteDisciplineType;
+    noteDiscipline: NoteDisciplineType | null;
     totalPoints: number;
     totalCoefficients: number;
     moyenne: number | null;
@@ -74,7 +74,7 @@ interface EvaluationInfoResultatType {
     datePublication?: Date;
     statut: string;
     noteMax: number;
-    noteVerrouillees?: boolean;
+    notesVerrouillees?: boolean;
     coefficientDiscipline?: number;
     matieres: {
         _id: string;
@@ -93,6 +93,7 @@ interface ResultatsDetaillesType {
 }
 
 // Type pour mes résultats détaillés (ÉTUDIANT)
+// CORRECTION ICI: notesMatieres au lieu de notes
 interface MesResultatsDetaillesType {
     evaluation: {
         _id: string;
@@ -104,8 +105,9 @@ interface MesResultatsDetaillesType {
         dateEpreuve?: Date;
         datePublication?: Date;
         noteMax: number;
+        coefficientDiscipline?: number;
     };
-    notes: NoteDetailleeMatiereType[];
+    notesMatieres: NoteDetailleeMatiereType[]; // ✅ CORRIGÉ: notesMatieres au lieu de notes
     noteDiscipline?: NoteDisciplineType;
     moyenne: number | null;
     rang: number | null;

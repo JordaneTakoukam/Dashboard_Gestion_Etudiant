@@ -418,11 +418,11 @@ function ProfileInformation() {
                 lieu_naiss: lieuNaiss,
                 date_entree: dateEntreeAdmin,
                 niveaux: userState.niveaux,
-                specialite: specialite?._id || null,
+                specialite: specialite?._id || undefined,
                 categorie: categorie?._id || null,
                 fonction: fonction?._id || null,
                 service: service?._id || null,
-                commune: commune?._id || null
+                commune: commune?._id || undefined
             }
         ).then((e: ReponseApiPros) => {
             if (e.success) {
